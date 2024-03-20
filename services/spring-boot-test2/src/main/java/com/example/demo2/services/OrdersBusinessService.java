@@ -24,4 +24,14 @@ public class OrdersBusinessService implements OrdersBusinessServiceInterface{
         return orders;
     }
 
+    @Override
+    public void init(){
+        System.out.println("Initializing: " + this.getClass());
+    }
+
+    @Override
+    public void destroy(){
+        System.out.println("Destroying: " + this.getClass());
+    }
+
 }

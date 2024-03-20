@@ -16,15 +16,30 @@ public class OrdersBusinessService2 implements OrdersBusinessServiceInterface{
         System.out.println("OrderBusinessService is working");
     }
 
+    List<OrderModel> orders;
+
+
+
     @Override
     public List<OrderModel> getOrders(){
-        List<OrderModel> orders = new ArrayList<>();
+        
         for(int i=0; i<3; i++){
             OrderModel x = new OrderModel(0L+i,"Big mac #"+i,"asdasd",12f,2);
             // System.out.println(x);
             orders.add(x);
         }
         return orders;
+    }
+
+    @Override
+    public void init(){
+        System.out.println("Initializing: " + this.getClass());
+        orders = new ArrayList<>();
+    }
+
+    @Override
+    public void destroy(){
+        System.out.println("Destroying: " + this.getClass());
     }
 
 }
