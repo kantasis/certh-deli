@@ -16,7 +16,6 @@ public class HelloWorldController {
     @GetMapping("/test1")
     @ResponseBody
     public String printHello(){
-        
         return "Hello world";
     }
     
@@ -53,6 +52,22 @@ public class HelloWorldController {
         System.out.println(friends);
         model.addAttribute("people", friends);
         return "showFriends.html";
+    }
+
+    @GetMapping("/peopleJSON")
+    @ResponseBody
+    public List<Person> showFriendsJSON(Model model){
+        List<Person> friends = new ArrayList<Person>();
+        friends.add(new Person(0,"A",23,100f));
+        friends.add(new Person(1,"B",23,100f));
+        friends.add(new Person(2,"C",23,100f));
+        friends.add(new Person(3,"D",23,100f));
+        friends.add(new Person(4,"E",23,100f));
+        friends.add(new Person(5,"F",23,100f));
+        friends.add(new Person(6,"G",23,100f));
+        friends.add(new Person(7,"H",23,100f));
+
+        return friends;
     }
 
 }
