@@ -30,11 +30,11 @@ public class LoginController {
     public String processLogin(@Valid LoginModel loginModel, BindingResult bindingResult, Model model ){
         if (bindingResult.hasErrors()){
             model.addAttribute("loginModel", loginModel);
-            System.out.println("GK> Invalid " + loginModel);
+            // System.out.println("GK> Invalid " + loginModel);
             return "loginForm.html";
         }
         model.addAttribute("loginModel", loginModel);
-        System.out.println("GK> processing " + loginModel);
+        // System.out.println("GK> processing " + loginModel);
         return "loginResults.html";
     }
 }

@@ -1,14 +1,8 @@
 <!DOCTYPE html>
-<html>
-
-<head>
-   <link href="/css/bootstrap.min.css" rel="stylesheet">
-</head>
+<html layout:decorate="layouts/defaultLayout">
 
 <body>
-   <h1>Login Form</h1>
-
-   <div class="container" th:object="${loginModel}">
+   <div class="container" th:object="${loginModel}" layout:fragment="content">
       <p>Username: <span th:text="*{username}"></span></p>
       <p>Password: <span th:text="*{password}"></span></p>
    </div>

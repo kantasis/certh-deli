@@ -39,11 +39,11 @@ public class LoginModel {
     public LoginModel(String username, String password) {
         this.username = username;
         this.password = password;
-        System.out.println("Calling constructor for " +username+' '+ password );
+        // System.out.println("Calling constructor for " +username+' '+ password );
     }
 
     public LoginModel() {
-        System.out.println("Calling default constructor" );
+        // System.out.println("Calling default constructor" );
     }
 
     @Override
