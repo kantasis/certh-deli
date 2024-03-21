@@ -11,9 +11,9 @@ public interface OrdersBusinessServiceInterface {
 
     public void destroy();
 
-    // search orders
-    // addOrder(order)
-    // delete order
-    // update order
-    // get one order
-}
+    public OrderModel getById(long id);
+    public List<OrderModel> searchOrders(String searchTerm);
+    public long addOne(OrderModel newOrder);
+    public boolean deleteOne(long id);
+    public OrderModel updateOne(long idToUpdate, OrderModel updatedModel);
+ }
