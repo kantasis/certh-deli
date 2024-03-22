@@ -78,12 +78,8 @@ public class OrdersDataServiceForRepository implements OrdersDataAccessInterface
    
    @Override
    public long addOne(OrderModel new_OrderModel) {
-      System.out.println("GK> ");
-      System.out.println("GK> " + new_OrderModel);
       OrderEntity new_orderEntity = modelMapper.map(new_OrderModel,OrderEntity.class);
-      System.out.println("GK> " + new_orderEntity);
       OrderEntity result_orderEntity = ordersRepository.save(new_orderEntity);
-      System.out.println("GK> " + result_orderEntity);
       return result_orderEntity==null?0:result_orderEntity.getId();
    }
 
