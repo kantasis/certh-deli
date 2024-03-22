@@ -8,8 +8,8 @@ import org.springframework.stereotype.Repository;
 
 import com.example.demo2.models.OrderModel;
 
-@Repository
-public class OrdersFakeDAO implements OrdersDataAccessInterface{
+// @Repository
+public class OrdersFakeDAO implements OrdersDataAccessInterface <OrderModel>{
 
    List<OrderModel> orders = new ArrayList<OrderModel>();
 

@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 public class OrdersBusinessService implements OrdersBusinessServiceInterface{
 
     @Autowired
-    OrdersDataAccessInterface ordersDAO;
+    OrdersDataAccessInterface<OrderModel> ordersDAO;
 
     @Override
     public void test(){

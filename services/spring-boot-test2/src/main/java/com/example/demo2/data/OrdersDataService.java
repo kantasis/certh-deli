@@ -13,7 +13,7 @@ import org.springframework.stereotype.Repository;
 import com.example.demo2.models.OrderModel;
 
 @Repository
-public class OrdersDataService implements OrdersDataAccessInterface {
+public class OrdersDataService implements OrdersDataAccessInterface<OrderModel> {
 
    @Autowired
    DataSource dataSource;
