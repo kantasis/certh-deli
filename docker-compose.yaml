@@ -1,32 +1,38 @@
-version: '3.8'
-
+version: "3"
 services:
-   test_mysql_container:
-      image: mysql:latest
-      container_name: test_mysql_container
+
+   deli_main_label:
+      container_name: deli_main_container
+      build: ./services/grafana
+      # image: grafana/grafana-oss
+      ports:
+         - 3000:3000
+      volumes:
+         - deli_main_volume:/var/lib/grafana
+         # - ./html/:/usr/local/apache2/htdocs/:ro
+         # - ./html/:/var/www/html/:ro
+
+   deli_db_label:
+      container_name: deli_db_container
+      build: ./services/postgres
+      # image: postgres
+      ports:
+         - 5432:5432
       restart: always
       environment:
-         MYSQL_ROOT_PASSWORD: 1234
-         MYSQL_DATABASE: test_main_database
-         MYSQL_USER: george
-         MYSQL_PASSWORD: 4321
-      ports:
-         - "3306:3306"
+         POSTGRES_PASSWORD: admin
       volumes:
-         - ./shared/mysql:/var/lib/mysql
-      # networks:
-      #    - test_main_network
+         - deli_pgdata_volume:/var/lib/postgresql/data
 
-   test_ubuntu_container:
-      image: ubuntu:latest
-      container_name: test_ubuntu_container
-      restart: always
-      command: tail -f /dev/null
-      tty: true
-      stdin_open: true
-      # networks:
-      #    - test_main_network
+   deli_frontend_label:
+      build: ./services/apache
+      container_name: deli_frontend_container
+      ports:
+         - 9080:80
+      volumes:
+         - ./html/:/usr/local/apache2/htdocs/:ro
+        #  - ./html/:/var/www/html/:ro
 
-# networks:
-#    test_main_network:
-#       driver: bridge
+volumes:
+   deli_main_volume: {}
+   deli_pgdata_volume: {}
