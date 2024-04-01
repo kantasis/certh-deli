@@ -1,5 +1,8 @@
-DROP TABLE IF EXISTS data_tbl;
+DROP DATABASE IF EXISTS deli_db;
+CREATE DATABASE deli_db;
+\c deli_db;
 
+-- DROP TABLE IF EXISTS data_tbl;
 CREATE TABLE data_tbl (
    id SERIAL PRIMARY KEY,
    "Country" VARCHAR(250),
@@ -339,11 +342,11 @@ CREATE TABLE data_tbl (
    "PPP dollar per person per day_Cost of a healthy diet_Value" DOUBLE PRECISION,
    "PPP dollar per person per day_Cost of animal source foods_Value" DOUBLE PRECISION,
    "PPP dollar per person per day_Cost of fruits_Value" DOUBLE PRECISION,
-   "PPP dollar per person per day_Cost of legumes nuts and seeds_Value" DOUBLE PRECISION,
+   "PPP dollar per person per day_Cost of legumes nuts and seeds_Va" DOUBLE PRECISION,
    "PPP dollar per person per day_Cost of oils and fats_Value" DOUBLE PRECISION,
    "PPP dollar per person per day_Cost of starchy staples_Value" DOUBLE PRECISION,
    "PPP dollar per person per day_Cost of vegetables_Value" DOUBLE PRECISION,
-   "million# of people unable to afford a healthy diet (million)_Value" DOUBLE PRECISION,
+   "million# of people unable to afford a healthy diet (million)_Va" DOUBLE PRECISION,
    "CRC_incidence_val_Number" DOUBLE PRECISION,
    "CRC_incidence_upper_Number" DOUBLE PRECISION,
    "CRC_incidence_lower_Number" DOUBLE PRECISION,
@@ -457,7 +460,7 @@ CREATE TABLE data_tbl (
    "Hospital care costs €" DOUBLE PRECISION,
    "% of total CRC health-care costs on Hospital care" DOUBLE PRECISION,
    "Systemic anti-cancer therapy costs €" DOUBLE PRECISION,
-   "% of total CRC health-care costs on Systemic anti-cancer therapy" DOUBLE PRECISION,
+   "% of total CRC health-care costs on Systemic anti-cancer therap" DOUBLE PRECISION,
    "Total health- care expenditure costs €" DOUBLE PRECISION,
    "% of total CRC economic burden on health-care expenditure" DOUBLE PRECISION,
    "Mortality costs €" DOUBLE PRECISION,

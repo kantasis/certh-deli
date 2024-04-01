@@ -1,4 +1,4 @@
-\copy data_tbl(
+copy data_tbl(
    "Country",
    "Year",
    "age",
@@ -336,11 +336,11 @@
    "PPP dollar per person per day_Cost of a healthy diet_Value",
    "PPP dollar per person per day_Cost of animal source foods_Value",
    "PPP dollar per person per day_Cost of fruits_Value",
-   "PPP dollar per person per day_Cost of legumes nuts and seeds_Value",
+   "PPP dollar per person per day_Cost of legumes nuts and seeds_Va",
    "PPP dollar per person per day_Cost of oils and fats_Value",
    "PPP dollar per person per day_Cost of starchy staples_Value",
    "PPP dollar per person per day_Cost of vegetables_Value",
-   "million# of people unable to afford a healthy diet (million)_Value",
+   "million# of people unable to afford a healthy diet (million)_Va",
    "CRC_incidence_val_Number",
    "CRC_incidence_upper_Number",
    "CRC_incidence_lower_Number",
@@ -454,7 +454,7 @@
    "Hospital care costs €",
    "% of total CRC health-care costs on Hospital care",
    "Systemic anti-cancer therapy costs €",
-   "% of total CRC health-care costs on Systemic anti-cancer therapy",
+   "% of total CRC health-care costs on Systemic anti-cancer therap",
    "Total health- care expenditure costs €",
    "% of total CRC economic burden on health-care expenditure",
    "Mortality costs €",
@@ -489,8 +489,7 @@
    "Air Pollution Population Weighted Average [ug/m3]_PM10",
    "Air Pollution Average [ug/m3]_PM2.5",
    "Air Pollution Population Weighted Average [ug/m3]_PM2.5"
-
 )
-FROM 'dataset.csv'
+FROM '/tmp/dataset.csv'
 DELIMITER ','
 CSV HEADER;

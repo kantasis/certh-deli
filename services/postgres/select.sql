@@ -1,3 +1,3 @@
 SELECT 
-   *
-FROM orders_tbl;
+   count(*)
+FROM data_tbl;
