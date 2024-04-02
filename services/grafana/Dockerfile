@@ -1,1 +1,1 @@
-FROM grafana/grafana-oss
+FROM grafana/grafana-oss:main

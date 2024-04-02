@@ -5,12 +5,16 @@ services:
       container_name: deli_main_container
       build: ./services/grafana
       # image: grafana/grafana-oss
+      environment:
+         # grafana setting to allow embedding
+         GF_SECURITY_ALLOW_EMBEDDING: true
+         # grafana setting to allow anonymous usage
+         GF_AUTH_ANONYMOUS_ENABLED: true
       ports:
          - 3000:3000
       volumes:
          - deli_main_volume:/var/lib/grafana
-         # - ./html/:/usr/local/apache2/htdocs/:ro
-         # - ./html/:/var/www/html/:ro
+         - ./shared/grafana/:/usr/share/grafana/conf/provisioning/
 
    deli_db_label:
       container_name: deli_db_container
@@ -23,6 +27,7 @@ services:
          POSTGRES_PASSWORD: admin
       volumes:
          - deli_pgdata_volume:/var/lib/postgresql/data
+         
 
    deli_frontend_label:
       build: ./services/apache
