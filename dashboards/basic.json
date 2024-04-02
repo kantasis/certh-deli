@@ -1,0 +1,139 @@
+{
+   "annotations": {
+     "list": [
+       {
+         "builtIn": 1,
+         "datasource": {
+           "type": "grafana",
+           "uid": "-- Grafana --"
+         },
+         "enable": true,
+         "hide": true,
+         "iconColor": "rgba(0, 211, 255, 1)",
+         "name": "Annotations & Alerts",
+         "type": "dashboard"
+       }
+     ]
+   },
+   "editable": true,
+   "fiscalYearStartMonth": 0,
+   "graphTooltip": 0,
+   "id": 2,
+   "links": [],
+   "panels": [
+     {
+       "datasource": {
+         "type": "grafana-postgresql-datasource",
+         "uid": "edhf2jwfumby8c"
+       },
+       "gridPos": {
+         "h": 8,
+         "w": 12,
+         "x": 0,
+         "y": 0
+       },
+       "id": 2,
+       "options": {
+         "baidu": {
+           "callback": "bmapReady",
+           "key": ""
+         },
+         "editor": {
+           "format": "auto"
+         },
+         "editorMode": "code",
+         "gaode": {
+           "key": "",
+           "plugin": "AMap.Scale,AMap.ToolBar"
+         },
+         "getOption": "\nlet values_fLst = [];\nlet countries_sLst = [];\n\ndata.series.map((s) => {\n\n  values_fLst = s.fields.find((f) =>\n    f.name === 'values_f'\n  ).values;\n\n  countries_sLst = s.fields.find((f) =>\n    f.name === 'country_str'\n  ).values;\n\n});\n\nindicator_Lst = []\nfor (let i in countries_sLst) {\n  indicator_Lst[i] = {\n    name: countries_sLst[i],\n    max: 30,\n  }\n\n}\n\nreturn {\n  title: {\n    text: 'Basic Radar Chart'\n  },\n  // legend: {\n  //    data: ['Allocated Budget', 'Actual Spending']\n  // },\n  radar: {\n    // shape: 'circle',\n    indicator: indicator_Lst\n  },\n  series: [\n    {\n      name: 'Budget vs spending',\n      type: 'radar',\n      data: [\n        {\n          value: values_fLst\n          // name: 'Allocated Budget'\n        }\n      ]\n    }\n  ]\n};\n",
+         "google": {
+           "callback": "gmapReady",
+           "key": ""
+         },
+         "map": "none",
+         "renderer": "canvas",
+         "themeEditor": {
+           "config": "{}",
+           "name": "default"
+         },
+         "visualEditor": {
+           "code": "",
+           "dataset": [
+             {
+               "name": "avg",
+               "source": "A"
+             }
+           ],
+           "series": []
+         }
+       },
+       "pluginVersion": "5.3.0",
+       "targets": [
+         {
+           "datasource": {
+             "type": "grafana-postgresql-datasource",
+             "uid": "edhf2jwfumby8c"
+           },
+           "editorMode": "code",
+           "format": "table",
+           "rawQuery": true,
+           "rawSql": "SELECT\r\n  -- AVG(\"Air Pollution Population Weighted Average [ug/m3]_PM2.5\"),\r\n  AVG(\"Air Pollution Population Weighted Average [ug/m3]_PM2.5\") as values_f,\r\n  \"Country\" as country_str\r\nFROM\r\n  data_tbl\r\nGROUP BY\r\n  \"Country\"\r\nhaving AVG(\"Air Pollution Population Weighted Average [ug/m3]_PM2.5\") is not null\r\nLIMIT\r\n  10",
+           "refId": "A",
+           "sql": {
+             "columns": [
+               {
+                 "name": "AVG",
+                 "parameters": [
+                   {
+                     "name": "\"Air Pollution Population Weighted Average [ug/m3]_PM2.5\"",
+                     "type": "functionParameter"
+                   }
+                 ],
+                 "type": "function"
+               },
+               {
+                 "parameters": [
+                   {
+                     "name": "\"Country\"",
+                     "type": "functionParameter"
+                   }
+                 ],
+                 "type": "function"
+               }
+             ],
+             "groupBy": [
+               {
+                 "property": {
+                   "name": "\"Country\"",
+                   "type": "string"
+                 },
+                 "type": "groupBy"
+               }
+             ],
+             "limit": 50
+           },
+           "table": "data_tbl"
+         }
+       ],
+       "title": "Panel Title",
+       "type": "volkovlabs-echarts-panel"
+     }
+   ],
+   "schemaVersion": 39,
+   "tags": [],
+   "templating": {
+     "list": []
+   },
+   "time": {
+     "from": "now-6h",
+     "to": "now"
+   },
+   "timeRangeUpdatedDuringEditOrView": false,
+   "timepicker": {},
+   "timezone": "browser",
+   "title": "test dashboard",
+   "uid": "cdhhxfc1n6m0wb",
+   "version": 3,
+   "weekStart": ""
+ }
