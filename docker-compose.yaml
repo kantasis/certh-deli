@@ -7,9 +7,9 @@ services:
       # image: grafana/grafana-oss
       environment:
          # grafana setting to allow embedding
-         GF_SECURITY_ALLOW_EMBEDDING: true
+         GF_SECURITY_ALLOW_EMBEDDING: 'true'
          # grafana setting to allow anonymous usage
-         GF_AUTH_ANONYMOUS_ENABLED: true
+         GF_AUTH_ANONYMOUS_ENABLED: 'true'
       ports:
          - 3000:3000
       volumes:
