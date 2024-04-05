@@ -27,7 +27,6 @@ services:
          POSTGRES_PASSWORD: admin
       volumes:
          - deli_pgdata_volume:/var/lib/postgresql/data
-         
 
    deli_frontend_label:
       build: ./services/apache

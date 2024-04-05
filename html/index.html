@@ -4,7 +4,7 @@
 <head>
    <meta charset="UTF-8">
    <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
-   <title>Orfana Test</title>
+   <title>ONCODIR DELI Dashboard</title>
 
    <!-- Bootstrap -->
    <!-- CSS only -->
@@ -24,50 +24,156 @@
    <!-- Custom styling -->
    <link rel="stylesheet" href="css/style.css">
 
+   <script type = "text/JavaScript">
+      function AutoRefresh( t ) {
+         setTimeout("location.reload(true);", t);
+      }
+   </script>
+
 </head>
 
-<body>
+<body onload = "JavaScript:AutoRefresh(30000);">
    <div class="container">
 
-   <nav class="navbar navbar-expand-lg bg-body-tertiary">
-      <div class="container-fluid">
-         <a class="navbar-brand" href="#">Navbar</a>
-         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-         </button>
-         <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-               <li class="nav-item">
-                  <a class="nav-link active" aria-current="page" href="#">Home</a>
-               </li>
-               <li class="nav-item">
-                  <a class="nav-link" href="#">Link</a>
-               </li>
-               <li class="nav-item dropdown">
-                  <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                     Dropdown
-                  </a>
-                  <ul class="dropdown-menu">
-                     <li><a class="dropdown-item" href="#">Action</a></li>
-                     <li><a class="dropdown-item" href="#">Another action</a></li>
-                     <li><hr class="dropdown-divider"></li>
-                     <li><a class="dropdown-item" href="#">Something else here</a></li>
-                  </ul>
-               </li>
-               <li class="nav-item">
-                  <a class="nav-link disabled" aria-disabled="true">Disabled</a>
-               </li>
-            </ul>
-            <form class="d-flex" role="search">
-               <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-               <button class="btn btn-outline-success" type="submit">Search</button>
-            </form>
+      <nav class="navbar navbar-expand-lg bg-body-tertiary">
+         <div class="container-fluid">
+            <a class="navbar-brand" href="#">Navbar</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+               <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+               <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                  <li class="nav-item">
+                     <a class="nav-link active" aria-current="page" href="#">Home</a>
+                  </li>
+                  <li class="nav-item">
+                     <a class="nav-link" href="#">Link</a>
+                  </li>
+                  <li class="nav-item dropdown">
+                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Dropdown
+                     </a>
+                     <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#">Action</a></li>
+                        <li><a class="dropdown-item" href="#">Another action</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="#">Something else here</a></li>
+                     </ul>
+                  </li>
+                  <li class="nav-item">
+                     <a class="nav-link disabled" aria-disabled="true">Disabled</a>
+                  </li>
+               </ul>
+               <form class="d-flex" role="search">
+                  <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                  <button class="btn btn-outline-success" type="submit">Search</button>
+               </form>
+            </div>
+         </div>
+      </nav>
+      <h1>Grafana Powered</h1>
+
+
+
+      <div class="main">
+         <!-- Tabbed List Reference -->
+         <!-- https://getbootstrap.com/docs/5.0/components/navs-tabs/#javascript-behavior -->
+         <ul 
+            class="nav nav-tabs" 
+            id="tabs1"
+            role="tablist"
+         >
+            <li 
+               class="nav-item"
+               role="presentation"
+            >
+               <button 
+                  class="nav-link active" 
+                  id="geomap-tab" 
+                  data-bs-toggle="tab" 
+                  data-bs-target="#geomap" 
+                  type="button" 
+                  role="tab" 
+                  aria-controls="geomap" 
+                  aria-selected="true"
+               >
+                  Geo Map
+               </button>
+            </li>
+            <li 
+               class="nav-item"
+               role="presentation"
+            >
+               <button 
+                  class="nav-link" 
+                  id="barchart-tab" 
+                  data-bs-toggle="tab" 
+                  data-bs-target="#barchart" 
+                  type="button" 
+                  role="tab" 
+                  aria-controls="barchart" 
+                  aria-selected="false"
+               >
+                  Barchart
+               </button>
+            </li>
+            <li 
+               class="nav-item"
+               role="presentation"
+            >
+               <button 
+                  class="nav-link" 
+                  id="spiderplot-tab" 
+                  data-bs-toggle="tab" 
+                  data-bs-target="#spiderplot" 
+                  type="button" 
+                  role="tab" 
+                  aria-controls="spiderplot" 
+                  aria-selected="false"
+               >
+                  Spiderplot
+               </button>
+            </li>
+         </ul>
+         <div 
+            class="tab-content" 
+            id="myTabContent"
+         >
+            <div 
+               class="tab-pane fade show active" 
+               id="geomap" 
+               role="tabpanel" 
+               aria-labelledby="geomap-tab"
+            >
+               Map Placeholder
+            </div>
+            <div 
+               class="tab-pane fade" 
+               id="barchart" 
+               role="tabpanel" 
+               aria-labelledby="barchart-tab"
+            >
+               Barchart Placeholder
+            </div>
+            <div 
+               class="tab-pane fade" 
+               id="spiderplot" 
+               role="tabpanel" 
+               aria-labelledby="spiderplot-tab"
+            >
+               <div class="embed-responsive embed-responsive-16by9">
+                  <iframe 
+                     class="embed-responsive-item"
+                     src="http://localhost:3000/d-solo/cdhhxfc1n6m0wb/test-dashboard?orgId=1&from=1712033376517&to=1712054976517&theme=light&panelId=2"
+                     width="800"
+                     height="600"
+                  >
+                  </iframe> 
+               </div>
+            </div>
          </div>
       </div>
-   </nav>
-   <h1>Grafana Powered</h1>
 
-   <!-- <p>Our portal uses Grafana! yay</p> -->
 
    <div class="embed-responsive embed-responsive-16by9">
       <iframe 
@@ -94,5 +200,7 @@
    </div>
 -->
 
-</div>
+   </div>
+   <script src="js/index.js"></script>
+</body>
 </html>
