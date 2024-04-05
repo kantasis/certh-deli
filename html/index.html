@@ -134,25 +134,50 @@
                   Spiderplot
                </button>
             </li>
+            <li 
+               class="nav-item"
+               role="presentation"
+            >
+               <button 
+                  class="nav-link" 
+                  id="dashboard-tab" 
+                  data-bs-toggle="tab" 
+                  data-bs-target="#dashboard" 
+                  type="button" 
+                  role="tab" 
+                  aria-controls="dashboard" 
+                  aria-selected="false"
+               >
+                  Spiderplot
+               </button>
+            </li>
          </ul>
          <div 
             class="tab-content" 
             id="myTabContent"
          >
-            <div 
-               class="tab-pane fade show active" 
-               id="geomap" 
-               role="tabpanel" 
-               aria-labelledby="geomap-tab"
-            >
-               Map Placeholder
+         <div 
+            class="tab-pane fade show active" 
+            id="geomap" 
+            role="tabpanel" 
+            aria-labelledby="geomap-tab"
+         >
+            <div class="embed-responsive embed-responsive-16by9">
+               <iframe 
+                  class="embed-responsive-item"
+                  src="http://160.40.53.35:3000/d-solo/fdhlxt13jf0n4a/test-dashboard?orgId=1&from=1712279409614&to=1712301009614&theme=light&panelId=4"
+                  width="800"
+                  height="600"
+               >
+               </iframe>
             </div>
-            <div 
-               class="tab-pane fade" 
-               id="barchart" 
-               role="tabpanel" 
-               aria-labelledby="barchart-tab"
-            >
+         </div>
+         <div 
+            class="tab-pane fade" 
+            id="barchart" 
+            role="tabpanel" 
+            aria-labelledby="barchart-tab"
+         >
             <div class="embed-responsive embed-responsive-16by9">
                <iframe 
                   class="embed-responsive-item"
@@ -163,22 +188,22 @@
                </iframe>
             </div>
          </div>
-            <div 
-               class="tab-pane fade" 
-               id="spiderplot" 
-               role="tabpanel" 
-               aria-labelledby="spiderplot-tab"
-            >
-               <div class="embed-responsive embed-responsive-16by9">
-                  <iframe 
-                     class="embed-responsive-item"
-                     src="http://160.40.53.35:3000/d-solo/fdhlxt13jf0n4a/test-dashboard?orgId=1&from=1712117229542&to=1712138829542&theme=light&panelId=1"
-                     width="800"
-                     height="600"
-                  >
-                  </iframe>
-               </div>
+         <div 
+            class="tab-pane fade" 
+            id="spiderplot" 
+            role="tabpanel" 
+            aria-labelledby="spiderplot-tab"
+         >
+            <div class="embed-responsive embed-responsive-16by9">
+               <iframe 
+                  class="embed-responsive-item"
+                  src="http://160.40.53.35:3000/d-solo/fdhlxt13jf0n4a/test-dashboard?orgId=1&from=1712117229542&to=1712138829542&theme=light&panelId=1"
+                  width="800"
+                  height="600"
+               >
+               </iframe>
             </div>
+         </div>
          </div>
       </div>
    </div>
