@@ -1,42 +1,42 @@
 version: "3"
 services:
 
-   deli_main_label:
-      container_name: deli_main_container
+   deli_grafana_label:
+      image: deli_grafana_image
+      container_name: deli_grafana_container
       build: ./services/grafana
-      # image: grafana/grafana-oss
-      environment:
-         # grafana setting to allow embedding
-         GF_SECURITY_ALLOW_EMBEDDING: 'true'
-         # grafana setting to allow anonymous usage
-         GF_AUTH_ANONYMOUS_ENABLED: 'true'
+      env_file:
+         - .private/grafana.env
       ports:
-         - 3000:3000
+         - ${DELI_GRAFANA_PORT}:3000
       volumes:
-         - deli_main_volume:/var/lib/grafana
+         - deli_grafana_volume:/var/lib/grafana
          - ./shared/grafana/:/usr/share/grafana/conf/provisioning/
 
    deli_db_label:
+      image: deli_db_image
       container_name: deli_db_container
       build: ./services/postgres
-      # image: postgres
+      env_file:
+         - .private/postgres.env
       ports:
-         - 5432:5432
-      restart: always
-      environment:
-         POSTGRES_PASSWORD: admin
+         - ${DELI_POSTGRES_PORT}:5432
       volumes:
          - deli_pgdata_volume:/var/lib/postgresql/data
 
-   deli_frontend_label:
+   deli_apache_label:
+      image: deli_apache_image
       build: ./services/apache
-      container_name: deli_frontend_container
+      container_name: deli_apache_container
       ports:
-         - 9080:80
+         - ${DELI_APACHE_PORT}:80
       volumes:
          - ./html/:/usr/local/apache2/htdocs/:ro
         #  - ./html/:/var/www/html/:ro
 
 volumes:
-   deli_main_volume: {}
+   deli_grafana_volume: {}
    deli_pgdata_volume: {}
+
+networks:
+   datalake_main_network: {}
