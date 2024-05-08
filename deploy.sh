@@ -6,4 +6,5 @@ docker-compose stop
 # ./mvnw clean package || exit
 # popd
 
-docker-compose up --build -d
+docker-compose up --build -d 
+# --remove-orphans

@@ -2,6 +2,8 @@ https://www.chartjs.org/docs/latest/charts/radar.html
 # TODO:
    put the initialization/deployment snippets in dockerfiles
    puc `grafana cli plugins install volkovlabs-echarts-panel` in the dockerfile
+
+
 # Initialize deployment
 ```bash
 # Copy the init script to the container
@@ -32,6 +34,25 @@ docker exec -it \
 
 ```
 # General
+
+## React
+```bash
+docker exec -it \
+   deli_ubuntu_container \
+   bash
+
+cd /app
+npm create vite@latest deli_react_app -- --template react-ts
+cd deli_react_app
+npm install
+
+npm run dev -- --host 0.0.0.0
+
+
+```
+
+
+
 
 ```bash
 # REST api for data sources

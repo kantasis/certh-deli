@@ -12,6 +12,8 @@ services:
       volumes:
          - deli_grafana_volume:/var/lib/grafana
          - ./shared/grafana/:/usr/share/grafana/conf/provisioning/
+      networks:
+         - deli_main_network
 
    deli_db_label:
       image: deli_db_image
@@ -23,20 +25,43 @@ services:
          - ${DELI_POSTGRES_PORT}:5432
       volumes:
          - deli_pgdata_volume:/var/lib/postgresql/data
+      networks:
+         - deli_main_network
 
-   deli_apache_label:
-      image: deli_apache_image
-      build: ./services/apache
-      container_name: deli_apache_container
+   deli_node_label:
+      image: deli_node_image
+      container_name: deli_node_container
+      build:
+         context: ./services/node
       ports:
-         - ${DELI_APACHE_PORT}:80
+         - ${DELI_NODE_PORT}:${NODE_PORT}
+      env_file:
+         - .private/node.env
+      volumes: 
+         - ./app:/app
+      networks:
+         - deli_main_network
+
+   deli_ubuntu_label:
+      image: deli_ubuntu_image
+      container_name: deli_ubuntu_container
+      build: ./services/ubuntu
+      env_file:
+         - .private/ubuntu.env
+      # ports:
+      #    - 8000:8000
+      #    - 5173:5173
       volumes:
-         - ./html/:/usr/local/apache2/htdocs/:ro
-        #  - ./html/:/var/www/html/:ro
+         - ./app:/app
+      networks:
+         - deli_main_network
+      # environment:
+      #    - GK_PWD=${PWD}
+      #    - NODE_PORT=${NODE_PORT}
 
 volumes:
    deli_grafana_volume: {}
    deli_pgdata_volume: {}
 
 networks:
-   datalake_main_network: {}
+   deli_main_network: {}
