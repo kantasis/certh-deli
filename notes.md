@@ -36,6 +36,8 @@ docker exec -it \
 # General
 
 ## React
+
+Initialization of a react project
 ```bash
 docker exec -it \
    deli_ubuntu_container \
@@ -44,10 +46,11 @@ docker exec -it \
 cd /app
 npm create vite@latest deli_react_app -- --template react-ts
 cd deli_react_app
+npm install bootstrap
+
 npm install
 
 npm run dev -- --host 0.0.0.0
-
 
 ```
 
