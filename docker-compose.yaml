@@ -1,20 +1,30 @@
 version: "3"
+
+volumes:
+   deli_grafana_volume: {}
+   deli_pgdata_volume: {}
+   deli_h2_volume: {}
+
+networks:
+   deli_main_network: {}
+
 services:
 
-   deli_main_label:
-      container_name: deli_main_container
-      build: ./services/grafana
-      # image: grafana/grafana-oss
-      environment:
-         # grafana setting to allow embedding
-         GF_SECURITY_ALLOW_EMBEDDING: 'true'
-         # grafana setting to allow anonymous usage
-         GF_AUTH_ANONYMOUS_ENABLED: 'true'
+   deli_grafana_label:
+      image: deli_grafana_container
+      container_name: deli_grafana_container
+      env_file:
+         - ./services/grafana/.env
+      build:
+         context: ./services/grafana
+      # TODO: use env for those
       ports:
          - 3000:3000
       volumes:
-         - deli_main_volume:/var/lib/grafana
+         - deli_grafana_volume:/var/lib/grafana
          - ./shared/grafana/:/usr/share/grafana/conf/provisioning/
+      networks:
+         - deli_main_network
 
    deli_db_label:
       container_name: deli_db_container
@@ -28,15 +38,37 @@ services:
       volumes:
          - deli_pgdata_volume:/var/lib/postgresql/data
 
-   deli_frontend_label:
-      build: ./services/apache
-      container_name: deli_frontend_container
+   deli_node_label:
+      image: deli_node_image
+      container_name: deli_node_container
+      build:
+         context: ./services/node
+      env_file:
+         - ./services/node/.env
       ports:
-         - 9080:80
-      volumes:
-         - ./html/:/usr/local/apache2/htdocs/:ro
-        #  - ./html/:/var/www/html/:ro
+         - ${HOST_NODE_PORT}:${NODE_PORT}
+      volumes: 
+         - ./app-react:/app-react
+      networks:
+         - deli_main_network
 
-volumes:
-   deli_main_volume: {}
-   deli_pgdata_volume: {}
+   deli_spring_label:
+      image: deli_spring_image
+      container_name: deli_spring_container
+      build:
+         context: ./services/spring
+      env_file:
+         - ./services/spring/.env
+      ports:
+         - ${HOST_SPRING_PORT}:${SPRING_PORT}
+      volumes: 
+         - ./shared/tomcat-logs:/spring_application/tomcat/logs
+         - ./shared/spring-logs:/spring/logs
+         # - ./shared/application-logs:/spring_application
+         - deli_h2_volume:/data
+         - ./app-spring:/app-spring
+      networks:
+         - deli_main_network
+      # depends_on:
+      #    - spreact_mongo_label
+
