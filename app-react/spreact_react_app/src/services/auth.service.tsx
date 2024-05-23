@@ -55,3 +55,5 @@ export const getCurrentUser = () => {
 
    return null;
 };
+
+// TODO: implement a function: isLoggedIn
