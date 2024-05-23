@@ -8,23 +8,72 @@ import DashboardPanel from "../components/DashboardPanel.tsx";
 
 const Dashboard: React.FC = () => {
 
-   const dashboardPanels_dictLst= [
+   const tabInfo_dictLst = [
       {
-         panel_id: "geomap",
-         panel_label: "Geo Map"
+         id: "geomap",
+         label_str: "Geomap",
+         url: "http://160.40.53.35:3000/d-solo/fdhlxt13jf0n4a/test-dashboard?orgId=1&from=1712302245732&to=1712323845732&theme=light&panelId=4",
       },
       {
-         panel_id: "barchart",
-         panel_label: "Barchart"
+         id: "barchart",
+         label_str: "Barchart",
+         url: "http://160.40.53.35:3000/d-solo/fdhlxt13jf0n4a/test-dashboard?orgId=1&from=1712279409614&to=1712301009614&theme=light&panelId=2",
       },
       {
-         panel_id: "spiderplot",
-         panel_label: "Spider plot"
+         id: "spiderplot",
+         label_str: "Spiderplot",
+         url: "http://160.40.53.35:3000/d-solo/fdhlxt13jf0n4a/test-dashboard?orgId=1&from=1712117229542&to=1712138829542&theme=light&panelId=1",
       },
-   ]
+   ];
 
-   // <!-- Tabbed List Reference -->
-   // <!-- https://getbootstrap.com/docs/5.0/components/navs-tabs/#javascript-behavior -->
+   const [selected_idx, setSelectedIdx] = useState(0);
+
+   const tabs_jsx = tabInfo_dictLst.map((tabInfo_dict, index) => (
+      <li 
+         className="nav-item"
+         role="presentation"
+         onClick={(event)=> setSelectedIdx(index) }
+         key={"tabs_jsx"+index}
+      >
+         <button 
+            className={ "nav-link" + (index === selected_idx ? " active" : "") }
+            id={tabInfo_dict['id']+"-tab" }
+            data-bs-toggle="tab" 
+            data-bs-target={"#"+tabInfo_dict['id']}
+            type="button" 
+            role="tab" 
+            aria-controls={tabInfo_dict['id']} 
+            aria-selected={ index === selected_idx ? "true" : "false" }
+            
+         >
+            {tabInfo_dict['label_str']}
+         </button>
+      </li>
+   ));
+
+
+   const tabPanels_jsx = tabInfo_dictLst.map((tabInfo_dict, index) => (
+      <div 
+         className={ "tab-pane fade show" + (index === selected_idx ? " active" : "")}
+         id={tabInfo_dict['id']} 
+         role="tabpanel" 
+         aria-labelledby={tabInfo_dict['id'] + "-tab"}
+         key={"tabContents_jsx"+index}
+      >
+         <div className="embed-responsive embed-responsive-16by9">
+            <iframe 
+               className="embed-responsive-item"
+               src={tabInfo_dict['url']}
+               width="800"
+               height="600"
+            >
+            </iframe>
+         </div>
+      </div>
+   ));
+
+
+
    return (
       <div className="main">
          <ul 
@@ -32,41 +81,17 @@ const Dashboard: React.FC = () => {
             id="tabs1"
             role="tablist"
          >
-            
-            {
-               dashboardPanels_dictLst.map( (dashboardPanels_dict,index) => 
-                  <DashboardTab
-                     panel_id={dashboardPanels_dict["panel_id"]}
-                     panel_label={dashboardPanels_dict["panel_label"]}
-                     isActive_b={index===1}
-                     key={dashboardPanels_dict["panel_id"]}
-                  />
-               )
-            }
+            {tabs_jsx}
          </ul>
          <div 
             className="tab-content" 
             id="myTabContent"
          >
-
-            {
-               dashboardPanels_dictLst.map( (dashboardPanels_dict,index) => 
-                  <DashboardPanel
-                     panel_id={dashboardPanels_dict["panel_id"]}
-                     panel_label={dashboardPanels_dict["panel_label"]}
-                     isActive_b={false}
-                     key={dashboardPanels_dict["panel_id"]}
-                  />
-               )
-            }
-
+         {tabPanels_jsx}
          </div>
-         
       </div>
-
-
    );
-
 };
+
 
 export default Dashboard;

@@ -1,40 +1,61 @@
 {
-  "hash": "291f72db",
+  "hash": "e67faa46",
   "configHash": "abea24c7",
-  "lockfileHash": "d71cfc54",
-  "browserHash": "86b0f006",
+  "lockfileHash": "e4d2921f",
+  "browserHash": "932f9d88",
   "optimized": {
     "react/jsx-dev-runtime": {
       "src": "../../node_modules/react/jsx-dev-runtime.js",
       "file": "react_jsx-dev-runtime.js",
-      "fileHash": "1138365b",
-      "needsInterop": true
-    },
-    "react": {
-      "src": "../../node_modules/react/index.js",
-      "file": "react.js",
-      "fileHash": "fd78c915",
+      "fileHash": "95a731ec",
       "needsInterop": true
     },
     "react-dom/client": {
       "src": "../../node_modules/react-dom/client.js",
       "file": "react-dom_client.js",
-      "fileHash": "6a11cefa",
+      "fileHash": "0a812e27",
       "needsInterop": true
+    },
+    "react-router-dom": {
+      "src": "../../node_modules/react-router-dom/dist/index.js",
+      "file": "react-router-dom.js",
+      "fileHash": "11d13920",
+      "needsInterop": false
+    },
+    "react": {
+      "src": "../../node_modules/react/index.js",
+      "file": "react.js",
+      "fileHash": "3d42cec2",
+      "needsInterop": true
+    },
+    "formik": {
+      "src": "../../node_modules/formik/dist/formik.esm.js",
+      "file": "formik.js",
+      "fileHash": "fa103f55",
+      "needsInterop": false
+    },
+    "yup": {
+      "src": "../../node_modules/yup/index.esm.js",
+      "file": "yup.js",
+      "fileHash": "cc1b8f12",
+      "needsInterop": false
     },
     "axios": {
       "src": "../../node_modules/axios/index.js",
       "file": "axios.js",
-      "fileHash": "78cf9099",
+      "fileHash": "c5e13385",
       "needsInterop": false
     }
   },
   "chunks": {
-    "chunk-RBGUQRYF": {
-      "file": "chunk-RBGUQRYF.js"
+    "chunk-KB4VQC4Z": {
+      "file": "chunk-KB4VQC4Z.js"
     },
-    "chunk-P2LSHJDD": {
-      "file": "chunk-P2LSHJDD.js"
+    "chunk-PMYDY72F": {
+      "file": "chunk-PMYDY72F.js"
+    },
+    "chunk-ZS7NZCD4": {
+      "file": "chunk-ZS7NZCD4.js"
     }
   }
 }
