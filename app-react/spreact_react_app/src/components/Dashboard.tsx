@@ -1,28 +1,30 @@
 import { Routes, Route, Link } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import * as AuthService from "../services/auth.service";
-import DashboardTab from "../components/DashboardTab.tsx";
-import DashboardPanel from "../components/DashboardPanel.tsx";
 // import EventBus from "./common/EventBus";
 
 
 const Dashboard: React.FC = () => {
 
+   const grafana_port = "3000";
+   const grafana_host = "localhost";
+   const grafana_url = `http://${grafana_host}:${grafana_port}/d-solo/fdmmh9chzkxz4e/new-dashboard`
+
    const tabInfo_dictLst = [
       {
          id: "geomap",
          label_str: "Geomap",
-         url: "http://160.40.53.35:3000/d-solo/fdhlxt13jf0n4a/test-dashboard?orgId=1&from=1712302245732&to=1712323845732&theme=light&panelId=4",
+         url: `${grafana_url}?orgId=1&theme=light&from=1716501480609&to=1716544680609&panelId=1`,
       },
       {
          id: "barchart",
          label_str: "Barchart",
-         url: "http://160.40.53.35:3000/d-solo/fdhlxt13jf0n4a/test-dashboard?orgId=1&from=1712279409614&to=1712301009614&theme=light&panelId=2",
+         url: `${grafana_url}?orgId=1&theme=light&from=1716501480609&to=1716544680609&panelId=2`,
       },
       {
          id: "spiderplot",
          label_str: "Spiderplot",
-         url: "http://160.40.53.35:3000/d-solo/fdhlxt13jf0n4a/test-dashboard?orgId=1&from=1712117229542&to=1712138829542&theme=light&panelId=1",
+         url: `${grafana_url}?orgId=1&theme=light&from=1716501480609&to=1716544680609&panelId=3`,
       },
    ];
 
