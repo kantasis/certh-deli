@@ -151,4 +151,17 @@ LIMIT 15
 
 
 
+```sql
+SELECT
+  AVG("CRC_incidence_val_Rate"),
+  "Year"
+FROM
+  data_tbl
+GROUP BY
+  "Year"
+ORDER BY
+  "Year"
+LIMIT
+  50
 
+```

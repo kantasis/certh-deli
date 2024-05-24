@@ -2,7 +2,7 @@ version: "3"
 
 volumes:
    deli_grafana_volume: {}
-   deli_pgdata_volume: {}
+   deli_db_volume: {}
    deli_h2_volume: {}
 
 networks:
@@ -27,16 +27,19 @@ services:
          - deli_main_network
 
    deli_db_label:
+      image: deli_db_image
       container_name: deli_db_container
-      build: ./services/postgres
-      # image: postgres
-      ports:
-         - 5432:5432
+      build:
+         context: ./services/postgres
+      env_file:
+         - ./services/postgres/.env
+      # ports:
+      #    - 5432:5432
       restart: always
-      environment:
-         POSTGRES_PASSWORD: admin
       volumes:
-         - deli_pgdata_volume:/var/lib/postgresql/data
+         - deli_db_volume:/data
+      networks:
+         - deli_main_network
 
    deli_node_label:
       image: deli_node_image
