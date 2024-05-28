@@ -1,12 +1,16 @@
 version: "3"
 
 volumes:
-   deli_grafana_volume: {}
-   deli_db_volume: {}
-   deli_h2_volume: {}
+   deli_grafana_volume:
+      name: deli_grafana_volume
+   deli_db_volume:
+      name: deli_db_volume
+   deli_h2_volume:
+      name: deli_db_volume
 
 networks:
-   deli_main_network: {}
+   deli_main_network:
+      name: deli_main_network
 
 services:
 

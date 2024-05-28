@@ -1,4 +1,4 @@
-.private/
+.private*/
 shared/
 access_log.*
 myapp.log*

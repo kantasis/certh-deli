@@ -2,6 +2,13 @@ https://www.chartjs.org/docs/latest/charts/radar.html
 # TODO:
    put the initialization/deployment snippets in dockerfiles
    puc `grafana cli plugins install volkovlabs-echarts-panel` in the dockerfile
+
+
+# URLs
+
+[frontend](http://localhost:9080)
+
+
 # Initialize deployment
 ```bash
 # Copy the init script to the container
