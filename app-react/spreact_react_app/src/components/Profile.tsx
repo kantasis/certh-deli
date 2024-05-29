@@ -1,8 +1,24 @@
-import React from "react";
-import { getCurrentUser } from "../services/auth.service";
+import React, { useState, useEffect } from "react";
+import * as AuthService from "../services/auth.service";
 
 const Profile: React.FC = () => {
-   const user_dict = getCurrentUser();
+
+   const [isLoggedIn, setIsLoggedIn] = useState(false);
+   const [user_dict, setUserDict] = useState();
+
+   useEffect(
+      () => {
+         setUserDict(AuthService.getCurrentUser());
+         setIsLoggedIn(AuthService.isLoggedIn());
+         console.log("Profile: "+ isLoggedIn);
+      }, 
+      []
+   );
+
+
+   if (!isLoggedIn)
+      return <h2>Unauthorized</h2>;
+
 
    return (
       <div className="container">

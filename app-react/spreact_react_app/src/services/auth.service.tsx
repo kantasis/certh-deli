@@ -1,4 +1,5 @@
 import axios from "axios";
+import { NavigateFunction, useNavigate } from 'react-router-dom';
 
 // TODO: Make this be loaded from somewhere
 // const API_URL = "http://localhost:3000/api/auth/";
@@ -39,21 +40,35 @@ export const login = (username: string, password: string) => {
  
 // Logout function logout
 export const logout = () => {
+   console.log('logging out');
+
+   // let navigate: NavigateFunction = useNavigate();
+
    localStorage.removeItem("user");
-   return axios
-      .post(API_URL + "signout")
-      .then((response) => {
-         return response.data;
-      });
+
+   // navigate("/login");
+   // window.location.reload();
+
+   // TODO: This one may be useful at some point
+   // return axios
+   //    .post(API_URL + "signout")
+   //    .then((response) => {
+   //       return response.data;
+   //    });
 };
 
 
 export const getCurrentUser = () => {
    const user_json = localStorage.getItem("user");
+   console.log("asking the current user:" + user_json);
    if (user_json) 
       return JSON.parse(user_json);
 
    return null;
 };
 
-// TODO: implement a function: isLoggedIn
+
+export const isLoggedIn = () => {
+   return getCurrentUser() !== null;
+};
+

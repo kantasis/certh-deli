@@ -8,8 +8,27 @@ https://www.chartjs.org/docs/latest/charts/radar.html
 
 [frontend](http://localhost:9080)
 [grafana](http://localhost:3000)
+[grafana](http://localhost:8081/h2-ui)
 
 
+http://160.40.53.35:3000/d-solo/edn5ahxrzaw3kc/deli-main-dashboard?orgId=1&from=1716944950967&to=1716966550967&panelId=1
+http://160.40.53.35:3000/d-solo/edn5ahxrzaw3kc/deli-main-dashboard?orgId=1&from=1716945974114&to=1716967574114&panelId=2
+
+
+# React snippets
+```ts
+// reload the page and navigate somewhere else
+import { NavigateFunction, useNavigate } from 'react-router-dom';
+
+   let navigate: NavigateFunction = useNavigate();
+   navigate("/login");
+   window.location.reload();
+
+
+
+
+
+```
 # Initialize deployment
 
 ## Initialize react
@@ -118,6 +137,7 @@ done
 
 # radar chart:
 ```js
+context.panel.data
 
 let averages_flst = [];
 let maxes_flst = [];
@@ -183,6 +203,11 @@ return {
 
 ```
 
+
+
+
+
+
 Get the echarts template from here
 https://echarts.apache.org/examples/en/index.html#chart-type-line
 
@@ -217,3 +242,17 @@ LIMIT
   50
 
 ```
+
+
+
+<iframe src="http://160.40.53.35:3000/d-solo/edn5ahxrzaw3kc/deli-main-dashboard?orgId=1&from=1716948484158&to=1716970084158&panelId=3" width="450" height="200" frameborder="0"></iframe>
+http://160.40.53.35:3000/d-solo/edn5ahxrzaw3kc/deli-main-dashboard?orgId=1&theme=light&panelId=3
+
+
+
+
+
+
+
+
+

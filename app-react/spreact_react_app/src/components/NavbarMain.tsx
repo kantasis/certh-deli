@@ -1,12 +1,51 @@
 import { Routes, Route, Link } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import * as AuthService from "../services/auth.service";
-// import EventBus from "./common/EventBus";
+import EventBus from "../common/EventBus";
 
 
 const NavbarMain: React.FC = () => {
 
    const [isLoggedIn, setIsLoggedIn] = useState(false);
+   // const [user_dict, setUserDict] = useState(false);
+
+   // TODO: Check it out https://www.bezkoder.com/handle-jwt-token-expiration-react/
+   useEffect(
+      () => {
+
+         // setUserDict(AuthService.getCurrentUser());
+
+         // TODO: Change this into the result of a statement
+         // if (user_dict) {
+         //    console.log("authorized" + user_dict);
+         //    setIsLoggedIn(true);
+         // }else{
+         //    console.log("unauthorized" + user_dict);
+         //    setIsLoggedIn(false);
+         // }
+
+         // EventBus.on("logoff", AuthService.logout);
+         // return () => {
+         //    EventBus.remove("logoff", AuthService.logout);
+         // };
+
+         setIsLoggedIn(AuthService.isLoggedIn());
+         console.log("Navbar: "+ isLoggedIn);
+
+      }, 
+      []
+   );
+
+   const logout = () => {
+      console.log('logging off');
+      AuthService.logout();
+      window.location.reload();
+   };
+   
+
+   // console.log(JSON.stringify(user_dict,null,3));
+   // console.log(isLoggedIn);
+
 
    const dashboardButton_cmp = (
       <li className="nav-item">
@@ -18,6 +57,18 @@ const NavbarMain: React.FC = () => {
          </a>
       </li>
    );
+
+   const profileButton_cmp = (
+      <li className="nav-item">
+         <a 
+            className="nav-link" 
+            href="profile"
+         >
+            Profile
+         </a>
+      </li>
+   );
+
 
    const loginButton_cmp = (
       <li className="nav-item">
@@ -32,47 +83,27 @@ const NavbarMain: React.FC = () => {
 
    const registerButton_cmp = (
       <li className="nav-item">
-         <Link 
-            to={"/register"} 
+         <a 
             className="nav-link"
+            href={"/register"} 
          >
             Sign Up
-         </Link>
+         </a>
       </li>
    );
 
    const logoutButton_cmp = (
       <li className="nav-item">
-         <Link 
-            to={"/logout"} 
+         <a 
             className="nav-link"
+            href="/login"
+            onClick={() => logout()}
          >
             Logout
-         </Link>
+         </a>
       </li>
    );
 
-   // Removed this for now
-   // TODO: Check it out https://www.bezkoder.com/handle-jwt-token-expiration-react/
-   useEffect(
-      () => {
-         const user_dict = AuthService.getCurrentUser();
-
-         // TODO: Change this into the result of a statement
-         if (user_dict) 
-            setIsLoggedIn(true);
-         else
-            setIsLoggedIn(false);
-
-
-            // EventBus.on("logout", logOut);
-
-         // return () => {
-         //    EventBus.remove("logout", logOut);
-         // };
-      }, 
-      []
-   );
 
    return (
       <nav className="navbar navbar-expand-lg bg-body-tertiary">
@@ -145,10 +176,11 @@ const NavbarMain: React.FC = () => {
                         Disabled
                      </a>
                   </li> */}
-                  {dashboardButton_cmp}
-                  {loginButton_cmp}
-                  {registerButton_cmp}
-                  {logoutButton_cmp}
+                  {isLoggedIn && dashboardButton_cmp}
+                  {isLoggedIn && profileButton_cmp}
+                  {isLoggedIn && logoutButton_cmp}
+                  {isLoggedIn || loginButton_cmp}
+                  {isLoggedIn || registerButton_cmp}
                </ul>
 
 

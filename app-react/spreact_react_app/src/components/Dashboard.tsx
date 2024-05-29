@@ -6,35 +6,50 @@ import * as AuthService from "../services/auth.service";
 
 const Dashboard: React.FC = () => {
 
+   const [isLoggedIn, setIsLoggedIn] = useState(false);
+   const [selected_idx, setSelectedIdx] = useState(0);
+   // const [user_dict, setUserDict] = useState(false);
+
+   useEffect(
+      () => {
+         setIsLoggedIn(AuthService.isLoggedIn());
+         console.log("Dashboard: "+ isLoggedIn);
+      }, 
+      []
+   );
+
+
+   if (!isLoggedIn)
+      return <h2>Unauthorized</h2>;
+
+   // TODO: The vars over here should go to configuration files
    const grafana_port = "3000";
    const grafana_host = "160.40.53.35";
    const grafana_path = "d-solo/edn5ahxrzaw3kc";
    const dashboard_name = "deli-main-dashboarg";
 
-   const grafana_url = `http://${grafana_host}:${grafana_port}/${grafana_path}/${dashboard_name}`
+   const grafana_url = `http://${grafana_host}:${grafana_port}/${grafana_path}/${dashboard_name}?orgId=1&theme=light`
    
-   // http://160.40.53.35:3000/d-solo/edn5ahxrzaw3kc/deli-main-dashboard?orgId=1&from=1716944950967&to=1716966550967&panelId=1
-
    const tabInfo_dictLst = [
       {
          id: "geomap",
          label_str: "Geomap",
-         url: `${grafana_url}?orgId=1&theme=light&panelId=1`,
+         // TODO: The panelId var should probably go to a datastore
+         url: `${grafana_url}&panelId=1`,
 
       },
       {
          id: "barchart",
          label_str: "Barchart",
-         url: `${grafana_url}?orgId=1&theme=light&panelId=2`,
+         url: `${grafana_url}&panelId=2`,
       },
       {
          id: "spiderplot",
          label_str: "Spiderplot",
-         url: `${grafana_url}?orgId=1&theme=light&panelId=3`,
+         url: `${grafana_url}&panelId=3`,
       },
    ];
 
-   const [selected_idx, setSelectedIdx] = useState(0);
 
    const tabs_jsx = tabInfo_dictLst.map((tabInfo_dict, index) => (
       <li 
