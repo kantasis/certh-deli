@@ -10,6 +10,42 @@ https://www.chartjs.org/docs/latest/charts/radar.html
 
 
 # Initialize deployment
+
+## Initialize react
+```bash
+docker exec -it \
+   spreact_ubuntu_container \
+   bash
+
+cd /app-react
+npm create vite@latest spreact_react_app -- --template react-ts
+cd spreact_react_app
+# Lovely bootstrap
+npm install bootstrap
+# Lib for requests
+npm install axios
+npm install @types/react-router-dom
+npm install react-router-dom
+npm install http-proxy-middleware
+# Library for form validation
+npm install react-validation validator
+npm install formik yup
+
+
+
+
+npm install react-auth-kit
+npm install @fortawesome/fontawesome-svg-core @fortawesome/free-solid-svg-icons @fortawesome/react-fontawesome@latest
+
+sudo chown george:george -R *
+
+npm install
+
+npm run dev -- --host 0.0.0.0
+
+```
+
+## Initialize postgres
 ```bash
 # Copy the init script to the container
 docker cp services/postgres/init.sql deli_db_container:/
@@ -39,6 +75,14 @@ docker exec -it \
 
 ```
 # General
+
+```bash
+docker exec -it \
+   deli_ubuntu_container \
+   bash
+
+```
+
 
 ```bash
 # REST api for data sources
@@ -71,7 +115,7 @@ done
 
 
 
-radar chart:
+# radar chart:
 ```js
 
 let averages_flst = [];
