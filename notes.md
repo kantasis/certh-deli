@@ -7,6 +7,7 @@ https://www.chartjs.org/docs/latest/charts/radar.html
 # URLs
 
 [frontend](http://localhost:9080)
+[grafana](http://localhost:3000)
 
 
 # Initialize deployment

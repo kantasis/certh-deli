@@ -8,7 +8,12 @@ const Dashboard: React.FC = () => {
 
    const grafana_port = "3000";
    const grafana_host = "localhost";
-   const grafana_url = `http://${grafana_host}:${grafana_port}/d-solo/fdmmh9chzkxz4e/new-dashboard`
+   const grafana_path = "d-solo/fdmmh9chzkxz4e";
+   const dashboard_name = "new-dashboard";
+
+   const grafana_url = `http://${grafana_host}:${grafana_port}/${grafana_path}/${dashboard_name}`
+   
+   // http://160.40.53.35:3000/d-solo/edn5ahxrzaw3kc/deli-main-dashboard?orgId=1&from=1716944950967&to=1716966550967&panelId=1
 
    const tabInfo_dictLst = [
       {
