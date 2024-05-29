@@ -7,9 +7,9 @@ import * as AuthService from "../services/auth.service";
 const Dashboard: React.FC = () => {
 
    const grafana_port = "3000";
-   const grafana_host = "localhost";
-   const grafana_path = "d-solo/fdmmh9chzkxz4e";
-   const dashboard_name = "new-dashboard";
+   const grafana_host = "160.40.53.35";
+   const grafana_path = "d-solo/edn5ahxrzaw3kc";
+   const dashboard_name = "deli-main-dashboarg";
 
    const grafana_url = `http://${grafana_host}:${grafana_port}/${grafana_path}/${dashboard_name}`
    
@@ -19,17 +19,18 @@ const Dashboard: React.FC = () => {
       {
          id: "geomap",
          label_str: "Geomap",
-         url: `${grafana_url}?orgId=1&theme=light&from=1716501480609&to=1716544680609&panelId=1`,
+         url: `${grafana_url}?orgId=1&theme=light&panelId=1`,
+
       },
       {
          id: "barchart",
          label_str: "Barchart",
-         url: `${grafana_url}?orgId=1&theme=light&from=1716501480609&to=1716544680609&panelId=2`,
+         url: `${grafana_url}?orgId=1&theme=light&panelId=2`,
       },
       {
          id: "spiderplot",
          label_str: "Spiderplot",
-         url: `${grafana_url}?orgId=1&theme=light&from=1716501480609&to=1716544680609&panelId=3`,
+         url: `${grafana_url}?orgId=1&theme=light&panelId=3`,
       },
    ];
 
