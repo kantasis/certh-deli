@@ -2,14 +2,16 @@ import axios from "axios";
 import { NavigateFunction, useNavigate } from 'react-router-dom';
 
 // TODO: Make this be loaded from somewhere
-// const API_URL = "http://localhost:3000/api/auth/";
-const API_URL = "http://localhost:8081/api/v1/auth/";
+// const api_url = "http://localhost:3000/api/auth/";
+
+const authentication_host = "160.40.53.35";
+const api_url = `http://${authentication_host}:8081/api/v1/auth/`;
 
 // Register function
 export const register = (username: string, email: string, password: string) => {
    return axios
       .post(
-         API_URL + "signup", 
+         api_url + "signup", 
          {
             username,
             email,
@@ -23,7 +25,7 @@ export const login = (username: string, password: string) => {
    console.log("LOGGIN IN!");
    return axios
       .post(
-         API_URL + "login", 
+         api_url + "login", 
          {
             username,
             password,
@@ -51,7 +53,7 @@ export const logout = () => {
 
    // TODO: This one may be useful at some point
    // return axios
-   //    .post(API_URL + "signout")
+   //    .post(api_url + "signout")
    //    .then((response) => {
    //       return response.data;
    //    });
