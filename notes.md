@@ -5,6 +5,7 @@ https://www.chartjs.org/docs/latest/charts/radar.html
 
 
 # URLs
+160.40.53.35
 
 [frontend](http://localhost:9080)
 [grafana](http://localhost:3000)
@@ -65,6 +66,13 @@ npm run dev -- --host 0.0.0.0
 
 ```
 
+## Init H2
+```sql
+INSERT INTO ROLES_TBL(LABEL) VALUES('ROLE_USER');
+INSERT INTO ROLES_TBL(LABEL) VALUES('ROLE_MODERATOR');
+INSERT INTO ROLES_TBL(LABEL) VALUES('ROLE_ADMIN');
+
+```
 ## Initialize postgres
 ```bash
 # Copy the init script to the container
@@ -230,16 +238,26 @@ LIMIT 15
 
 ```sql
 SELECT
-  AVG("CRC_incidence_val_Rate"),
-  "Year"
+  "Country",
+  "Year",
+  "CRC_incidence_val_Rate",
 FROM
   data_tbl
-GROUP BY
-  "Year"
-ORDER BY
-  "Year"
-LIMIT
-  50
+GROUP BY "Year", "Coutnry"
+
+```
+
+```sql
+SELECT 
+   "Year",
+   MAX(CASE WHEN "Country" = 'Greece' THEN "CRC_incidence_val_Percent" END) as "Greece",
+   MAX(CASE WHEN "Country" = 'France' THEN "CRC_incidence_val_Percent" END) as "France",
+   MAX(CASE WHEN "Country" = 'Germany' THEN "CRC_incidence_val_Percent" END) as "Germany"
+FROM data_tbl
+WHERE age='Age-standardized'
+   and "Country" in ( 'Greece', 'France', 'Germany')
+group by "Year"
+ORDER BY "Year"
 
 ```
 

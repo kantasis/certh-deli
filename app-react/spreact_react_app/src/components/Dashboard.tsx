@@ -87,7 +87,7 @@ const Dashboard: React.FC = () => {
             <iframe 
                className="embed-responsive-item"
                src={tabInfo_dict['url']}
-               width="800"
+               width="1200"
                height="600"
             >
             </iframe>

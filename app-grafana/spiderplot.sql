@@ -1,9 +1,9 @@
 SELECT 
-   AVG("Air Pollution Population Weighted Average [ug/m3]_PM2.5") as averages, 
-   MAX("Air Pollution Population Weighted Average [ug/m3]_PM2.5") as maxes,
-   "Country" as countries
+   AVG("CRC_incidence_val_Rate") as "CRC incidence", 
+   AVG("High body-mass index_Percent_DALYs_val") as "BMI",
+   AVG("Alcohol use_Percent_DALYs_val") as "Alcohol",
+   AVG("Smoking_Percent_DALYs_val") as "Smoking",
+   AVG("Diet high in processed meat_Percent_DALYs_val") as "Processed meat",
+   "Country" 
 FROM data_tbl 
-GROUP BY countries
-HAVING AVG("Air Pollution Population Weighted Average [ug/m3]_PM2.5") IS NOT NULL
-ORDER BY AVG("Air Pollution Population Weighted Average [ug/m3]_PM2.5")
-LIMIT 15
+GROUP BY "Country" 
