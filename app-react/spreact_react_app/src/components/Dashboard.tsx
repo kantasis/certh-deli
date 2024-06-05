@@ -1,6 +1,7 @@
 import { Routes, Route, Link } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import * as AuthService from "../services/auth.service";
+import FilterPanel from "../components/FilterPanel";
 // import EventBus from "./common/EventBus";
 
 const grafana_host = import.meta.env.VITE_GRAFANA_HOST;
@@ -80,7 +81,6 @@ const Dashboard: React.FC = () => {
       // console.log(value);
       setGrafanaVar(Number(value));
    };
-  
 
    const tabPanels_jsx = tabInfo_dictLst.map((tabInfo_dict, index) => (
       <div 
@@ -90,32 +90,13 @@ const Dashboard: React.FC = () => {
          aria-labelledby={tabInfo_dict['id'] + "-tab"}
          key={"tabContents_jsx"+index}
       >
-         <div 
-            data-mdb-input-init 
-            className="form-outline"
-         >
-            <input 
-               value={grafanaVar_int}
-               type="number" 
-               id="typeNumber" 
-               className="form-control" 
-               onChange={(event) => input_handler(event) }
-            />
-            <label 
-               className="form-label" 
-               htmlFor="typeNumber"
-            >
-               Number input
-            </label>
-         </div>
-
          <div className="embed-responsive embed-responsive-16by9">
             <iframe 
                className="embed-responsive-item"
                src={tabInfo_dict['url'] + `&var-deli_custom_var=${grafanaVar_int}`}
                width="1200"
                height="600"
-            >
+               >
             </iframe>
          </div>
       </div>
@@ -130,6 +111,7 @@ const Dashboard: React.FC = () => {
          >
             {tabs_jsx}
          </ul>
+         <FilterPanel/>
          <div 
             className="tab-content" 
             id="myTabContent"
