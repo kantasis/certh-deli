@@ -3,11 +3,21 @@ import React, { useState, useEffect } from "react";
 import * as AuthService from "../services/auth.service";
 // import EventBus from "./common/EventBus";
 
+const grafana_host = import.meta.env.VITE_GRAFANA_HOST;
+const grafana_port = import.meta.env.VITE_GRAFANA_PORT;
+const grafana_path = import.meta.env.VITE_GRAFANA_PATH;
+const dashboard_name = import.meta.env.VITE_GRAFANA_DASHBOARD;
+
+const grafana_url = `http://${grafana_host}:${grafana_port}/${grafana_path}/${dashboard_name}?orgId=1&theme=light`
+
+// var envs_json = JSON.stringify(import.meta.env, null, 2); // spacing level = 2
+// console.log('GK> ' + envs_json);
 
 const Dashboard: React.FC = () => {
 
    const [isLoggedIn, setIsLoggedIn] = useState(false);
    const [selected_idx, setSelectedIdx] = useState(0);
+   const [grafanaVar_int, setGrafanaVar] = useState(5);
    // const [user_dict, setUserDict] = useState(false);
 
    useEffect(
@@ -18,18 +28,10 @@ const Dashboard: React.FC = () => {
       []
    );
 
-
    if (!isLoggedIn)
       return <h2>Unauthorized</h2>;
 
-   // TODO: The vars over here should go to configuration files
-   const grafana_port = "3000";
-   const grafana_host = "160.40.53.35";
-   const grafana_path = "d-solo/edn5ahxrzaw3kc";
-   const dashboard_name = "deli-main-dashboarg";
 
-   const grafana_url = `http://${grafana_host}:${grafana_port}/${grafana_path}/${dashboard_name}?orgId=1&theme=light`
-   
    const tabInfo_dictLst = [
       {
          id: "geomap",
@@ -49,7 +51,6 @@ const Dashboard: React.FC = () => {
          url: `${grafana_url}&panelId=3`,
       },
    ];
-
 
    const tabs_jsx = tabInfo_dictLst.map((tabInfo_dict, index) => (
       <li 
@@ -74,6 +75,12 @@ const Dashboard: React.FC = () => {
       </li>
    ));
 
+   const input_handler = (event: React.ChangeEvent<HTMLInputElement>) => {
+      const value = event.target.value;
+      // console.log(value);
+      setGrafanaVar(Number(value));
+   };
+  
 
    const tabPanels_jsx = tabInfo_dictLst.map((tabInfo_dict, index) => (
       <div 
@@ -83,10 +90,29 @@ const Dashboard: React.FC = () => {
          aria-labelledby={tabInfo_dict['id'] + "-tab"}
          key={"tabContents_jsx"+index}
       >
+         <div 
+            data-mdb-input-init 
+            className="form-outline"
+         >
+            <input 
+               value={grafanaVar_int}
+               type="number" 
+               id="typeNumber" 
+               className="form-control" 
+               onChange={(event) => input_handler(event) }
+            />
+            <label 
+               className="form-label" 
+               htmlFor="typeNumber"
+            >
+               Number input
+            </label>
+         </div>
+
          <div className="embed-responsive embed-responsive-16by9">
             <iframe 
                className="embed-responsive-item"
-               src={tabInfo_dict['url']}
+               src={tabInfo_dict['url'] + `&var-deli_custom_var=${grafanaVar_int}`}
                width="1200"
                height="600"
             >
@@ -94,8 +120,6 @@ const Dashboard: React.FC = () => {
          </div>
       </div>
    ));
-
-
 
    return (
       <div className="main">
