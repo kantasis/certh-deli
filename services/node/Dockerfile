@@ -1,3 +1,4 @@
+# TODO: Don't use latest in production
 FROM node:latest
 
 # WORKDIR /app
@@ -5,5 +6,10 @@ FROM node:latest
 
 WORKDIR /app-react/spreact_react_app
 # RUN npm install
+
+# Lovely bootstrap
+RUN npm install bootstrap axios @types/react-router-dom react-router-dom http-proxy-middleware react-validation validator formik yup
+RUN npm install 
+
 
 CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]

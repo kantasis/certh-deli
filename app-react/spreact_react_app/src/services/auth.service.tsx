@@ -4,8 +4,12 @@ import { NavigateFunction, useNavigate } from 'react-router-dom';
 // TODO: Make this be loaded from somewhere
 // const api_url = "http://localhost:3000/api/auth/";
 
-const authentication_host = "160.40.53.35";
-const api_url = `http://${authentication_host}:8081/api/v1/auth/`;
+// const authentication_host = "localhost";
+// const authentication_host = "160.40.53.35";
+const authentication_host = import.meta.env.VITE_AUTHENTICATION_HOST;
+const authentication_port = import.meta.env.VITE_AUTHENTICATION_HOST;
+
+const api_url = `http://${authentication_host}:${authentication_port}/api/v1/auth/`;
 
 // Register function
 export const register = (username: string, email: string, password: string) => {
@@ -22,7 +26,7 @@ export const register = (username: string, email: string, password: string) => {
 
 // Login function
 export const login = (username: string, password: string) => {
-   console.log("LOGGIN IN!");
+   // console.log("LOGGIN IN!");
    return axios
       .post(
          api_url + "login", 
@@ -32,7 +36,7 @@ export const login = (username: string, password: string) => {
          }
       )
       .then((response) => {
-         console.log(JSON.stringify(response,null,3) );
+         // console.log(JSON.stringify(response,null,3) );
          if (response.data.username) {
             localStorage.setItem("user", JSON.stringify(response.data));
          }
@@ -42,7 +46,7 @@ export const login = (username: string, password: string) => {
  
 // Logout function logout
 export const logout = () => {
-   console.log('logging out');
+   // console.log('logging out');
 
    // let navigate: NavigateFunction = useNavigate();
 
@@ -62,7 +66,7 @@ export const logout = () => {
 
 export const getCurrentUser = () => {
    const user_json = localStorage.getItem("user");
-   console.log("asking the current user:" + user_json);
+   // console.log("asking the current user:" + user_json);
    if (user_json) 
       return JSON.parse(user_json);
 

@@ -3,18 +3,34 @@ https://www.chartjs.org/docs/latest/charts/radar.html
    put the initialization/deployment snippets in dockerfiles
    puc `grafana cli plugins install volkovlabs-echarts-panel` in the dockerfile
 
+# Columns:
+High body-mass index_Percent_DALYs_val
+Low physical activity_Percent_DALYs_val
+Alcohol use_Percent_DALYs_val
+Diet high in processed meat_Percent_DALYs_val
+Diet high in red meat_Percent_DALYs_val
+Diet low in calcium_Percent_DALYs_val
+Diet low in fiber_Percent_DALYs_val
+Diet low in milk_Percent_DALYs_val
+Diet low in whole grains_Percent_DALYs_val
+Smoking_Percent_DALYs_val
+
+## All
+
 
 # URLs
 160.40.53.35
 
 [frontend](http://localhost:9080)
 [grafana](http://localhost:3000)
-[grafana](http://localhost:8081/h2-ui)
+[h2](http://localhost:8081/h2-ui)
 
 
 http://160.40.53.35:3000/d-solo/edn5ahxrzaw3kc/deli-main-dashboard?orgId=1&from=1716944950967&to=1716966550967&panelId=1
 http://160.40.53.35:3000/d-solo/edn5ahxrzaw3kc/deli-main-dashboard?orgId=1&from=1716945974114&to=1716967574114&panelId=2
 
+# Guides:
+https://nightingaledvs.com/how-to-in-grafana%E2%80%8A-%E2%80%8Apart-2-creating-interactive-dashboards/
 
 # React snippets
 ```ts
@@ -35,7 +51,7 @@ import { NavigateFunction, useNavigate } from 'react-router-dom';
 ## Initialize react
 ```bash
 docker exec -it \
-   spreact_ubuntu_container \
+   deli_ubuntu_container \
    bash
 
 cd /app-react
@@ -67,6 +83,10 @@ npm run dev -- --host 0.0.0.0
 ```
 
 ## Init H2
+[h2](http://localhost:8081/h2-ui)
+
+jdbc:h2:/data/spreact_db
+
 ```sql
 INSERT INTO ROLES_TBL(LABEL) VALUES('ROLE_USER');
 INSERT INTO ROLES_TBL(LABEL) VALUES('ROLE_MODERATOR');
