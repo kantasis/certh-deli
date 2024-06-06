@@ -19,6 +19,7 @@ import io.jsonwebtoken.security.Keys;
 
 @Component
 public class JwtUtils {
+
    private static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
 
    @Value("${custom.app.jwtSecret}")
