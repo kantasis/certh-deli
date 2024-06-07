@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.tutorials.spring_react.DataUpdateService;
+import com.tutorials.spring_react.datarepo.DataUpdateService;
 import com.tutorials.spring_react.security.JwtUtils;
 
 @RestController
@@ -23,8 +23,10 @@ public class TestController {
    @GetMapping("/hello")
    public String hello() {
 
-      String jwt_str = dataUpdateService.getTemp();
-      // String jwt_str = dataUpdateService.login();
+      // String jwt_str = dataUpdateService.getTemp();
+      // String jwt_str = dataUpdateService.getData();
+      String jwt_str = "asdf";
+      dataUpdateService.login();
       
       System.out.println("--- GK> Someone said hi! " + jwt_str);
       return "Hello, Spring Boot!!!! "+new Date()+" " +jwt_str;

@@ -68,6 +68,7 @@ public class AuthController {
       LoginRequest loginRequest
    ) {
 
+      System.out.printf("--- GK> Someone tried to login with [%s] / [%s] \n",loginRequest.getUsername(),loginRequest.getPassword() );
       UsernamePasswordAuthenticationToken userpass = new UsernamePasswordAuthenticationToken(
          loginRequest.getUsername(), 
          loginRequest.getPassword()
