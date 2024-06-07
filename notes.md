@@ -17,6 +17,9 @@ Smoking_Percent_DALYs_val
 
 ## All
 
+# General
+http://oncodir.catalink.eu:7565/v1/services/login/
+http://oncodir.catalink.eu:7565/v1/services/login/
 
 # URLs
 160.40.53.35
@@ -24,7 +27,7 @@ Smoking_Percent_DALYs_val
 [frontend](http://localhost:9080)
 [grafana](http://localhost:3000)
 [h2](http://localhost:8081/h2-ui)
-
+   jdbc:h2:/data/spreact_db
 
 http://160.40.53.35:3000/d-solo/edn5ahxrzaw3kc/deli-main-dashboard?orgId=1&from=1716944950967&to=1716966550967&panelId=1
 http://160.40.53.35:3000/d-solo/edn5ahxrzaw3kc/deli-main-dashboard?orgId=1&from=1716945974114&to=1716967574114&panelId=2

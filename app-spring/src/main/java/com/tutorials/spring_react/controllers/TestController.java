@@ -25,11 +25,9 @@ public class TestController {
 
       // String jwt_str = dataUpdateService.getTemp();
       // String jwt_str = dataUpdateService.getData();
-      String jwt_str = "asdf";
       dataUpdateService.login();
       
-      System.out.println("--- GK> Someone said hi! " + jwt_str);
-      return "Hello, Spring Boot!!!! "+new Date()+" " +jwt_str;
+      return "Hello, Spring Boot!!!! "+new Date();
    }
 
 }
