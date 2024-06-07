@@ -1,10 +1,14 @@
 package com.tutorials.spring_react.datarepo;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.buffer.DataBuffer;
+import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.ClientResponse;
@@ -16,6 +20,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tutorials.spring_react.security.payloads.LoginRequest;
 
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Service
@@ -32,8 +37,8 @@ public class DataUpdateService {
 
    private static final String login_endpoint="v1/services/login/";
    // private static final String login_endpoint="api/v1/auth/login";
-   // private static final String data_endpoint="v1/retrospective/fused_european_only_new/";
-   private static final String data_endpoint="v1/deli/";
+   private static final String data_endpoint="v1/retrospective/fused_european_only_new/";
+   // private static final String data_endpoint="v1/deli/";
    private static final String test_endpoint="/api/v1/content/all";
    
    
@@ -80,7 +85,7 @@ public class DataUpdateService {
          System.out.println("GK> Already logged: "+jwt);
       }
 
-      String response_json = webClient
+      Flux<DataBuffer> response_flux = webClient
          .get()
          .uri(data_endpoint)
          .header("Accept","*/*")
@@ -91,11 +96,16 @@ public class DataUpdateService {
             httpStatus -> !httpStatus.is2xxSuccessful(),
             clientResponse -> handleErrorResponse(clientResponse)
          )
-         .bodyToMono(String.class)
-         .block()
+         .bodyToFlux(DataBuffer.class)
       ;
+      
+      Path path = Paths.get("/tmp/download.dat");
+      DataBufferUtils
+         .write(response_flux,path)
+         .block();
+
       System.out.println("GK> Response:");
-      System.out.println(response_json);
+      System.out.println(response_flux);
       System.out.println("GK> /Response:");
 
    }
