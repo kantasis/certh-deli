@@ -32,7 +32,8 @@ public class DataUpdateService {
 
    private static final String login_endpoint="v1/services/login/";
    // private static final String login_endpoint="api/v1/auth/login";
-   private static final String data_endpoint="v1/retrospective/fused_european_only_new/";
+   // private static final String data_endpoint="v1/retrospective/fused_european_only_new/";
+   private static final String data_endpoint="v1/deli/";
    private static final String test_endpoint="/api/v1/content/all";
    
    
@@ -42,8 +43,6 @@ public class DataUpdateService {
    private WebClient webClient;
 
    public void login(){
-      System.out.println("--- GK> Trying to login ");
-
 
       String response_json = webClient
          .post()
@@ -60,10 +59,7 @@ public class DataUpdateService {
          .block()
       ;
 
-      System.out.println("--- GK> Response: " + response_json);
       jwt = (String) json2map(response_json).get("token");
-      System.out.println("--- GK> Token: " + jwt);
-       
    }
    
    private Mono<? extends Throwable> handleErrorResponse(ClientResponse clientResponse) {
@@ -73,17 +69,35 @@ public class DataUpdateService {
       return Mono.error(new Exception("--- GK> Request failed with status code: " + clientResponse.statusCode().toString()));
    }
 
-   public String getData() {
+   public void getData() {
       System.out.println("--- GK> Entering the service ");
 
-      return webClient
+      if (jwt == null) {
+         System.out.println("GK> Not logged in yet: "+jwt);
+         login();
+         System.out.println("GK> Fixed: "+jwt);
+      }else{
+         System.out.println("GK> Already logged: "+jwt);
+      }
+
+      String response_json = webClient
          .get()
-         .uri(test_endpoint)
+         .uri(data_endpoint)
          .header("Accept","*/*")
-         .retrieve()
+         .header("Content-Type","application/json")
+         .header("Authorization","Bearer " + jwt)
+         .retrieve()                                           // Send the request
+         .onStatus(
+            httpStatus -> !httpStatus.is2xxSuccessful(),
+            clientResponse -> handleErrorResponse(clientResponse)
+         )
          .bodyToMono(String.class)
          .block()
       ;
+      System.out.println("GK> Response:");
+      System.out.println(response_json);
+      System.out.println("GK> /Response:");
+
    }
 
    private String getCredentialsJson(){
