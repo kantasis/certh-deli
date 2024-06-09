@@ -1,5 +1,9 @@
 package com.tutorials.spring_react.datarepo;
 
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -11,6 +15,7 @@ import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -18,6 +23,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.opencsv.CSVReader;
+import com.opencsv.exceptions.CsvValidationException;
 import com.tutorials.spring_react.security.payloads.LoginRequest;
 
 import reactor.core.publisher.Flux;
@@ -46,6 +53,9 @@ public class DataUpdateService {
 
    @Autowired
    private WebClient webClient;
+
+   @Autowired
+   private CsvDataRepository csvDataRepository;
 
    public void login(){
 
@@ -99,10 +109,28 @@ public class DataUpdateService {
          .bodyToFlux(DataBuffer.class)
       ;
       
-      Path path = Paths.get("/tmp/download.dat");
-      DataBufferUtils
-         .write(response_flux,path)
-         .block();
+      try (
+         PipedOutputStream pipedOutputStream = new PipedOutputStream();
+         // InputStream inputStream = new InputStream();
+         PipedInputStream pipedInputStream = new PipedInputStream();
+         InputStreamReader inputStreamReader = new InputStreamReader(pipedInputStream);
+         CSVReader csvReader = new CSVReader(inputStreamReader)
+      ) {
+         pipedInputStream.connect(pipedOutputStream);
+
+         DataBufferUtils
+            .write(response_flux,pipedOutputStream)
+            .subscribe();
+
+      }catch (IOException e){
+         e.printStackTrace();
+      }
+
+
+      // Path path = Paths.get("/tmp/download.dat");
+      // DataBufferUtils
+      //    .write(response_flux,path)
+      //    .block();
 
       System.out.println("GK> Response:");
       System.out.println(response_flux);
@@ -139,6 +167,34 @@ public class DataUpdateService {
       }
 
       return result_json;
+
+   }
+
+   public void loadToDatabase(MultipartFile file){
+      // csvDataRepository;
+      try (
+         InputStreamReader inputStreamReader = new InputStreamReader(file.getInputStream());
+         CSVReader csvReader = new CSVReader(inputStreamReader)
+      ) {
+         String[] headers = csvReader.readNext();
+         if (headers == null) 
+            throw new RuntimeException("Empty CSV file");
+         String[] values;
+
+         
+         while ((values = csvReader.readNext()) != null) {
+            Map<String, String> attributes = new HashMap<>();
+            for (int i = 0; i < headers.length; i++)
+               attributes.put(headers[i], values[i]);
+
+            CsvDataEntity csvDataEntity = new CsvDataEntity();
+            csvDataEntity.setAttributes(attributes);
+            csvDataRepository.save(csvDataEntity);
+         }
+
+      }catch (IOException | CsvValidationException e) {
+         throw new RuntimeException("Failed to parse CSV file: " + e.getMessage());
+      }
 
    }
 
