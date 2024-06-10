@@ -21,8 +21,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableMethodSecurity
 public class WebSecurityConfig {
 
-   @Value("${spring.h2.console.path}")
-   private String h2ConsolePath;
+   // Removing H2
+   // @Value("${spring.h2.console.path}")
+   // private String h2ConsolePath;
 
    @Autowired
    UserDetailsServiceImpl userDetailsService;

@@ -16,7 +16,7 @@ public class CsvDataEntity {
 
    @Id
    @GeneratedValue(strategy = GenerationType.IDENTITY)
-   private String id;
+   private Long id;
 
    @ElementCollection
    private Map<String, String> attributes;

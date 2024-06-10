@@ -55,11 +55,13 @@
       </dependency>
 
       <!-- These two go together -->
-      <dependency>
+
+      <!-- Removing H2 -->
+      <!-- <dependency>
          <groupId>com.h2database</groupId>
          <artifactId>h2</artifactId>
          <scope>runtime</scope>
-      </dependency>
+      </dependency> -->
 
       <dependency>
          <groupId>org.springframework.boot</groupId>
