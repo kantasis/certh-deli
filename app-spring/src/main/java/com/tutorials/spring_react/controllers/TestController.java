@@ -25,10 +25,11 @@ public class TestController {
 
       // String jwt_str = dataUpdateService.getTemp();
       // String jwt_str = dataUpdateService.getData();
-      // dataUpdateService.getData();
-      dataUpdateService.silly();
+      dataUpdateService.getData();
+      dataUpdateService.importDataset();
       
       return "Hello, Spring Boot!!!! "+new Date();
+      
    }
 
 }

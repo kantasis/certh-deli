@@ -5,6 +5,7 @@ CREATE DATABASE deli_db;
 -- DROP TABLE IF EXISTS data_tbl;
 CREATE TABLE data_tbl (
    id SERIAL PRIMARY KEY,
+   "_id" VARCHAR(250),
    "Country" VARCHAR(250),
    "Year" INT,
    "age" VARCHAR(250),

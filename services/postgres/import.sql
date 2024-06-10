@@ -1,4 +1,4 @@
-copy data_tbl(
+COPY data_tbl(
    "Country",
    "Year",
    "age",
