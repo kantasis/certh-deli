@@ -132,6 +132,13 @@ docker exec -it \
    deli_ubuntu_container \
    bash
 
+docker exec -it \
+   deli_db_container \
+   psql \
+      -h localhost \
+      -U postgres \
+      -d deli_db 
+
 ```
 
 
