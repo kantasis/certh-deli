@@ -139,6 +139,8 @@ docker exec -it \
       -U postgres \
       -d deli_db 
 
+docker restart deli_spring_container && docker logs --follow deli_spring_container 
+
 ```
 
 

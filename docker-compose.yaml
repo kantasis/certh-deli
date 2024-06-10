@@ -5,9 +5,9 @@ volumes:
       name: deli_grafana_volume
    deli_db_volume:
       name: deli_db_volume
-   deli_h2_volume:
-   # TODO: Fix this volume name, it's wrong
-      name: deli_h2_volume
+   # deli_h2_volume:
+   # # TODO: Fix this volume name, it's wrong
+   #    name: deli_h2_volume
 
 networks:
    deli_main_network:
@@ -15,22 +15,33 @@ networks:
 
 services:
 
-   deli_ubuntu_label:
-      image: deli_ubuntu_image
-      container_name: deli_ubuntu_container
-      build: ./services/ubuntu
-      env_file:
-         - .private/ubuntu.env
-      # ports:
-      #    - 8000:8000
-      #    - 5173:5173
-      volumes:
-         - ./app-react:/app-react
-      networks:
-         - deli_main_network
-      # environment:
-      #    - GK_PWD=${PWD}
-      #    - NODE_PORT=${NODE_PORT}
+   # deli_ubuntu_label:
+   #    image: deli_ubuntu_image
+   #    container_name: deli_ubuntu_container
+   #    build: ./services/ubuntu
+   #    env_file:
+   #       - .private/ubuntu.env
+   #    # ports:
+   #    #    - 8000:8000
+   #    #    - 5173:5173
+   #    volumes:
+   #       - ./app-react:/app-react
+   #    networks:
+   #       - deli_main_network
+   #    # environment:
+   #    #    - GK_PWD=${PWD}
+   #    #    - NODE_PORT=${NODE_PORT}
+
+   # deli_python_label:
+   #    image: deli_python_image
+   #    container_name: deli_python_container
+   #    build: ./services/python
+   #    env_file:
+   #       - ./services/python/.env
+   #    volumes:
+   #       - ./shared:/shared
+   #    networks:
+   #       - deli_main_network
 
    deli_grafana_label:
       image: deli_grafana_container
@@ -90,10 +101,10 @@ services:
          - ./shared/tomcat-logs:/spring_application/tomcat/logs
          - ./shared/spring-logs:/spring/logs
          # - ./shared/application-logs:/spring_application
-         - deli_h2_volume:/data
+         # - deli_h2_volume:/data
          - ./app-spring:/app-spring
       networks:
          - deli_main_network
-      # depends_on:
-      #    - spreact_mongo_label
+      depends_on:
+         - deli_db_label
 
