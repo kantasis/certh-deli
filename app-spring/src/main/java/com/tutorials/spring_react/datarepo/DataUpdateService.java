@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferUtils;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -46,13 +47,15 @@ public class DataUpdateService {
    @Value("${spring.datasource.password}")
    private String _db_pass;
 
+   @Autowired
+   private JdbcTemplate jdbcTemplate;
+
    private static final String login_endpoint="v1/services/login/";
    private static final String data_endpoint="v1/retrospective/fused_european_only_new/";
    private static final String dataset_afile="/tmp/fused_dataset.csv";
    
    // TODO: put this in a different file
    private static final String importQuery_str = """
-      TRUNCATE TABLE data_tbl;
       COPY data_tbl(
          "_id",
          "Country",
@@ -646,6 +649,11 @@ public class DataUpdateService {
    }
 
    public void importDataset(){
+
+      System.out.println("GK> truncating the table");
+      jdbcTemplate.execute("TRUNCATE TABLE data_tbl;");
+
+      System.out.println("GK> Importing the data");
       Path dataFile_path = Paths.get(dataset_afile);
       try (
          Connection connection = getConnection();
@@ -655,6 +663,8 @@ public class DataUpdateService {
          CopyManager copyManager = new CopyManager((BaseConnection) connection);
          
          long rowsWritten_cnt = copyManager.copyIn(importQuery_str, inputStream);
+         System.out.printf("GK> Loaded %d lines\n", rowsWritten_cnt);
+
          connection.commit();
          connection.close();
  
