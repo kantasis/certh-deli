@@ -7,7 +7,7 @@ import { NavigateFunction, useNavigate } from 'react-router-dom';
 // const authentication_host = "localhost";
 // const authentication_host = "160.40.53.35";
 const authentication_host = import.meta.env.VITE_AUTHENTICATION_HOST;
-const authentication_port = import.meta.env.VITE_AUTHENTICATION_HOST;
+const authentication_port = import.meta.env.VITE_AUTHENTICATION_PORT;
 
 const api_url = `http://${authentication_host}:${authentication_port}/api/v1/auth/`;
 
