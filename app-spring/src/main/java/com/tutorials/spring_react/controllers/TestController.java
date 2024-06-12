@@ -13,21 +13,12 @@ import com.tutorials.spring_react.security.JwtUtils;
 @RestController
 public class TestController {
 
-
-   @Autowired
-   DataUpdateService dataUpdateService;
-
    // TODO: The port should be referenced here: HOST_NODE_PORT
    // @CrossOrigin(origins = "http://localhost:9080")
    
    @GetMapping("/hello")
    public String hello() {
 
-      // String jwt_str = dataUpdateService.getTemp();
-      // String jwt_str = dataUpdateService.getData();
-      dataUpdateService.getData();
-      dataUpdateService.importDataset();
-      
       return "Hello, Spring Boot!!!! "+new Date();
       
    }
