@@ -2,9 +2,6 @@ package com.tutorials.spring_react.datarepo;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -17,21 +14,16 @@ import java.util.Map;
 import org.postgresql.copy.CopyManager;
 import org.postgresql.core.BaseConnection;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferUtils;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.opencsv.CSVReader;
-import com.opencsv.exceptions.CsvValidationException;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -617,34 +609,11 @@ public class DataUpdateService {
          )
          .bodyToFlux(DataBuffer.class)
       ;
-      
-      // try (
-      //    PipedOutputStream pipedOutputStream = new PipedOutputStream();
-      //    // InputStream inputStream = new InputStream();
-      //    PipedInputStream pipedInputStream = new PipedInputStream();
-      //    InputStreamReader inputStreamReader = new InputStreamReader(pipedInputStream);
-      //    CSVReader csvReader = new CSVReader(inputStreamReader)
-      // ) {
-      //    pipedInputStream.connect(pipedOutputStream);
-
-      //    DataBufferUtils
-      //       .write(response_flux,pipedOutputStream)
-      //       .subscribe();
-
-      // }catch (IOException e){
-      //    e.printStackTrace();
-      // }
-
 
       Path dataFile_path = Paths.get(dataset_afile);
       DataBufferUtils
          .write(response_flux,dataFile_path)
          .block();
-
-      System.out.println("GK> Response:");
-      System.out.println(response_flux);
-      System.out.println("GK> /Response:");
-
    }
 
    private String getCredentialsJson(){
@@ -662,7 +631,6 @@ public class DataUpdateService {
       } catch(JsonProcessingException e){
          e.printStackTrace();
       } 
-      // finally{}
       return result_map;
    }
 
@@ -674,15 +642,11 @@ public class DataUpdateService {
       } catch (JsonProcessingException e){
          e.printStackTrace();
       }
-
       return result_json;
-
    }
 
    public void importDataset(){
-      
       Path dataFile_path = Paths.get(dataset_afile);
-
       try (
          Connection connection = getConnection();
          InputStream inputStream = Files.newInputStream(dataFile_path);
