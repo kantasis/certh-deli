@@ -38,7 +38,6 @@ const Dashboard: React.FC = () => {
    if (!isLoggedIn)
       return <h2>Unauthorized</h2>;
 
-
    const tabInfo_dictLst = [
       {
          id: "geomap",
