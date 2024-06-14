@@ -3,18 +3,16 @@ import { Routes, Route, Link } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
 
-import * as AuthService from "./services/auth.service";
-
 import Login from "./components/Login.jsx";
-import Register from "./components/Register.jsx";
+// import Register from "./components/Register.jsx";
 import Home from "./components/Home.jsx";
 import Profile from "./components/Profile.jsx";
 import Dashboard from "./components/Dashboard.jsx";
-
-
-// import AuthVerify from "./common/AuthVerify";
-
+import NewDash from "./components/NewDash.jsx";
 import NavbarMain from "./components/NavbarMain.js";
+
+// import * as AuthService from "./services/auth.service";
+// import AuthVerify from "./common/AuthVerify";
 
 const App: React.FC = () => {
    return (<>
@@ -26,7 +24,7 @@ const App: React.FC = () => {
             <Route   path="/login"     element={<Login />}           />
             {/* <Route   path="/register"  element={<Register />}        /> */}
             <Route   path="/profile"   element={<Profile />}         />
-            <Route   path="/dashboard"      element={<Dashboard />}       />
+            <Route   path="/newdash"      element={<NewDash />}       />
          </Routes>
       </div>
    </>);

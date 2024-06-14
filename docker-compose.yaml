@@ -1,13 +1,8 @@
-version: "3"
-
 volumes:
    deli_grafana_volume:
       name: deli_grafana_volume
    deli_db_volume:
       name: deli_db_volume
-   # deli_h2_volume:
-   # # TODO: Fix this volume name, it's wrong
-   #    name: deli_h2_volume
 
 networks:
    deli_main_network:
