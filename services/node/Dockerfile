@@ -8,7 +8,9 @@ WORKDIR /app-react/spreact_react_app
 # RUN npm install
 
 # Lovely bootstrap
-RUN npm install bootstrap axios @types/react-router-dom react-router-dom http-proxy-middleware react-validation validator formik yup
+RUN npm install axios @types/react-router-dom react-router-dom http-proxy-middleware react-validation validator formik yup
+RUN npm install react-bootstrap bootstrap
+
 RUN npm install 
 
 

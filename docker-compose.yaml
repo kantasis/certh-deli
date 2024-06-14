@@ -10,22 +10,22 @@ networks:
 
 services:
 
-   # deli_ubuntu_label:
-   #    image: deli_ubuntu_image
-   #    container_name: deli_ubuntu_container
-   #    build: ./services/ubuntu
-   #    env_file:
-   #       - .private/ubuntu.env
-   #    # ports:
-   #    #    - 8000:8000
-   #    #    - 5173:5173
-   #    volumes:
-   #       - ./app-react:/app-react
-   #    networks:
-   #       - deli_main_network
-   #    # environment:
-   #    #    - GK_PWD=${PWD}
-   #    #    - NODE_PORT=${NODE_PORT}
+   deli_ubuntu_label:
+      image: deli_ubuntu_image
+      container_name: deli_ubuntu_container
+      build: ./services/ubuntu
+      env_file:
+         - .private/ubuntu.env
+      # ports:
+      #    - 8000:8000
+      #    - 5173:5173
+      volumes:
+         - ./app-react:/app-react
+      networks:
+         - deli_main_network
+      # environment:
+      #    - GK_PWD=${PWD}
+      #    - NODE_PORT=${NODE_PORT}
 
    # deli_python_label:
    #    image: deli_python_image
