@@ -18,8 +18,7 @@ public class DataUpdateController {
    public String hello() {
       dataUpdateService.getData();
       dataUpdateService.importDataset();
-      
-      return "Data update completed";      
+      return "Data update completed";
    }
 
 

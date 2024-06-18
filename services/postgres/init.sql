@@ -2,7 +2,7 @@ DROP DATABASE IF EXISTS deli_db;
 CREATE DATABASE deli_db;
 \c deli_db;
 
--- DROP TABLE IF EXISTS data_tbl;
+DROP TABLE IF EXISTS data_tbl;
 CREATE TABLE data_tbl (
    id SERIAL PRIMARY KEY,
    "_id" VARCHAR(250),

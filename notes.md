@@ -24,7 +24,6 @@ http://oncodir.catalink.eu:7565/v1/services/login/
 ## Requirements
 
 
-
 # URLs
 160.40.53.35
 
@@ -47,10 +46,6 @@ import { NavigateFunction, useNavigate } from 'react-router-dom';
    let navigate: NavigateFunction = useNavigate();
    navigate("/login");
    window.location.reload();
-
-
-
-
 
 ```
 # Initialize deployment
@@ -183,6 +178,7 @@ done
 
 ```bash
 
+# Find the columns with too long names
 cat columns.txt \
    | sed 's/Percentage of total/%/' \
    | sed 's/_Percentage/%/' \
@@ -194,6 +190,7 @@ cat columns.txt \
    | sed 's/ (percent)//' \
    | grep -E -e '.{60,}' 
 
+# columns for the init.sql file
 cat columns.txt \
    | sed 's/Percentage of total/%/' \
    | sed 's/_Percentage/%/' \

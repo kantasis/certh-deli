@@ -1,14 +1,8 @@
 package com.tutorials.spring_react.controllers;
 
 import java.util.Date;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.tutorials.spring_react.datarepo.DataUpdateService;
-import com.tutorials.spring_react.security.JwtUtils;
 
 @RestController
 public class TestController {
@@ -20,7 +14,6 @@ public class TestController {
    public String hello() {
 
       return "Hello, Spring Boot!!!! "+new Date();
-      
    }
 
 }
