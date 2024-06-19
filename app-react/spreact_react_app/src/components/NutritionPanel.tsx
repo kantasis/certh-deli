@@ -68,7 +68,7 @@ const NewDash: React.FC = () => {
       
       <Button
          onClick={ () => setIFrameUrl(`${grafana_url}&${getUriParams()}`) }
-         >
+      >
          Update Panel
       </Button>
 

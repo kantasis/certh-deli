@@ -10,7 +10,6 @@ interface FilterProps {
    setFilter_country_str: Function,
 }
 
- 
 const FilterPanel: React.FC<FilterProps> = ({filter_startYear_int, setFilter_startYear_int, filter_country_str, setFilter_country_str}) => {
 
    const countries_strLst = [
