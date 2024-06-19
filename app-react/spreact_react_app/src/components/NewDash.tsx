@@ -54,12 +54,6 @@ const NewDash: React.FC = () => {
 
    return (<>
       <div className="row">
-         <Button
-            className="col-sm"
-            onClick={ () => setIFrameUrl(`${grafana_url}&panelId=4&${getUriParams()}`) }
-            >
-            Update Panel
-         </Button>
 
          <CountryFilter
             selectedCountries_lst={selectedCountries_lst}
@@ -74,6 +68,13 @@ const NewDash: React.FC = () => {
          />
 
       </div>
+      
+      <Button
+         onClick={ () => setIFrameUrl(`${grafana_url}&panelId=4&${getUriParams()}`) }
+         >
+         Update Panel
+      </Button>
+
       <div className="embed-responsive embed-responsive-16by9">
          <iframe 
             id="embeddedPanel_id"

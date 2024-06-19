@@ -202,6 +202,18 @@ cat columns.txt \
    | sed 's/ (percent)//' \
    | xargs -I {} echo "   \"{}\" DOUBLE PRECISION,"
 
+# columns for the import.sql file
+cat columns.txt \
+   | sed 's/Percentage of total/%/' \
+   | sed 's/_Percentage/%/' \
+   | sed 's/_Rate_Summary exposure value/ SEV/' \
+   | sed 's/colorectal cancer/CRC/' \
+   | sed 's:dollar per person per day_Cost:\$/person/day:' \
+   | sed 's/million No_Number of //' \
+   | sed 's/ (PPP dollar per person per day)//' \
+   | sed 's/ (percent)//' \
+   | xargs -I {} echo "   \"{}\","
+
 
 ```
 
