@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import * as AuthService from "../services/auth.service";
+import * as AuthService from "../services/auth.service.tsx";
 import { Button, Dropdown } from 'react-bootstrap'; 
-import CountryFilter from "../components/CountryFilter.tsx";
-import YearFilter from "../components/YearFilter.tsx";
+import CountryFilter from "./CountryFilter.tsx";
+import YearFilter from "./YearFilter.tsx";
 // import Multiselect from 'react-bootstrap-multiselect';
 
 
@@ -10,13 +10,10 @@ const grafana_host = import.meta.env.VITE_GRAFANA_HOST;
 const grafana_port = import.meta.env.VITE_GRAFANA_PORT;
 const grafana_path = import.meta.env.VITE_GRAFANA_PATH;
 const dashboard_name = import.meta.env.VITE_GRAFANA_DASHBOARD;
-
-const grafana_url = `http://${grafana_host}:${grafana_port}/${grafana_path}/${dashboard_name}?orgId=1&theme=light`
-
-// http://localhost:3000/d-solo/edn5ahxrzaw3kc/deli-main-dashboarg?orgId=1&theme=light&panelId=4&var-deli_custom_var=5
+const panel_id = 2;
+const grafana_url = `http://${grafana_host}:${grafana_port}/${grafana_path}/${dashboard_name}?panelId=${panel_id}&orgId=1&theme=light`
 
 // var envs_json = JSON.stringify(import.meta.env, null, 2); // spacing level = 2
-// console.log('GK> ' + envs_json);
 
 const NewDash: React.FC = () => {
 
@@ -44,7 +41,7 @@ const NewDash: React.FC = () => {
    useEffect(
       () => {
          setIsLoggedIn(AuthService.isLoggedIn());
-         setIFrameUrl(`${grafana_url}&panelId=4&${getUriParams()}`);
+         setIFrameUrl(`${grafana_url}&${getUriParams()}`);
       },
       []
    );
@@ -70,7 +67,7 @@ const NewDash: React.FC = () => {
       </div>
       
       <Button
-         onClick={ () => setIFrameUrl(`${grafana_url}&panelId=4&${getUriParams()}`) }
+         onClick={ () => setIFrameUrl(`${grafana_url}&${getUriParams()}`) }
          >
          Update Panel
       </Button>
@@ -80,8 +77,8 @@ const NewDash: React.FC = () => {
             id="embeddedPanel_id"
             className="embed-responsive-item"
             src={iFrameUrl_str}
-            width="1200"
-            height="600"
+            width="100%"
+            height="600px"
          >
          </iframe>
          <div>{iFrameUrl_str}</div>

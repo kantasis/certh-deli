@@ -25,14 +25,19 @@ const NavbarMain: React.FC = () => {
    };
 
    const buttons_tsx = [
+      // {
+      //    href: "dashboard",
+      //    label: "Dashboard",
+      //    condition: isLoggedIn
+      // },
       {
-         href: "dashboard",
-         label: "Dashboard",
+         href: "epidimiologicalPanel",
+         label: "Epidimiological Data",
          condition: isLoggedIn
       },
       {
-         href: "newdash",
-         label: "NewDash",
+         href: "nutritionPanel",
+         label: "Nutritional Data",
          condition: isLoggedIn
       },
       {

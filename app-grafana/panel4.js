@@ -46,6 +46,7 @@ option = {
       orient: 'vertical',
       left: 'right'
    },
+   tooltip: {},
    xAxis: {
       type: 'category',
       data: xaxis_ser

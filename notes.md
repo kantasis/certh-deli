@@ -124,6 +124,16 @@ docker exec -it \
       -f import.sql
 
 ```
+
+## Initialize Grafana:
+
+Variables:
+minyear_filter
+maxyear_filter
+country_filter
+
+
+
 # General
 
 WHERE age='Age-standardized'
@@ -175,7 +185,6 @@ done
 ```
 
 ## Snippets:
-
 ```bash
 
 # Find the columns with too long names

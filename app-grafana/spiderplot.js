@@ -27,7 +27,8 @@ const indicators_arr = queryResult['fields']
    .map((column_dict) => {
       return {
          name: column_dict['name'],
-         max: Math.max(...column_dict['values'])
+         max: Math.max(...column_dict['values']),
+         color: "#000"
       }
    }
 );
@@ -64,7 +65,7 @@ console.log(dataFrame);
 
 option = {
    title: {
-      text: 'Basic Radar Chart'
+      text: 'Nutritional Data'
    },
    legend: {
       type: 'plain',
@@ -73,15 +74,13 @@ option = {
    },
    tooltip: {},
    radar: {
-      shape: 'circle',
       indicator: indicators_arr
    },
-   series: [
-      {
-         type: 'radar',
-         data: data_opt
-      }
-   ]
+   series: [{
+      // name: "",
+      type: 'radar',
+      data: data_opt
+   }]
 };
 return option;
 

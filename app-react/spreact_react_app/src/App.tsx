@@ -8,7 +8,8 @@ import Login from "./components/Login.jsx";
 import Home from "./components/Home.jsx";
 import Profile from "./components/Profile.jsx";
 import Dashboard from "./components/Dashboard.jsx";
-import NewDash from "./components/NewDash.jsx";
+import EpidimiologicalPanel from "./components/EpidimiologicalPanel.tsx";
+import NutritionPanel from "./components/NutritionPanel.tsx";
 import NavbarMain from "./components/NavbarMain.js";
 
 // import * as AuthService from "./services/auth.service";
@@ -24,7 +25,8 @@ const App: React.FC = () => {
             <Route   path="/login"     element={<Login />}           />
             {/* <Route   path="/register"  element={<Register />}        /> */}
             <Route   path="/profile"   element={<Profile />}         />
-            <Route   path="/newdash"      element={<NewDash />}       />
+            <Route   path="/epidimiologicalPanel"      element={<EpidimiologicalPanel />}       />
+            <Route   path="/nutritionPanel"      element={<NutritionPanel />}       />
          </Routes>
       </div>
    </>);
