@@ -24,7 +24,7 @@ const NavbarMain: React.FC = () => {
       window.location.reload();
    };
 
-   const buttons_tsx = [
+   const leftButtons_tsx = [
       // {
       //    href: "dashboard",
       //    label: "Dashboard",
@@ -41,10 +41,24 @@ const NavbarMain: React.FC = () => {
          condition: isLoggedIn
       },
       {
-         href: "profile",
-         label: "Profile",
+         href: "LifestylePanel",
+         label: "Lifestyle Data",
          condition: isLoggedIn
       },
+
+   ].map( (item_dict, index) => item_dict.condition && (
+      <li className="nav-item" key={index}>
+         <a 
+            className="nav-link" 
+            href={item_dict.href}
+            // onClick={item_dict.onClick ? item_dict.onClick : undefined}
+         >
+            {item_dict.label}
+         </a>
+      </li>
+   ));
+
+   const rightButtons_tsx = [
       {
          href: "login",
          label: "Login",
@@ -54,6 +68,11 @@ const NavbarMain: React.FC = () => {
          href: "register",
          label: "Register",
          condition: !isLoggedIn
+      },
+      {
+         href: "profile",
+         label: "Profile",
+         condition: isLoggedIn
       },
       {
          href: "login",
@@ -72,6 +91,8 @@ const NavbarMain: React.FC = () => {
          </a>
       </li>
    ));
+
+
 
    return (
       <nav className="navbar navbar-expand-lg bg-body-tertiary">
@@ -98,7 +119,11 @@ const NavbarMain: React.FC = () => {
                id="navbarSupportedContent"
             >
                <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-                  {buttons_tsx}
+                  {leftButtons_tsx}
+               </ul>
+               
+               <ul className="navbar-nav my-2 my-lg-0">
+                  {rightButtons_tsx}
                </ul>
             </div>
          </div>
