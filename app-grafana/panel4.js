@@ -1,12 +1,9 @@
 
 function getSelections(multiSelectVar_name){
-
    // Get the variable
    const multiSelect_var = context.grafana.replaceVariables("${"+multiSelectVar_name+"}");
-
    // Parse it if its multiselect
    result = multiSelect_var.replace(/{/,'').replace(/}/,'').split(',');
-   
    return result;
 }
 

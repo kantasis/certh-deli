@@ -18,7 +18,9 @@ function getQueryResult(query_name) {
    ;
 }
 
-const queryResult = getQueryResult('A');
+const countries_strLst = getSelections("country_filter")
+
+const queryResult = getQueryResult('deli_spider_query');
 
 const indicators_arr = queryResult['fields']
    .filter((column_dict) => column_dict['name'] !== 'Country')
@@ -34,33 +36,28 @@ console.log("indicators_arr:   ");
 console.log(indicators_arr);
 
 let dataFrame = {};
-queryResult['fields']
-   .find((column_dict) => column_dict['name'] === 'Country')
-   .values
+countries_strLst
    .forEach((country_name, index) => {
-   const temp = queryResult['fields']
-      .filter((column_dict) => column_dict['name'] !== 'Country')
-      .map((column_dict) => {
-         return column_dict['values'][index]
-      })
-      // .values
+      const temp = queryResult['fields']
+         .filter((column_dict) => column_dict['name'] !== 'Country')
+         .map((column_dict) => {
+            return column_dict['values'][index]
+         })
       ;
-
-   // console.log(`Temp: ${temp}`);
-   dataFrame[country_name] = temp;
-
+      dataFrame[country_name] = temp;
    })
-   ;
+;
 
 const columns_strLst = Object.keys(dataFrame);
 
 const data_opt = columns_strLst
    .map((column_name) => {
-   return {
-      value: dataFrame[column_name],
-      name: column_name
-   };
+      return {
+         value: dataFrame[column_name],
+         name: column_name
+      };
    })
+;
 
 console.log("dataFrame: ");
 console.log(dataFrame);
@@ -69,16 +66,18 @@ option = {
    title: {
       text: 'Basic Radar Chart'
    },
-   // legend: {
-   //    data: ['Allocated Budget', 'Actual Spending']
-   // },
+   legend: {
+      type: 'plain',
+      orient: 'vertical',
+      left: 'right'
+   },
+   tooltip: {},
    radar: {
-      // shape: 'circle',
+      shape: 'circle',
       indicator: indicators_arr
    },
    series: [
       {
-         name: 'Budget vs spending',
          type: 'radar',
          data: data_opt
       }
