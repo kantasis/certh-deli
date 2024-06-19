@@ -17,13 +17,6 @@ Smoking_Percent_DALYs_val
 
 ## All
 
-# General
-http://oncodir.catalink.eu:7565/v1/services/login/
-http://oncodir.catalink.eu:7565/v1/services/login/
-
-## Requirements
-
-
 # URLs
 160.40.53.35
 
@@ -134,9 +127,9 @@ country_filter
 
 
 
+
 # General
 
-WHERE age='Age-standardized'
 
 ```bash
 docker exec -it \
@@ -185,6 +178,24 @@ done
 ```
 
 ## Snippets:
+
+LIFESTYLE
+User can select YEARS from 1990 – 2019
+
+   Alcohol 
+   Smoking 
+   Low physical activity 
+   High BMI
+
+```SQL
+
+
+
+
+```
+
+
+
 ```bash
 
 # Find the columns with too long names
