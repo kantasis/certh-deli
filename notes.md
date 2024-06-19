@@ -106,7 +106,6 @@ docker cp shared/Fused_european_only_new.csv deli_db_container:/tmp/dataset.csv
 # Copy the loading script
 docker cp services/postgres/import.sql deli_db_container:/
 
-
 # Run the init script
 docker exec -it \
    deli_db_container \
@@ -124,9 +123,10 @@ docker exec -it \
       -d deli_db \
       -f import.sql
 
-
 ```
 # General
+
+WHERE age='Age-standardized'
 
 ```bash
 docker exec -it \

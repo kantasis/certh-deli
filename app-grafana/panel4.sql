@@ -9,7 +9,8 @@ FROM crosstab('
       AVG("CRC_incidence_val_Percent") as values_f
    FROM data_tbl 
    WHERE true
-      AND age=''Age-standardized''
+      AND "Year" BETWEEN ${minyear_filter} AND ${maxyear_filter}
+      AND "age" = ''Age-standardized''
       AND "Country" IN (''Greece'', ''Romania'', ''Lithuania'', ''Belgium'', ''Italy'', ''Spain'')
    GROUP BY
       "Country",
@@ -26,5 +27,4 @@ FROM crosstab('
 )
 ORDER BY ct."Year"
 ;
-
 
