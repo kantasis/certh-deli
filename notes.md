@@ -187,6 +187,22 @@ User can select YEARS from 1990 – 2019
    Low physical activity 
    High BMI
 
+   "Alcohol use_Percent_DALYs_val" DOUBLE PRECISION,
+   "Alcohol use_Percent_Deaths_val" DOUBLE PRECISION,
+   "Alcohol use_Percent_YLDs_val" DOUBLE PRECISION,
+   "Alcohol use_Percent_YLLs_val" DOUBLE PRECISION,
+
+   "Alcohol use_Rate_DALYs_val" DOUBLE PRECISION,
+   "Alcohol use_Rate_Deaths_val" DOUBLE PRECISION,
+   "Alcohol use_Rate_YLDs_val" DOUBLE PRECISION,
+   "Alcohol use_Rate_YLLs_val" DOUBLE PRECISION,
+   
+   "Alcohol use SEV_val" DOUBLE PRECISION,
+   
+   "Alcohol use_Number_DALYs_val" DOUBLE PRECISION,
+   "Alcohol use_Number_Deaths_val" DOUBLE PRECISION,
+   "Alcohol use_Number_YLDs_val" DOUBLE PRECISION,
+   "Alcohol use_Number_YLLs_val" DOUBLE PRECISION,
 ```SQL
 
 
@@ -195,6 +211,10 @@ User can select YEARS from 1990 – 2019
 ```
 
 
+To change the schema you need to update the following files:
+- services/postgres/init.sql
+- services/postgres/import.sql
+- app-spring/src/main/java/com/tutorials/spring_react/datarepo/DataUpdateService.java
 
 ```bash
 
@@ -202,7 +222,7 @@ User can select YEARS from 1990 – 2019
 cat columns.txt \
    | sed 's/Percentage of total/%/' \
    | sed 's/_Percentage/%/' \
-   | sed 's/_Rate_Summary exposure value/ SEV/' \
+   | sed 's/_Summary exposure value/_SEV/' \
    | sed 's/colorectal cancer/CRC/' \
    | sed 's:dollar per person per day_Cost:\$/person/day:' \
    | sed 's/million No_Number of //' \
@@ -211,28 +231,30 @@ cat columns.txt \
    | grep -E -e '.{60,}' 
 
 # columns for the init.sql file
-cat columns.txt \
+cat shared/columns.txt \
    | sed 's/Percentage of total/%/' \
    | sed 's/_Percentage/%/' \
-   | sed 's/_Rate_Summary exposure value/ SEV/' \
+   | sed 's/_Summary exposure value/_SEV/' \
    | sed 's/colorectal cancer/CRC/' \
    | sed 's:dollar per person per day_Cost:\$/person/day:' \
    | sed 's/million No_Number of //' \
    | sed 's/ (PPP dollar per person per day)//' \
    | sed 's/ (percent)//' \
-   | xargs -I {} echo "   \"{}\" DOUBLE PRECISION,"
+   | xargs -I {} echo "   \"{}\" DOUBLE PRECISION," \
+   | cpy
 
 # columns for the import.sql file
-cat columns.txt \
+cat shared/columns.txt \
    | sed 's/Percentage of total/%/' \
    | sed 's/_Percentage/%/' \
-   | sed 's/_Rate_Summary exposure value/ SEV/' \
+   | sed 's/_Summary exposure value/_SEV/' \
    | sed 's/colorectal cancer/CRC/' \
    | sed 's:dollar per person per day_Cost:\$/person/day:' \
    | sed 's/million No_Number of //' \
    | sed 's/ (PPP dollar per person per day)//' \
    | sed 's/ (percent)//' \
    | xargs -I {} echo "   \"{}\","
+   | cpy
 
 
 ```
