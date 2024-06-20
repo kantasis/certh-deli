@@ -19,6 +19,14 @@ const CountryFilter: React.FC<FilterProps> = ({selectedCountries_lst, set_select
       "Italy",
       "Spain"
    ];
+
+   useEffect(
+      () => {
+         set_selectedCountries([countries_strLst[0]]);
+      },
+      []
+   );
+
    
    const toggleCountry_cbk = (selection_str: string) => { 
       console.log("GK> -------");

@@ -3,12 +3,15 @@ import * as AuthService from "../services/auth.service.tsx";
 import { Button, Dropdown } from 'react-bootstrap'; 
 import CountryFilter from "./CountryFilter.tsx";
 import YearFilter from "./YearFilter.tsx";
+import FactorFilter from "./FactorFilter.tsx";
 // import Multiselect from 'react-bootstrap-multiselect';
 
 
 const grafana_host = import.meta.env.VITE_GRAFANA_HOST;
 const grafana_port = import.meta.env.VITE_GRAFANA_PORT;
-const grafana_path = import.meta.env.VITE_GRAFANA_PATH;
+// const grafana_path = import.meta.env.VITE_GRAFANA_PATH;
+const grafana_path = "d-solo/adpbvtgvi2k1sf";
+
 const dashboard_name = import.meta.env.VITE_GRAFANA_DASHBOARD;
 const panel_id = 3;
 const grafana_url = `http://${grafana_host}:${grafana_port}/${grafana_path}/${dashboard_name}?panelId=${panel_id}&orgId=1&theme=light`
@@ -17,17 +20,9 @@ const grafana_url = `http://${grafana_host}:${grafana_port}/${grafana_path}/${da
 
 const NewDash: React.FC = () => {
 
-   const countries_strLst = [
-      "Greece",
-      "Romania",
-      "Lithuania",
-      "Belgium",
-      "Italy",
-      "Spain"
-   ];
-
    const [isLoggedIn, setIsLoggedIn] = useState(false);
-   const [selectedCountries_lst, set_selectedCountries] = useState([countries_strLst[0]]);
+   const [selectedCountries_lst, set_selectedCountries] = useState([]);
+   const [selectedFactor_str, set_selectedFactor] = useState('');
    const [iFrameUrl_str, setIFrameUrl] = useState('');
    const [minYear_int, set_minYear] = useState(1990);
    const [maxYear_int, set_maxYear] = useState(2020);
@@ -35,7 +30,8 @@ const NewDash: React.FC = () => {
    const getUriParams = () => {
       let countryFilter_str = selectedCountries_lst.map( (country_str, index) => `var-country_filter=${country_str}`).join('&');
       let yearFilter_str = `var-minyear_filter=${minYear_int}&var-maxyear_filter=${maxYear_int}`;
-      return `${countryFilter_str}&${yearFilter_str}`;
+      let factorFilter_str = `var-factor_filter=${selectedFactor_str}`;
+      return `${countryFilter_str}&${yearFilter_str}&${factorFilter_str}`;
    };
 
    useEffect(
@@ -50,6 +46,8 @@ const NewDash: React.FC = () => {
       return <h2>Unauthorized</h2>;
 
    return (<>
+
+      {/* Filters */}
       <div className="row">
 
          <CountryFilter
@@ -62,6 +60,11 @@ const NewDash: React.FC = () => {
             set_minYear={set_minYear}
             maxYear_int={maxYear_int}
             set_maxYear={set_maxYear}
+         />
+
+         <FactorFilter
+            selectedFactor_str={selectedFactor_str}
+            set_selectedFactor={set_selectedFactor}
          />
 
       </div>
