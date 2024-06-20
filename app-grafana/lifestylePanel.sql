@@ -1,9 +1,9 @@
 SELECT
    "Country",
-   AVG("Alcohol use SEV_val") AS "Alcohol use SEV_val",
-   AVG("Smoking SEV_val") AS "Smoking SEV_val",
-   AVG("Low physical activity SEV_val") AS "Low physical activity SEV_val",
-   AVG("High body-mass index SEV_val") AS "High body-mass index SEV_val"
+   AVG("Alcohol use${factor_filter}") AS "Alcohol Use",
+   AVG("Smoking${factor_filter}") AS "Smoking",
+   AVG("Low physical activity${factor_filter}") AS "Low Physical Activity",
+   AVG("High body-mass index${factor_filter}") AS "High Body-Mass Index"
 FROM data_tbl
 WHERE true
    AND "Country" IN ('Greece', 'Romania', 'Lithuania', 'Belgium', 'Italy', 'Spain')
