@@ -81,8 +81,6 @@ const NewDash: React.FC = () => {
             height="600px"
          >
          </iframe>
-         <div>{iFrameUrl_str}</div>
-         <div>{selectedCountries_lst}</div>
       </div>
 
    </>);

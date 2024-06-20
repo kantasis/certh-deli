@@ -9,8 +9,7 @@ import FactorFilter from "./FactorFilter.tsx";
 
 const grafana_host = import.meta.env.VITE_GRAFANA_HOST;
 const grafana_port = import.meta.env.VITE_GRAFANA_PORT;
-// const grafana_path = import.meta.env.VITE_GRAFANA_PATH;
-const grafana_path = "d-solo/adpbvtgvi2k1sf";
+const grafana_path = import.meta.env.VITE_GRAFANA_PATH;
 
 const dashboard_name = import.meta.env.VITE_GRAFANA_DASHBOARD;
 const panel_id = 3;
@@ -84,8 +83,6 @@ const NewDash: React.FC = () => {
             height="600px"
          >
          </iframe>
-         <div>{iFrameUrl_str}</div>
-         <div>{selectedCountries_lst}</div>
       </div>
 
    </>);
