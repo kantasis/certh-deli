@@ -48,12 +48,19 @@ option = {
    },
    tooltip: {},
    xAxis: {
+      name: 'Year',
+      nameLocation: 'center',
+      nameGap:30,
       type: 'category',
       data: xaxis_ser
    },
    yAxis: {
+      name: 'CRC incidence %',
+      nameLocation: 'center',
+      nameGap: 60,
       type: 'value'
    },
+  
    series: seriesOptions_lst
 };
 
