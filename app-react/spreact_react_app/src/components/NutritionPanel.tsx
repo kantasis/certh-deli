@@ -3,7 +3,7 @@ import * as AuthService from "../services/auth.service.tsx";
 import { Button, Dropdown } from 'react-bootstrap'; 
 import CountryFilter from "./CountryFilter.tsx";
 import YearFilter from "./YearFilter.tsx";
-// import Multiselect from 'react-bootstrap-multiselect';
+import FactorFilter from "./FactorFilter.tsx";
 
 
 const grafana_host = import.meta.env.VITE_GRAFANA_HOST;
@@ -14,19 +14,19 @@ const dashboard_name = import.meta.env.VITE_GRAFANA_DASHBOARD;
 const panel_id = 2;
 const grafana_url = `http://${grafana_host}:${grafana_port}/${grafana_path}/${dashboard_name}?panelId=${panel_id}&orgId=1&theme=light`
 
-// var envs_json = JSON.stringify(import.meta.env, null, 2); // spacing level = 2
-
 const NewDash: React.FC = () => {
 
    const [isLoggedIn, setIsLoggedIn] = useState(false);
    const [selectedCountries_lst, set_selectedCountries] = useState([]);
+   const [selectedFactor_str, set_selectedFactor] = useState('');
    const [minYear_int, set_minYear] = useState(1990);
    const [maxYear_int, set_maxYear] = useState(2020);
 
    const getUriParams = () => {
       let countryFilter_str = selectedCountries_lst.map( (country_str, index) => `var-country_filter=${country_str}`).join('&');
       let yearFilter_str = `var-minyear_filter=${minYear_int}&var-maxyear_filter=${maxYear_int}`;
-      return `${countryFilter_str}&${yearFilter_str}`;
+      let factorFilter_str = `var-factor_filter=${selectedFactor_str}`;
+      return `${countryFilter_str}&${yearFilter_str}&${factorFilter_str}`;
    };
 
    const iFrame_url = `${grafana_url}&${getUriParams()}`;
@@ -54,6 +54,11 @@ const NewDash: React.FC = () => {
             set_minYear={set_minYear}
             maxYear_int={maxYear_int}
             set_maxYear={set_maxYear}
+         />
+
+         <FactorFilter
+            selectedFactor_str={selectedFactor_str}
+            set_selectedFactor={set_selectedFactor}
          />
 
       </div>

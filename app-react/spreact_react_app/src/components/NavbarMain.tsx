@@ -101,7 +101,7 @@ const NavbarMain: React.FC = () => {
                className="navbar-brand" 
                href="/"
             >
-               ONCO-DELI
+               Policy Analytics Dashboard
             </a>
             <button 
                className="navbar-toggler" 

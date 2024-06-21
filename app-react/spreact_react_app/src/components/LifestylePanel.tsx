@@ -4,7 +4,6 @@ import { Button, Dropdown } from 'react-bootstrap';
 import CountryFilter from "./CountryFilter.tsx";
 import YearFilter from "./YearFilter.tsx";
 import FactorFilter from "./FactorFilter.tsx";
-// import Multiselect from 'react-bootstrap-multiselect';
 
 
 const grafana_host = import.meta.env.VITE_GRAFANA_HOST;
@@ -14,8 +13,6 @@ const dashboard_name = import.meta.env.VITE_GRAFANA_DASHBOARD;
 
 const panel_id = 3;
 const grafana_url = `http://${grafana_host}:${grafana_port}/${grafana_path}/${dashboard_name}?panelId=${panel_id}&orgId=1&theme=light`
-
-// var envs_json = JSON.stringify(import.meta.env, null, 2); // spacing level = 2
 
 const NewDash: React.FC = () => {
 
