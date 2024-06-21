@@ -49,7 +49,7 @@ const FactorFilter: React.FC<FilterProps> = ({selectedFactor_str, set_selectedFa
             className="form-label"
             htmlFor="factorSelect_id" 
          >
-            Select Coutnries
+            Select Risk Factors
          </label>
          <Form id="factorSelect_id">
             <Form.Control 

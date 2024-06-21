@@ -126,8 +126,6 @@ maxyear_filter
 country_filter
 factor_filter
 
-
-
 # General
 
 
