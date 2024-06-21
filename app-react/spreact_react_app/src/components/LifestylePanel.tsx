@@ -10,8 +10,8 @@ import FactorFilter from "./FactorFilter.tsx";
 const grafana_host = import.meta.env.VITE_GRAFANA_HOST;
 const grafana_port = import.meta.env.VITE_GRAFANA_PORT;
 const grafana_path = import.meta.env.VITE_GRAFANA_PATH;
-
 const dashboard_name = import.meta.env.VITE_GRAFANA_DASHBOARD;
+
 const panel_id = 3;
 const grafana_url = `http://${grafana_host}:${grafana_port}/${grafana_path}/${dashboard_name}?panelId=${panel_id}&orgId=1&theme=light`
 
@@ -22,7 +22,6 @@ const NewDash: React.FC = () => {
    const [isLoggedIn, setIsLoggedIn] = useState(false);
    const [selectedCountries_lst, set_selectedCountries] = useState([]);
    const [selectedFactor_str, set_selectedFactor] = useState('');
-   const [iFrameUrl_str, setIFrameUrl] = useState('');
    const [minYear_int, set_minYear] = useState(1990);
    const [maxYear_int, set_maxYear] = useState(2020);
 
@@ -33,10 +32,11 @@ const NewDash: React.FC = () => {
       return `${countryFilter_str}&${yearFilter_str}&${factorFilter_str}`;
    };
 
+   const iFrame_url = `${grafana_url}&${getUriParams()}`;
+
    useEffect(
       () => {
          setIsLoggedIn(AuthService.isLoggedIn());
-         setIFrameUrl(`${grafana_url}&${getUriParams()}`);
       },
       []
    );
@@ -67,22 +67,22 @@ const NewDash: React.FC = () => {
          />
 
       </div>
-      
-      <Button
-         onClick={ () => setIFrameUrl(`${grafana_url}&${getUriParams()}`) }
-      >
-         Update Panel
-      </Button>
 
       <div className="embed-responsive embed-responsive-16by9">
          <iframe 
             id="embeddedPanel_id"
             className="embed-responsive-item"
-            src={iFrameUrl_str}
+            src={iFrame_url}
             width="100%"
             height="600px"
          >
          </iframe>
+         {/* <div>
+            {iFrameUrl_str}
+         </div>
+         <div>
+            {iFrame_url}
+         </div> */}
       </div>
 
    </>);

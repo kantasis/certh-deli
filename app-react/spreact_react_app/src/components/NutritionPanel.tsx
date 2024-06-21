@@ -17,18 +17,8 @@ const grafana_url = `http://${grafana_host}:${grafana_port}/${grafana_path}/${da
 
 const NewDash: React.FC = () => {
 
-   const countries_strLst = [
-      "Greece",
-      "Romania",
-      "Lithuania",
-      "Belgium",
-      "Italy",
-      "Spain"
-   ];
-
    const [isLoggedIn, setIsLoggedIn] = useState(false);
-   const [selectedCountries_lst, set_selectedCountries] = useState([countries_strLst[0]]);
-   const [iFrameUrl_str, setIFrameUrl] = useState('');
+   const [selectedCountries_lst, set_selectedCountries] = useState([]);
    const [minYear_int, set_minYear] = useState(1990);
    const [maxYear_int, set_maxYear] = useState(2020);
 
@@ -38,10 +28,11 @@ const NewDash: React.FC = () => {
       return `${countryFilter_str}&${yearFilter_str}`;
    };
 
+   const iFrame_url = `${grafana_url}&${getUriParams()}`;
+
    useEffect(
       () => {
          setIsLoggedIn(AuthService.isLoggedIn());
-         setIFrameUrl(`${grafana_url}&${getUriParams()}`);
       },
       []
    );
@@ -66,17 +57,11 @@ const NewDash: React.FC = () => {
 
       </div>
       
-      <Button
-         onClick={ () => setIFrameUrl(`${grafana_url}&${getUriParams()}`) }
-      >
-         Update Panel
-      </Button>
-
       <div className="embed-responsive embed-responsive-16by9">
          <iframe 
             id="embeddedPanel_id"
             className="embed-responsive-item"
-            src={iFrameUrl_str}
+            src={iFrame_url}
             width="100%"
             height="600px"
          >
