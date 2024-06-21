@@ -65,7 +65,7 @@ console.log(dataFrame);
 
 option = {
    title: {
-      text: 'Nutritional Data'
+      text: 'Lifestyle Data'
    },
    legend: {
       type: 'plain',

@@ -32,12 +32,12 @@ const NavbarMain: React.FC = () => {
       // },
       {
          href: "epidimiologicalPanel",
-         label: "Epidimiological Data",
+         label: "CRC Incidence over the years",
          condition: isLoggedIn
       },
       {
          href: "nutritionPanel",
-         label: "Nutritional Data",
+         label: "Nutrition Data",
          condition: isLoggedIn
       },
       {
