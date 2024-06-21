@@ -63,11 +63,12 @@ const NewDash: React.FC = () => {
             id="embeddedPanel_id"
             className="embed-responsive-item"
             src={iFrame_url}
-            width="1200"
-            height="600"
+            width="100%"
+            height="600px"
          >
          </iframe>
       </div>
+      {/* <div>{iFrame_url}</div> */}
 
    </>);
 };
