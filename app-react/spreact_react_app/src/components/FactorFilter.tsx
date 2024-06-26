@@ -13,7 +13,7 @@ const FactorFilter: React.FC<FilterProps> = ({selectedFactor_str, set_selectedFa
 
    const factors_dictLst = [
       {
-         label: "SEV",
+         label: "Summary Exposure Value",
          value: "_Rate_SEV_val"
       },
       {
@@ -49,7 +49,7 @@ const FactorFilter: React.FC<FilterProps> = ({selectedFactor_str, set_selectedFa
             className="form-label"
             htmlFor="factorSelect_id" 
          >
-            Select Risk Factors
+            Select Aggregation
          </label>
          <Form id="factorSelect_id">
             <Form.Control 
@@ -64,7 +64,7 @@ const FactorFilter: React.FC<FilterProps> = ({selectedFactor_str, set_selectedFa
                ))}
             </Form.Control>
       </Form>
-      {selectedFactor_str}
+      {/* {selectedFactor_str} */}
       </div>
    </>);
 };

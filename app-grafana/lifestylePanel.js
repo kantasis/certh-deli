@@ -54,8 +54,8 @@ console.log("dataFrame:   ");
 console.log(dataFrame);
 
 const data_opt = [
-   ['Risk Factor', ...dataFrame['columns']],
- 
+   [ 'Risk Factor', ...dataFrame['columns'] ],
+
    ...dataFrame['index']
       .map((index_str, index_int) => {
          let temp=[];
@@ -70,8 +70,8 @@ const data_opt = [
          ]
       })
    ,
-] 
-  
+];
+
 console.log("data_opt:     ");
 console.log(data_opt);
 
@@ -88,14 +88,16 @@ option = {
    xAxis: { type: 'category' },
    yAxis: {},
 
-
-  // Declare several bar series, each will be mapped
-  // to a column of dataset.source by default.
-  series: [{ type: 'bar' }, { type: 'bar' }, { type: 'bar' }],
-
-  dataset: {
-    source: data_opt
-  }
+   // Declare several bar series, each will be mapped
+   // to a column of dataset.source by default.
+   series: dataFrame['columns']
+      .map((column_name) => {
+         return { type: 'bar' };
+      }),
+   
+   dataset: {
+      source: data_opt
+   }
 };
 return option;
 

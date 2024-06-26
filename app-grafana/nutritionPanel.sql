@@ -13,7 +13,6 @@ WHERE true
    AND "Country" IN ('Greece', 'Romania', 'Lithuania', 'Belgium', 'Italy', 'Spain')
    AND "Year" BETWEEN ${minyear_filter} AND ${maxyear_filter}
    AND "age" = 'Age-standardized'
-
 GROUP BY "Country"
 ORDER BY 1
 ;
