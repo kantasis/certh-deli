@@ -22,21 +22,12 @@ const countries_strLst = getSelections("country_filter")
 
 const queryResult = getQueryResult('deli_lifestyle_query');
 
-const indicators_arr = queryResult['fields']
-   .filter((column_dict) => column_dict['name'] !== 'Country')
-   .map((column_dict) => {
-      return {
-         name: column_dict['name'],
-         max: Math.max(...column_dict['values']),
-         color: "#000"
-      }
-   }
-);
-
-console.log("indicators_arr:   ");
-console.log(indicators_arr);
+console.log("queryResult:   ");
+console.log(queryResult);
 
 let dataFrame = {};
+dataFrame['data']={};
+
 countries_strLst
    .forEach((country_name, index) => {
       const temp = queryResult['fields']
@@ -45,23 +36,44 @@ countries_strLst
             return column_dict['values'][index]
          })
       ;
-      dataFrame[country_name] = temp;
+      dataFrame['data'][country_name] = temp;
    })
 ;
 
-const columns_strLst = Object.keys(dataFrame);
-
-const data_opt = columns_strLst
-   .map((column_name) => {
-      return {
-         value: dataFrame[column_name],
-         name: column_name
-      };
+dataFrame['index']=[];
+queryResult['fields']
+   .filter((column_dict) => column_dict['name'] !== 'Country')
+   .forEach((column_dict, index) => {
+      dataFrame['index'][index] = column_dict['name'];
    })
 ;
 
-console.log("dataFrame: ");
+dataFrame['columns'] = Object.keys(dataFrame['data']);
+
+console.log("dataFrame:   ");
 console.log(dataFrame);
+
+const data_opt = [
+   ['Risk Factor', ...dataFrame['columns']],
+ 
+   ...dataFrame['index']
+      .map((index_str, index_int) => {
+         let temp=[];
+         dataFrame['columns']
+            .forEach((column_name, index_int) => {
+               temp[index_int] = dataFrame.data[column_name][index_int]
+            })
+         ;
+         return [
+            index_str,
+            ...temp
+         ]
+      })
+   ,
+] 
+  
+console.log("data_opt:     ");
+console.log(data_opt);
 
 option = {
    title: {
@@ -73,14 +85,17 @@ option = {
       left: 'right'
    },
    tooltip: {},
-   radar: {
-      indicator: indicators_arr
-   },
-   series: [{
-      // name: "",
-      type: 'radar',
-      data: data_opt
-   }]
+   xAxis: { type: 'category' },
+   yAxis: {},
+
+
+  // Declare several bar series, each will be mapped
+  // to a column of dataset.source by default.
+  series: [{ type: 'bar' }, { type: 'bar' }, { type: 'bar' }],
+
+  dataset: {
+    source: data_opt
+  }
 };
 return option;
 
