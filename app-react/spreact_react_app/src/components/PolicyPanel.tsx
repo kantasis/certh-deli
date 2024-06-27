@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import * as AuthService from "../services/auth.service.tsx";
 import { Button, Dropdown } from 'react-bootstrap'; 
 import PolicyFilter from "./PolicyFilter.tsx";
+import Glossary from "./Glossary.tsx";
 
 
 const grafana_host = import.meta.env.VITE_GRAFANA_HOST;
@@ -61,6 +62,8 @@ const PolicyPanel: React.FC = () => {
             {/* {iFrame_url} */}
          </div>
       </div>
+      
+      <Glossary/>
 
    </>);
 };

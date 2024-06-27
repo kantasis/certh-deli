@@ -4,6 +4,7 @@ import { Button, Dropdown } from 'react-bootstrap';
 import CountryFilter from "./CountryFilter.tsx";
 import YearFilter from "./YearFilter.tsx";
 import FactorFilter from "./FactorFilter.tsx";
+import Glossary from "./Glossary.tsx";
 
 
 const grafana_host = import.meta.env.VITE_GRAFANA_HOST;
@@ -82,6 +83,8 @@ const LifestylePanel: React.FC = () => {
             {/* {iFrame_url} */}
          </div>
       </div>
+
+      <Glossary/>
 
    </>);
 };

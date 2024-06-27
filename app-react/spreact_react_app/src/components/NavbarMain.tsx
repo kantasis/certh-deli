@@ -97,8 +97,6 @@ const NavbarMain: React.FC = () => {
       </li>
    ));
 
-
-
    return (
       <nav className="navbar navbar-expand-lg bg-body-tertiary">
          <div className="container-fluid">

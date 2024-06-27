@@ -77,7 +77,6 @@ dataset_dict = {
    }
 };
 
-
 const policyFilter_str = getVariable('policy_filter');
 const slice_dict = dataset_dict[policyFilter_str]
 const countries_strLst = Object.keys(slice_dict);
@@ -92,7 +91,7 @@ countries_strLst
 
 option = {
    title: {
-      text: 'Alcohol Consumption by Country',
+      text: 'Number of CRC Prevention Policies per Country',
       left: 'center'
    },
    tooltip: {
