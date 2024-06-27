@@ -22,7 +22,8 @@ const CountryFilter: React.FC<FilterProps> = ({selectedCountries_lst, set_select
 
    useEffect(
       () => {
-         set_selectedCountries([countries_strLst[0]]);
+         if (selectedCountries_lst.length == 0)
+            set_selectedCountries([countries_strLst[0]]);
       },
       []
    );

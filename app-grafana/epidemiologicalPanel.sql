@@ -1,4 +1,3 @@
-CREATE EXTENSION IF NOT EXISTS tablefunc;
 
 SELECT 
    *
@@ -11,12 +10,20 @@ FROM crosstab('
    WHERE true
       AND "Year" BETWEEN ${minyear_filter} AND ${maxyear_filter}
       AND "age" = ''Age-standardized''
-      AND "Country" IN (''Greece'', ''Romania'', ''Lithuania'', ''Belgium'', ''Italy'', ''Spain'')
+      AND "Country" IN (''Belgium'', ''Greece'', ''Italy'', ''Lithuania'', ''Romania'', ''Spain'')
    GROUP BY
       "Country",
       "Year"
    ORDER BY 1, 2
-') AS ct (
+',
+'
+SELECT 
+   *
+FROM ( VALUES 
+   (''Belgium''), (''Greece''), (''Italy''), (''Lithuania''), (''Romania''), (''Spain'')
+)
+'
+) AS ct (
    "Year" INT,
    "Belgium" DOUBLE PRECISION,
    "Greece" DOUBLE PRECISION,

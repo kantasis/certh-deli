@@ -61,9 +61,24 @@ option = {
       name: 'CRC incidence per 100000',
       nameLocation: 'center',
       nameGap: 60,
-      type: 'value'
+      type: 'value',
+      min: 'dataMin'
    },
-
+   dataZoom: [
+      {
+         type: 'slider',
+         show: true,
+         xAxisIndex: [0],
+         start: 0,
+         end: 100
+      },
+      {
+         type: 'inside',
+         xAxisIndex: [0],
+         start: 0,
+         end: 100
+      }
+   ],
    series: seriesOptions_lst
 };
 

@@ -2,6 +2,8 @@ DROP DATABASE IF EXISTS deli_db WITH (FORCE);
 CREATE DATABASE deli_db;
 \c deli_db;
 
+CREATE EXTENSION IF NOT EXISTS tablefunc;
+
 -- DROP TABLE IF EXISTS data_tbl;
 CREATE TABLE data_tbl (
    id SERIAL PRIMARY KEY,

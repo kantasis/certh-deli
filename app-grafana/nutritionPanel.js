@@ -59,7 +59,7 @@ const data_opt = columns_strLst
 
 option = {
    title: {
-      text: 'Nutritional Data'
+      text: 'Nutrition Data'
    },
    legend: {
       type: 'plain',

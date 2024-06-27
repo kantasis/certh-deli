@@ -17,7 +17,11 @@ const grafana_url = `http://${grafana_host}:${grafana_port}/${grafana_path}/${da
 const LifestylePanel: React.FC = () => {
 
    const [isLoggedIn, setIsLoggedIn] = useState(false);
-   const [selectedCountries_lst, set_selectedCountries] = useState([]);
+   const [selectedCountries_lst, set_selectedCountries] = useState([
+      "Greece",
+      "Romania",
+      "Lithuania"
+   ]);
    const [selectedFactor_str, set_selectedFactor] = useState('');
    const [minYear_int, set_minYear] = useState(1990);
    const [maxYear_int, set_maxYear] = useState(2020);
