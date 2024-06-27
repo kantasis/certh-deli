@@ -14,7 +14,7 @@ const dashboard_name = import.meta.env.VITE_GRAFANA_DASHBOARD;
 const panel_id = 3;
 const grafana_url = `http://${grafana_host}:${grafana_port}/${grafana_path}/${dashboard_name}?panelId=${panel_id}&orgId=1&theme=light`
 
-const NewDash: React.FC = () => {
+const LifestylePanel: React.FC = () => {
 
    const [isLoggedIn, setIsLoggedIn] = useState(false);
    const [selectedCountries_lst, set_selectedCountries] = useState([]);
@@ -75,11 +75,11 @@ const NewDash: React.FC = () => {
          >
          </iframe>
          <div>
-            {iFrame_url}
+            {/* {iFrame_url} */}
          </div>
       </div>
 
    </>);
 };
 
-export default NewDash;
+export default LifestylePanel;

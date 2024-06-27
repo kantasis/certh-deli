@@ -12,6 +12,7 @@ import Dashboard from "./components/Dashboard.jsx";
 import EpidimiologicalPanel from "./components/EpidimiologicalPanel.tsx";
 import NutritionPanel from "./components/NutritionPanel.tsx";
 import LifestylePanel from "./components/LifestylePanel.tsx";
+import PolicyPanel from "./components/PolicyPanel.tsx";
 
 // import * as AuthService from "./services/auth.service";
 // import AuthVerify from "./common/AuthVerify";
@@ -21,14 +22,15 @@ const App: React.FC = () => {
       <div className="container mt-3">
          <NavbarMain/>
          <Routes>
-            <Route   path="/"        element={<Home />}            />
-            <Route   path="/home"    element={<Home />}            />
-            <Route   path="/login"     element={<Login />}           />
+            <Route   path="/"                      element={<Home />}                  />
+            <Route   path="/home"                  element={<Home />}                  />
+            <Route   path="/login"                 element={<Login />}                 />
             {/* <Route   path="/register"  element={<Register />}        /> */}
-            <Route   path="/profile"   element={<Profile />}         />
-            <Route   path="/epidimiologicalPanel"      element={<EpidimiologicalPanel />}       />
-            <Route   path="/nutritionPanel"      element={<NutritionPanel />}       />
-            <Route   path="/lifestylePanel"      element={<LifestylePanel />}       />
+            <Route   path="/profile"               element={<Profile />}               />
+            <Route   path="/epidimiologicalPanel"  element={<EpidimiologicalPanel />}  />
+            <Route   path="/nutritionPanel"        element={<NutritionPanel />}        />
+            <Route   path="/lifestylePanel"        element={<LifestylePanel />}        />
+            <Route   path="/policyPanel"           element={<PolicyPanel />}           />
          </Routes>
       </div>
    </>);

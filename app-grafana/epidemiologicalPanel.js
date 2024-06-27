@@ -40,9 +40,6 @@ const seriesOptions_lst = series_lst.map((data_series, index) => {
    }
 });
 
-console.log("asdf ");
-console.log(countries_strLst);
-
 option = {
    title: {
       text: "Age-Standardised CRC Incidence",

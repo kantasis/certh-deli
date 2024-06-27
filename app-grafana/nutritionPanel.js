@@ -33,9 +33,6 @@ const indicators_arr = queryResult['fields']
    }
 );
 
-console.log("indicators_arr:   ");
-console.log(indicators_arr);
-
 let dataFrame = {};
 countries_strLst
    .forEach((country_name, index) => {
@@ -59,9 +56,6 @@ const data_opt = columns_strLst
       };
    })
 ;
-
-console.log("dataFrame: ");
-console.log(dataFrame);
 
 option = {
    title: {

@@ -45,6 +45,11 @@ const NavbarMain: React.FC = () => {
          label: "Lifestyle Data",
          condition: isLoggedIn
       },
+      {
+         href: "policyPanel",
+         label: "Policy Data",
+         condition: isLoggedIn
+      },
 
    ].map( (item_dict, index) => item_dict.condition && (
       <li className="nav-item" key={index}>

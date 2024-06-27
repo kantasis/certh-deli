@@ -22,9 +22,6 @@ const countries_strLst = getSelections("country_filter")
 
 const queryResult = getQueryResult('deli_lifestyle_query');
 
-console.log("queryResult:   ");
-console.log(queryResult);
-
 let dataFrame = {};
 dataFrame['data']={};
 
@@ -50,9 +47,6 @@ queryResult['fields']
 
 dataFrame['columns'] = Object.keys(dataFrame['data']);
 
-console.log("dataFrame:   ");
-console.log(dataFrame);
-
 const data_opt = [
    [ 'Risk Factor', ...dataFrame['columns'] ],
 
@@ -71,9 +65,6 @@ const data_opt = [
       })
    ,
 ];
-
-console.log("data_opt:     ");
-console.log(data_opt);
 
 option = {
    title: {
