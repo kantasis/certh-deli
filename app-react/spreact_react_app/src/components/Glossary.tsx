@@ -33,7 +33,7 @@ const Glossary: React.FC = () => {
                <tr>
                   <th scope="col">Measure</th>
                   <th scope="col">Definition</th>
-                  <th scope="col">Percent</th>
+                  {/* <th scope="col">Percent</th> */}
                   <th scope="col">Rate</th>
                   {/* <th scope="col">Years</th>
                   <th scope="col">Probability of death</th> */}
@@ -43,7 +43,7 @@ const Glossary: React.FC = () => {
             <tr>
                   <th scope="row">Summary Exposure Value (SEV)</th>
                   <td>The prevalence of cases weighted by the risk</td>
-                  <td>n/a</td>
+                  {/* <td>n/a</td> */}
                   <td>Cases per 100,000 population</td>
                   {/* <td>n/a</td>
                   <td>n/a</td> */}
@@ -51,7 +51,7 @@ const Glossary: React.FC = () => {
                <tr>
                   <th scope="row">Deaths</th>
                   <td>Number of deaths in the population</td>
-                  <td>Proportion of deaths for a particular cause relative to deaths from all causes</td>
+                  {/* <td>Proportion of deaths for a particular cause relative to deaths from all causes</td> */}
                   <td>Deaths per 100,000 population</td>
                   {/* <td>n/a</td>
                   <td>n/a</td> */}
@@ -59,7 +59,7 @@ const Glossary: React.FC = () => {
                <tr>
                   <th scope="row">Disability adjusted life years (DALYs)</th>
                   <td>Number of DALYs in the population</td>
-                  <td>Proportion of DALYs for a particular cause relative to DALYs for all causes</td>
+                  {/* <td>Proportion of DALYs for a particular cause relative to DALYs for all causes</td> */}
                   <td>DALYs per 100,000 population</td>
                   {/* <td>n/a</td>
                   <td>n/a</td> */}
@@ -67,7 +67,7 @@ const Glossary: React.FC = () => {
                <tr>
                   <th scope="row">Years of life lost (YLLs)</th>
                   <td>Number of YLLs in the population</td>
-                  <td>Proportion of YLLs for a particular cause relative to YLDs for all causes</td>
+                  {/* <td>Proportion of YLLs for a particular cause relative to YLDs for all causes</td> */}
                   <td>YLLs per 100,000 population</td>
                   {/* <td>n/a</td>
                   <td>n/a</td> */}
@@ -75,7 +75,7 @@ const Glossary: React.FC = () => {
                <tr>
                   <th scope="row">Years lived with disability (YLDs)</th>
                   <td>Number of YLDs in the population</td>
-                  <td>Proportion of YLDs for a particular cause relative to YLDs for all causes</td>
+                  {/* <td>Proportion of YLDs for a particular cause relative to YLDs for all causes</td> */}
                   <td>YLDs per 100,000 population</td>
                   {/* <td>n/a</td>
                   <td>n/a</td> */}
