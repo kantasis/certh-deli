@@ -42,7 +42,7 @@ option = {
    },
    visualMap: {
       min: 0,
-      max: 10,
+      max: Math.max(...values_intLst),
       left: 'left',
       top: 'bottom',
       text: ['High', 'Low'],

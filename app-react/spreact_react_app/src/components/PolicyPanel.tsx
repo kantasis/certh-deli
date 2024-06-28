@@ -63,8 +63,6 @@ const PolicyPanel: React.FC = () => {
          </div>
       </div>
       
-      <Glossary/>
-
    </>);
 };
 
