@@ -1,92 +1,35 @@
-function getVariable(variable_name) {
-   return context.grafana.replaceVariables("${" + variable_name + "}");
+function getQueryResult(query_name) {
+   const result = context
+      .panel
+      .data
+      .series
+      .find((series_dict) =>
+         series_dict['refId'] === query_name
+      )
+   ;
+   if (!result)
+    console.log(`Error: Query with name ${query_name} not found`)
+   return result['fields'];
 }
 
-dataset_dict = {
-   "Physical Activity": {
-      "Belgium": 4,
-      "Greece": 3,
-      "Italy": 5,
-      "Lithuania": 2,
-      "Romania": 0,
-      "Spain": 4,
-      "Grand Total": 18
-   },
-   "Smoking": {
-      "Belgium": 3,
-      "Greece": 7,
-      "Italy": 8,
-      "Lithuania": 4,
-      "Romania": 5,
-      "Spain": 11,
-      "Grand Total": 38
-   },
-   "Environment": {
-      "Belgium": 9,
-      "Greece": 0,
-      "Italy": 19,
-      "Lithuania": 13,
-      "Romania": 4,
-      "Spain": 12,
-      "Grand Total": 57
-   },
-   "Alcohol": {
-      "Belgium": 4,
-      "Greece": 6,
-      "Italy": 5,
-      "Lithuania": 5,
-      "Romania": 3,
-      "Spain": 7,
-      "Grand Total": 30
-   },
-   "Nutrition": {
-      "Belgium": 6,
-      "Greece": 5,
-      "Italy": 6,
-      "Lithuania": 4,
-      "Romania": 0,
-      "Spain": 2,
-      "Grand Total": 23
-   },
-   "Health Literacy": {
-      "Belgium": 0,
-      "Greece": 0,
-      "Italy": 3,
-      "Lithuania": 0,
-      "Romania": 3,
-      "Spain": 4,
-      "Grand Total": 10
-   },
-   "Health Promotion": {
-      "Belgium": 1,
-      "Greece": 0,
-      "Italy": 6,
-      "Lithuania": 2,
-      "Romania": 2,
-      "Spain": 4,
-      "Grand Total": 15
-   },
-   "Health Education": {
-      "Belgium": 0,
-      "Greece": 0,
-      "Italy": 3,
-      "Lithuania": 1,
-      "Romania": 2,
-      "Spain": 1,
-      "Grand Total": 7
-   }
-};
+const queryResult = getQueryResult('deli_policy_query')
+console.log(queryResult);
 
-const policyFilter_str = getVariable('policy_filter');
-const slice_dict = dataset_dict[policyFilter_str]
-const countries_strLst = Object.keys(slice_dict);
-const data_opt = [];
+const countries_strLst = queryResult
+  .find( (column_dict) => column_dict['name'] == 'Country')
+  ['values']
+
+const values_intLst = queryResult
+  .find( (column_dict) => column_dict['name'] == 'Value')
+  ['values']
+
+
+let data_opt = []
 
 countries_strLst
-   .forEach((country_name, index_int) => {
-      const result = { name: country_name, value: slice_dict[country_name] };
-      data_opt[index_int] = result;
-   })
+  .forEach((country_name, index_int) => {
+    data_opt[index_int] = { name: country_name, value: values_intLst[index_int] };
+  })
 ;
 
 option = {

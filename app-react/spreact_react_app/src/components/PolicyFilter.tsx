@@ -11,44 +11,28 @@ interface FilterProps {
  
 const PolicyFilter: React.FC<FilterProps> = ({selectedPolicy_str, set_selectedPolicy}) => {
 
-   const policies_dictLst = [
-      {
-         label: "Physical Activity",
-         value: "Physical Activity"
-      },
-      {
-         label: "Smoking",
-         value: "Smoking"
-      },
-      {
-         label: "Environment",
-         value: "Environment"
-      },
-      {
-         label: "Alcohol Usage",
-         value: "Alcohol"
-      },
-      {
-         label: "Nutrition",
-         value: "Nutrition"
-      },
-      {
-         label: "Health Literacy",
-         value: "Health Literacy"
-      },
-      {
-         label: "Health Promotion",
-         value: "Health Promotion"
-      },
-      {
-         label: "Health Education",
-         value: "Health Education"
-      },
+   const policies_strLst = [
+      "Alcohol Consumption",
+      "Diabetes",
+      "Environmental Factors" ,
+      "Governance",
+      "Health Education",
+      "Health Literacy",
+      "Health Promotion",
+      "Mental Health",
+      "Nutrition",
+      "Occupational Risk Factors" ,
+      "Personalized Medicine",
+      "Physical Activity",
+      "Psychotropic Substances",
+      "R&D",
+      "Smoking",
+      "Vaccinations & Communicable Di",
    ];
 
    useEffect(
       () => {
-         let temp = policies_dictLst[0]['value'];
+         let temp = policies_strLst[0];
          console.log(`Setting: ${temp}`);
          set_selectedPolicy(temp);
       },
@@ -69,9 +53,9 @@ const PolicyFilter: React.FC<FilterProps> = ({selectedPolicy_str, set_selectedPo
                value={selectedPolicy_str} 
                onChange={(e) => set_selectedPolicy(e.target.value)}
             >
-               {policies_dictLst.map((policy_dict, index) => (
-                  <option key={index} value={policy_dict['value']}>
-                     {policy_dict['label']}
+               {policies_strLst.map((policy_str, index) => (
+                  <option key={index} value={policy_str}>
+                     {policy_str}
                   </option>
                ))}
             </Form.Control>
