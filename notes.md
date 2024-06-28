@@ -97,7 +97,9 @@ docker cp services/postgres/init.sql deli_db_container:/
 # Copy the data
 docker cp shared/Fused_european_only_new.csv deli_db_container:/tmp/dataset.csv
 # Copy the loading script
-docker cp services/postgres/import.sql deli_db_container:/
+docker cp services/postgres/import_data.sql deli_db_container:/
+# Copy the policy import script
+docker cp services/postgres/import_policies.sql deli_db_container:/
 
 # Run the init script
 docker exec -it \

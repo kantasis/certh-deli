@@ -66,6 +66,7 @@ services:
       # restart: always
       volumes:
          - deli_db_volume:/data
+         - ./shared:/shared
       networks:
          - deli_main_network
 

@@ -1,5 +1,5 @@
-DROP DATABASE IF EXISTS deli_db WITH (FORCE);
-CREATE DATABASE deli_db;
+-- DROP DATABASE IF EXISTS deli_db WITH (FORCE);
+-- CREATE DATABASE deli_db;
 \c deli_db;
 
 CREATE EXTENSION IF NOT EXISTS tablefunc;
@@ -498,4 +498,11 @@ CREATE TABLE data_tbl (
    "Air Pollution Population Weighted Average [ug/m3]_PM10" DOUBLE PRECISION,
    "Air Pollution Average [ug/m3]_PM2.5" DOUBLE PRECISION,
    "Air Pollution Population Weighted Average [ug/m3]_PM2.5" DOUBLE PRECISION
+);
+
+CREATE TABLE policies_tbl (
+   id SERIAL PRIMARY KEY,
+   "Country" VARCHAR(250),
+   "Value" INT,
+   "Policy" VARCHAR(250)
 );
