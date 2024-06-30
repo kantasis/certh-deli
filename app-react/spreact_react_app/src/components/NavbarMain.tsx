@@ -104,8 +104,16 @@ const NavbarMain: React.FC = () => {
                className="navbar-brand" 
                href="/"
             >
-               Policy Analytics Dashboard
+               {/* Policy Analytics Dashboard */}
+               <img 
+                  width="158" 
+                  height="25" 
+                  src="https://www.oncodir.eu/wp-content/uploads/2023/07/ONCODIR-LOGO.svg" 
+                  // className="qodef-header-logo-image qodef--main" 
+                  // alt="logo main"
+               />
             </a>
+
             <button 
                className="navbar-toggler" 
                type="button" 
