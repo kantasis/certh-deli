@@ -49,7 +49,9 @@ option = {
       orient: 'vertical',
       left: 'right'
    },
-   tooltip: {},
+   tooltip: {
+      valueFormatter: (value) => parseFloat(value).toFixed(2)
+   },
    xAxis: {
       name: 'Year',
       nameLocation: 'center',
