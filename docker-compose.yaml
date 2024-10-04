@@ -1,18 +1,12 @@
-volumes:
-   deli_grafana_volume:
-      name: deli_grafana_volume
-   deli_db_volume:
-      name: deli_db_volume
-
 networks:
-   deli_main_network:
-      name: deli_main_network
+   main_network:
+      name: ${PROJECT_NAME}_main_network
 
 services:
 
-   # deli_ubuntu_label:
-   #    image: deli_ubuntu_image
-   #    container_name: deli_ubuntu_container
+   # ubuntu_label:
+   #    image: ${PROJECT_NAME}_ubuntu_image
+   #    container_name: ${PROJECT_NAME}_ubuntu_container
    #    build: ./services/ubuntu
    #    env_file:
    #       - .private/ubuntu.env
@@ -22,25 +16,25 @@ services:
    #    volumes:
    #       - ./app-react:/app-react
    #    networks:
-   #       - deli_main_network
+   #       - main_network
    #    # environment:
    #    #    - GK_PWD=${PWD}
    #    #    - NODE_PORT=${NODE_PORT}
 
-   # deli_python_label:
-   #    image: deli_python_image
-   #    container_name: deli_python_container
+   # python_label:
+   #    image: ${PROJECT_NAME}_python_image
+   #    container_name: ${PROJECT_NAME}_python_container
    #    build: ./services/python
    #    env_file:
    #       - ./services/python/.env
    #    volumes:
    #       - ./shared:/shared
    #    networks:
-   #       - deli_main_network
+   #       - main_network
 
-   deli_grafana_label:
-      image: deli_grafana_container
-      container_name: deli_grafana_container
+   grafana_label:
+      image: ${PROJECT_NAME}_grafana_container
+      container_name: ${PROJECT_NAME}_grafana_container
       env_file:
          - ./services/grafana/.env
       build:
@@ -49,14 +43,14 @@ services:
       ports:
          - ${HOST_GRAFANA_PORT}:3000
       volumes:
-         - deli_grafana_volume:/var/lib/grafana
-         - ./shared/grafana/:/usr/share/grafana/conf/provisioning/
+         - ./shared/grafana/provisoining:/var/lib/grafana
+         - ./shared/grafana/provisoining:/usr/share/grafana/conf/provisioning/
       networks:
-         - deli_main_network
+         - main_network
 
-   deli_db_label:
-      image: deli_db_image
-      container_name: deli_db_container
+   db_label:
+      image: ${PROJECT_NAME}_db_image
+      container_name: ${PROJECT_NAME}_db_container
       build:
          context: ./services/postgres
       env_file:
@@ -65,14 +59,13 @@ services:
       #    - 5432:5432
       # restart: always
       volumes:
-         - deli_db_volume:/data
-         - ./shared:/shared
+         - ./shared/data:/data
       networks:
-         - deli_main_network
+         - main_network
 
-   deli_node_label:
-      image: deli_node_image
-      container_name: deli_node_container
+   node_label:
+      image: ${PROJECT_NAME}_node_image
+      container_name: ${PROJECT_NAME}_node_container
       build:
          context: ./services/node
       env_file:
@@ -82,11 +75,11 @@ services:
       volumes: 
          - ./app-react:/app-react
       networks:
-         - deli_main_network
+         - main_network
 
-   deli_spring_label:
-      image: deli_spring_image
-      container_name: deli_spring_container
+   spring_label:
+      image: ${PROJECT_NAME}_spring_image
+      container_name: ${PROJECT_NAME}_spring_container
       build:
          context: ./services/spring
       env_file:
@@ -94,13 +87,10 @@ services:
       ports:
          - ${HOST_SPRING_PORT}:${SPRING_PORT}
       volumes: 
-         - ./shared/tomcat-logs:/spring_application/tomcat/logs
+         - ./shared/tomcat-logs:/tomcat/logs
          - ./shared/spring-logs:/spring/logs
-         # - ./shared/application-logs:/spring_application
-         # - deli_h2_volume:/data
-         - ./app-spring:/app-spring
       networks:
-         - deli_main_network
+         - main_network
       depends_on:
-         - deli_db_label
+         - db_label
 
