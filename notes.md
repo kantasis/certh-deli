@@ -1,21 +1,5 @@
 https://www.chartjs.org/docs/latest/charts/radar.html
 # TODO:
-   put the initialization/deployment snippets in dockerfiles
-   puc `grafana cli plugins install volkovlabs-echarts-panel` in the dockerfile
-
-# Columns:
-High body-mass index_Percent_DALYs_val
-Low physical activity_Percent_DALYs_val
-Alcohol use_Percent_DALYs_val
-Diet high in processed meat_Percent_DALYs_val
-Diet high in red meat_Percent_DALYs_val
-Diet low in calcium_Percent_DALYs_val
-Diet low in fiber_Percent_DALYs_val
-Diet low in milk_Percent_DALYs_val
-Diet low in whole grains_Percent_DALYs_val
-Smoking_Percent_DALYs_val
-
-## All
 
 # URLs
 160.40.53.35
@@ -27,6 +11,38 @@ Smoking_Percent_DALYs_val
 
 http://160.40.53.35:3000/d-solo/edn5ahxrzaw3kc/deli-main-dashboard?orgId=1&from=1716944950967&to=1716966550967&panelId=1
 http://160.40.53.35:3000/d-solo/edn5ahxrzaw3kc/deli-main-dashboard?orgId=1&from=1716945974114&to=1716967574114&panelId=2
+
+# Desc 
+
+- docker
+   maintenance
+   scalability
+   loose coupling
+   deployment
+
+- spring boot
+   authentication 
+   data retrieval from the data warehouse
+   will listen to kafka
+
+- react.js
+   the front-end component
+   user interface
+   panels
+   filters
+
+- grafana
+   responsible for communicating with the database
+
+- postgresql
+   storing data from the data warehouse
+   query performance
+   users
+   roles
+   
+- apache ECharts
+   the graphics
+   dynamic and interactive dashboards
 
 # Guides:
 https://nightingaledvs.com/how-to-in-grafana%E2%80%8A-%E2%80%8Apart-2-creating-interactive-dashboards/
@@ -179,45 +195,12 @@ done
 
 ## Snippets:
 
-LIFESTYLE
-User can select YEARS from 1990 – 2019
-
-   Alcohol 
-   Smoking 
-   Low physical activity 
-   High BMI
-
-   "Alcohol use_Percent_DALYs_val" DOUBLE PRECISION,
-   "Alcohol use_Percent_Deaths_val" DOUBLE PRECISION,
-   "Alcohol use_Percent_YLDs_val" DOUBLE PRECISION,
-   "Alcohol use_Percent_YLLs_val" DOUBLE PRECISION,
-
-   "Alcohol use_Rate_DALYs_val" DOUBLE PRECISION,
-   "Alcohol use_Rate_Deaths_val" DOUBLE PRECISION,
-   "Alcohol use_Rate_YLDs_val" DOUBLE PRECISION,
-   "Alcohol use_Rate_YLLs_val" DOUBLE PRECISION,
-   
-   "Alcohol use SEV_val" DOUBLE PRECISION,
-   
-   "Alcohol use_Number_DALYs_val" DOUBLE PRECISION,
-   "Alcohol use_Number_Deaths_val" DOUBLE PRECISION,
-   "Alcohol use_Number_YLDs_val" DOUBLE PRECISION,
-   "Alcohol use_Number_YLLs_val" DOUBLE PRECISION,
-```SQL
-
-
-
-
-```
-
-
 To change the schema you need to update the following files:
 - services/postgres/init.sql
 - services/postgres/import.sql
 - app-spring/src/main/java/com/tutorials/spring_react/datarepo/DataUpdateService.java
 
 ```bash
-
 # Find the columns with too long names
 cat columns.txt \
    | sed 's/Percentage of total/%/' \
@@ -260,130 +243,25 @@ cat shared/columns.txt \
 ```
 
 # radar chart:
-```js
-context.panel.data
-
-let averages_flst = [];
-let maxes_flst = [];
-let countries_slst = [];
-
-data.series.map((s) => {
-
-  // console.log(s)
-
-  values_fLst = s.fields.find((f) =>
-    f.name === 'averages'
-  ).values;
-
-  maxes_flst = s.fields.find((f) =>
-    f.name === 'maxes'
-  ).values;
-
-  countries_sLst = s.fields.find((f) =>
-    f.name === 'countries'
-  ).values;
-
-});
-
-
-indicator_Lst = [];
-max_f = Math.max(...values_fLst);
-
-console.log(maxes_flst);
-console.log(countries_sLst);
-console.log(max_f);
-
-for (let i in countries_sLst) {
-  indicator_Lst[i] = {
-    name: countries_sLst[i],
-    max: max_f,
-  }
-};
-
-return {
-  title: {
-    text: 'Basic Radar Chart'
-  },
-  // legend: {
-  //    data: ['Allocated Budget', 'Actual Spending']
-  // },
-  radar: {
-    // shape: 'circle',
-    indicator: indicator_Lst
-  },
-  series: [
-    {
-      name: 'Budget vs spending',
-      type: 'radar',
-      data: [
-        {
-          value: values_fLst
-          // name: 'Allocated Budget'
-        }
-      ]
-    }
-  ]
-};
-
-```
-
-
-
-
-
 
 Get the echarts template from here
 https://echarts.apache.org/examples/en/index.html#chart-type-line
 
-return option;
-
-and the query
-```sql
-SELECT 
-   AVG("Air Pollution Population Weighted Average [ug/m3]_PM2.5") as averages, 
-   MAX("Air Pollution Population Weighted Average [ug/m3]_PM2.5") as maxes,
-   "Country" as countries
-FROM data_tbl 
-GROUP BY countries
-HAVING AVG("Air Pollution Population Weighted Average [ug/m3]_PM2.5") IS NOT NULL
-ORDER BY AVG("Air Pollution Population Weighted Average [ug/m3]_PM2.5")
-LIMIT 15
-```
+# 
 
 
+The map information will be in a much more granular level
+   will this be able to show more granular data than country level?
 
-```sql
-SELECT
-  "Country",
-  "Year",
-  "CRC_incidence_val_Rate",
-FROM
-  data_tbl
-GROUP BY "Year", "Coutnry"
-
-```
-
-```sql
-SELECT 
-   "Year",
-   MAX(CASE WHEN "Country" = 'Greece' THEN "CRC_incidence_val_Percent" END) as "Greece",
-   MAX(CASE WHEN "Country" = 'France' THEN "CRC_incidence_val_Percent" END) as "France",
-   MAX(CASE WHEN "Country" = 'Germany' THEN "CRC_incidence_val_Percent" END) as "Germany"
-FROM data_tbl
-WHERE age='Age-standardized'
-   and "Country" in ( 'Greece', 'France', 'Germany')
-group by "Year"
-ORDER BY "Year"
-
-```
+fix the lifestyle data
+fix the country looltips
+share the link and credentials to the partners by thursday
+change password
+retrieve password
 
 
-
-<iframe src="http://160.40.53.35:3000/d-solo/edn5ahxrzaw3kc/deli-main-dashboard?orgId=1&from=1716948484158&to=1716970084158&panelId=3" width="450" height="200" frameborder="0"></iframe>
-http://160.40.53.35:3000/d-solo/edn5ahxrzaw3kc/deli-main-dashboard?orgId=1&theme=light&panelId=3
-
-
-
+give a granularity of what can be done by policy makers
+   give somethign actionable
 
 
 

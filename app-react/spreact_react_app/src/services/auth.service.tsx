@@ -1,9 +1,6 @@
 import axios from "axios";
 import { NavigateFunction, useNavigate } from 'react-router-dom';
 
-// TODO: Make this be loaded from somewhere
-// const api_url = "http://localhost:3000/api/auth/";
-
 // const authentication_host = "localhost";
 // const authentication_host = "160.40.53.35";
 const authentication_host = import.meta.env.VITE_AUTHENTICATION_HOST;
