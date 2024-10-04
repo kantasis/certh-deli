@@ -24,10 +24,12 @@ public class UserDetailsServiceImpl implements UserDetailsService{
       // We put the data in a UserModel instance
       // Then we put that data in a UserDetailsImpl instance
       // Which will be passed as a UserDetails reference
-      UserModel user = userRepository.findByUsername(username)
-         .orElseThrow( () -> new UsernameNotFoundException("User not found with username:" + username));
+      UserModel user = userRepository
+         .findByUsername(username)
+         .orElseThrow( () -> 
+            new UsernameNotFoundException("User not found with username:" + username)
+         );
       return UserDetailsImpl.build(user);
    }
-
 
 }

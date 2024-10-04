@@ -144,6 +144,12 @@ maxyear_filter
 country_filter
 factor_filter
 
+## Initialize shared directories
+Make sure the containers have access to the locally shared directories
+`sudo chmod 744 shared/grafana/main`
+etc
+
+
 # General
 
 

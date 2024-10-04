@@ -35,7 +35,7 @@ import java.util.Set;
 public class UserModel {
 
    @Id
-   @GeneratedValue(strategy = GenerationType.IDENTITY)
+   // @GeneratedValue(strategy = GenerationType.IDENTITY)
    private String id;
 
    @NotBlank
