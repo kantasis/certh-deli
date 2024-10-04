@@ -2,6 +2,7 @@ package com.tutorials.spring_react.models;
 
 import java.util.HashSet;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -20,6 +21,8 @@ import lombok.NoArgsConstructor;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.hibernate.annotations.GenericGenerator;
+
 // Class annotation for a row/document of a db
 @Entity
 @Table(
@@ -36,6 +39,9 @@ public class UserModel {
 
    @Id
    // @GeneratedValue(strategy = GenerationType.IDENTITY)
+   @GeneratedValue(generator = "uuid")
+   @GenericGenerator(name = "uuid", strategy = "uuid2")
+   @Column(name="id")
    private String id;
 
    @NotBlank

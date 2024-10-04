@@ -136,6 +136,13 @@ docker exec -it \
 
 ```
 
+```sql
+INSERT INTO ROLES_TBL(LABEL) VALUES('ROLE_USER');
+INSERT INTO ROLES_TBL(LABEL) VALUES('ROLE_MODERATOR');
+INSERT INTO ROLES_TBL(LABEL) VALUES('ROLE_ADMIN');
+
+```
+
 ## Initialize Grafana:
 
 Variables:
