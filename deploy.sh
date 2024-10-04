@@ -14,6 +14,5 @@ fi
 
 docker compose up \
    --build \
+   --remove-orphans \
    -d 
-
-   # --remove-orphans \
