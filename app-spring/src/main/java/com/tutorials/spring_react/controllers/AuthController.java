@@ -18,6 +18,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,6 +36,7 @@ import com.tutorials.spring_react.security.payloads.LoginRequest;
 import com.tutorials.spring_react.security.payloads.MessageResponse;
 import com.tutorials.spring_react.security.payloads.SignupRequest;
 import com.tutorials.spring_react.security.payloads.UserInfoResponse;
+import lombok.extern.log4j.Log4j2;
 
 import jakarta.validation.Valid;
 
@@ -44,6 +46,7 @@ import jakarta.validation.Valid;
 )
 @RestController
 @RequestMapping("/api/v1/auth")
+@Log4j2
 public class AuthController {
 
    @Autowired
@@ -190,6 +193,28 @@ public class AuthController {
       ;
    }
 
+   @GetMapping("/whoami")
+   public ResponseEntity<?> whoami() {
+
+      Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+      Object principal_obj = authentication.getPrincipal();
+      String message_str; 
+      if (principal_obj instanceof UserDetailsImpl) {
+         message_str = ((UserDetailsImpl) principal_obj).getUsername();
+      }else{
+         message_str = principal_obj.toString();
+      }
+
+      log.info("You are: "+message_str);
+      return ResponseEntity
+         .ok()
+         .body(
+            new MessageResponse(message_str)
+         )
+      ;
+   }
+
    // @PostMapping("/logout")
    // public ResponseEntity<?> logoutUser() {
    //    ResponseCookie cookie = jwtUtils.getCleanJwtCookie();
@@ -204,5 +229,21 @@ public class AuthController {
    //       )
    //    ;
    // }
+
+   @PostMapping("/logout")
+   public ResponseEntity<?> logoutUser() {
+      // TODO: Test if this disables the given JWT
+      Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+      Object principal = authentication.getPrincipal();
+
+      if (principal.toString() != "anonymousUser") {
+         String userId = ((UserDetailsImpl) principal).getId();
+         // TODO: Someday fix the refresh token
+         // refreshTokenService.deleteByUserId(userId);
+      }
+
+      return ResponseEntity.ok()
+         .body(new MessageResponse("You've been signed out!"));
+   }
 
 }
