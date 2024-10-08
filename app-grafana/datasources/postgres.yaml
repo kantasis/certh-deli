@@ -1,0 +1,29 @@
+apiVersion: 1
+
+# deleteDatasources:
+#   - name: PostgreSQL1234321
+#     orgId: 1
+#   - name: PostgreSQL
+#     orgId: 1
+
+# Automatically delete datasources not defined here (right?)
+prune: true
+
+datasources:
+   - 
+      name: ${PROJECT_NAME}_datasource
+      type: postgres
+      # access: proxy
+      # orgId: 1
+      url: "${PROJECT_NAME}_db_container:${PGPORT}"
+      user: "${POSTGRES_USER}"
+      database: "${POSTGRES_DB}"
+      # password: "${POSTGRES_PASSWORD}"
+      jsonData:
+         sslmode: "disable"
+         postgresVersion: 1200
+      secureJsonData:
+         password: "${POSTGRES_PASSWORD}"
+      isDefault: true
+      # version: 1
+      # editable: false

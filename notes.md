@@ -133,7 +133,18 @@ docker exec -it \
       -U postgres \
       -d deli_db \
       -f import.sql
+```
 
+
+Initialize the user database
+```bash
+# Enter the postgres prompt
+docker exec -it \
+   deli_db_container \
+   psql \
+      -h localhost \
+      -U postgres \
+      -d deli_db \
 ```
 
 ```sql
@@ -161,6 +172,16 @@ etc
 
 
 ```bash
+
+docker cp default.yaml deli_grafana_container:/etc/grafana/provisioning
+
+
+
+GF_PATHS_PROVISIONING=/etc/grafana/provisioning/
+
+
+
+
 docker exec -it \
    deli_ubuntu_container \
    bash

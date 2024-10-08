@@ -45,7 +45,7 @@ services:
       restart: always
       volumes:
          - ./shared/grafana/main:/var/lib/grafana
-         - ./shared/grafana/provisioning:/usr/share/grafana/conf/provisioning/
+         - ./app-grafana:${GLOBAL_GF_PATHS_PROVISIONING}
       networks:
          - main_network
 
