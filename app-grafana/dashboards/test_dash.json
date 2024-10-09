@@ -1,0 +1,568 @@
+{
+   "annotations": {
+     "list": [
+       {
+         "builtIn": 1,
+         "datasource": {
+           "type": "grafana",
+           "uid": "-- Grafana --"
+         },
+         "enable": true,
+         "hide": true,
+         "iconColor": "rgba(0, 211, 255, 1)",
+         "name": "Annotations & Alerts",
+         "type": "dashboard"
+       }
+     ]
+   },
+   "editable": true,
+   "fiscalYearStartMonth": 0,
+   "graphTooltip": 0,
+   "id": 1,
+   "links": [],
+   "panels": [
+     {
+       "datasource": {
+         "type": "grafana-postgresql-datasource",
+         "uid": "adn5a5w1lineoe"
+       },
+       "gridPos": {
+         "h": 8,
+         "w": 12,
+         "x": 0,
+         "y": 0
+       },
+       "id": 5,
+       "options": {
+         "baidu": {
+           "callback": "bmapReady",
+           "key": ""
+         },
+         "editor": {
+           "format": "none"
+         },
+         "editorMode": "code",
+         "gaode": {
+           "key": "",
+           "plugin": "AMap.Scale,AMap.ToolBar"
+         },
+         "getOption": "function getQueryResult(query_name) {\n   const result = context\n      .panel\n      .data\n      .series\n      .find((series_dict) =>\n         series_dict['refId'] === query_name\n      )\n   ;\n   if (!result)\n    console.log(`Error: Query with name ${query_name} not found`)\n   return result['fields'];\n}\n\nconst queryResult = getQueryResult('A')\nconsole.log(queryResult);\n\nconst countries_strLst = queryResult\n  .find( (column_dict) => column_dict['name'] == 'Country')\n  ['values']\n\nconst values_intLst = queryResult\n  .find( (column_dict) => column_dict['name'] == 'Value')\n  ['values']\n\n\nlet data_opt = []\n\ncountries_strLst\n  .forEach((country_name, index_int) => {\n    data_opt[index_int] = { name: country_name, value: values_intLst[index_int] };\n  })\n;\n//    .forEach((country_name, index_int) => {\n//       const result = { name: country_name, value: slice_dict[country_name] };\n//       data_opt[index_int] = result;\n\noption = {\n   title: {\n      text: 'Number of CRC Prevention Policies per Country',\n      left: 'center'\n   },\n   tooltip: {\n      trigger: 'item'\n   },\n   visualMap: {\n      min: 0,\n      max: 10,\n      left: 'left',\n      top: 'bottom',\n      text: ['High', 'Low'],\n      calculable: true\n   },\n   series: [\n      {\n         name: 'Alcohol',\n         type: 'map',\n         mapType: 'world', // Use 'world' map type, or you can use specific region map type if available\n         center: [15, 50], // Center the map on Europe\n         zoom: 6,\n         roam: false,\n         label: {\n            show: false\n         },\n         data: data_opt\n      }\n   ]\n};\n\nreturn option;\n\n",
+         "google": {
+           "callback": "gmapReady",
+           "key": ""
+         },
+         "map": "none",
+         "renderer": "canvas",
+         "themeEditor": {
+           "config": "{}",
+           "name": "default"
+         },
+         "visualEditor": {
+           "code": "return {\n  dataset: context.editor.dataset,\n  series: context.editor.series,\n  xAxis: {\n    type: 'time',\n  },\n  yAxis: {\n    type: 'value',\n    min: 'dataMin',\n  },\n}\n",
+           "dataset": [],
+           "series": []
+         }
+       },
+       "pluginVersion": "6.1.0",
+       "targets": [
+         {
+           "datasource": {
+             "type": "grafana-postgresql-datasource",
+             "uid": "adn5a5w1lineoe"
+           },
+           "editorMode": "code",
+           "format": "table",
+           "rawQuery": true,
+           "rawSql": "SELECT\n   \"Country\",\n   \"Value\"\nFROM policies_tbl\nWHERE true\n   AND \"Policy\" = '${policy_filter}'\n;\n",
+           "refId": "A",
+           "sql": {
+             "columns": [
+               {
+                 "parameters": [],
+                 "type": "function"
+               }
+             ],
+             "groupBy": [
+               {
+                 "property": {
+                   "type": "string"
+                 },
+                 "type": "groupBy"
+               }
+             ],
+             "limit": 50
+           }
+         }
+       ],
+       "title": "Test Visual",
+       "type": "volkovlabs-echarts-panel"
+     },
+     {
+       "datasource": {
+         "type": "grafana-postgresql-datasource",
+         "uid": "adn5a5w1lineoe"
+       },
+       "description": "",
+       "gridPos": {
+         "h": 8,
+         "w": 12,
+         "x": 12,
+         "y": 0
+       },
+       "id": 2,
+       "options": {
+         "baidu": {
+           "callback": "bmapReady",
+           "key": ""
+         },
+         "editor": {
+           "format": "none"
+         },
+         "editorMode": "code",
+         "gaode": {
+           "key": "",
+           "plugin": "AMap.Scale,AMap.ToolBar"
+         },
+         "getOption": "\nfunction getSelections(multiSelectVar_name) {\n   // Get the variable\n   const multiSelect_var = context.grafana.replaceVariables(\"${\" + multiSelectVar_name + \"}\");\n   // Parse it if its multiselect\n   result = multiSelect_var.replace(/{/, '').replace(/}/, '').split(',');\n   return result;\n}\n\nfunction getQueryResult(query_name) {\n   return context\n      .panel\n      .data\n      .series\n      .find((series_dict) =>\n         series_dict['refId'] === query_name\n      )\n   ;\n}\n\nconst countries_strLst = getSelections(\"country_filter\")\n\nconst queryResult = getQueryResult('deli_spider_query');\n\nconst indicators_arr = queryResult['fields']\n   .filter((column_dict) => column_dict['name'] !== 'Country')\n   .map((column_dict) => {\n      return {\n         name: column_dict['name'],\n         max: Math.max(...column_dict['values']),\n         color: \"#000\"\n      }\n   }\n);\n\nlet dataFrame = {};\ncountries_strLst\n   .forEach((country_name, index) => {\n      const temp = queryResult['fields']\n         .filter((column_dict) => column_dict['name'] !== 'Country')\n         .map((column_dict) => {\n            return column_dict['values'][index]\n         })\n      ;\n      dataFrame[country_name] = temp;\n   })\n;\n\nconst columns_strLst = Object.keys(dataFrame);\n\nconst data_opt = columns_strLst\n   .map((column_name) => {\n      return {\n         value: dataFrame[column_name],\n         name: column_name\n      };\n   })\n;\n\noption = {\n   title: {\n      text: 'Nutrition Data'\n   },\n   legend: {\n      type: 'plain',\n      orient: 'vertical',\n      left: 'right'\n   },\n   tooltip: {\n      valueFormatter: (value) => parseFloat(value).toFixed(2)\n   },\n   radar: {\n      indicator: indicators_arr\n   },\n   series: [{\n      // name: \"\",\n      type: 'radar',\n      data: data_opt\n   }]\n};\nreturn option;\n\n",
+         "google": {
+           "callback": "gmapReady",
+           "key": ""
+         },
+         "map": "none",
+         "renderer": "canvas",
+         "themeEditor": {
+           "config": "{}",
+           "name": "default"
+         },
+         "visualEditor": {
+           "code": "return {\n  dataset: context.editor.dataset,\n  series: context.editor.series,\n  xAxis: {\n    type: 'time',\n  },\n  yAxis: {\n    type: 'value',\n    min: 'dataMin',\n  },\n}\n",
+           "dataset": [],
+           "series": []
+         }
+       },
+       "pluginVersion": "6.1.0",
+       "targets": [
+         {
+           "datasource": {
+             "type": "grafana-postgresql-datasource",
+             "uid": "adn5a5w1lineoe"
+           },
+           "editorMode": "code",
+           "format": "table",
+           "rawQuery": true,
+           "rawSql": "SELECT\n   \"Country\",\n   AVG(\"Diet low in whole grains${factor_filter}\") AS \"Diet low in whole grains\",\n   AVG(\"Diet low in milk${factor_filter}\") AS \"Diet low in milk\",\n   AVG(\"Diet high in red meat${factor_filter}\") AS \"Diet high in red meat\",\n   AVG(\"Diet low in calcium${factor_filter}\") AS \"Diet low in calcium\",\n   AVG(\"Diet low in fiber${factor_filter}\") AS \"Diet low in fiber\",\n   AVG(\"Diet high in processed meat${factor_filter}\") AS \"Diet high in processed meat\"\n   -- AVG(\"Diet low in fruits${factor_filter}\") AS \"Diet low in fruits\",\n   -- AVG(\"Diet low in vegetables${factor_filter}\") AS \"Diet low in vegetables\",\nFROM data_tbl\nWHERE true\n   AND \"Country\" IN ('Greece', 'Romania', 'Lithuania', 'Belgium', 'Italy', 'Spain')\n   AND \"Year\" BETWEEN ${minyear_filter} AND ${maxyear_filter}\n   AND \"age\" = 'Age-standardized'\nGROUP BY \"Country\"\nORDER BY 1\n;",
+           "refId": "deli_spider_query",
+           "sql": {
+             "columns": [
+               {
+                 "parameters": [],
+                 "type": "function"
+               }
+             ],
+             "groupBy": [
+               {
+                 "property": {
+                   "type": "string"
+                 },
+                 "type": "groupBy"
+               }
+             ],
+             "limit": 50
+           }
+         }
+       ],
+       "type": "volkovlabs-echarts-panel"
+     },
+     {
+       "datasource": {
+         "type": "grafana-postgresql-datasource",
+         "uid": "adn5a5w1lineoe"
+       },
+       "gridPos": {
+         "h": 8,
+         "w": 12,
+         "x": 0,
+         "y": 8
+       },
+       "id": 1,
+       "options": {
+         "baidu": {
+           "callback": "bmapReady",
+           "key": ""
+         },
+         "editor": {
+           "format": "none"
+         },
+         "editorMode": "code",
+         "gaode": {
+           "key": "",
+           "plugin": "AMap.Scale,AMap.ToolBar"
+         },
+         "getOption": "\nfunction getSelections(multiSelectVar_name) {\n   // Get the variable\n   const multiSelect_var = context.grafana.replaceVariables(\"${\" + multiSelectVar_name + \"}\");\n   // Parse it if its multiselect\n   result = multiSelect_var.replace(/{/, '').replace(/}/, '').split(',');\n   return result;\n }\n \nfunction getSeriesByName(series_name) {\n   return context\n      .panel\n      .data\n      .series\n      .map((series_dict) => {\n         \n         const series_temp = series_dict\n            .fields\n            .find((item) => item.name === series_name)\n         ;\n\n         if (series_temp === undefined) {\n            console.log(`ERROR (getSeriesByName()): Could not find series by name: ${series_name}`)\n            return null;\n         }\n\n         const seriesValues_temp = series_temp.values\n         return seriesValues_temp.buffer || seriesValues_temp;\n      })[0];\n}\n\nconst countries_strLst = getSelections(\"country_filter\")\nconst series_lst = countries_strLst.map((country_name) => getSeriesByName(country_name))\nconst xaxis_ser = getSeriesByName(\"Year\");\nconst seriesOptions_lst = series_lst.map((data_series, index) => {\n   return {\n      data: data_series,\n      type: 'line',\n      name: countries_strLst[index]\n   }\n});\n\noption = {\n   title: {\n      text: \"Age-Standardised CRC Incidence\",\n   },\n   legend: {\n      type: 'plain',\n      orient: 'vertical',\n      left: 'right'\n   },\n   tooltip: {\n      valueFormatter: (value) => parseFloat(value).toFixed(2)\n   },\n   xAxis: {\n      name: 'Year',\n      nameLocation: 'center',\n      nameGap: 30,\n      type: 'category',\n      data: xaxis_ser\n   },\n   yAxis: {\n      name: 'CRC incidence per 100000',\n      nameLocation: 'center',\n      nameGap: 60,\n      type: 'value',\n      min: 'dataMin'\n   },\n   dataZoom: [\n      {\n         type: 'slider',\n         show: true,\n         xAxisIndex: [0],\n         start: 0,\n         end: 100\n      },\n      {\n         type: 'inside',\n         xAxisIndex: [0],\n         start: 0,\n         end: 100\n      }\n   ],\n   series: seriesOptions_lst\n};\n\nreturn option;\n",
+         "google": {
+           "callback": "gmapReady",
+           "key": ""
+         },
+         "map": "none",
+         "renderer": "canvas",
+         "themeEditor": {
+           "config": "{}",
+           "name": "default"
+         },
+         "visualEditor": {
+           "code": "return {\n  dataset: context.editor.dataset,\n  series: context.editor.series,\n  xAxis: {\n    type: 'time',\n  },\n  yAxis: {\n    type: 'value',\n    min: 'dataMin',\n  },\n}\n",
+           "dataset": [],
+           "series": []
+         }
+       },
+       "pluginVersion": "6.1.0",
+       "targets": [
+         {
+           "datasource": {
+             "type": "grafana-postgresql-datasource",
+             "uid": "adn5a5w1lineoe"
+           },
+           "editorMode": "code",
+           "format": "table",
+           "rawQuery": true,
+           "rawSql": "CREATE EXTENSION IF NOT EXISTS tablefunc;\n\nSELECT \n   *\nFROM crosstab('\n   SELECT \n      \"Year\" as year_str,\n      \"Country\" as country_str,\n      AVG(\"CRC_incidence_val_Rate\") as values_f\n   FROM data_tbl \n   WHERE true\n      AND \"Year\" BETWEEN ${minyear_filter} AND ${maxyear_filter}\n      AND \"age\" = ''Age-standardized''\n      AND \"Country\" IN (''Belgium'', ''Greece'', ''Italy'', ''Lithuania'', ''Romania'', ''Spain'')\n   GROUP BY\n      \"Country\",\n      \"Year\"\n   ORDER BY 1, 2\n',\n'\nSELECT \n   *\nFROM ( VALUES \n   (''Belgium''), (''Greece''), (''Italy''), (''Lithuania''), (''Romania''), (''Spain'')\n)\n'\n) AS ct (\n   \"Year\" INT,\n   \"Belgium\" DOUBLE PRECISION,\n   \"Greece\" DOUBLE PRECISION,\n   \"Italy\" DOUBLE PRECISION,\n   \"Lithuania\" DOUBLE PRECISION,\n   \"Romania\" DOUBLE PRECISION,\n   \"Spain\" DOUBLE PRECISION\n)\nORDER BY ct.\"Year\"\n;\n\n",
+           "refId": "A",
+           "sql": {
+             "columns": [
+               {
+                 "parameters": [],
+                 "type": "function"
+               }
+             ],
+             "groupBy": [
+               {
+                 "property": {
+                   "type": "string"
+                 },
+                 "type": "groupBy"
+               }
+             ],
+             "limit": 50
+           }
+         }
+       ],
+       "type": "volkovlabs-echarts-panel"
+     },
+     {
+       "datasource": {
+         "type": "grafana-postgresql-datasource",
+         "uid": "adn5a5w1lineoe"
+       },
+       "gridPos": {
+         "h": 8,
+         "w": 12,
+         "x": 12,
+         "y": 8
+       },
+       "id": 3,
+       "options": {
+         "baidu": {
+           "callback": "bmapReady",
+           "key": ""
+         },
+         "editor": {
+           "format": "none"
+         },
+         "editorMode": "code",
+         "gaode": {
+           "key": "",
+           "plugin": "AMap.Scale,AMap.ToolBar"
+         },
+         "getOption": "\nfunction getSelections(multiSelectVar_name) {\n   // Get the variable\n   const multiSelect_var = context.grafana.replaceVariables(\"${\" + multiSelectVar_name + \"}\");\n   // Parse it if its multiselect\n   result = multiSelect_var.replace(/{/, '').replace(/}/, '').split(',');\n   return result;\n}\n\nfunction getQueryResult(query_name) {\n   return context\n      .panel\n      .data\n      .series\n      .find((series_dict) =>\n         series_dict['refId'] === query_name\n      )\n   ;\n}\n\nconst countries_strLst = getSelections(\"country_filter\")\n\nconst queryResult = getQueryResult('deli_lifestyle_query');\n\nconsole.log(\"queryResult:   \");\nconsole.log(queryResult);\n\nlet dataFrame = {};\ndataFrame['data']={};\n\ncountries_strLst\n   .forEach((country_name, index) => {\n      const temp = queryResult['fields']\n         .filter((column_dict) => column_dict['name'] !== 'Country')\n         .map((column_dict) => {\n            return column_dict['values'][index]\n         })\n      ;\n      dataFrame['data'][country_name] = temp;\n   })\n;\n\ndataFrame['index']=[];\nqueryResult['fields']\n   .filter((column_dict) => column_dict['name'] !== 'Country')\n   .forEach((column_dict, index) => {\n      dataFrame['index'][index] = column_dict['name'];\n   })\n;\n\ndataFrame['columns'] = Object.keys(dataFrame['data']);\n\nconsole.log(\"dataFrame:   \");\nconsole.log(dataFrame);\n\nconst data_opt = [\n   [ 'Risk Factor', ...dataFrame['columns'] ],\n\n   ...dataFrame['index']\n      .map((index_str, index_int) => {\n         let temp=[];\n         dataFrame['columns']\n            .forEach((column_name, index_int) => {\n               temp[index_int] = dataFrame.data[column_name][index_int]\n            })\n         ;\n         return [\n            index_str,\n            ...temp\n         ]\n      })\n   ,\n];\n\nconsole.log(\"data_opt:     \");\nconsole.log(data_opt);\n\noption = {\n   title: {\n      text: 'Lifestyle Data'\n   },\n   legend: {\n      type: 'plain',\n      orient: 'vertical',\n      left: 'right'\n   },\n   tooltip: {\n      valueFormatter: (value) => parseFloat(value).toFixed(2)\n   },\n   xAxis: { type: 'category' },\n   yAxis: {},\n\n   // Declare several bar series, each will be mapped\n   // to a column of dataset.source by default.\n   series: dataFrame['columns']\n      .map((column_name) => {\n         return { type: 'bar' };\n      }),\n   \n   dataset: {\n      source: data_opt\n   }\n};\nreturn option;\n\n",
+         "google": {
+           "callback": "gmapReady",
+           "key": ""
+         },
+         "map": "none",
+         "renderer": "canvas",
+         "themeEditor": {
+           "config": "{}",
+           "name": "default"
+         },
+         "visualEditor": {
+           "code": "let averages_flst = [];\nlet maxes_flst = [];\nlet countries_slst = [];\n\ndata.series.map((s) => {\n\n  // console.log(s)\n\n  values_fLst = s.fields.find((f) =>\n    f.name === 'averages'\n  ).values;\n\n  maxes_flst = s.fields.find((f) =>\n    f.name === 'maxes'\n  ).values;\n\n  countries_sLst = s.fields.find((f) =>\n    f.name === 'countries'\n  ).values;\n\n});\n\n\nindicator_Lst = [];\nmax_f = Math.max(...values_fLst);\n\nconsole.log(maxes_flst);\nconsole.log(countries_sLst);\nconsole.log(max_f);\n\nfor (let i in countries_sLst) {\n  indicator_Lst[i] = {\n    name: countries_sLst[i],\n    max: max_f,\n  }\n};\n\nreturn {\n  title: {\n    text: 'Basic Radar Chart'\n  },\n  // legend: {\n  //    data: ['Allocated Budget', 'Actual Spending']\n  // },\n  radar: {\n    // shape: 'circle',\n    indicator: indicator_Lst\n  },\n  series: [\n    {\n      name: 'Budget vs spending',\n      type: 'radar',\n      data: [\n        {\n          value: values_fLst\n          // name: 'Allocated Budget'\n        }\n      ]\n    }\n  ]\n};\n",
+           "dataset": [
+             {
+               "name": "averages",
+               "source": "deli_spider_query"
+             }
+           ],
+           "series": []
+         }
+       },
+       "pluginVersion": "6.1.0",
+       "targets": [
+         {
+           "datasource": {
+             "type": "grafana-postgresql-datasource",
+             "uid": "adn5a5w1lineoe"
+           },
+           "editorMode": "code",
+           "format": "table",
+           "rawQuery": true,
+           "rawSql": "SELECT\n   \"Country\",\n   AVG(\"Alcohol use${factor_filter}\") AS \"Alcohol Use\",\n   AVG(\"Smoking${factor_filter}\") AS \"Smoking\",\n   AVG(\"Low physical activity${factor_filter}\") AS \"Low Physical Activity\",\n   AVG(\"High body-mass index${factor_filter}\") AS \"High Body-Mass Index\"\nFROM data_tbl\nWHERE true\n   AND \"Country\" IN ('Greece', 'Romania', 'Lithuania', 'Belgium', 'Italy', 'Spain')\n   AND \"Year\" BETWEEN ${minyear_filter} AND ${maxyear_filter}\n   AND \"age\" = 'Age-standardized'\nGROUP BY \"Country\"\nORDER BY 1\n;\n",
+           "refId": "deli_lifestyle_query",
+           "sql": {
+             "columns": [
+               {
+                 "parameters": [],
+                 "type": "function"
+               }
+             ],
+             "groupBy": [
+               {
+                 "property": {
+                   "type": "string"
+                 },
+                 "type": "groupBy"
+               }
+             ],
+             "limit": 50
+           }
+         }
+       ],
+       "type": "volkovlabs-echarts-panel"
+     },
+     {
+       "datasource": {
+         "type": "grafana-postgresql-datasource",
+         "uid": "adn5a5w1lineoe"
+       },
+       "description": "",
+       "gridPos": {
+         "h": 8,
+         "w": 12,
+         "x": 0,
+         "y": 16
+       },
+       "id": 4,
+       "options": {
+         "baidu": {
+           "callback": "bmapReady",
+           "key": ""
+         },
+         "editor": {
+           "format": "auto"
+         },
+         "editorMode": "code",
+         "gaode": {
+           "key": "",
+           "plugin": "AMap.Scale,AMap.ToolBar"
+         },
+         "getOption": "function getQueryResult(query_name) {\n   const result = context\n      .panel\n      .data\n      .series\n      .find((series_dict) =>\n         series_dict['refId'] === query_name\n      )\n      ;\n   if (!result)\n      console.log(`Error: Query with name ${query_name} not found`)\n   return result['fields'];\n}\n\nconst queryResult = getQueryResult('deli_policy_query')\nconsole.log(queryResult);\n\nconst countries_strLst = queryResult\n   .find((column_dict) => column_dict['name'] == 'Country')\n['values']\n\nconst values_intLst = queryResult\n   .find((column_dict) => column_dict['name'] == 'Value')\n['values']\n\n\nlet data_opt = []\n\ncountries_strLst\n   .forEach((country_name, index_int) => {\n      data_opt[index_int] = { name: country_name, value: values_intLst[index_int] };\n   })\n   ;\n\noption = {\n   title: {\n      text: 'Number of CRC Prevention Policies per Country',\n      left: 'center'\n   },\n   tooltip: {\n      trigger: 'item'\n   },\n   visualMap: {\n      min: 0,\n      max: 10,\n      left: 'left',\n      top: 'bottom',\n      text: ['High', 'Low'],\n      calculable: true\n   },\n   series: [\n      {\n         name: 'Alcohol',\n         type: 'map',\n         mapType: 'world', // Use 'world' map type, or you can use specific region map type if available\n         center: [15, 50], // Center the map on Europe\n         zoom: 6,\n         roam: false,\n         label: {\n            show: false\n         },\n         data: data_opt\n      }\n   ]\n};\n\nreturn option;\n\n",
+         "google": {
+           "callback": "gmapReady",
+           "key": ""
+         },
+         "map": "json",
+         "renderer": "svg",
+         "themeEditor": {
+           "config": "{}",
+           "name": "default"
+         },
+         "visualEditor": {
+           "code": "return {\n  dataset: context.editor.dataset,\n  series: [\n    {\n      type: \"map\",\n      map: 'world',\n      name: 'requests',\n      left: 0,\n      right: 0,\n      roam: false,\n      label: {\n        show: true,\n        formatter: (d) => {\n          if (!d.data || d.data.value <= labelValue)\n            return '';\n          return d.name;\n        }\n      },\n      emphasis: {\n        itemStyle: {\n          areaColor: '#ff5656'\n        },\n        label: {\n          show: true\n        }\n      },\n      data: {\n        'Greece': 100,\n        'Italy': 150,\n      }\n    }\n  ],\n  xAxis: {\n    type: 'time',\n  },\n  yAxis: {\n    type: 'value',\n    min: 'dataMin',\n  },\n}\n",
+           "dataset": [
+             {
+               "name": "Country",
+               "source": "deli_lifestyle_query"
+             },
+             {
+               "name": "Alcohol Use",
+               "source": "deli_lifestyle_query"
+             }
+           ],
+           "series": []
+         }
+       },
+       "pluginVersion": "6.1.0",
+       "targets": [
+         {
+           "datasource": {
+             "type": "grafana-postgresql-datasource",
+             "uid": "adn5a5w1lineoe"
+           },
+           "editorMode": "code",
+           "format": "table",
+           "hide": false,
+           "rawQuery": true,
+           "rawSql": "SELECT\n   \"Country\",\n   \"Value\"\nFROM policies_tbl\nWHERE true\n   AND \"Policy\" = '${policy_filter}'\n;\n",
+           "refId": "deli_policy_query",
+           "sql": {
+             "columns": [
+               {
+                 "parameters": [],
+                 "type": "function"
+               }
+             ],
+             "groupBy": [
+               {
+                 "property": {
+                   "type": "string"
+                 },
+                 "type": "groupBy"
+               }
+             ],
+             "limit": 50
+           }
+         }
+       ],
+       "type": "volkovlabs-echarts-panel"
+     }
+   ],
+   "refresh": "",
+   "schemaVersion": 39,
+   "tags": [],
+   "templating": {
+     "list": [
+       {
+         "current": {
+           "selected": false,
+           "text": "1",
+           "value": "1"
+         },
+         "hide": 0,
+         "includeAll": false,
+         "label": "deli_custom_label",
+         "multi": false,
+         "name": "deli_custom_var",
+         "options": [],
+         "query": "",
+         "queryValue": "",
+         "skipUrlSync": false,
+         "type": "custom"
+       },
+       {
+         "current": {
+           "selected": true,
+           "text": [
+             "Greece",
+             "Romania",
+             "Lithuania"
+           ],
+           "value": [
+             "Greece",
+             "Romania",
+             "Lithuania"
+           ]
+         },
+         "hide": 0,
+         "includeAll": false,
+         "multi": true,
+         "name": "country_filter",
+         "options": [
+           {
+             "selected": true,
+             "text": "Greece",
+             "value": "Greece"
+           },
+           {
+             "selected": true,
+             "text": "Romania",
+             "value": "Romania"
+           },
+           {
+             "selected": true,
+             "text": "Lithuania",
+             "value": "Lithuania"
+           },
+           {
+             "selected": false,
+             "text": "Belgium",
+             "value": "Belgium"
+           },
+           {
+             "selected": false,
+             "text": "Italy",
+             "value": "Italy"
+           },
+           {
+             "selected": false,
+             "text": "Spain",
+             "value": "Spain"
+           }
+         ],
+         "query": "Greece, Romania, Lithuania, Belgium, Italy, Spain",
+         "queryValue": "",
+         "skipUrlSync": false,
+         "type": "custom"
+       },
+       {
+         "current": {
+           "selected": true,
+           "text": "> 1990",
+           "value": "1990"
+         },
+         "hide": 0,
+         "includeAll": false,
+         "multi": false,
+         "name": "minyear_filter",
+         "options": [],
+         "query": "",
+         "queryValue": "",
+         "skipUrlSync": false,
+         "type": "custom"
+       },
+       {
+         "current": {
+           "selected": true,
+           "text": "> 2020",
+           "value": "2020"
+         },
+         "hide": 0,
+         "includeAll": false,
+         "multi": false,
+         "name": "maxyear_filter",
+         "options": [],
+         "query": "",
+         "queryValue": "2000",
+         "skipUrlSync": false,
+         "type": "custom"
+       },
+       {
+         "current": {
+           "selected": true,
+           "text": "> _Rate_SEV_val",
+           "value": "_Rate_SEV_val"
+         },
+         "description": "",
+         "hide": 0,
+         "includeAll": false,
+         "multi": false,
+         "name": "factor_filter",
+         "options": [],
+         "query": "",
+         "queryValue": "",
+         "skipUrlSync": false,
+         "type": "custom"
+       },
+       {
+         "current": {},
+         "hide": 0,
+         "includeAll": false,
+         "multi": false,
+         "name": "policy_filter",
+         "options": [],
+         "query": "",
+         "queryValue": "",
+         "skipUrlSync": false,
+         "type": "custom"
+       }
+     ]
+   },
+   "time": {
+     "from": "now-6h",
+     "to": "now"
+   },
+   "timepicker": {},
+   "timezone": "browser",
+   "title": "deli_main_dashboard",
+   "uid": "edn5ahxrzaw3kc",
+   "version": 76,
+   "weekStart": ""
+ }

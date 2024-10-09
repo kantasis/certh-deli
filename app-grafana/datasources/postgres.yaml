@@ -18,7 +18,6 @@ datasources:
       url: "${PROJECT_NAME}_db_container:${PGPORT}"
       user: "${POSTGRES_USER}"
       database: "${POSTGRES_DB}"
-      # password: "${POSTGRES_PASSWORD}"
       jsonData:
          sslmode: "disable"
          postgresVersion: 1200

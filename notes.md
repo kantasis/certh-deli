@@ -132,7 +132,7 @@ docker exec -it \
       -h localhost \
       -U postgres \
       -d deli_db \
-      -f import.sql
+      -f import_data.sql
 ```
 
 

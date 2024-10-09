@@ -13,6 +13,7 @@ import EpidimiologicalPanel from "./components/EpidimiologicalPanel.tsx";
 import NutritionPanel from "./components/NutritionPanel.tsx";
 import LifestylePanel from "./components/LifestylePanel.tsx";
 import PolicyPanel from "./components/PolicyPanel.tsx";
+import Analytics from "./components/Analytics.tsx";
 
 // import * as AuthService from "./services/auth.service";
 // import AuthVerify from "./common/AuthVerify";
@@ -31,6 +32,7 @@ const App: React.FC = () => {
             <Route   path="/nutritionPanel"        element={<NutritionPanel />}        />
             <Route   path="/lifestylePanel"        element={<LifestylePanel />}        />
             <Route   path="/policyPanel"           element={<PolicyPanel />}           />
+            <Route   path="/analytics"           element={<Analytics />}           />
          </Routes>
       </div>
    </>);
