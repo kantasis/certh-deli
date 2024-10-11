@@ -58,7 +58,7 @@ services:
          - ./services/postgres/.env
       restart: always
       volumes:
-         - ./shared/data:/data
+         - ./shared/data:${GLOBAL_PGDATA}
       networks:
          - main_network
 

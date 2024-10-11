@@ -82,8 +82,6 @@ npm install http-proxy-middleware
 npm install react-validation validator
 npm install formik yup
 
-
-
 npm install react-auth-kit
 npm install @fortawesome/fontawesome-svg-core @fortawesome/free-solid-svg-icons @fortawesome/react-fontawesome@latest
 
@@ -110,10 +108,13 @@ INSERT INTO ROLES_TBL(LABEL) VALUES('ROLE_ADMIN');
 ```bash
 # Copy the init script to the container
 docker cp services/postgres/init.sql deli_db_container:/
+
 # Copy the data
 docker cp shared/Fused_european_only_new.csv deli_db_container:/tmp/dataset.csv
+
 # Copy the loading script
 docker cp services/postgres/import_data.sql deli_db_container:/
+
 # Copy the policy import script
 docker cp services/postgres/import_policies.sql deli_db_container:/
 
@@ -169,17 +170,15 @@ etc
 
 
 # General
-
-
 ```bash
+
+# Update the .private directory
+rsync -avzPh .private/*.env certh:oncodir/deli/.private
+
 
 docker cp default.yaml deli_grafana_container:/etc/grafana/provisioning
 
-
-
 GF_PATHS_PROVISIONING=/etc/grafana/provisioning/
-
-
 
 
 docker exec -it \
@@ -194,36 +193,6 @@ docker exec -it \
       -d deli_db 
 
 docker restart deli_spring_container && docker logs --follow deli_spring_container 
-
-```
-
-
-```bash
-# REST api for data sources
-
-USER=admin
-PASS=adminadmin
-HOST=localhost
-PORT=3000
-
-mkdir -p datasources
-# Export datasources
-curl -s \
-   "http://$HOST:$PORT/api/datasources" \
-   -u $USER:$PASS \
-   | jq -c -M '.[]' \
-   | split -l 1 - datasources/
-
-
-# Import all datasources located in the “datasources” directory.
-
-for datasource_rfile in datasources/*; do
-   curl -X "POST" "http://$HOST:$PORT/api/datasources" \
-      -H "Content-Type: application/json" \
-      --user "$USER":"$PASS" \
-      --data-binary @$datasource_rfile
-done
-
 
 ```
 
@@ -275,6 +244,37 @@ cat shared/columns.txt \
 
 
 ```
+
+## Grafana api
+```bash
+# REST api for data sources
+
+USER=admin
+PASS=adminadmin
+HOST=localhost
+PORT=3000
+
+mkdir -p datasources
+# Export datasources
+curl -s \
+   "http://$HOST:$PORT/api/datasources" \
+   -u $USER:$PASS \
+   | jq -c -M '.[]' \
+   | split -l 1 - datasources/
+
+
+# Import all datasources located in the “datasources” directory.
+
+for datasource_rfile in datasources/*; do
+   curl -X "POST" "http://$HOST:$PORT/api/datasources" \
+      -H "Content-Type: application/json" \
+      --user "$USER":"$PASS" \
+      --data-binary @$datasource_rfile
+done
+
+
+```
+
 
 # radar chart:
 
