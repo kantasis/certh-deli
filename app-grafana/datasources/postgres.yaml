@@ -1,9 +1,7 @@
 apiVersion: 1
 
-# deleteDatasources:
-#   - name: PostgreSQL1234321
-#     orgId: 1
-#   - name: PostgreSQL
+deleteDatasources:
+#   - name: ${PROJECT_NAME}_datasource
 #     orgId: 1
 
 # Automatically delete datasources not defined here (right?)
@@ -11,8 +9,9 @@ prune: true
 
 datasources:
    - 
-      name: ${PROJECT_NAME}_datasource
+      name: ${PROJECT_NAME}_main_datasource
       type: postgres
+      uid: "c12d1bf3-ad89-41a8-b362-9eeab766a7ec"
       # access: proxy
       # orgId: 1
       url: "${PROJECT_NAME}_db_container:${PGPORT}"

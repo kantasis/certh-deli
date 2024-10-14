@@ -68,7 +68,7 @@
          {
            "datasource": {
              "type": "grafana-postgresql-datasource",
-             "uid": "adn5a5w1lineoe"
+             "uid": "c12d1bf3-ad89-41a8-b362-9eeab766a7ec"
            },
            "editorMode": "code",
            "format": "table",
@@ -385,7 +385,7 @@
          {
            "datasource": {
              "type": "grafana-postgresql-datasource",
-             "uid": "adn5a5w1lineoe"
+             "uid": "c12d1bf3-ad89-41a8-b362-9eeab766a7ec"
            },
            "editorMode": "code",
            "format": "table",
