@@ -298,7 +298,73 @@ give a granularity of what can be done by policy makers
    give somethign actionable
 
 
+# Parse Policy excel
+
+```python
+
+import pandas as pd
+import re
+
+file_name='crc.xlsx'
 
 
+excel_file = pd.ExcelFile(file_name)
 
+sheetNames_strLst = excel_file.sheet_names
+# Display the first few rows
+
+result_df = pd.DataFrame()
+
+for sheet_name in sheetNames_strLst:
+   print(f"--------------------")
+   print(f"Sheet: {sheet_name}")
+
+   sheet_df = pd.read_excel(
+      file_name,
+      sheet_name=sheet_name,
+      header=1
+   )
+
+   # Rename the policies column to countries
+   sheet_df.rename(columns={sheet_df.columns[0]: 'Country'}, inplace=True)
+
+   # Set the countries to be the index
+   sheet_df.set_index('Country', inplace=True)
+
+   # drop the rows with nan
+   dataColumns_idx = sheet_df.columns
+
+   nanRow_mask = sheet_df[dataColumns_idx[0]].isnull()
+   for column_name in dataColumns_idx[1:]:
+      nanRow_mask = nanRow_mask & sheet_df[column_name].isnull()
+   sheet_df = sheet_df[~nanRow_mask]
+
+   for column_name in dataColumns_idx:
+      if re.search("^Unnamed: ", column_name):
+         continue
+      if re.search("^Best Practice", column_name):
+         continue
+      print(f"Column: {column_name}")
+
+      nan_mask = sheet_df[column_name].isnull()
+      temp_idx = sheet_df[~nan_mask].index
+      temp_df = pd.DataFrame(
+         index=temp_idx,
+      )
+      temp_df['Policy'] = sheet_name
+      temp_df['Type'] = column_name
+      temp_df['Comment'] = sheet_df[column_name]
+
+      result_df = pd.concat([result_df,temp_df])
+
+   print(result_df['Type'].str.match("^Best Practice").isnull().any())
+
+result_df
+```
+
+Next steps:
+- save the data to a csv file
+- create a table to store that data
+- upload the data to the database
+- create a good visualization
 
