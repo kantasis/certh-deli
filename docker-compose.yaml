@@ -45,7 +45,7 @@ services:
       restart: always
       volumes:
          - ./shared/grafana/main:/var/lib/grafana
-         # - ./shared/grafana/provisioning:/usr/share/grafana/conf/provisioning/
+         - ./app-grafana:${GLOBAL_GF_PATHS_PROVISIONING}
       networks:
          - main_network
       depends_on:
@@ -60,8 +60,7 @@ services:
          - ./services/postgres/.env
       restart: always
       volumes:
-      # TODO: use ${PGDATA}
-         - ./shared/data:/data
+         - ./shared/data:${GLOBAL_PGDATA}
       networks:
          - main_network
 

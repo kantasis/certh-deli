@@ -82,8 +82,6 @@ npm install http-proxy-middleware
 npm install react-validation validator
 npm install formik yup
 
-
-
 npm install react-auth-kit
 npm install @fortawesome/fontawesome-svg-core @fortawesome/free-solid-svg-icons @fortawesome/react-fontawesome@latest
 
@@ -110,10 +108,13 @@ INSERT INTO ROLES_TBL(LABEL) VALUES('ROLE_ADMIN');
 ```bash
 # Copy the init script to the container
 docker cp services/postgres/init.sql deli_db_container:/
+
 # Copy the data
 docker cp shared/Fused_european_only_new.csv deli_db_container:/tmp/dataset.csv
+
 # Copy the loading script
 docker cp services/postgres/import_data.sql deli_db_container:/
+
 # Copy the policy import script
 docker cp services/postgres/import_policies.sql deli_db_container:/
 
@@ -132,8 +133,19 @@ docker exec -it \
       -h localhost \
       -U postgres \
       -d deli_db \
-      -f import.sql
+      -f import_data.sql
+```
 
+
+Initialize the user database
+```bash
+# Enter the postgres prompt
+docker exec -it \
+   deli_db_container \
+   psql \
+      -h localhost \
+      -U postgres \
+      -d deli_db \
 ```
 
 
@@ -160,9 +172,17 @@ etc
 
 
 # General
-
-
 ```bash
+
+# Update the .private directory
+rsync -avzPh .private/*.env certh:oncodir/deli/.private
+
+
+docker cp default.yaml deli_grafana_container:/etc/grafana/provisioning
+
+GF_PATHS_PROVISIONING=/etc/grafana/provisioning/
+
+
 docker exec -it \
    deli_ubuntu_container \
    bash
@@ -175,36 +195,6 @@ docker exec -it \
       -d deli_db 
 
 docker restart deli_spring_container && docker logs --follow deli_spring_container 
-
-```
-
-
-```bash
-# REST api for data sources
-
-USER=admin
-PASS=adminadmin
-HOST=localhost
-PORT=3000
-
-mkdir -p datasources
-# Export datasources
-curl -s \
-   "http://$HOST:$PORT/api/datasources" \
-   -u $USER:$PASS \
-   | jq -c -M '.[]' \
-   | split -l 1 - datasources/
-
-
-# Import all datasources located in the “datasources” directory.
-
-for datasource_rfile in datasources/*; do
-   curl -X "POST" "http://$HOST:$PORT/api/datasources" \
-      -H "Content-Type: application/json" \
-      --user "$USER":"$PASS" \
-      --data-binary @$datasource_rfile
-done
-
 
 ```
 
@@ -257,6 +247,37 @@ cat shared/columns.txt \
 
 ```
 
+## Grafana api
+```bash
+# REST api for data sources
+
+USER=admin
+PASS=adminadmin
+HOST=localhost
+PORT=3000
+
+mkdir -p datasources
+# Export datasources
+curl -s \
+   "http://$HOST:$PORT/api/datasources" \
+   -u $USER:$PASS \
+   | jq -c -M '.[]' \
+   | split -l 1 - datasources/
+
+
+# Import all datasources located in the “datasources” directory.
+
+for datasource_rfile in datasources/*; do
+   curl -X "POST" "http://$HOST:$PORT/api/datasources" \
+      -H "Content-Type: application/json" \
+      --user "$USER":"$PASS" \
+      --data-binary @$datasource_rfile
+done
+
+
+```
+
+
 # radar chart:
 
 Get the echarts template from here
@@ -279,7 +300,73 @@ give a granularity of what can be done by policy makers
    give somethign actionable
 
 
+# Parse Policy excel
+
+```python
+
+import pandas as pd
+import re
+
+file_name='crc.xlsx'
 
 
+excel_file = pd.ExcelFile(file_name)
 
+sheetNames_strLst = excel_file.sheet_names
+# Display the first few rows
+
+result_df = pd.DataFrame()
+
+for sheet_name in sheetNames_strLst:
+   print(f"--------------------")
+   print(f"Sheet: {sheet_name}")
+
+   sheet_df = pd.read_excel(
+      file_name,
+      sheet_name=sheet_name,
+      header=1
+   )
+
+   # Rename the policies column to countries
+   sheet_df.rename(columns={sheet_df.columns[0]: 'Country'}, inplace=True)
+
+   # Set the countries to be the index
+   sheet_df.set_index('Country', inplace=True)
+
+   # drop the rows with nan
+   dataColumns_idx = sheet_df.columns
+
+   nanRow_mask = sheet_df[dataColumns_idx[0]].isnull()
+   for column_name in dataColumns_idx[1:]:
+      nanRow_mask = nanRow_mask & sheet_df[column_name].isnull()
+   sheet_df = sheet_df[~nanRow_mask]
+
+   for column_name in dataColumns_idx:
+      if re.search("^Unnamed: ", column_name):
+         continue
+      if re.search("^Best Practice", column_name):
+         continue
+      print(f"Column: {column_name}")
+
+      nan_mask = sheet_df[column_name].isnull()
+      temp_idx = sheet_df[~nan_mask].index
+      temp_df = pd.DataFrame(
+         index=temp_idx,
+      )
+      temp_df['Policy'] = sheet_name
+      temp_df['Type'] = column_name
+      temp_df['Comment'] = sheet_df[column_name]
+
+      result_df = pd.concat([result_df,temp_df])
+
+   print(result_df['Type'].str.match("^Best Practice").isnull().any())
+
+result_df
+```
+
+Next steps:
+- save the data to a csv file
+- create a table to store that data
+- upload the data to the database
+- create a good visualization
 
