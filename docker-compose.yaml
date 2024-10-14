@@ -45,9 +45,11 @@ services:
       restart: always
       volumes:
          - ./shared/grafana/main:/var/lib/grafana
-         - ./shared/grafana/provisioning:/usr/share/grafana/conf/provisioning/
+         # - ./shared/grafana/provisioning:/usr/share/grafana/conf/provisioning/
       networks:
          - main_network
+      depends_on:
+         - db_label
 
    db_label:
       image: ${PROJECT_NAME}_db_image
@@ -58,6 +60,7 @@ services:
          - ./services/postgres/.env
       restart: always
       volumes:
+      # TODO: use ${PGDATA}
          - ./shared/data:/data
       networks:
          - main_network
