@@ -29,7 +29,7 @@ const LifestylePanel: React.FC = () => {
 
    const getUriParams = () => {
       let countryFilter_str = selectedCountries_lst.map( (country_str, index) => `var-country_filter=${country_str}`).join('&');
-      let yearFilter_str = `var-minyear_filter=${minYear_int}&var-maxyear_filter=${maxYear_int}`;
+      let yearFilter_str = `var-minyear_filter=${minYear_int}%0A&var-maxyear_filter=${maxYear_int}%0A`;
       let factorFilter_str = `var-factor_filter=${selectedFactor_str}`;
       return `${countryFilter_str}&${yearFilter_str}&${factorFilter_str}`;
    };
@@ -80,7 +80,7 @@ const LifestylePanel: React.FC = () => {
          >
          </iframe>
          <div>
-            {/* {iFrame_url} */}
+            {iFrame_url}
          </div>
       </div>
 

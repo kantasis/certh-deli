@@ -18,13 +18,13 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 5,
+  "id": 7,
   "links": [],
   "panels": [
     {
       "datasource": {
         "type": "grafana-postgresql-datasource",
-        "uid": "adn5a5w1lineoe"
+        "uid": "c12d1bf3-ad89-41a8-b362-9eeab766a7ec"
       },
       "fieldConfig": {
         "defaults": {},
@@ -185,7 +185,7 @@
     {
       "datasource": {
         "type": "grafana-postgresql-datasource",
-        "uid": "adn5a5w1lineoe"
+        "uid": "c12d1bf3-ad89-41a8-b362-9eeab766a7ec"
       },
       "fieldConfig": {
         "defaults": {},
@@ -265,7 +265,7 @@
     {
       "datasource": {
         "type": "grafana-postgresql-datasource",
-        "uid": "adn5a5w1lineoe"
+        "uid": "c12d1bf3-ad89-41a8-b362-9eeab766a7ec"
       },
       "fieldConfig": {
         "defaults": {},
@@ -323,7 +323,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT\n   \"Country\",\n   AVG(\"Alcohol use${factor_filter}\") AS \"Alcohol Use\",\n   AVG(\"Smoking${factor_filter}\") AS \"Smoking\",\n   AVG(\"Low physical activity${factor_filter}\") AS \"Low Physical Activity\",\n   AVG(\"High body-mass index${factor_filter}\") AS \"High Body-Mass Index\"\nFROM data_tbl\nWHERE true\n   AND \"Country\" IN ('Greece', 'Romania', 'Lithuania', 'Belgium', 'Italy', 'Spain')\n   AND \"Year\" BETWEEN ${minyear_filter} AND ${maxyear_filter}\n   AND \"age\" = 'Age-standardized'\nGROUP BY \"Country\"\nORDER BY 1\n;\n",
+          "rawSql": "SELECT\n   \"Country\",\n   AVG(\"Alcohol use_${factor_filter}\") AS \"Alcohol Use\",\n   AVG(\"Smoking_${factor_filter}\") AS \"Smoking\",\n   AVG(\"Low physical activity_${factor_filter}\") AS \"Low Physical Activity\",\n   AVG(\"High body-mass index_${factor_filter}\") AS \"High Body-Mass Index\"\nFROM data_tbl\nWHERE true\n   AND \"Country\" IN ('Greece', 'Romania', 'Lithuania', 'Belgium', 'Italy', 'Spain')\n   AND \"Year\" BETWEEN ${minyear_filter} AND ${maxyear_filter}\n   AND \"age\" = 'Age-standardized'\nGROUP BY \"Country\"\nORDER BY 1\n;\n",
           "refId": "deli_lifestyle_query",
           "sql": {
             "columns": [
@@ -350,7 +350,7 @@
     {
       "datasource": {
         "type": "grafana-postgresql-datasource",
-        "uid": "adn5a5w1lineoe"
+        "uid": "c12d1bf3-ad89-41a8-b362-9eeab766a7ec"
       },
       "description": "",
       "fieldConfig": {
@@ -560,6 +560,6 @@
   "timezone": "browser",
   "title": "deli_main_dashboard",
   "uid": "edn5ahxrzaw3kc",
-  "version": 1,
+  "version": 2,
   "weekStart": ""
 }
