@@ -1,127 +1,235 @@
 {
-  "annotations": {
-    "list": [
-      {
-        "builtIn": 1,
-        "datasource": {
-          "type": "grafana",
-          "uid": "-- Grafana --"
-        },
-        "enable": true,
-        "hide": true,
-        "iconColor": "rgba(0, 211, 255, 1)",
-        "name": "Annotations & Alerts",
-        "type": "dashboard"
-      }
-    ]
-  },
-  "description": "this dashboard is to connect dashboard provisioning with data source provisioning",
-  "editable": true,
-  "fiscalYearStartMonth": 0,
-  "graphTooltip": 0,
-  "id": 5,
-  "links": [],
-  "panels": [
-    {
-      "datasource": {
-        "type": "grafana-postgresql-datasource",
-        "uid": "c12d1bf3-ad89-41a8-b362-9eeab766a7ec"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 0
-      },
-      "id": 1,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "area",
-        "justifyMode": "auto",
-        "orientation": "auto",
-        "percentChangeColorMode": "standard",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showPercentChange": false,
-        "textMode": "auto",
-        "wideLayout": true
-      },
-      "pluginVersion": "11.4.0-201869",
-      "targets": [
-        {
-          "datasource": {
-            "type": "grafana-postgresql-datasource",
-            "uid": "c12d1bf3-ad89-41a8-b362-9eeab766a7ec"
-          },
-          "editorMode": "code",
-          "format": "table",
-          "rawQuery": true,
-          "rawSql": "select count(*) from data_tbl ;",
-          "refId": "A",
-          "sql": {
-            "columns": [
-              {
-                "parameters": [],
-                "type": "function"
-              }
-            ],
-            "groupBy": [
-              {
-                "property": {
-                  "type": "string"
-                },
-                "type": "groupBy"
-              }
-            ],
-            "limit": 50
-          }
-        }
-      ],
-      "title": "Panel Title",
-      "type": "stat"
-    }
-  ],
-  "preload": false,
-  "schemaVersion": 40,
-  "tags": [],
-  "templating": {
-    "list": []
-  },
-  "time": {
-    "from": "now-6h",
-    "to": "now"
-  },
-  "timepicker": {},
-  "timezone": "browser",
-  "title": "development dashboard 2",
-  "uid": "ee0ujzobij8jkc",
-  "version": 1,
-  "weekStart": ""
-}
+   "annotations": {
+     "list": [
+       {
+         "builtIn": 1,
+         "datasource": {
+           "type": "grafana",
+           "uid": "-- Grafana --"
+         },
+         "enable": true,
+         "hide": true,
+         "iconColor": "rgba(0, 211, 255, 1)",
+         "name": "Annotations & Alerts",
+         "type": "dashboard"
+       }
+     ]
+   },
+   "description": "this dashboard is to connect dashboard provisioning with data source provisioning",
+   "editable": true,
+   "fiscalYearStartMonth": 0,
+   "graphTooltip": 0,
+   "id": 2,
+   "links": [],
+   "panels": [
+     {
+       "datasource": {
+         "type": "grafana-postgresql-datasource",
+         "uid": "c12d1bf3-ad89-41a8-b362-9eeab766a7ec"
+       },
+       "fieldConfig": {
+         "defaults": {},
+         "overrides": []
+       },
+       "gridPos": {
+         "h": 8,
+         "w": 12,
+         "x": 0,
+         "y": 0
+       },
+       "id": 2,
+       "options": {
+         "baidu": {
+           "callback": "bmapReady",
+           "key": ""
+         },
+         "editor": {
+           "format": "auto"
+         },
+         "editorMode": "code",
+         "gaode": {
+           "key": "",
+           "plugin": "AMap.Scale,AMap.ToolBar"
+         },
+         "getOption": "\nfunction getSelections(multiSelectVar_name) {\n  // Get the variable\n  const multiSelect_var = context.grafana.replaceVariables(\"${\" + multiSelectVar_name + \"}\");\n  // Parse it if its multiselect\n  result = multiSelect_var.replace(/{/, '').replace(/}/, '').split(',');\n  return result;\n}\n\nfunction getQueryResult(query_name) {\n  return context\n    .panel\n    .data\n    .series\n    .find((series_dict) =>\n      series_dict['refId'] === query_name\n    )\n    ;\n}\n// console.log()\nconst countries_strLst = getSelections(\"country_filter\")\n\nconst queryResult = getQueryResult('deli_spider_query');\n\nconst indicators_arr = queryResult['fields']\n  .filter((column_dict) => column_dict['name'] !== 'Country')\n  .map((column_dict) => {\n    return {\n      name: column_dict['name'],\n      max: Math.max(...column_dict['values']),\n      color: \"#000\"\n    }\n  }\n  );\n\nlet dataFrame = {};\ncountries_strLst\n  .forEach((country_name, index) => {\n    const temp = queryResult['fields']\n      .filter((column_dict) => column_dict['name'] !== 'Country')\n      .map((column_dict) => {\n        return column_dict['values'][index]\n      })\n      ;\n    dataFrame[country_name] = temp;\n  })\n  ;\n\nconst columns_strLst = Object.keys(dataFrame);\n\nconst data_opt = columns_strLst\n  .map((column_name) => {\n    return {\n      value: dataFrame[column_name],\n      name: column_name\n    };\n  })\n  ;\n\noption = {\n  title: {\n    text: 'Nutrition Data'\n  },\n  legend: {\n    type: 'plain',\n    orient: 'vertical',\n    left: 'right'\n  },\n  tooltip: {\n    valueFormatter: (value) => parseFloat(value).toFixed(2)\n  },\n  radar: {\n    indicator: indicators_arr\n  },\n  series: [{\n    // name: \"\",\n    type: 'radar',\n    data: data_opt\n  }]\n};\nreturn option;\n\n",
+         "google": {
+           "callback": "gmapReady",
+           "key": ""
+         },
+         "map": "none",
+         "renderer": "canvas",
+         "themeEditor": {
+           "config": "{}",
+           "name": "default"
+         },
+         "visualEditor": {
+           "code": "return {\n  dataset: context.editor.dataset,\n  series: context.editor.series,\n  xAxis: {\n    type: 'time',\n  },\n  yAxis: {\n    type: 'value',\n    min: 'dataMin',\n  },\n}\n",
+           "dataset": [],
+           "series": []
+         }
+       },
+       "pluginVersion": "6.4.1",
+       "targets": [
+         {
+           "editorMode": "code",
+           "format": "table",
+           "rawQuery": true,
+           "rawSql": "SELECT\r\n   \"Country\",\r\n   AVG(\"Diet low in whole grains_${factor_filter}\") AS \"Diet low in whole grains\",\r\n   AVG(\"Diet low in milk_${factor_filter}\") AS \"Diet low in milk\",\r\n   AVG(\"Diet high in red meat_${factor_filter}\") AS \"Diet high in red meat\",\r\n   AVG(\"Diet low in calcium_${factor_filter}\") AS \"Diet low in calcium\",\r\n   AVG(\"Diet low in fiber_${factor_filter}\") AS \"Diet low in fiber\",\r\n   AVG(\"Diet high in processed meat_${factor_filter}\") AS \"Diet high in processed meat\"\r\n   -- AVG(\"Diet low in fruits_${factor_filter}\") AS \"Diet low in fruits\",\r\n   -- AVG(\"Diet low in vegetables_${factor_filter}\") AS \"Diet low in vegetables\",\r\nFROM data_tbl\r\nWHERE true\r\n   AND \"Country\" IN ('Greece', 'Romania', 'Lithuania', 'Belgium', 'Italy', 'Spain')\r\n   -- AND \"Year\" BETWEEN ${minyear_filter} AND ${maxyear_filter}\r\n   AND \"age\" = 'Age-standardized'\r\nGROUP BY \"Country\"\r\nORDER BY 1\r\n;",
+           "refId": "deli_spider_query",
+           "sql": {
+             "columns": [
+               {
+                 "parameters": [],
+                 "type": "function"
+               }
+             ],
+             "groupBy": [
+               {
+                 "property": {
+                   "type": "string"
+                 },
+                 "type": "groupBy"
+               }
+             ],
+             "limit": 50
+           }
+         }
+       ],
+       "title": "Panel Title",
+       "type": "volkovlabs-echarts-panel"
+     },
+     {
+       "datasource": {
+         "type": "grafana-postgresql-datasource",
+         "uid": "c12d1bf3-ad89-41a8-b362-9eeab766a7ec"
+       },
+       "fieldConfig": {
+         "defaults": {
+           "color": {
+             "mode": "thresholds"
+           },
+           "mappings": [],
+           "thresholds": {
+             "mode": "absolute",
+             "steps": [
+               {
+                 "color": "green",
+                 "value": null
+               },
+               {
+                 "color": "red",
+                 "value": 80
+               }
+             ]
+           }
+         },
+         "overrides": []
+       },
+       "gridPos": {
+         "h": 8,
+         "w": 12,
+         "x": 0,
+         "y": 8
+       },
+       "id": 1,
+       "options": {
+         "colorMode": "value",
+         "graphMode": "area",
+         "justifyMode": "auto",
+         "orientation": "auto",
+         "percentChangeColorMode": "standard",
+         "reduceOptions": {
+           "calcs": [
+             "lastNotNull"
+           ],
+           "fields": "",
+           "values": false
+         },
+         "showPercentChange": false,
+         "textMode": "auto",
+         "wideLayout": true
+       },
+       "pluginVersion": "11.4.0-201964",
+       "targets": [
+         {
+           "datasource": {
+             "type": "grafana-postgresql-datasource",
+             "uid": "c12d1bf3-ad89-41a8-b362-9eeab766a7ec"
+           },
+           "editorMode": "code",
+           "format": "table",
+           "rawQuery": true,
+           "rawSql": "select count(*) from data_tbl ;",
+           "refId": "A",
+           "sql": {
+             "columns": [
+               {
+                 "parameters": [],
+                 "type": "function"
+               }
+             ],
+             "groupBy": [
+               {
+                 "property": {
+                   "type": "string"
+                 },
+                 "type": "groupBy"
+               }
+             ],
+             "limit": 50
+           }
+         }
+       ],
+       "title": "Panel Title",
+       "type": "stat"
+     }
+   ],
+   "preload": false,
+   "schemaVersion": 40,
+   "tags": [],
+   "templating": {
+     "list": [
+       {
+         "current": {
+           "text": "_Rate_SEV_val",
+           "value": "_Rate_SEV_val"
+         },
+         "name": "factor_filter",
+         "options": [],
+         "query": "",
+         "type": "custom"
+       },
+       {
+         "current": {
+           "text": "1990",
+           "value": "1990"
+         },
+         "name": "minyear_filter",
+         "options": [],
+         "query": "",
+         "type": "custom"
+       },
+       {
+         "current": {
+           "text": "2020",
+           "value": "2020"
+         },
+         "description": "",
+         "name": "maxyear_filter",
+         "options": [],
+         "query": "",
+         "type": "custom"
+       }
+     ]
+   },
+   "time": {
+     "from": "now-6h",
+     "to": "now"
+   },
+   "timepicker": {},
+   "timezone": "browser",
+   "title": "development dashboard",
+   "uid": "ee0ujzobij8jkc",
+   "version": 20,
+   "weekStart": ""
+ }

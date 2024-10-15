@@ -14,23 +14,23 @@ const FactorFilter: React.FC<FilterProps> = ({selectedFactor_str, set_selectedFa
    const factors_dictLst = [
       {
          label: "Summary Exposure Value",
-         value: "_Rate_SEV_val"
+         value: "Rate_SEV_val"
       },
       {
          label: "DALYs",
-         value: "_Rate_DALYs_val"
+         value: "Rate_DALYs_val"
       },
       {
          label: "Deaths",
-         value: "_Rate_Deaths_val"
+         value: "Rate_Deaths_val"
       },
       {
          label: "YLDs",
-         value: "_Rate_YLDs_val"
+         value: "Rate_YLDs_val"
       },
       {
          label: "YLLs",
-         value: "_Rate_YLLs_val"
+         value: "Rate_YLLs_val"
       },
    ];
 
