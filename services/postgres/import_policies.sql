@@ -3,7 +3,7 @@ COPY policies_tbl(
    "Value",
    "Policy"
 )
-FROM '/shared/policy_data.csv'
+FROM '/tmp/policy_data.csv'
 DELIMITER ','
 CSV HEADER
 ;

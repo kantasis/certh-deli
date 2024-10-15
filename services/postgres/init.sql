@@ -2,6 +2,7 @@
 -- CREATE DATABASE deli_db;
 \c deli_db;
 
+-- TODO: Figure out why I am doing this here
 CREATE EXTENSION IF NOT EXISTS tablefunc;
 
 -- DROP TABLE IF EXISTS data_tbl;
