@@ -5,4 +5,4 @@ providers:
     folder: ONCODIR-DELI # The folder where to place the dashboards
     type: file
     options:
-      path: "${GLOBAL_GF_PATHS_PROVISIONING}/dashboards"
+      path: "${GF_PATHS_PROVISIONING}/dashboards"
