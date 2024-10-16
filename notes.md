@@ -143,7 +143,6 @@ docker exec -it \
       -d deli_db \
       -f import_policies.sql
 
-
 ```
 
 

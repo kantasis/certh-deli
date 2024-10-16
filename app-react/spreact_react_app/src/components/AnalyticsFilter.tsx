@@ -4,63 +4,13 @@ import { Form } from 'react-bootstrap';
 // Interface for the properties of this component
 interface FilterProps {
    // Lifted up State
-   selectedFactor_str: string,
+   selectedFactor_int: number,
    set_selectedFactor: Function,
+   factors_dictLst: Array<any>,
 }
 
  
-const AnalyticsFilter: React.FC<FilterProps> = ({selectedFactor_str, set_selectedFactor}) => {
-
-   const factors_dictLst = [
-      {
-         label: "01",
-         value: "01.png"
-      },
-      {
-         label: "02",
-         value: "02.png"
-      },
-      {
-         label: "03",
-         value: "03.png"
-      },
-      {
-         label: "04",
-         value: "04.png"
-      },
-      {
-         label: "05",
-         value: "05.png"
-      },
-      {
-         label: "06",
-         value: "06.png"
-      },
-      {
-         label: "07",
-         value: "07.png"
-      },
-      {
-         label: "08",
-         value: "08.png"
-      },
-      {
-         label: "09",
-         value: "09.png"
-      },
-      {
-         label: "10",
-         value: "10.png"
-      },
-      {
-         label: "11",
-         value: "11.png"
-      },
-      {
-         label: "13",
-         value: "13.png"
-      },
-   ];
+const AnalyticsFilter: React.FC<FilterProps> = ({selectedFactor_int, set_selectedFactor, factors_dictLst}) => {
 
    useEffect(
       () => {
@@ -82,7 +32,7 @@ const AnalyticsFilter: React.FC<FilterProps> = ({selectedFactor_str, set_selecte
          <Form id="factorSelect_id">
             <Form.Control 
                as="select" 
-               value={selectedFactor_str} 
+               value={selectedFactor_int} 
                onChange={(e) => set_selectedFactor(e.target.value)}
             >
                {factors_dictLst.map((factor_dict, index) => (
@@ -92,7 +42,7 @@ const AnalyticsFilter: React.FC<FilterProps> = ({selectedFactor_str, set_selecte
                ))}
             </Form.Control>
       </Form>
-      {/* {selectedFactor_str} */}
+      {/* {selectedFactor_int} */}
       </div>
    </>);
 };
