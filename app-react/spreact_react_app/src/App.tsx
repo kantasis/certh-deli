@@ -20,7 +20,7 @@ import Analytics from "./components/Analytics.tsx";
 
 const App: React.FC = () => {
    return (<>
-      <div className="container mt-3">
+      <div className="container-fluid">
          <NavbarMain/>
          <Routes>
             <Route   path="/"                      element={<Home />}                  />

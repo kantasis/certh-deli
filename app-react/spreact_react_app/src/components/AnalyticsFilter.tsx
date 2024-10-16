@@ -4,47 +4,55 @@ import { Form } from 'react-bootstrap';
 // Interface for the properties of this component
 interface FilterProps {
    // Lifted up State
-   selectedFactor_int: number,
-   set_selectedFactor: Function,
-   factors_dictLst: Array<any>,
+   selectedAnalysis_int: number,
+   set_selectedAnalysis: Function,
+   analyses_dictLst: Array<any>,
 }
 
  
-const AnalyticsFilter: React.FC<FilterProps> = ({selectedFactor_int, set_selectedFactor, factors_dictLst}) => {
+const AnalyticsFilter: React.FC<FilterProps> = ({selectedAnalysis_int, set_selectedAnalysis, analyses_dictLst}) => {
 
    useEffect(
       () => {
-         let temp = factors_dictLst[0]['value'];
-         console.log(`Setting: ${temp}`);
-         set_selectedFactor(temp);
+         // let temp = analyses_dictLst[0]['value'];
+         // set_selectedAnalysis(temp);
       },
       []
    );
 
    return (<>
-      <div className="col-lg">
          <label 
             className="form-label"
             htmlFor="factorSelect_id" 
          >
-            Select Analysis
+            <h6>Select Analysis</h6>
          </label>
          <Form id="factorSelect_id">
             <Form.Control 
                as="select" 
-               value={selectedFactor_int} 
-               onChange={(e) => set_selectedFactor(e.target.value)}
+               value={selectedAnalysis_int} 
+               onChange={(e) => {
+                  console.log(`Clicked ${e.target.value}`);
+                  set_selectedAnalysis(
+                     e.target.value
+                  )
+               }}
             >
-               {factors_dictLst.map((factor_dict, index) => (
-                  <option key={index} value={factor_dict['value']}>
-                     {factor_dict['label']}
+               {analyses_dictLst.map((analysis_dict, index) => (
+                  <option 
+                     key={index} 
+                     value={analysis_dict['value']}
+                     data-toggle="tooltip"
+                     data-placement="right"
+                     title={analysis_dict['caption']}
+                     // onClick={()=>( set_selectedAnalysis(analysis_dict) )}
+                  >
+                     {analysis_dict['label']}
                   </option>
                ))}
             </Form.Control>
       </Form>
-      {/* {selectedFactor_int} */}
-      </div>
-   </>);
+      </>);
 };
 
 

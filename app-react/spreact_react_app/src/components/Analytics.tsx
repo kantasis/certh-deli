@@ -16,8 +16,7 @@ const grafana_url = `http://${grafana_host}:${grafana_port}/${grafana_path}/${da
 const AnalyticsPanel: React.FC = () => {
 
    const [isLoggedIn, setIsLoggedIn] = useState(false);
-   const [selectedFactor_int, set_selectedFactor] = useState(0);
-   const [glossaryTerm_int, set_glossaryTerm] = useState(0);
+   const [selectedAnalysis_int, set_selectedAnalysis] = useState(0);
 
    useEffect(
       () => {
@@ -50,7 +49,7 @@ const AnalyticsPanel: React.FC = () => {
          </>)
       },
       {
-         title: 'SOURCE',
+         title: 'Source',
          content: (<>
             <p>
                Global Burden of Disease 2019 (+ link)<br/>
@@ -61,58 +60,31 @@ const AnalyticsPanel: React.FC = () => {
             </p>
          </>)
       },
+      {
+         title: 'Year Lags',
+         content: (<>
+            <p>
+               Only statistically significant associations between risk factors and CRC incidence are shown. Higher coefficients indicate a stronger association between risk factor Summary Exposure Value (SEV) and CRC incidence. Year lags refer to the time interval between risk factor exposure and CRC incidence. Error bars represent the variance or uncertainty in the data. Negative coefficients may be related to a number of factors, e.g. the presence of confounding variables.
+            </p>
+         </>)
+      },
+      {
+         title: 'Risk Factors',
+         content: (<>
+            <p>
+               Only risk factors with a statistically significant association with CRC incidence are shown. Higher coefficients indicate a stronger association between risk factor Summary Exposure Value (SEV) and CRC incidence. Year lags refer to the time interval between risk factor exposure and CRC incidence. Error bars represent the variance or uncertainty in the data. Negative coefficients may be related to a number of factors, e.g. the presence of confounding variables.
+            </p>
+         </>)
+      },
+      {
+         title: 'Summary Exposure Value (SEV)',
+         content: (<>
+            <p>
+               measure of a population's exposure to a risk factor that takes into account the extent of exposure by risk level and the severity of that risk's contribution to disease burden
+            </p>
+         </>)
+      },
    ];
-   
-   // const images_dictLst = [
-   //    {
-   //       label: "01",
-   //       value: "01.png"
-   //    },
-   //    {
-   //       label: "02",
-   //       value: "02.png"
-   //    },
-   //    {
-   //       label: "03",
-   //       value: "03.png"
-   //    },
-   //    {
-   //       label: "04",
-   //       value: "04.png"
-   //    },
-   //    {
-   //       label: "05",
-   //       value: "05.png"
-   //    },
-   //    {
-   //       label: "06",
-   //       value: "06.png"
-   //    },
-   //    {
-   //       label: "07",
-   //       value: "07.png"
-   //    },
-   //    {
-   //       label: "08",
-   //       value: "08.png"
-   //    },
-   //    {
-   //       label: "09",
-   //       value: "09.png"
-   //    },
-   //    {
-   //       label: "10",
-   //       value: "10.png"
-   //    },
-   //    {
-   //       label: "11",
-   //       value: "11.png"
-   //    },
-   //    {
-   //       label: "13",
-   //       value: "13.png"
-   //    },
-   // ];
 
    const yearLagsImages_strLst = [
       "01.png",
@@ -133,41 +105,26 @@ const AnalyticsPanel: React.FC = () => {
       "13.png",
    ];
 
-   const factors_dictLst = [
-      {
-         label: "Year Lags",
-         value: 0,
-         description: "Summary Exposure Value1 of various CRC Risk Factors",
-      },
-      {
-         label: "Risk Factors",
-         value: 1,
-         description: "Time interval between Risk Factor exposure and CRC incidence",
-      },
-   ]
-
    const yearLags_html = (<>
-      <table>
-            {yearLagsImages_strLst.map((_, rowIndex_int) => {
-               const column_cnt = 2;
-               if (rowIndex_int%column_cnt!=0) return<></>;
-               const rowImages_strLst = yearLagsImages_strLst.slice(rowIndex_int,rowIndex_int+column_cnt)
-               console.log('asdf');
-               return (<>
-                  <tr key={`row:${rowIndex_int}`}>
-                     {rowImages_strLst.map((yearLagsImage_str, colIndex_int)=>(
-                        <td key={`cell-${rowIndex_int}-${colIndex_int}`}><img src={yearLagsImage_str} style={style.image}/></td>
-                     ))}
-                  </tr>
-               </>)
-
-            })}
-      </table>
+      <table><tbody>
+         {yearLagsImages_strLst.map((_, rowIndex_int) => {
+            const column_cnt = 2;
+            if (rowIndex_int%column_cnt!=0) return<></>;
+            const rowImages_strLst = yearLagsImages_strLst.slice(rowIndex_int,rowIndex_int+column_cnt)
+            return (<>
+               <tr key={`row:${rowIndex_int}`}>
+                  {rowImages_strLst.map((yearLagsImage_str, colIndex_int)=>(
+                     <td key={`cell-${rowIndex_int}-${colIndex_int}`}><img src={yearLagsImage_str} style={style.image}/></td>
+                  ))}
+               </tr>
+            </>)
+         })}
+      </tbody></table>
    </>);
    
    const riskFactors_html = (<>
-      <table>
-            {riskFactorImages_strLst.map((_, rowIndex_int) => {
+      <table><tbody>
+         {riskFactorImages_strLst.map((_, rowIndex_int) => {
                const column_cnt = 3;
                if (rowIndex_int%column_cnt!=0) return<></>;
                const rowImages_strLst = riskFactorImages_strLst.slice(rowIndex_int,rowIndex_int+column_cnt)
@@ -178,44 +135,71 @@ const AnalyticsPanel: React.FC = () => {
                      ))}
                   </tr>
                </>)
-
             })}
-      </table>
+      </tbody></table>
    </>);
+
+   const analyses_dictLst = [
+      {
+         value: 0,
+         label: "Year Lags",
+         title:"Change of associations between exposure to a specific risk factor and CRC incidence as year lags increase",
+         caption: "Time interval between Risk Factor exposure and CRC incidence",
+         html:yearLags_html,
+      },
+      {
+         value: 1,
+         label: "Risk Factors",
+         title:"Associations between exposure to various risk factors and CRC incidence for a specific year lag",
+         caption: "Summary Exposure Value of various CRC Risk Factors",
+         html:riskFactors_html,
+      },
+   ]
    
+   console.log(selectedAnalysis_int)
+
    return (<>
 
       <h3>ONCODIR Predictive Analytics</h3>
       <p>Regression analysis showing the impact of exposure to various risk factors on CRC incidence</p>
 
-      {/* Filters */}
       <div className="row">
 
-         <AnalyticsFilter
-            selectedFactor_int={selectedFactor_int}
-            set_selectedFactor={set_selectedFactor}
-            factors_dictLst={factors_dictLst}
-         />
+         {/* Left column */}
+         <div className="col-sm-1">
+            <AnalyticsFilter
+               selectedAnalysis_int={selectedAnalysis_int}
+               set_selectedAnalysis={set_selectedAnalysis}
+               analyses_dictLst={analyses_dictLst}
+            />
+            <p className="text-start">{analyses_dictLst[selectedAnalysis_int]['title']}</p>
+         </div>
+
+         {/* Centerpiece*/}
+         <div className="col-sm-9">
+            <h4>{analyses_dictLst[selectedAnalysis_int]['caption']}</h4>
+            {analyses_dictLst[selectedAnalysis_int]['html']}
+            {/* {selectedAnalysis_dict['html']} */}
+            {/* {yearLags_html} */}
+         </div>
+
+         {/* Right column */}
+         <div className="col-sm-2">
+            <h5>Glossary</h5>
+            <Accordion defaultActiveKey="-1">
+               {accordionContent_dictLst.map((accordionContent_dict, itemIndex_int) => (
+                  <Accordion.Item 
+                     eventKey={itemIndex_int.toString()} 
+                     key={itemIndex_int}
+                  >
+                     <Accordion.Header>{accordionContent_dict['title']}</Accordion.Header>
+                     <Accordion.Body className="text-start" >{accordionContent_dict['content']}</Accordion.Body>
+                  </Accordion.Item>
+               ))}
+            </Accordion>
+         </div>
 
       </div>
-      
-      <div className="row">
-         {[yearLags_html, riskFactors_html][selectedFactor_int]}
-         {/* <img alt="analysis" src={selectedFactor_int} style={style.image}/> */}
-      </div>
-      
-      <Accordion defaultActiveKey="0">
-         {accordionContent_dictLst.map((accordionContent_dict, itemIndex_int) => (
-            <Accordion.Item 
-               eventKey={itemIndex_int.toString()} 
-               key={itemIndex_int}
-            >
-               <Accordion.Header>{accordionContent_dict['title']}</Accordion.Header>
-               <Accordion.Body>{accordionContent_dict['content']}</Accordion.Body>
-            </Accordion.Item>
-         ))}
-      </Accordion>
-
    </>);
 };
 
