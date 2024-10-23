@@ -33,7 +33,7 @@ const AnalyticsPanel: React.FC = () => {
          width: '100%',
          height: '100%',
          objectFit: 'cover', // Maintains aspect ratio, while covering the area
-         padding: '15% 0%'
+         padding: '2% 0%'
       }
    };
    
@@ -42,11 +42,11 @@ const AnalyticsPanel: React.FC = () => {
          title: 'Source',
          content: (<>
             <p>
-               Global Burden of Disease 2019 (+ link) Data from 1990 to 2019<br/>
-               <br/>
-               Data from 34 European countries<br/>
-               CRC Incidence Age-Standardised Rate (ASR)<br/>
-               Data aggregated for Both sexes<br/>
+               Global Burden of Disease 2019.<br/><br/>
+               Data from 1990 to 2019.<br/><br/>
+               Data from 34 European countries<br/><br/>
+               CRC Incidence Age-Standardised Rate (ASR)<br/><br/>
+               Data aggregated for Both sexes<br/><br/>
             </p>
          </>)
       },
@@ -70,7 +70,11 @@ const AnalyticsPanel: React.FC = () => {
          title: 'Methodology',
          content: (<>
             <p>
-            Random Effects Linear Regression was performed with country as a Random Effect. Final number of risk factors used in the model was 13. Time-lag analyses of 1, 3, 5 and 10 years between CRC Incidence and Risk Factors investigated potential downstream effects. For example, SEV for 1990 was correlated with CRC incidence for 1991, 1993, 1995 and 2000. SEV for 1991 was correlated with CRC incidence for 1992, 1994, 1996 and 2001 and so on.
+               Random Effects Linear Regression was performed with country as a Random Effect.<br/><br/>
+               Final number of risk factors used in the model was 13. <br/><br/>
+               Time-lag analyses of 1, 3, 5 and 10 years between CRC Incidence and Risk Factors investigated potential downstream effects.<br/><br/>
+               For example, SEV for 1990 was correlated with CRC incidence for 1991, 1993, 1995 and 2000. <br/><br/>
+               SEV for 1991 was correlated with CRC incidence for 1992, 1994, 1996 and 2001 and so on.<br/><br/>
             </p>
          </>)
       },
@@ -104,7 +108,9 @@ const AnalyticsPanel: React.FC = () => {
             return (<>
                <tr key={`row:${rowIndex_int}`}>
                   {rowImages_strLst.map((yearLagsImage_str, colIndex_int)=>(
-                     <td key={`cell-${rowIndex_int}-${colIndex_int}`}><img src={yearLagsImage_str} style={style.image}/></td>
+                     <td key={`cell-${rowIndex_int}-${colIndex_int}`}>
+                        <img src={yearLagsImage_str} style={style.image}/>
+                     </td>
                   ))}
                </tr>
             </>)
@@ -115,7 +121,7 @@ const AnalyticsPanel: React.FC = () => {
    const riskFactors_html = (<>
       <table><tbody>
          {riskFactorImages_strLst.map((_, rowIndex_int) => {
-               const column_cnt = 3;
+               const column_cnt = 2;
                if (rowIndex_int%column_cnt!=0) return<></>;
                const rowImages_strLst = riskFactorImages_strLst.slice(rowIndex_int,rowIndex_int+column_cnt)
                return (<>
@@ -135,19 +141,46 @@ const AnalyticsPanel: React.FC = () => {
          label: "",
          title:"",
          caption: "",
-         html:(<></>),
+         html:(<>
+            <p>.</p>
+            <p>.</p>
+            <p>
+               In this page you can see the results of a regression analysis showing the impact of exposure to various risk factors on CRC incidence.
+               <br/>
+               <br/>
+               Please select a type of presentation from the drop-down menu on the left. 
+               <br/>
+               <br/>
+               In the menu on the right hand side you can find details about the data and methodology of the analysis.
+               <br/>
+            </p>
+         </>),
       },
       {
          value: 1,
          label: "Per Year Lag",
-         title:"Change of associations between exposure to a specific risk factor and CRC incidence as year lags increase between them. “Only statistically significant associations between risk factors and CRC incidence are shown. Higher coefficients indicate a stronger association between risk factor Summary Exposure Value (SEV) and CRC incidence. Negative coefficients may be related to a number of factors, e.g. the presence of confounding variables.",
          caption: "Time interval between Risk Factor exposure and CRC incidence",
+         title: (<>
+            <p>
+               Associations between exposure to various risk factors and CRC incidence for a specific year lag between them.<br/><br/>
+               Only statistically significant associations between risk factors and CRC incidence are shown. <br/><br/>
+               Higher coefficients indicate a stronger association between risk factor Summary Exposure Value (SEV) and CRC incidence. <br/><br/>
+               Negative coefficients may be related to a number of factors, e.g. the presence of confounding variables.
+            </p>
+         </>),
          html:yearLags_html,
       },
       {
          value: 2,
          label: "Per Risk Factor",
-         title:"Associations between exposure to various risk factors and CRC incidence for a specific year lag between them. “Only statistically significant associations between risk factors and CRC incidence are shown. Higher coefficients indicate a stronger association between risk factor Summary Exposure Value (SEV) and CRC incidence. Negative coefficients may be related to a number of factors, e.g. the presence of confounding variables.",
+         title:(<>
+            <p>
+            Change of associations between exposure to a specific risk factor and CRC incidence as year lags increase between them.<br/><br/>
+               Only statistically significant associations between risk factors and CRC incidence are shown. <br/><br/>
+               Higher coefficients indicate a stronger association between risk factor Summary Exposure Value (SEV) and CRC incidence. <br/><br/>
+               Negative coefficients may be related to a number of factors, e.g. the presence of confounding variables.
+            </p>
+         </>),
          caption: "Summary Exposure Value of various CRC Risk Factors",
          html:riskFactors_html,
       },
@@ -159,18 +192,21 @@ const AnalyticsPanel: React.FC = () => {
 
          {/* Left column */}
          <div className="col-sm-2">
+            <p>.</p>
             <AnalyticsFilter
                selectedAnalysis_int={selectedAnalysis_int}
                set_selectedAnalysis={set_selectedAnalysis}
                analyses_dictLst={analyses_dictLst}
             />
+            <br/>
             <p className="text-start">{analyses_dictLst[selectedAnalysis_int]['title']}</p>
          </div>
 
          {/* Centerpiece*/}
          <div className="col-sm-8">
-            <h3>Regression analysis showing the impact of exposure to various risk factors on CRC incidence</h3>
-            <h4>{analyses_dictLst[selectedAnalysis_int]['caption']}</h4>
+            {/* <h4>{analyses_dictLst[selectedAnalysis_int]['caption']}</h4> */}
+            <div></div>
+            {/* TODO: auta na eksafanizontai otan to epilegeis */}
             {analyses_dictLst[selectedAnalysis_int]['html']}
             {/* {selectedAnalysis_dict['html']} */}
             {/* {yearLags_html} */}
@@ -178,6 +214,7 @@ const AnalyticsPanel: React.FC = () => {
 
          {/* Right column */}
          <div className="col-sm-2">
+            <p>.</p>
             <h5>Glossary</h5>
             <Accordion defaultActiveKey="-1">
                {accordionContent_dictLst.map((accordionContent_dict, itemIndex_int) => (
