@@ -77,22 +77,22 @@ const AnalyticsPanel: React.FC = () => {
    ];
 
    const yearLagsImages_strLst = [
-      "01.png",
-      "02.png",
-      "03.png",
-      "04.png",
+      "1 Year Lag.png",
+      "3 Years Lag.png",
+      "5 Years Lag.png",
+      "10 Years Lag.png",
    ];
 
    const riskFactorImages_strLst = [
-      "05.png",
-      "06.png",
-      "07.png",
-      "08.png",
-      "09.png",
-      "10.png",
-      "11.png",
-      "12.png",
-      "13.png",
+      "Alcohol use.png",
+      "Diet high in red meat.png",
+      "Diet high in trans fatty acids.png",
+      "Diet low in polyunsaturated fatty acids.png",
+      "Diet low in seafood omega-3 fatty acids.png",
+      "Diet low in vegetables.png",
+      "Diet low in whole grains.png",
+      "High body-mass index.png",
+      "Low physical activity.png",
    ];
 
    const yearLags_html = (<>
@@ -169,6 +169,7 @@ const AnalyticsPanel: React.FC = () => {
 
          {/* Centerpiece*/}
          <div className="col-sm-8">
+            <h3>Regression analysis showing the impact of exposure to various risk factors on CRC incidence</h3>
             <h4>{analyses_dictLst[selectedAnalysis_int]['caption']}</h4>
             {analyses_dictLst[selectedAnalysis_int]['html']}
             {/* {selectedAnalysis_dict['html']} */}
