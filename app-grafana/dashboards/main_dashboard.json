@@ -510,8 +510,8 @@
       },
       {
         "current": {
-          "text": "> 1990",
-          "value": "1990"
+          "text": "> 1989",
+          "value": "1989"
         },
         "includeAll": false,
         "name": "minyear_filter",
@@ -521,8 +521,8 @@
       },
       {
         "current": {
-          "text": "> 2020",
-          "value": "2020"
+          "text": "> 2021",
+          "value": "2021"
         },
         "includeAll": false,
         "name": "maxyear_filter",
