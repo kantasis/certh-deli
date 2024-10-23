@@ -381,19 +381,16 @@ Next steps:
 
 # 
 
-<!-- 1.	Remove title (bold) -->
-<!-- 2.	Remove title of graphs (bold) -->
-<!-- 3.	Replace Select Analysis with: “Select Presentation” -->
-<!-- 4.	Drop down: [Per] Year Lag / [Per] Risk Factor -->
-<!-- 5.	…as year lags [ADD: between them] increase -->
-<!-- 6.	…year lag [ADD: between them] -->
-<!-- 7.	Leave space between graphs (vertically) -->
-<!-- 8.	For both presentations add this in the description (and remove from Glossary): 
-“Only statistically significant associations between risk factors and CRC incidence are shown. Higher coefficients indicate a stronger association between risk factor Summary Exposure Value (SEV) and CRC incidence. Negative coefficients may be related to a number of factors, e.g. the presence of confounding variables.” -->
-<!-- 9.	Glossary – Source first, then SEV, then Year Lags, then Methodology – remove Risk Factors -->
-<!-- 10.	Source: Global Burden of Disease 2019 study… CRC Incidence: Age-Standardised Rate (ASR) with Data aggregated for Both sexes -->
-<!-- 11.	SEV: Measure of a population's exposure to a risk factor that takes into account the extent of exposure by risk level and the severity of that risk's contribution to disease burden.  -->
-<!-- 12.	Year Lags: Year lags refer to the time interval between risk factor exposure and CRC incidence. Based on: Cai et al. 2024 (Public Health). -->
-<!-- 13.	Methodology: Random Effects Linear Regression was performed with country as a Random Effect. Final number of risk factors used in the model was 13. Time-lag analyses of 1, 3, 5 and 10 years between CRC Incidence and Risk Factors investigated potential downstream effects. For example, SEV for 1990 was correlated with CRC incidence for 1991, 1993, 1995 and 2000. SEV for 1991 was correlated with CRC incidence for 1992, 1994, 1996 and 2001 and so on. -->
+
+http://localhost:3000/d-solo/edn5ahxrzaw3kc/deli-main-dashboard?panelId=1&var-minyear_filter=1990&var-maxyear_filter=2020&
+
+
+
+http://localhost:3000/d-solo/edn5ahxrzaw3kc/deli-main-dashboard?var-minyear_filter=1992&var-maxyear_filter=2019&panelId=1&
+
+
+
+
+
 
 

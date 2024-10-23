@@ -87,18 +87,6 @@ const AnalyticsPanel: React.FC = () => {
       "10 Years Lag.png",
    ];
 
-   const riskFactorImages_strLst = [
-      "Alcohol use.png",
-      "Diet high in red meat.png",
-      "Diet high in trans fatty acids.png",
-      "Diet low in polyunsaturated fatty acids.png",
-      "Diet low in seafood omega-3 fatty acids.png",
-      "Diet low in vegetables.png",
-      "Diet low in whole grains.png",
-      "High body-mass index.png",
-      "Low physical activity.png",
-   ];
-
    const yearLags_html = (<>
       <table><tbody>
          {yearLagsImages_strLst.map((_, rowIndex_int) => {
@@ -117,7 +105,19 @@ const AnalyticsPanel: React.FC = () => {
          })}
       </tbody></table>
    </>);
-   
+
+   const riskFactorImages_strLst = [
+      "Alcohol use.png",
+      "Diet high in red meat.png",
+      "Diet high in trans fatty acids.png",
+      "Diet low in polyunsaturated fatty acids.png",
+      "Diet low in seafood omega-3 fatty acids.png",
+      "Diet low in vegetables.png",
+      "Diet low in whole grains.png",
+      "High body-mass index.png",
+      "Low physical activity.png",
+   ];
+
    const riskFactors_html = (<>
       <table><tbody>
          {riskFactorImages_strLst.map((_, rowIndex_int) => {

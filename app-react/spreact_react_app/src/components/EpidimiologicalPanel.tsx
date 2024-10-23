@@ -3,7 +3,7 @@ import * as AuthService from "../services/auth.service.tsx";
 import { Button, Dropdown } from 'react-bootstrap'; 
 import CountryFilter from "./CountryFilter.tsx";
 import YearFilter from "./YearFilter.tsx";
-// import Multiselect from 'react-bootstrap-multiselect';
+import { Accordion } from 'react-bootstrap';
 
 
 const grafana_host = import.meta.env.VITE_GRAFANA_HOST;
@@ -24,8 +24,8 @@ const NewDash: React.FC = () => {
       "Greece",
       "Italy",
    ]);
-   const [minYear_int, set_minYear] = useState(1990);
-   const [maxYear_int, set_maxYear] = useState(2020);
+   const [minYear_int, set_minYear] = useState(0);
+   const [maxYear_int, set_maxYear] = useState(0);
 
    const getUriParams = () => {
       let countryFilter_str = selectedCountries_lst.map( (country_str, index) => `var-country_filter=${country_str}`).join('&');
@@ -45,33 +45,77 @@ const NewDash: React.FC = () => {
    if (!isLoggedIn)
       return <h2>Unauthorized</h2>;
 
-   return (<>
+   const accordionContent_dictLst = [
+      {
+         title: 'Source',
+         content: (<>
+            <p>
+               Global Burden of Disease 2019.<br/><br/>
+               Data from 1990 to 2019.<br/><br/>
+               Data from 34 European countries<br/><br/>
+               CRC Incidence Age-Standardised Rate (ASR)<br/><br/>
+               Data aggregated for Both sexes<br/><br/>
+            </p>
+         </>)
+      },
+   ];
+
+return (<>
       <div className="row">
 
-         <CountryFilter
-            selectedCountries_lst={selectedCountries_lst}
-            set_selectedCountries={set_selectedCountries}
-         />
+         {/* Left Navbar */}
+         <div className="col-sm-2">
 
-         <YearFilter
-            minYear_int={minYear_int}
-            set_minYear={set_minYear}
-            maxYear_int={maxYear_int}
-            set_maxYear={set_maxYear}
-         />
+            <CountryFilter
+               selectedCountries_lst={selectedCountries_lst}
+               set_selectedCountries={set_selectedCountries}
+            />
 
+            <YearFilter
+               minYear_int={minYear_int}
+               set_minYear={set_minYear}
+               maxYear_int={maxYear_int}
+               set_maxYear={set_maxYear}
+            />
+
+         </div>
+
+         {/* Center Content */}
+         <div className="col-sm-8">
+            <div className="embed-responsive embed-responsive-16by9">
+               <iframe 
+                  id="embeddedPanel_id"
+                  className="embed-responsive-item"
+                  src={iFrame_url}
+                  width="100%"
+                  height="600px"
+               >
+               </iframe>
+            </div>
+            <p>{iFrame_url}</p>
+            <p>{typeof(minYear_int)}</p>
+            <p>{typeof(maxYear_int)}</p>
+         </div>
+
+         {/* Right Navbar */}
+         <div className="col-sm-2">
+            {/* TODO: use a component for this perhaps? */}
+            <h5>Glossary</h5>
+            <Accordion defaultActiveKey="-1">
+               {accordionContent_dictLst.map((accordionContent_dict, itemIndex_int) => (
+                  <Accordion.Item 
+                     eventKey={itemIndex_int.toString()} 
+                     key={itemIndex_int}
+                  >
+                     <Accordion.Header>{accordionContent_dict['title']}</Accordion.Header>
+                     <Accordion.Body className="text-start" >{accordionContent_dict['content']}</Accordion.Body>
+                  </Accordion.Item>
+               ))}
+            </Accordion>
+         </div>
+   
       </div>
       
-      <div className="embed-responsive embed-responsive-16by9">
-         <iframe 
-            id="embeddedPanel_id"
-            className="embed-responsive-item"
-            src={iFrame_url}
-            width="100%"
-            height="600px"
-         >
-         </iframe>
-      </div>
       {/* <div>{iFrame_url}</div> */}
 
    </>);

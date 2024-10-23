@@ -51,40 +51,47 @@ const LifestylePanel: React.FC = () => {
       {/* Filters */}
       <div className="row">
 
-         <CountryFilter
-            selectedCountries_lst={selectedCountries_lst}
-            set_selectedCountries={set_selectedCountries}
-         />
+         <div className="col-sm-2">
+            <CountryFilter
+               selectedCountries_lst={selectedCountries_lst}
+               set_selectedCountries={set_selectedCountries}
+            />
 
-         <YearFilter
-            minYear_int={minYear_int}
-            set_minYear={set_minYear}
-            maxYear_int={maxYear_int}
-            set_maxYear={set_maxYear}
-         />
+            <YearFilter
+               minYear_int={minYear_int}
+               set_minYear={set_minYear}
+               maxYear_int={maxYear_int}
+               set_maxYear={set_maxYear}
+            />
 
-         <FactorFilter
-            selectedFactor_str={selectedFactor_str}
-            set_selectedFactor={set_selectedFactor}
-         />
+            <FactorFilter
+               selectedFactor_str={selectedFactor_str}
+               set_selectedFactor={set_selectedFactor}
+            />
+         </div>
 
-      </div>
+         <div className="col-sm-8">
+            {/* TODO: This div is repeated a lot, put it in a component */}
+            <div className="embed-responsive embed-responsive-16by9">
+               <iframe 
+                  id="embeddedPanel_id"
+                  className="embed-responsive-item"
+                  src={iFrame_url}
+                  width="100%"
+                  height="600px"
+               >
+               </iframe>
+               <div>
+                  {iFrame_url}
+               </div>
+            </div>
+         </div>
 
-      <div className="embed-responsive embed-responsive-16by9">
-         <iframe 
-            id="embeddedPanel_id"
-            className="embed-responsive-item"
-            src={iFrame_url}
-            width="100%"
-            height="600px"
-         >
-         </iframe>
-         <div>
-            {iFrame_url}
+         <div className="col-sm-2">
+            <Glossary/>
          </div>
       </div>
 
-      <Glossary/>
 
    </>);
 };

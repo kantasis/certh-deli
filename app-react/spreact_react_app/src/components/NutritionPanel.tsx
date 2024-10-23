@@ -42,40 +42,52 @@ const NewDash: React.FC = () => {
    if (!isLoggedIn)
       return <h2>Unauthorized</h2>;
 
+
    return (<>
       <div className="row">
 
-         <CountryFilter
-            selectedCountries_lst={selectedCountries_lst}
-            set_selectedCountries={set_selectedCountries}
-         />
+         {/* Left Navbar */}
+         <div className="col-sm-2">
 
-         <YearFilter
-            minYear_int={minYear_int}
-            set_minYear={set_minYear}
-            maxYear_int={maxYear_int}
-            set_maxYear={set_maxYear}
-         />
+            <CountryFilter
+               selectedCountries_lst={selectedCountries_lst}
+               set_selectedCountries={set_selectedCountries}
+            />
 
-         <FactorFilter
-            selectedFactor_str={selectedFactor_str}
-            set_selectedFactor={set_selectedFactor}
-         />
+            <YearFilter
+               minYear_int={minYear_int}
+               set_minYear={set_minYear}
+               maxYear_int={maxYear_int}
+               set_maxYear={set_maxYear}
+            />
 
-      </div>
+            <FactorFilter
+               selectedFactor_str={selectedFactor_str}
+               set_selectedFactor={set_selectedFactor}
+            />
+         </div>
+
       
-      <div className="embed-responsive embed-responsive-16by9">
-         <iframe 
-            id="embeddedPanel_id"
-            className="embed-responsive-item"
-            src={iFrame_url}
-            width="100%"
-            height="600px"
-         >
-         </iframe>
-      </div>
+         {/* Center Content */}
+         <div className="col-sm-8">
 
-      <Glossary/>
+            <div className="embed-responsive embed-responsive-16by9">
+               <iframe 
+                  id="embeddedPanel_id"
+                  className="embed-responsive-item"
+                  src={iFrame_url}
+                  width="100%"
+                  height="600px"
+               >
+               </iframe>
+            </div>
+         </div>
+         {/* Right Navbar */}
+         <div className="col-sm-2">
+            <Glossary/>
+         </div>
+      
+      </div>
 
    </>);
 };

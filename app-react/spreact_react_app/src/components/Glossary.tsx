@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import * as AuthService from "../services/auth.service.tsx";
+import { Accordion } from 'react-bootstrap';
 
 
 const grafana_host = import.meta.env.VITE_GRAFANA_HOST;
@@ -24,121 +25,75 @@ const Glossary: React.FC = () => {
    if (!isLoggedIn)
       return <h2>Unauthorized</h2>;
 
+   const accordionContent_dictLst = [
+      {
+         title: 'Source',
+         content: (<>
+            <p>
+               Global Burden of Disease 2019.<br/><br/>
+               Data from 1990 to 2019.<br/><br/>
+               Data from 34 European countries<br/><br/>
+               CRC Incidence Age-Standardised Rate (ASR)<br/><br/>
+               Data aggregated for Both sexes<br/><br/>
+            </p>
+         </>)
+      },
+      {
+         title: 'Summary Exposure Value (SEV)',
+         content: (<>
+            <p>
+            Measure of a population's exposure to a risk factor that takes into account the extent of exposure by risk level and the severity of that risk's contribution to disease burden. 
+            </p>
+         </>)
+      },
+      {
+         title: 'Deaths',
+         content: (<>
+            <p>
+            Number of deaths in the population per 100,000.
+            </p>
+         </>)
+      },
+      {
+         title: 'Disability adjusted life years (DALYs)',
+         content: (<>
+            <p>
+            Number of DALYs in the population per 100,000.
+            </p>
+         </>)
+      },
+      {
+         title: 'Years of life lost (YLLs)',
+         content: (<>
+            <p>
+            Number of YLLs in the population per 100,000
+            </p>
+         </>)
+      },
+      {
+         title: 'Years lived with disability (YLDs)',
+         content: (<>
+            <p>
+            Number of YLDs in the population per 100,000
+            </p>
+         </>)
+      },
+   ];
+
    return (<>
 
-      <div className="row">
-         <h2>Glossary:</h2>
-         <table className="table">
-            <thead>
-               <tr>
-                  <th scope="col">Measure</th>
-                  <th scope="col">Definition</th>
-                  {/* <th scope="col">Percent</th> */}
-                  <th scope="col">Rate</th>
-                  {/* <th scope="col">Years</th>
-                  <th scope="col">Probability of death</th> */}
-               </tr>
-            </thead>
-            <tbody>
-            <tr>
-                  <th scope="row">Summary Exposure Value (SEV)</th>
-                  <td>The prevalence of cases weighted by the risk</td>
-                  {/* <td>n/a</td> */}
-                  <td>Cases per 100,000 population</td>
-                  {/* <td>n/a</td>
-                  <td>n/a</td> */}
-               </tr>
-               <tr>
-                  <th scope="row">Deaths</th>
-                  <td>Number of deaths in the population</td>
-                  {/* <td>Proportion of deaths for a particular cause relative to deaths from all causes</td> */}
-                  <td>Deaths per 100,000 population</td>
-                  {/* <td>n/a</td>
-                  <td>n/a</td> */}
-               </tr>
-               <tr>
-                  <th scope="row">Disability adjusted life years (DALYs)</th>
-                  <td>Number of DALYs in the population</td>
-                  {/* <td>Proportion of DALYs for a particular cause relative to DALYs for all causes</td> */}
-                  <td>DALYs per 100,000 population</td>
-                  {/* <td>n/a</td>
-                  <td>n/a</td> */}
-               </tr>
-               <tr>
-                  <th scope="row">Years of life lost (YLLs)</th>
-                  <td>Number of YLLs in the population</td>
-                  {/* <td>Proportion of YLLs for a particular cause relative to YLDs for all causes</td> */}
-                  <td>YLLs per 100,000 population</td>
-                  {/* <td>n/a</td>
-                  <td>n/a</td> */}
-               </tr>
-               <tr>
-                  <th scope="row">Years lived with disability (YLDs)</th>
-                  <td>Number of YLDs in the population</td>
-                  {/* <td>Proportion of YLDs for a particular cause relative to YLDs for all causes</td> */}
-                  <td>YLDs per 100,000 population</td>
-                  {/* <td>n/a</td>
-                  <td>n/a</td> */}
-               </tr>
-               {/* <tr>
-                  <th scope="row">Prevalence</th>
-                  <td>Total number of cases in the population</td>
-                  <td>Proportion of total cases of a particular cause relative to cases from all causes</td>
-                  <td>Total cases per 100,000 population</td>
-                  <td>n/a</td>
-                  <td>n/a</td>
-               </tr>
-               <tr>
-                  <th scope="row">Incidence</th>
-                  <td>Number of new cases in the population</td>
-                  <td>Proportion of new cases of a particular cause relative to cases from all causes</td>
-                  <td>New cases per 100,000 population</td>
-                  <td>n/a</td>
-                  <td>n/a</td>
-               </tr>
-               <tr>
-                  <th scope="row">Maternal mortality ratio (MMR)</th>
-                  <td>n/a</td>
-                  <td>n/a</td>
-                  <td>Deaths per 100,000 live births</td>
-                  <td>n/a</td>
-                  <td>n/a</td>
-               </tr>
-               <tr>
-                  <th scope="row">Probability of death</th>
-                  <td>n/a</td>
-                  <td>n/a</td>
-                  <td>n/a</td>
-                  <td>n/a</td>
-                  <td>Probability of dying due to a specific cause between a given age start and end, contingent upon being alive at age start</td>
-               </tr>
-               <tr>
-                  <th scope="row">Life expectancy</th>
-                  <td>n/a</td>
-                  <td>n/a</td>
-                  <td>n/a</td>
-                  <td>Years lived</td>
-                  <td>n/a</td>
-               </tr>
-               <tr>
-                  <th scope="row">Healthy life expectancy (HALE)</th>
-                  <td>n/a</td>
-                  <td>n/a</td>
-                  <td>n/a</td>
-                  <td>Years lived</td>
-                  <td>n/a</td>
-               </tr>
-               <tr>
-                  <th scope="row">Summary exposure value (SEV)</th>
-                  <td>n/a</td>
-                  <td>n/a</td>
-                  <td>0 to 100, where 0 is no risk and 100 is the highest level of risk</td>
-                  <td>n/a</td>
-                  <td>n/a</td>
-               </tr> */}
-            </tbody>
-         </table>
-      </div>
+      <h5>Glossary</h5>
+      <Accordion defaultActiveKey="-1">
+         {accordionContent_dictLst.map((accordionContent_dict, itemIndex_int) => (
+            <Accordion.Item 
+               eventKey={itemIndex_int.toString()} 
+               key={itemIndex_int}
+            >
+               <Accordion.Header>{accordionContent_dict['title']}</Accordion.Header>
+               <Accordion.Body className="text-start" >{accordionContent_dict['content']}</Accordion.Body>
+            </Accordion.Item>
+         ))}
+      </Accordion>
 
    </>);
 };
