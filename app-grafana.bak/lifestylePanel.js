@@ -18,24 +18,39 @@ function getQueryResult(query_name) {
    ;
 }
 
-const countries_strLst = getSelections("country_filter")
+const selectedCountries_strLst = getSelections("country_filter")
 
 const queryResult = getQueryResult('deli_lifestyle_query');
+const allCountries_strLst = queryResult['fields']
+   .find((column_dict) => column_dict['name'] === 'Country')
+   ['values'];
 
 let dataFrame = {};
 dataFrame['data']={};
 
-countries_strLst
-   .forEach((country_name, index) => {
-      const temp = queryResult['fields']
+// console.log(queryResult);
+selectedCountries_strLst
+   .forEach((country_name, selectedCountry_idx) => {
+
+      country_idx = allCountries_strLst.indexOf(country_name);
+
+      // console.log(country_name)
+      // console.log(queryResult['fields']
+      //    .filter((column_dict) => column_dict['name'] !== 'Country')
+      //    .map((column_dict) => column_dict['values'][country_idx])
+      // );
+
+      const countryValues_arr = queryResult['fields']
          .filter((column_dict) => column_dict['name'] !== 'Country')
          .map((column_dict) => {
-            return column_dict['values'][index]
+            return column_dict['values'][country_idx]
          })
       ;
-      dataFrame['data'][country_name] = temp;
+      dataFrame['data'][country_name] = countryValues_arr;
+
    })
 ;
+
 
 dataFrame['index']=[];
 queryResult['fields']
@@ -47,15 +62,17 @@ queryResult['fields']
 
 dataFrame['columns'] = Object.keys(dataFrame['data']);
 
+// console.log(dataFrame);
+
 const data_opt = [
    [ 'Risk Factor', ...dataFrame['columns'] ],
 
    ...dataFrame['index']
-      .map((index_str, index_int) => {
+      .map((index_str, index_idx) => {
          let temp=[];
          dataFrame['columns']
-            .forEach((column_name, index_int) => {
-               temp[index_int] = dataFrame.data[column_name][index_int]
+            .forEach((column_name, column_idx) => {
+               temp[column_idx] = dataFrame.data[column_name][index_idx]
             })
          ;
          return [
@@ -65,6 +82,9 @@ const data_opt = [
       })
    ,
 ];
+
+// console.log(data_opt);
+
 
 option = {
    title: {
