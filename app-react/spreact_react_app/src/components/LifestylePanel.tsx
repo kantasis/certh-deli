@@ -82,7 +82,7 @@ const LifestylePanel: React.FC = () => {
                >
                </iframe>
                <div>
-                  {iFrame_url}
+                  {/* {iFrame_url} */}
                </div>
             </div>
          </div>

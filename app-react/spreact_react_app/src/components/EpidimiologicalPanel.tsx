@@ -92,9 +92,7 @@ return (<>
                >
                </iframe>
             </div>
-            <p>{iFrame_url}</p>
-            <p>{typeof(minYear_int)}</p>
-            <p>{typeof(maxYear_int)}</p>
+            {/* <p>{iFrame_url}</p> */}
          </div>
 
          {/* Right Navbar */}

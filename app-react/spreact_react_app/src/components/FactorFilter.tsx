@@ -37,7 +37,6 @@ const FactorFilter: React.FC<FilterProps> = ({selectedFactor_str, set_selectedFa
    useEffect(
       () => {
          let temp = factors_dictLst[0]['value'];
-         console.log(`Setting: ${temp}`);
          set_selectedFactor(temp);
       },
       []

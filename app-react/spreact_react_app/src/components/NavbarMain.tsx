@@ -13,13 +13,11 @@ const NavbarMain: React.FC = () => {
    useEffect(
       () => {
          setIsLoggedIn(AuthService.isLoggedIn());
-         console.log("Navbar: "+ isLoggedIn);
       }, 
       []
    );
 
    const logout = () => {
-      console.log('logging off');
       AuthService.logout();
       window.location.reload();
    };

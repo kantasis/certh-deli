@@ -69,9 +69,7 @@ const PolicyPanel: React.FC = () => {
                height="600px"
             >
             </iframe>
-            <div>
-               {iFrame_url}
-            </div>
+            {/* <div>{iFrame_url}</div> */}
          </div>
 
          </div>

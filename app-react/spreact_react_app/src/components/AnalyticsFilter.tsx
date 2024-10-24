@@ -32,7 +32,6 @@ const AnalyticsFilter: React.FC<FilterProps> = ({selectedAnalysis_int, set_selec
                as="select" 
                value={selectedAnalysis_int} 
                onChange={(e) => {
-                  console.log(`Clicked ${e.target.value}`);
                   set_selectedAnalysis(
                      e.target.value
                   )
