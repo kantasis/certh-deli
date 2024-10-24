@@ -504,6 +504,7 @@ CREATE TABLE data_tbl (
 CREATE TABLE policies_tbl (
    id SERIAL PRIMARY KEY,
    "Country" VARCHAR(250),
-   "Value" INT,
-   "Policy" VARCHAR(250)
+   "Policy" VARCHAR(250),
+   "Type" VARCHAR(250),
+   "Comment" VARCHAR(250)
 );

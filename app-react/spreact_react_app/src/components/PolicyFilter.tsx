@@ -11,23 +11,24 @@ interface FilterProps {
  
 const PolicyFilter: React.FC<FilterProps> = ({selectedPolicy_str, set_selectedPolicy}) => {
 
+   // TODO: Fix the trailing spaces from the database
    const policies_strLst = [
       "Alcohol Consumption",
       "Diabetes",
-      "Environmental Factors" ,
+      "Environmental Factors ", // YES with the trailing space
       "Governance",
       "Health Education",
       "Health Literacy",
       "Health Promotion",
       "Mental Health",
       "Nutrition",
-      "Occupational Risk Factors" ,
+      "Occupational Risk Factors ",
       "Personalized Medicine",
       "Physical Activity",
       "Psychotropic Substances",
       "R&D",
       "Smoking",
-      "Vaccinations & Communicable Di",
+      "Vaccinations & Communicable Di ",
    ];
 
    useEffect(

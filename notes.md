@@ -134,7 +134,7 @@ docker exec -it \
 
 # Import the policies
 docker cp services/postgres/import_policies.sql deli_db_container:/
-docker cp shared/policy_data.csv deli_db_container:/tmp/policy_data.csv
+docker cp services/postgres/policies.csv deli_db_container:/tmp/policies.csv
 docker exec -it \
    deli_db_container \
    psql \
@@ -381,14 +381,22 @@ Next steps:
 
 # 
 
-
-http://localhost:3000/d-solo/edn5ahxrzaw3kc/deli-main-dashboard?panelId=1&var-minyear_filter=1990&var-maxyear_filter=2020&
-
-
-
-http://localhost:3000/d-solo/edn5ahxrzaw3kc/deli-main-dashboard?var-minyear_filter=1992&var-maxyear_filter=2019&panelId=1&
-
-
+Psychotropic Substances
+R&D
+Health Education
+Environmental Factors 
+Alcohol Consumption
+Health Literacy
+Governance
+Diabetes
+Personalized Medicine
+Health Promotion
+Nutrition
+Occupational Risk Factors 
+Physical Activity
+Mental Health
+Vaccinations & Communicable Di 
+Smoking
 
 
 

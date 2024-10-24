@@ -1,9 +1,10 @@
 COPY policies_tbl(
    "Country",
-   "Value",
-   "Policy"
+   "Policy",
+   "Type",
+   "Comment"
 )
-FROM '/tmp/policy_data.csv'
+FROM '/tmp/policies.csv'
 DELIMITER ','
 CSV HEADER
 ;

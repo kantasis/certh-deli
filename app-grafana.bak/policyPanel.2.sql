@@ -1,8 +1,7 @@
 SELECT
    "Country",
-   count(id) as "Value"
+   "Type"
 FROM policies_tbl
 WHERE true
    AND "Policy" = '${policy_filter}'
-GROUP BY "Country", "Policy"
 ;

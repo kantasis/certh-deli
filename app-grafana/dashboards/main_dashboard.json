@@ -377,7 +377,7 @@
           "key": "",
           "plugin": "AMap.Scale,AMap.ToolBar"
         },
-        "getOption": "function getQueryResult(query_name) {\n   const result = context\n      .panel\n      .data\n      .series\n      .find((series_dict) =>\n         series_dict['refId'] === query_name\n      )\n      ;\n   if (!result)\n      console.log(`Error: Query with name ${query_name} not found`)\n   return result['fields'];\n}\n\nconst queryResult = getQueryResult('deli_policy_query')\nconsole.log(queryResult);\n\nconst countries_strLst = queryResult\n   .find((column_dict) => column_dict['name'] == 'Country')\n['values']\n\nconst values_intLst = queryResult\n   .find((column_dict) => column_dict['name'] == 'Value')\n['values']\n\n\nlet data_opt = []\n\ncountries_strLst\n   .forEach((country_name, index_int) => {\n      data_opt[index_int] = { name: country_name, value: values_intLst[index_int] };\n   })\n   ;\n\noption = {\n   title: {\n      text: 'Number of CRC Prevention Policies per Country',\n      left: 'center'\n   },\n   tooltip: {\n      trigger: 'item'\n   },\n   visualMap: {\n      min: 0,\n      max: 10,\n      left: 'left',\n      top: 'bottom',\n      text: ['High', 'Low'],\n      calculable: true\n   },\n   series: [\n      {\n         name: 'Alcohol',\n         type: 'map',\n         mapType: 'world', // Use 'world' map type, or you can use specific region map type if available\n         center: [15, 50], // Center the map on Europe\n         zoom: 6,\n         roam: false,\n         label: {\n            show: false\n         },\n         data: data_opt\n      }\n   ]\n};\n\nreturn option;\n\n",
+        "getOption": "function getQueryResult(query_name) {\n   const result = context\n      .panel\n      .data\n      .series\n      .find((series_dict) =>\n         series_dict['refId'] === query_name\n      )\n      ;\n   if (!result)\n      console.log(`Error: Query with name ${query_name} not found`)\n   return result['fields'];\n}\n\nfunction getVariable(variable_name) {\n   return context.grafana.replaceVariables(`\\${${variable_name}}`);\n}\n\nconst selectedPolicy_name = getVariable('policy_filter');\n\nconst queryResult = getQueryResult('deli_policy_query')\n\nconst drilldownResult = getQueryResult('deli_policy2_query');\n\nlet countryPolicies_dict = {}\nconst policyTypes_strLst = drilldownResult\n   .find((element_dict) => element_dict['name'] === 'Type')\n['values'];\n\ndrilldownResult\n   .find((element_dict) => element_dict['name'] === 'Country')\n['values']\n   .forEach((country_name, index_int) => {\n      if (!(country_name in countryPolicies_dict))\n         countryPolicies_dict[country_name] = []\n      countryPolicies_dict[country_name].push(policyTypes_strLst[index_int])\n   })\n   ;\n\nfunction tooltipFormatter_fun(params_dict, ticket, callback) {\n   const country_name = params_dict['name'];\n   const policies_cnt = params_dict['value'];\n   if (!(country_name in countryPolicies_dict))\n      return `<p>Policies:Unknown</p>`;\n\n   const policies_strLst = countryPolicies_dict[country_name];\n   let tooltip_html = policies_strLst\n      .map((policyType_str) => `<li>${policyType_str}</li>`)\n      .join('')\n      ;\n\n   return `\n      <p>Policies:${policies_cnt}</p>\n      <ul>${tooltip_html}</ul>\n   `;\n   // return countryPolicies_dict[params_dict['name']]\n   // ;\n   // return \"<ul>fool!</ul>\";\n}\n\n\n\nconst countries_strLst = queryResult\n   .find((column_dict) => column_dict['name'] == 'Country')\n['values']\n   ;\n\nconst values_intLst = queryResult\n   .find((column_dict) => column_dict['name'] == 'Value')\n['values']\n   ;\n\nlet data_opt = []\n\ncountries_strLst\n   .forEach((country_name, index_int) => {\n      data_opt[index_int] = { name: country_name, value: values_intLst[index_int] };\n   })\n   ;\n\noption = {\n   title: {\n      text: 'Number of CRC Prevention Policies per Country',\n      left: 'center'\n   },\n   tooltip: {\n      trigger: 'item',\n      formatter: tooltipFormatter_fun,\n   },\n   visualMap: {\n      min: 0,\n      max: Math.max(...values_intLst),\n      left: 'left',\n      top: 'bottom',\n      text: ['High', 'Low'],\n      calculable: true\n   },\n   series: [\n      {\n         name: selectedPolicy_name,\n         type: 'map',\n         mapType: 'world', // Use 'world' map type, or you can use specific region map type if available\n         center: [15, 50], // Center the map on Europe\n         zoom: 6,\n         roam: false,\n         label: {\n            show: false\n         },\n         data: data_opt\n      }\n   ]\n};\n\nreturn option;\n\n",
         "google": {
           "callback": "gmapReady",
           "key": ""
@@ -414,8 +414,37 @@
           "format": "table",
           "hide": false,
           "rawQuery": true,
-          "rawSql": "SELECT\n   \"Country\",\n   \"Value\"\nFROM policies_tbl\nWHERE true\n   AND \"Policy\" = '${policy_filter}'\n;\n",
+          "rawSql": "SELECT\n   \"Country\",\n   count(id) as \"Value\"\nFROM policies_tbl\nWHERE true\n   AND \"Policy\" = '${policy_filter}'\nGROUP BY \"Country\", \"Policy\"\n;\n",
           "refId": "deli_policy_query",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        },
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "c12d1bf3-ad89-41a8-b362-9eeab766a7ec"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "hide": false,
+          "rawQuery": true,
+          "rawSql": "SELECT\n   \"Country\",\n   \"Type\"\nFROM policies_tbl\nWHERE true\n   AND \"Policy\" = '${policy_filter}'\n;\n",
+          "refId": "deli_policy2_query",
           "sql": {
             "columns": [
               {
@@ -560,6 +589,6 @@
   "timezone": "browser",
   "title": "deli_main_dashboard",
   "uid": "edn5ahxrzaw3kc",
-  "version": 3,
+  "version": 4,
   "weekStart": ""
 }

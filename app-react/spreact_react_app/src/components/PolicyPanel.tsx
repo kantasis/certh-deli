@@ -19,7 +19,7 @@ const PolicyPanel: React.FC = () => {
    const [selectedPolicy_str, set_selectedPolicy] = useState('');
 
    const getUriParams = () => {
-      let policyFilter_str = `var-policy_filter=${selectedPolicy_str}`;
+      let policyFilter_str = `var-policy_filter=${encodeURIComponent(selectedPolicy_str)}`;
       return `${policyFilter_str}`;
    };
 
@@ -70,7 +70,7 @@ const PolicyPanel: React.FC = () => {
             >
             </iframe>
             <div>
-               {/* {iFrame_url} */}
+               {iFrame_url}
             </div>
          </div>
 
