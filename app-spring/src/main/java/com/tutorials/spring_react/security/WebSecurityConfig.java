@@ -27,7 +27,6 @@ public class WebSecurityConfig {
 
    @Autowired
    UserDetailsServiceImpl userDetailsService;
-   
 
    @Autowired
    private AuthEntryPointJwt unauthorizedHandler;

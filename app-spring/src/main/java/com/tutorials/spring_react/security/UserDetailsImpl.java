@@ -51,7 +51,7 @@ public class UserDetailsImpl implements UserDetails{
          authorities
       );
    }
-
+   
    @Override
    public boolean isAccountNonExpired() {
       return true;
@@ -71,7 +71,6 @@ public class UserDetailsImpl implements UserDetails{
    public boolean isEnabled() {
      return true;
    }
- 
 
    @Override
    public boolean equals(Object o) {
