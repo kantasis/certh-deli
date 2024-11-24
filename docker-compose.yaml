@@ -42,7 +42,7 @@ services:
       # TODO: Check how to change the grafana server port
       ports:
          - ${HOST_GRAFANA_PORT}:3000
-      restart: on-failure
+      restart: ${RESTART_POLICY}
       volumes:
          - ./shared/grafana:/var/lib/grafana
          - ./app-grafana:${GLOBAL_GF_PATHS_PROVISIONING}
@@ -58,7 +58,7 @@ services:
          context: ./services/postgres
       env_file:
          - ./services/postgres/.env
-      restart: on-failure
+      restart: ${RESTART_POLICY}
       volumes:
          - ./shared/data:${GLOBAL_PGDATA}
       networks:
@@ -73,7 +73,7 @@ services:
          - ./services/node/.env
       ports:
          - ${HOST_NODE_PORT}:${NODE_PORT}
-      restart: on-failure
+      restart: ${RESTART_POLICY}
       volumes: 
          - ./app-react:/app-react
       networks:
@@ -88,7 +88,7 @@ services:
          - ./services/spring/.env
       ports:
          - ${HOST_SPRING_PORT}:${SPRING_PORT}
-      restart: on-failure
+      restart: ${RESTART_POLICY}
       volumes: 
          - ./shared/tomcat-logs:/tomcat/logs
          - ./shared/spring-logs:/spring/logs
