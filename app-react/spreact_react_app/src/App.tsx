@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Routes, Route, Link } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
+import "./index.css";
 
 import NavbarMain from "./components/NavbarMain.js";
 import Login from "./components/Login.jsx";
@@ -14,9 +15,6 @@ import NutritionPanel from "./components/NutritionPanel.tsx";
 import LifestylePanel from "./components/LifestylePanel.tsx";
 import PolicyPanel from "./components/PolicyPanel.tsx";
 import Analytics from "./components/Analytics.tsx";
-
-// import * as AuthService from "./services/auth.service";
-// import AuthVerify from "./common/AuthVerify";
 
 const App: React.FC = () => {
    return (<>
@@ -34,6 +32,11 @@ const App: React.FC = () => {
             <Route   path="/policyPanel"           element={<PolicyPanel />}           />
             <Route   path="/analytics"           element={<Analytics />}           />
          </Routes>
+      </div>
+
+      <div className="footer"> 
+         <p> asdfasdfasdf </p>
+         <img src='EU-Funding-Logo.png' />
       </div>
    </>);
 };

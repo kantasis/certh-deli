@@ -1,12 +1,64 @@
 https://www.chartjs.org/docs/latest/charts/radar.html
-# TODO:
+# GTD:
+
+## Inbox
+Integration
+
+    
+    
+    Data Warehouse. DELI to get GBD data and post results of predictive analytics to DWH. Other data could be stored locally. 
+
+ 
+
+ICCS Predictive Analytics
+
+    Discussion to re-open early next year. Need feedback from clinicians to re-run models with updated data (GBD 2021, DALYs etc.) and parameters (year lags, risk factors). GD to organize workshop end of Jan/beginning of Feb under T2.2/T4.4 [DOA]
+    Develop predictions
+    Spatial correlation analysis on Spanish regional data to support LIT-03 under discussion   
+
+ 
+## TODO: 
+| A/A | [UR](! "User Requirements") | Who | [TR](! "Technical Requirements")  | Status | [DoD](! "Definition of Done") | Importance | Urgency | 
+|-|-|-|-|-|-|-|-|
+| 0 | UR | | TR | Open | ? | | |
+| 1 | Further implementation of policy data provided by **Marilly** (MoHGR) | | Update the Policy Analytics panel with the new data from MoHGR | Open | ? | Main feedback from Vienna plenary, high priority | Next |
+| 2 | Implementation of interactive regression graphs on Grafana (to replace images) using csv files provided by Dimitris | | Get the dataset from Dimitris | Open | ? | High priority, will help end users provide better feedback | Next |
+| 3 | Implementation of interactive regression graphs on Grafana (to replace images) using csv files provided by Dimitris | | Create the panels for the predictive analytics | Open | ? | | |
+| 4 | Cater to power users | AM | Create a pivot table for each dataset? | Open | ? | |  |
+| 5 | Regional data from Spain provided by URIOJA for LIT-03  | **Marino** | Extract the CSV from Marino's files | Open | ? | | probably after review meeting |
+| 6 | Regional data from Spain provided by URIOJA for LIT-03  | **Marino** | Create a panel with geo data for spain like the policy analytics panel | Open | ? | | probably after review meeting |
+| 7 | APPO. Bias info to be added on regression graphs using JSON provided by Panos. Also details to be added in Glossary. Kafka to be used later if data changes | | TR | Open | ? | | (High priority as results are ready, tested in LIT-01 and implemented in DEPO) |
+| 9 | Deployment on EXUS servers. Front end first. Predictive analytics to follow (probably after review meeting) | | TR | Open | ? | | After Review Meeting |
+| 10 | Data Warehouse Integration. To discuss further. Predictive analytics and fusion results to be posted and stored to DWH? LIT-03, policy data etc. to be added on central DWH?  | | Ask for a DoD | Open | ? | | Early 2025 |
+| 11 | Discussion to re-open early next year. Need feedback from clinicians to re-run models with updated data (GBD 2021, DALYs etc.) and parameters (year lags, risk factors) | | TR | Open | ? | | After LIT-3 |
+| 12 | Develop predictions | | TR | Open | ? | | |
+| 13 | Video or slider to be added on Homepage | | TR | Open | ? | | Next |
+| 14 | Additional logos to be added. Help from SYNYO. | | TR | Open | ? | | Next |
+| 14 | Fix Marily's recommendations | | TR | Open | ? | |  |
+| 14 | Fusion | Add sex filter to the visualizations | TR | Open | ? | |  |
+| 14 | Fusion | Add age group filter to the visualizations | TR | Open | ? | |  |
+| 14 | Fusion | Spider plot and bar chart need to be modified, perhaps using different charts, to exclude year range.| TR | Open | ? | |  |
+| 14 | Fusion | Data for 2020-21 to be added for country-level.  | TR | Open | ? | |  |
+| 14 | Fusion | Additional data used in Fusion to be discussed (e.g. comorbidities, socioeconomic). | TR | Open | ? | |  |
+| 14 | Fusion | For all these country-level and sub-group datasets need to be fused into a single one. | TR | Open | ? | |  |
+| 14 | Fusion | Check how data collected in LIT-02 (NELI, PYRAMID) can be aggregated for DELI. | TR | Open | ? | |  |
+
+
+Fusion. 
+   UPDATE: Male/Female and Age Group incidence and risk factor exposure to be integrated in existing plots.
+   Spider plot and bar chart need to be modified, perhaps using different charts, to include year range. 
+   Data for 2020-21 to be added for country-level. 
+   
+   For all these country-level and sub-group datasets need to be fused into a single one. Check how data collected in LIT-02 (NELI, PYRAMID) can be aggregated for DELI. Feedback from end users. Mainly preparation for LIP-03 but useful to visualise for LIP-02. Can start now but full implementation can wait until after DELI workshop.
+
+
 
 # URLs
 160.40.53.35
 
-[frontend](http://localhost:9080)
-[grafana](http://localhost:3000)
-[h2](http://localhost:8081/h2-ui)
+[frontend](http://localhost:9080)  
+[grafana](http://localhost:3000)  
+[h2](http://localhost:8081/h2-ui)  
    jdbc:h2:/data/spreact_db
 
 http://160.40.53.35:3000/d-solo/edn5ahxrzaw3kc/deli-main-dashboard?orgId=1&from=1716944950967&to=1716966550967&panelId=1
@@ -379,7 +431,16 @@ Next steps:
 - upload the data to the database
 - create a good visualization
 
-# 
+# Funding Logos
+
+Please find attached the EU funding logo. Different sizes of the ONCODIR logo you can find on the PWS on the [subpage media][1] and also on the [ONCODIR share point][2].
+
+[1]:https://www.oncodir.eu/oncodir-media/
+[2]:https://itigr.sharepoint.com/sites/ONCODIR2/Shared%20Documents/Forms/AllItems.aspx?id=%2Fsites%2FONCODIR2%2FShared%20Documents%2FGeneral%2F5%2ETemplates%20and%20Logos&viewid=1600021e%2Dc251%2D4a37%2Daca2%2D9f6bb995f961
+
+
+
+
 
 Psychotropic Substances
 R&D
@@ -397,7 +458,6 @@ Physical Activity
 Mental Health
 Vaccinations & Communicable Di 
 Smoking
-
 
 
 
