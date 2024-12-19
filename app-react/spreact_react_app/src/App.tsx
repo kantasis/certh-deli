@@ -35,7 +35,6 @@ const App: React.FC = () => {
       </div>
 
       <div className="footer"> 
-         <p> asdfasdfasdf </p>
          <img src='EU-Funding-Logo.png' />
       </div>
    </>);
