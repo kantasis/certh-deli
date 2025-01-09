@@ -4,19 +4,15 @@ https://www.chartjs.org/docs/latest/charts/radar.html
 ## Inbox
 Integration
 
-    
-    
     Data Warehouse. DELI to get GBD data and post results of predictive analytics to DWH. Other data could be stored locally. 
-
- 
 
 ICCS Predictive Analytics
 
-    Discussion to re-open early next year. Need feedback from clinicians to re-run models with updated data (GBD 2021, DALYs etc.) and parameters (year lags, risk factors). GD to organize workshop end of Jan/beginning of Feb under T2.2/T4.4 [DOA]
-    Develop predictions
-    Spatial correlation analysis on Spanish regional data to support LIT-03 under discussion   
+   Discussion to re-open early next year. Need feedback from clinicians to re-run models with updated data (GBD 2021, DALYs etc.) and parameters (year lags, risk factors). GD to organize workshop end of Jan/beginning of Feb under T2.2/T4.4 [DOA]
+   Develop predictions
+   Spatial correlation analysis on Spanish regional data to support LIT-03 under discussion   
 
- 
+
 ## TODO: 
 | A/A | [UR](! "User Requirements") | Who | [TR](! "Technical Requirements")  | Status | [DoD](! "Definition of Done") | Importance | Urgency | 
 |-|-|-|-|-|-|-|-|
@@ -53,6 +49,14 @@ Fusion.
 
 
 
+- Policy data visualisations – GK 
+- Regression visualisations – GK
+- APPO results visualisations – GK 
+- EU Logo – GK 
+- Spider plot and bar chart to be fixed – GK 
+- 
+
+
 # URLs
 160.40.53.35
 
@@ -63,6 +67,7 @@ Fusion.
 
 http://160.40.53.35:3000/d-solo/edn5ahxrzaw3kc/deli-main-dashboard?orgId=1&from=1716944950967&to=1716966550967&panelId=1
 http://160.40.53.35:3000/d-solo/edn5ahxrzaw3kc/deli-main-dashboard?orgId=1&from=1716945974114&to=1716967574114&panelId=2
+
 
 # Desc 
 

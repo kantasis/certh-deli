@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 # Copy the init script to the container
 docker cp init.sql deli_db_container:/
 # Copy the data

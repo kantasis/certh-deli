@@ -1,5 +1,5 @@
--- DROP DATABASE IF EXISTS deli_db WITH (FORCE);
--- CREATE DATABASE deli_db;
+DROP DATABASE IF EXISTS deli_db WITH (FORCE);
+CREATE DATABASE deli_db;
 \c deli_db;
 
 -- TODO: Figure out why I am doing this here
@@ -501,10 +501,11 @@ CREATE TABLE data_tbl (
    "Air Pollution Population Weighted Average [ug/m3]_PM2.5" DOUBLE PRECISION
 );
 
+-- DROP TABLE IF EXISTS policies_tbl;
 CREATE TABLE policies_tbl (
    id SERIAL PRIMARY KEY,
    "Country" VARCHAR(250),
    "Policy" VARCHAR(250),
    "Type" VARCHAR(250),
-   "Comment" VARCHAR(250)
+   "Comment" VARCHAR(1000)
 );
