@@ -18,7 +18,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 4,
+  "id": 7,
   "links": [],
   "panels": [
     {
@@ -67,7 +67,7 @@
           "series": []
         }
       },
-      "pluginVersion": "6.4.1",
+      "pluginVersion": "6.5.0",
       "targets": [
         {
           "datasource": {
@@ -148,7 +148,7 @@
           "series": []
         }
       },
-      "pluginVersion": "6.4.1",
+      "pluginVersion": "6.5.0",
       "targets": [
         {
           "datasource": {
@@ -228,7 +228,7 @@
           "series": []
         }
       },
-      "pluginVersion": "6.4.1",
+      "pluginVersion": "6.5.0",
       "targets": [
         {
           "datasource": {
@@ -313,7 +313,7 @@
           "series": []
         }
       },
-      "pluginVersion": "6.4.1",
+      "pluginVersion": "6.5.0",
       "targets": [
         {
           "datasource": {
@@ -403,7 +403,7 @@
           "series": []
         }
       },
-      "pluginVersion": "6.4.1",
+      "pluginVersion": "6.5.0",
       "targets": [
         {
           "datasource": {
@@ -414,7 +414,7 @@
           "format": "table",
           "hide": false,
           "rawQuery": true,
-          "rawSql": "SELECT\n   \"Country\",\n   count(id) as \"Value\"\nFROM policies_tbl\nWHERE true\n   AND \"Policy\" = '${policy_filter}'\nGROUP BY \"Country\", \"Policy\"\n;\n",
+          "rawSql": "SELECT\n   \"Country\",\n   count(id) as \"Value\"\nFROM policies_tbl\nWHERE true\n   AND \"Policy\" = '${policy_filter}'\n   AND \"Comment\" != ''\n\nGROUP BY \"Country\"\n;\n",
           "refId": "deli_policy_query",
           "sql": {
             "columns": [
@@ -443,7 +443,7 @@
           "format": "table",
           "hide": false,
           "rawQuery": true,
-          "rawSql": "SELECT\n   \"Country\",\n   \"Type\"\nFROM policies_tbl\nWHERE true\n   AND \"Policy\" = '${policy_filter}'\n;\n",
+          "rawSql": "SELECT\n   \"Country\",\n   \"Type\"\nFROM policies_tbl\nWHERE true\n   AND \"Policy\" = '${policy_filter}'\n   AND \"Comment\" != ''\n;\n",
           "refId": "deli_policy2_query",
           "sql": {
             "columns": [
@@ -572,12 +572,20 @@
         "type": "custom"
       },
       {
-        "current": {},
-        "includeAll": false,
+        "current": {
+          "text": "Mental Health",
+          "value": "Mental Health"
+        },
         "name": "policy_filter",
-        "options": [],
-        "query": "",
-        "type": "custom"
+        "options": [
+          {
+            "selected": true,
+            "text": "Mental Health",
+            "value": "Mental Health"
+          }
+        ],
+        "query": "Mental Health",
+        "type": "textbox"
       }
     ]
   },
@@ -589,6 +597,6 @@
   "timezone": "browser",
   "title": "deli_main_dashboard",
   "uid": "edn5ahxrzaw3kc",
-  "version": 4,
+  "version": 5,
   "weekStart": ""
 }
