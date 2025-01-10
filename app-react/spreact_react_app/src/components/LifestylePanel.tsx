@@ -92,7 +92,6 @@ const LifestylePanel: React.FC = () => {
          </div>
       </div>
 
-
    </>);
 };
 

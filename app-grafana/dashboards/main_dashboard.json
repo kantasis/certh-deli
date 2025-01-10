@@ -539,37 +539,52 @@
       },
       {
         "current": {
-          "text": "> 1989",
-          "value": "1989"
+          "text": "1990",
+          "value": "1990"
         },
-        "includeAll": false,
         "name": "minyear_filter",
-        "options": [],
-        "query": "",
-        "type": "custom"
+        "options": [
+          {
+            "selected": true,
+            "text": "1990",
+            "value": "1990"
+          }
+        ],
+        "query": "1990",
+        "type": "textbox"
       },
       {
         "current": {
-          "text": "> 2021",
-          "value": "2021"
+          "text": "2020",
+          "value": "2020"
         },
-        "includeAll": false,
         "name": "maxyear_filter",
-        "options": [],
-        "query": "",
-        "type": "custom"
+        "options": [
+          {
+            "selected": true,
+            "text": "2020",
+            "value": "2020"
+          }
+        ],
+        "query": "2020",
+        "type": "textbox"
       },
       {
         "current": {
-          "text": "> _Rate_SEV_val",
-          "value": "_Rate_SEV_val"
+          "text": "Rate_SEV_val",
+          "value": "Rate_SEV_val"
         },
         "description": "",
-        "includeAll": false,
         "name": "factor_filter",
-        "options": [],
-        "query": "",
-        "type": "custom"
+        "options": [
+          {
+            "selected": true,
+            "text": "Rate_SEV_val",
+            "value": "Rate_SEV_val"
+          }
+        ],
+        "query": "Rate_SEV_val",
+        "type": "textbox"
       },
       {
         "current": {
@@ -597,6 +612,6 @@
   "timezone": "browser",
   "title": "deli_main_dashboard",
   "uid": "edn5ahxrzaw3kc",
-  "version": 5,
+  "version": 8,
   "weekStart": ""
 }
