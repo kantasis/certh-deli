@@ -49,12 +49,38 @@ Fusion.
 
 
 
-- Policy data visualisations – GK 
+<!-- - Policy data visualisations – GK  -->
 - Regression visualisations – GK
 - APPO results visualisations – GK 
 - EU Logo – GK 
 - Spider plot and bar chart to be fixed – GK 
 - 
+
+let euCountries_strLst = {
+   "Cyprus",
+   "Italy",
+   "Hungary",
+   "Czech Republic",
+   "Sweden",
+   "Netherlands",
+   "Romania",
+   "Austria",
+   "Country",
+   "Luxemburg",
+   "Ireland",
+   "Germany",
+}
+
+
+let countryPolicies_dict = {}
+
+euCountries_strLst.forEach(key => {
+  countryPolicies_dict[key] = [];
+});
+
+[
+]
+
 
 
 # URLs
