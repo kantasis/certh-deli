@@ -4,13 +4,13 @@
 
 # Params:
 POSTGRESCRIPTS_RPATH="../services/postgres"
-POLICIES_RFILE="../shared/input/Fused_european_only_new.csv"
+POLICIES_RFILE="../shared/input/predictive.csv"
 
 echo "---- GK> Copying the sql script"
-docker cp "${POSTGRESCRIPTS_RPATH}/import_fused.sql" "${PROJECT_NAME}_db_container:/"
+docker cp "${POSTGRESCRIPTS_RPATH}/import_predictive.sql" "${PROJECT_NAME}_db_container:/"
 
 echo "---- GK> Copying the csv"
-docker cp "${POLICIES_RFILE}" ${PROJECT_NAME}_db_container:/tmp/fused.csv
+docker cp "${POLICIES_RFILE}" ${PROJECT_NAME}_db_container:/tmp
 
 echo "---- GK> Copying the csv"
 docker exec -it \
@@ -19,5 +19,5 @@ docker exec -it \
       -h localhost \
       -U postgres \
       -d deli_db \
-      -f import_fused.sql
+      -f import_predictive.sql
 

@@ -4,7 +4,7 @@
 
 # Params:
 POSTGRESCRIPTS_RPATH="../services/postgres"
-POLICIES_RFILE="../shared/policy-data/ONCODIR-DELI Policies 2.csv"
+POLICIES_RFILE="../shared/input/ONCODIR-DELI Policies 2.csv"
 
 echo "---- GK> Copying the sql script"
 docker cp "${POSTGRESCRIPTS_RPATH}/import_policies.sql" "${PROJECT_NAME}_db_container:/"

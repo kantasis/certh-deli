@@ -10,7 +10,7 @@ const grafana_port = import.meta.env.VITE_GRAFANA_PORT;
 const grafana_path = import.meta.env.VITE_GRAFANA_PATH;
 const dashboard_name = import.meta.env.VITE_GRAFANA_DASHBOARD;
 
-const panel_id = 3;
+const panel_id = 6;
 const grafana_url = `http://${grafana_host}:${grafana_port}/${grafana_path}/${dashboard_name}?panelId=${panel_id}&orgId=1&theme=light`
 
 const AnalyticsPanel: React.FC = () => {
@@ -135,6 +135,23 @@ const AnalyticsPanel: React.FC = () => {
       </tbody></table>
    </>);
 
+   const getUriParams = () => {
+      return ``;
+   };
+
+   const iFrame_url = `${grafana_url}&${getUriParams()}`;
+
+   const interactive_html = (<>
+      <iframe 
+         id="embeddedPanel_id"
+         className="embed-responsive-item"
+         src={iFrame_url}
+         width="100%"
+         height="600px"
+      >
+      </iframe>
+   </>);
+
    const analyses_dictLst = [
       {
          value: 0,
@@ -184,6 +201,17 @@ const AnalyticsPanel: React.FC = () => {
          caption: "Summary Exposure Value of various CRC Risk Factors",
          html:riskFactors_html,
       },
+      {
+         value: 3,
+         label: "Interactive",
+         title:(<>
+            <p>
+               Interactive Chart using Grafana
+            </p>
+         </>),
+         caption: "Interactive Chart using Grafana",
+         html:interactive_html,
+      },
    ]
    
    return (<>
@@ -210,6 +238,8 @@ const AnalyticsPanel: React.FC = () => {
             {analyses_dictLst[selectedAnalysis_int]['html']}
             {/* {selectedAnalysis_dict['html']} */}
             {/* {yearLags_html} */}
+
+
          </div>
 
          {/* Right column */}

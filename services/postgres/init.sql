@@ -509,3 +509,12 @@ CREATE TABLE policies_tbl (
    "Type" VARCHAR(250),
    "Comment" VARCHAR(1000)
 );
+
+-- DROP TABLE IF EXISTS predictive_tbl;
+CREATE TABLE predictive_tbl (
+   id SERIAL PRIMARY KEY,
+   "Risk Factor" VARCHAR(250),
+   "Values" DOUBLE PRECISION,
+   "Error" DOUBLE PRECISION,
+   "Year Lag" VARCHAR(250)
+);
