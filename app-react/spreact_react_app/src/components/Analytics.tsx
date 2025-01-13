@@ -179,7 +179,7 @@ const AnalyticsPanel: React.FC = () => {
    const selectedFactor_str=riskFactors_dictLst[selectedRiskFactor_int]['label'];   
    
    const getUriParams = () => {
-      let factorFilter_str = `var-factor_filter=${selectedFactor_str}`;
+      let factorFilter_str = `var-riskFactor_filter=${selectedFactor_str}`;
       return `${factorFilter_str}`;
    };
 
@@ -194,9 +194,9 @@ const AnalyticsPanel: React.FC = () => {
          height="600px"
       >
       </iframe>
-      {/* <div>
+      <div>
          {iFrame_url}
-      </div> */}
+      </div>
    </>);
 
    const analyses_dictLst = [
