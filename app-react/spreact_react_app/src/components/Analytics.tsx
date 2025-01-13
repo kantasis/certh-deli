@@ -4,6 +4,7 @@ import { Button, Dropdown } from 'react-bootstrap';
 import { Accordion } from 'react-bootstrap';
 import AnalyticsFilter from "./AnalyticsFilter.tsx";
 import Glossary from "./Glossary.tsx";
+import AnalyticsRiskFactorFilter from "./AnalyticsRiskFactorFilter.tsx";
 
 const grafana_host = import.meta.env.VITE_GRAFANA_HOST;
 const grafana_port = import.meta.env.VITE_GRAFANA_PORT;
@@ -17,6 +18,7 @@ const AnalyticsPanel: React.FC = () => {
 
    const [isLoggedIn, setIsLoggedIn] = useState(false);
    const [selectedAnalysis_int, set_selectedAnalysis] = useState(0);
+   const [selectedRiskFactor_int, set_selectedRiskFactors] = useState(0);
 
    useEffect(
       () => {
@@ -135,12 +137,54 @@ const AnalyticsPanel: React.FC = () => {
       </tbody></table>
    </>);
 
+   const riskFactors_dictLst = [
+      {
+         value: 0,
+         label: "Alcohol use",
+      },
+      {
+         value: 1,
+         label: "Diet high in red meat",
+      },
+      {
+         value: 2,
+         label: "Diet high in trans fatty acids",
+      },
+      {
+         value: 3,
+         label: "Diet low in polyunsaturated fatty acids",
+      },
+      {
+         value: 4,
+         label: "Diet low in seafood omega-3 fatty acids",
+      },
+      {
+         value: 5,
+         label: "Diet low in vegetables",
+      },
+      {
+         value: 6,
+         label: "Diet low in whole grains",
+      },
+      {
+         value: 7,
+         label: "High body-mass index",
+      },
+      {
+         value: 8,
+         label: "Low physical activity",
+      },
+   ];
+
+   const selectedFactor_str=riskFactors_dictLst[selectedRiskFactor_int]['label'];   
+   
    const getUriParams = () => {
-      return ``;
+      let factorFilter_str = `var-factor_filter=${selectedFactor_str}`;
+      return `${factorFilter_str}`;
    };
 
    const iFrame_url = `${grafana_url}&${getUriParams()}`;
-
+   // riskFactor_filter
    const interactive_html = (<>
       <iframe 
          id="embeddedPanel_id"
@@ -150,6 +194,9 @@ const AnalyticsPanel: React.FC = () => {
          height="600px"
       >
       </iframe>
+      {/* <div>
+         {iFrame_url}
+      </div> */}
    </>);
 
    const analyses_dictLst = [
@@ -213,7 +260,7 @@ const AnalyticsPanel: React.FC = () => {
          html:interactive_html,
       },
    ]
-   
+
    return (<>
 
       <div className="row">
@@ -226,8 +273,13 @@ const AnalyticsPanel: React.FC = () => {
                set_selectedAnalysis={set_selectedAnalysis}
                analyses_dictLst={analyses_dictLst}
             />
-            <br/>
             <p className="text-start">{analyses_dictLst[selectedAnalysis_int]['title']}</p>
+            <br/>
+            <AnalyticsRiskFactorFilter
+               selectedRiskFactor_int={selectedRiskFactor_int}
+               set_selectedRiskFactors={set_selectedRiskFactors}
+               riskFactors_dictLst={riskFactors_dictLst}
+            />
          </div>
 
          {/* Centerpiece*/}
