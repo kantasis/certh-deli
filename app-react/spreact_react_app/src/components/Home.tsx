@@ -26,7 +26,7 @@ const Home: React.FC = () => {
             <div className="hero-content">
                <br/>
                <h3>Welcome to the ONCODIR Policy Analytics Dashboard (DELI)</h3>
-               {/* <p>A web-based intelligence tool that integrates and visualizes data for reporting purposes.</p> */}
+               <p>Α web-based intelligent dashboard with descriptive and predictive analytics to inform evidence-based policy decisions on CRC prevention.</p>
                <br/>
 
                <iframe 
