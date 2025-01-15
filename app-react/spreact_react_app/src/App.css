@@ -69,3 +69,30 @@ label {
    -webkit-border-radius: 50%;
    border-radius: 50%;
 }
+
+.gk_flexContainer {
+   display: flex;
+   flex-direction: column;
+   min-height: 100dvh;
+}
+
+.gk_header {
+   position: sticky;
+   top: 0;
+}
+
+.gk_content {
+   flex: 1;
+   overflow-y: auto;
+}
+
+.gk_footer {
+   position: sticky;
+   bottom: 0;
+   background-color: white;
+   text-align: left;
+}
+
+.gk_footer > img {
+   width: 15%;
+}

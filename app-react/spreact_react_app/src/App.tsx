@@ -18,24 +18,30 @@ import Analytics from "./components/Analytics.tsx";
 
 const App: React.FC = () => {
    return (<>
-      <div className="container-fluid">
-         <NavbarMain/>
-         <Routes>
-            <Route   path="/"                      element={<Home />}                  />
-            <Route   path="/home"                  element={<Home />}                  />
-            <Route   path="/login"                 element={<Login />}                 />
-            {/* <Route   path="/register"  element={<Register />}        /> */}
-            <Route   path="/profile"               element={<Profile />}               />
-            <Route   path="/epidimiologicalPanel"  element={<EpidimiologicalPanel />}  />
-            <Route   path="/nutritionPanel"        element={<NutritionPanel />}        />
-            <Route   path="/lifestylePanel"        element={<LifestylePanel />}        />
-            <Route   path="/policyPanel"           element={<PolicyPanel />}           />
-            <Route   path="/analytics"           element={<Analytics />}           />
-         </Routes>
-      </div>
+      
+      <div className="gk_flexContainer">
+         <div className="gk_header">
+            <NavbarMain/>
+         </div>
+         
+         <div className="container-fluid gk_content">
+            <Routes>
+               <Route   path="/"                      element={<Home />}                  />
+               <Route   path="/home"                  element={<Home />}                  />
+               <Route   path="/login"                 element={<Login />}                 />
+               {/* <Route   path="/register"  element={<Register />}        /> */}
+               <Route   path="/profile"               element={<Profile />}               />
+               <Route   path="/epidimiologicalPanel"  element={<EpidimiologicalPanel />}  />
+               <Route   path="/nutritionPanel"        element={<NutritionPanel />}        />
+               <Route   path="/lifestylePanel"        element={<LifestylePanel />}        />
+               <Route   path="/policyPanel"           element={<PolicyPanel />}           />
+               <Route   path="/analytics"           element={<Analytics />}           />
+            </Routes>
+         </div>
 
-      <div className="footer"> 
-         <img src='EU-Funding-Logo.png' />
+         <div className="gk_footer"> 
+            <img src='EU-Funding-Logo.png' height="20%"/>
+         </div>
       </div>
    </>);
 };
