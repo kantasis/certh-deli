@@ -137,6 +137,7 @@ const AnalyticsPanel: React.FC = () => {
       </tbody></table>
    </>);
 
+   // TODO: Get this from the DB
    const riskFactors_dictLst = [
       {
          value: 0,
