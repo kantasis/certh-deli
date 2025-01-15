@@ -1,3 +1,5 @@
+TRUNCATE TABLE policies_tbl;
+
 COPY policies_tbl(
    "Country",
    "Policy",

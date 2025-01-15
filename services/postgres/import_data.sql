@@ -1,3 +1,5 @@
+TRUNCATE TABLE data_tbl;
+
 COPY data_tbl(
    "Country",
    "Year",

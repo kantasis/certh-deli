@@ -1,3 +1,5 @@
+TRUNCATE TABLE predictive_tbl;
+
 COPY predictive_tbl(
    "Risk Factor",
    "Values",

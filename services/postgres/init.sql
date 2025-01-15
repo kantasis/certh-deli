@@ -1,11 +1,18 @@
-DROP DATABASE IF EXISTS deli_db WITH (FORCE);
-CREATE DATABASE deli_db;
-\c deli_db;
+-- Keep this for hard init of the DB.
+-- Note that it will also remove users_tbl and roles_tbl
+-- DROP DATABASE IF EXISTS deli_db WITH (FORCE);
+-- CREATE DATABASE deli_db;
+-- \c deli_db;
+
+-- After redeploying run this
+-- INSERT INTO ROLES_TBL(LABEL) VALUES('ROLE_USER');
+-- INSERT INTO ROLES_TBL(LABEL) VALUES('ROLE_MODERATOR');
+-- INSERT INTO ROLES_TBL(LABEL) VALUES('ROLE_ADMIN');
 
 -- TODO: Figure out why I am doing this here
 CREATE EXTENSION IF NOT EXISTS tablefunc;
 
--- DROP TABLE IF EXISTS data_tbl;
+DROP TABLE IF EXISTS data_tbl;
 CREATE TABLE data_tbl (
    id SERIAL PRIMARY KEY,
    "_id" VARCHAR(250),
@@ -501,7 +508,7 @@ CREATE TABLE data_tbl (
    "Air Pollution Population Weighted Average [ug/m3]_PM2.5" DOUBLE PRECISION
 );
 
--- DROP TABLE IF EXISTS policies_tbl;
+DROP TABLE IF EXISTS policies_tbl;
 CREATE TABLE policies_tbl (
    id SERIAL PRIMARY KEY,
    "Country" VARCHAR(250),
@@ -510,7 +517,7 @@ CREATE TABLE policies_tbl (
    "Comment" VARCHAR(1000)
 );
 
--- DROP TABLE IF EXISTS predictive_tbl;
+DROP TABLE IF EXISTS predictive_tbl;
 CREATE TABLE predictive_tbl (
    id SERIAL PRIMARY KEY,
    "Risk Factor" VARCHAR(250),
