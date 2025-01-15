@@ -24,8 +24,9 @@ const Home: React.FC = () => {
       <div className="container">
          <header className="jumbotron">
             <div className="hero-content">
+               <br/>
                <h3>Welcome to the ONCODIR Policy Analytics Dashboard (DELI)</h3>
-               <p>A web-based intelligence tool that integrates and visualizes data for reporting purposes.</p>
+               {/* <p>A web-based intelligence tool that integrates and visualizes data for reporting purposes.</p> */}
                <br/>
 
                <iframe 
