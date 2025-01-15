@@ -40,7 +40,7 @@ const Home: React.FC = () => {
                >
 
                </iframe>
-               <Carousel>
+               {/* <Carousel>
                   {carouselImages_strLst.map((carouselImage_str, index_i)=>(
                      <Carousel.Item>
                         <img 
@@ -49,13 +49,9 @@ const Home: React.FC = () => {
                            src={carouselImage_str}
                            alt={`Slide #${index_i}`}
                         />
-                        {/* <Carousel.Caption>
-                           <h3>First slide label</h3>
-                           <p>Nulla vitae elit libero, a pharetra augue mollis interdum.</p>
-                        </Carousel.Caption> */}
                      </Carousel.Item>
                   ))}
-               </Carousel>
+               </Carousel> */}
 
             </div>
          </header>
