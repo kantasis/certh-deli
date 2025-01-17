@@ -10,12 +10,16 @@ const grafana_path = import.meta.env.VITE_GRAFANA_PATH;
 const dashboard_name = import.meta.env.VITE_GRAFANA_DASHBOARD;
 
 const panel_id = 4;
-const grafana_url = `http://${grafana_host}:${grafana_port}/${grafana_path}/${dashboard_name}?panelId=${panel_id}&orgId=1&theme=light`
+const grafanaHost_url = `http://${grafana_host}:${grafana_port}`
+const grafana_url = `${grafanaHost_url}/${grafana_path}/${dashboard_name}?panelId=${panel_id}&orgId=1&theme=light`
 
 const PolicyPanel: React.FC = () => {
 
    const [isLoggedIn, setIsLoggedIn] = useState(false);
    const [selectedPolicy_str, set_selectedPolicy] = useState('');
+   const [country_name, setCountryName] = useState('Default');
+   const [policies_strLst, setPolicies] = useState([]);
+   const [bestPractices_str, setBestPractices] = useState('');
 
    const getUriParams = () => {
       let policyFilter_str = `var-policy_filter=${encodeURIComponent(selectedPolicy_str)}`;
@@ -23,7 +27,7 @@ const PolicyPanel: React.FC = () => {
    };
 
    const iFrame_url = `${grafana_url}&${getUriParams()}`;
-
+   
    useEffect(
       () => {
          setIsLoggedIn(AuthService.isLoggedIn());
@@ -64,6 +68,24 @@ const PolicyPanel: React.FC = () => {
       'Sweden': "National Cancer Strategy 2009 (No update available)",
    };
 
+   // Add an event listener for messages from the iframe
+   window.addEventListener("message", function(event) {
+      
+      // Make sure the message is coming from the expected Grafana origin
+      if (event.origin !== grafanaHost_url) return;
+      if (event.data.type !== 'click-message') return;
+   
+      // Handle the message from Grafana
+      // const messageData = event.data;
+      console.log('+++++++++++')
+      console.log(event.data)
+      console.log('-----------')
+      setCountryName(event.data['Country']);
+      setPolicies(event.data['Policies']);
+      setBestPractices(event.data['Best Practices'] || 'None');
+
+   });
+
    return (<>
 
       <div className="row">
@@ -88,27 +110,53 @@ const PolicyPanel: React.FC = () => {
             >
             </iframe>
             {/* <div>{iFrame_url}</div> */}
+            <div style={ {textAlign: 'left'} }>
+               <div><strong>Country</strong>: {country_name}</div>
+               <div><strong>Best Practices</strong>: {bestPractices_str}</div>
+               <div>
+                  <strong >Policies: </strong>
+                  <ul className="list-group ">
+                     {/* <li className="list-group-item"><h6>asasf</h6></li> */}
+                     {
+                        policies_strLst?
+                        policies_strLst.map( key_str => (
+                           <li className="list-group-item" key={`${key_str}_key`}>
+                              {key_str}
+                           </li>
+                        ))
+                        :'Unknown'
+                     }
+                  </ul>
+               </div>
+            </div>
+            {/* const [policies_strLst, setPolicies] = useState([]);
+            const [bestPractices_str, setBestPractices] = useState(''); */}
          </div>
 
          </div>
 
          {/* Right Navbar */}
          <div className="col-sm-2">
-         <h5>Sources</h5>
+         <h5>Glossary</h5>
             <Accordion defaultActiveKey="-1">
-               { Object.keys(sources_dict).map( key_str => (
-                  <Accordion.Item 
-                     eventKey={key_str} 
-                     key={key_str}
-                  >
-                     <Accordion.Header>{key_str}</Accordion.Header>
-                     <Accordion.Body className="text-start" >
-                        <p>
-                           {sources_dict[key_str]}
-                        </p>
-                     </Accordion.Body>
-                  </Accordion.Item>
-               ))}
+               <Accordion.Item 
+                  eventKey="_0" 
+                  key="_0"
+               >
+                  <Accordion.Header>Sources</Accordion.Header>
+                  <Accordion.Body className="text-start" >
+                     <ul className='simpleList'>
+                     {
+                        Object.keys(sources_dict).map( key_str => (
+                           <li key={`${key_str}_key`}>
+                              <strong><p>{key_str}</p></strong>
+                              <p>{sources_dict[key_str]}</p>
+                           </li>
+                        ))
+                     }
+                     </ul>
+                  </Accordion.Body>
+               </Accordion.Item>
             </Accordion>
          </div>
 

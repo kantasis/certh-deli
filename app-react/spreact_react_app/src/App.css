@@ -96,3 +96,12 @@ label {
 .gk_footer > img {
    width: 15%;
 }
+
+.simpleList {
+   list-style-type: none;
+   padding:0;
+}
+
+.policyList {
+   text-align: left;
+}
