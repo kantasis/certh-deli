@@ -4,7 +4,8 @@
 -- CREATE DATABASE deli_db;
 -- \c deli_db;
 
--- After redeploying run this
+-- This table is created by the spring container
+TRUNCATE TABLE ROLES_TBL;
 INSERT INTO ROLES_TBL(LABEL) VALUES('ROLE_USER');
 INSERT INTO ROLES_TBL(LABEL) VALUES('ROLE_MODERATOR');
 INSERT INTO ROLES_TBL(LABEL) VALUES('ROLE_ADMIN');
