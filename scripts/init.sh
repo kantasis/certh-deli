@@ -13,5 +13,6 @@ docker exec -it \
    "${PROJECT_NAME}_db_container" \
    psql \
       -h localhost \
-      -U postgres \
+      -U "${GLOBAL_POSTGRES_USER}" \
+      -d "${GLOBAL_POSTGRES_DB}" \
       -f init.sql
