@@ -17,8 +17,8 @@ if [[ ${CONTAINER_NAME} == 'db' ]]; then
       "${PROJECT_NAME}_${CONTAINER_NAME}_container" \
       psql \
          -h localhost \
-         -U postgres \
-         -d deli_db 
+      -U "${GLOBAL_POSTGRES_USER}" \
+      -d "${GLOBAL_POSTGRES_DB}"
 
    exit 0;
 fi
