@@ -5,12 +5,17 @@
 - [frontend](http://localhost:9080)  
 - [grafana](http://localhost:3000)  
 
+## Shared directories
 
-## Project
-- deploy
-- shared dir
-- Docker Compose
+Several directories in the repository are shared with the containers. 
 
+`shared`: This directory holds dynamic data of the containers therefore not tracked by version control.
+   - `shared/tomcat-logs`, `shared/spring-logs`: Shared with the spring container storing the logs of the spring application.
+   - `shared/data`: Shared with the postgres container to hold the data directory
+   - `shared/grafana`: Shared with the grafana container to hold the grafana configuration. Perhaps it's redundant with the new feature of provisioning. **IMPORTANT**: when first creating the project, change the permissions for this directory (`chmod 777 shared/grafana`)
+   - `shared/input`: This is not a shared directory but holds the csv data to be sent to postgres using the `import_*.sh` scripts (see below)
+`app-grafana`: This directory holds the provisioned data for grafana, namely the postgres datasource and the main dashboard. Changes here are reflected almost immediately through grafana
+`app-react`: This directory holds the react application for the front-end of DELI. 
 
 ## Scripts:
 
