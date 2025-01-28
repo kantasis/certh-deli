@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import * as AuthService from "../services/auth.service.tsx";
-import { Button, Dropdown } from 'react-bootstrap'; 
+import { Button, Dropdown } from 'react-bootstrap';
 import CountryFilter from "./CountryFilter.tsx";
 import YearFilter from "./YearFilter.tsx";
 import { Accordion } from 'react-bootstrap';
@@ -28,7 +28,7 @@ const NewDash: React.FC = () => {
    const [maxYear_int, set_maxYear] = useState(0);
 
    const getUriParams = () => {
-      let countryFilter_str = selectedCountries_lst.map( (country_str, index) => `var-country_filter=${country_str}`).join('&');
+      let countryFilter_str = selectedCountries_lst.map((country_str, index) => `var-country_filter=${country_str}`).join('&');
       let yearFilter_str = `var-minyear_filter=${minYear_int}&var-maxyear_filter=${maxYear_int}`;
       return `${countryFilter_str}&${yearFilter_str}`;
    };
@@ -50,17 +50,17 @@ const NewDash: React.FC = () => {
          title: 'Source',
          content: (<>
             <p>
-               Global Burden of Disease 2019.<br/><br/>
-               Data from 1990 to 2019.<br/><br/>
-               Data from 34 European countries<br/><br/>
-               CRC Incidence Age-Standardised Rate (ASR)<br/><br/>
-               Data aggregated for Both sexes<br/><br/>
+               Global Burden of Disease 2019.<br /><br />
+               Data from 1990 to 2019.<br /><br />
+               Data from 34 European countries<br /><br />
+               CRC Incidence Age-Standardised Rate (ASR)<br /><br />
+               Data aggregated for Both sexes<br /><br />
             </p>
          </>)
       },
    ];
 
-return (<>
+   return (<>
       <div className="row">
 
          {/* Left Navbar */}
@@ -83,7 +83,7 @@ return (<>
          {/* Center Content */}
          <div className="col-sm-8">
             <div className="embed-responsive embed-responsive-16by9">
-               <iframe 
+               <iframe
                   id="embeddedPanel_id"
                   className="embed-responsive-item"
                   src={iFrame_url}
@@ -101,8 +101,8 @@ return (<>
             <h5>Glossary</h5>
             <Accordion defaultActiveKey="-1">
                {accordionContent_dictLst.map((accordionContent_dict, itemIndex_int) => (
-                  <Accordion.Item 
-                     eventKey={itemIndex_int.toString()} 
+                  <Accordion.Item
+                     eventKey={itemIndex_int.toString()}
                      key={itemIndex_int}
                   >
                      <Accordion.Header>{accordionContent_dict['title']}</Accordion.Header>
@@ -111,9 +111,9 @@ return (<>
                ))}
             </Accordion>
          </div>
-   
+
       </div>
-      
+
       {/* <div>{iFrame_url}</div> */}
 
    </>);

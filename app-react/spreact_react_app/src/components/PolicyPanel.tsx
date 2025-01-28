@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import * as AuthService from "../services/auth.service.tsx";
-import { Button, Dropdown } from 'react-bootstrap'; 
+import { Button, Dropdown } from 'react-bootstrap';
 import PolicyFilter from "./PolicyFilter.tsx";
 import { Accordion } from 'react-bootstrap';
 
@@ -27,7 +27,7 @@ const PolicyPanel: React.FC = () => {
    };
 
    const iFrame_url = `${grafana_url}&${getUriParams()}`;
-   
+
    useEffect(
       () => {
          setIsLoggedIn(AuthService.isLoggedIn());
@@ -38,7 +38,7 @@ const PolicyPanel: React.FC = () => {
    if (!isLoggedIn)
       return <h2>Unauthorized</h2>;
 
-   const sources_dict:{ [key: string]: string }  = {
+   const sources_dict: { [key: string]: string } = {
       'Austria': "Krebsrahmenprogramm Österreich 2014",
       'Belgium': "Joint Plan for the Chronically Ill-Integrated Care for Better Health",
       'Bulgaria': "NATIONAL PROGRAM FOR THE PREVENTION OF CHRONIC NON-COMMUNICABLE DISEASES -2014-2020 WORK PROGRAMME",
@@ -69,12 +69,12 @@ const PolicyPanel: React.FC = () => {
    };
 
    // Add an event listener for messages from the iframe
-   window.addEventListener("message", function(event) {
-      
+   window.addEventListener("message", function (event) {
+
       // Make sure the message is coming from the expected Grafana origin
       if (event.origin !== grafanaHost_url) return;
       if (event.data.type !== 'click-message') return;
-   
+
       // Handle the message from Grafana
       // const messageData = event.data;
       console.log('+++++++++++')
@@ -101,59 +101,117 @@ const PolicyPanel: React.FC = () => {
          {/* Center Content */}
          <div className="col-sm-8">
             <div className="embed-responsive embed-responsive-16by9">
-            <iframe 
-               id="embeddedPanel_id"
-               className="embed-responsive-item"
-               src={iFrame_url}
-               width="100%"
-               height="600px"
-            >
-            </iframe>
+               <iframe
+                  id="embeddedPanel_id"
+                  className="embed-responsive-item"
+                  src={iFrame_url}
+                  width="100%"
+                  height="600px"
+               >
+               </iframe>
+            </div>
             {/* <div>{iFrame_url}</div> */}
-            <div style={ {textAlign: 'left'} }>
-               <div><strong>Country</strong>: {country_name}</div>
-               <div><strong>Best Practices</strong>: {bestPractices_str}</div>
-               <div>
-                  <strong >Policies: </strong>
-                  <ul className="list-group ">
-                     {/* <li className="list-group-item"><h6>asasf</h6></li> */}
-                     {
-                        policies_strLst?
-                        policies_strLst.map( key_str => (
-                           <li className="list-group-item" key={`${key_str}_key`}>
-                              {key_str}
-                           </li>
-                        ))
-                        :'Unknown'
-                     }
-                  </ul>
+            <div style={{ textAlign: 'left' }}>
+               <div className="row">
+                  <div className="col-sm-6">
+                     <div><strong>Country</strong>: {country_name}</div>
+                     <div><strong>Best Practices</strong>: {bestPractices_str}</div>
+                     <div><strong>Sources</strong>: <ul className='simpleList'>
+                        {sources_dict[country_name] && (
+                           <p>{sources_dict[country_name]}</p>
+                        )}
+                     </ul></div>
+                  </div>
+                  <div className="col-sm-6">
+                     <strong >Policies: </strong>
+                     <ul className="list-group ">
+                        {/* <li className="list-group-item"><h6>asasf</h6></li> */}
+                        {
+                           policies_strLst ?
+                              policies_strLst.map(key_str => (
+                                 <li className="list-group-item" key={`${key_str}_key`}>
+                                    {key_str}
+                                 </li>
+                              ))
+                              : 'Unknown'
+                        }
+                     </ul>
+
+
+                  </div>
                </div>
+
             </div>
             {/* const [policies_strLst, setPolicies] = useState([]);
             const [bestPractices_str, setBestPractices] = useState(''); */}
          </div>
 
-         </div>
+
 
          {/* Right Navbar */}
          <div className="col-sm-2">
-         <h5>Glossary</h5>
+            <h5>Glossary</h5>
             <Accordion defaultActiveKey="-1">
-               <Accordion.Item 
-                  eventKey="_0" 
+               <Accordion.Item
+                  eventKey="_0"
                   key="_0"
                >
-                  <Accordion.Header>Sources</Accordion.Header>
+                  <Accordion.Header>Methodology</Accordion.Header>
                   <Accordion.Body className="text-start" >
                      <ul className='simpleList'>
-                     {
-                        Object.keys(sources_dict).map( key_str => (
-                           <li key={`${key_str}_key`}>
-                              <strong><p>{key_str}</p></strong>
-                              <p>{sources_dict[key_str]}</p>
-                           </li>
-                        ))
-                     }
+                        {/* {
+                           Object.keys(sources_dict).map(key_str => (
+                              <li key={`${key_str}_key`}>
+                                 <strong><p>{key_str}</p></strong>
+                                 <p>{sources_dict[key_str]}</p>
+                              </li>
+                           ))
+                        } */}
+                        <li>On this page you can see types and examples of current policies and interventions related to various domains of CRC prevention that are implemented across EU countries. These are the results of a policy mapping exercise facilitating the development of a decision-support methodology for policy makers based on the ‘Analytic Hierarchy Approach’. The standing national cancer plans, public health action plans or other equivalent documents of the 27 EU member states were reviewed to identify the policies currently established contributing to CRC’s primary prevention independently of whether they were designed and implemented to particularly address it. The policy domains identified can be selected from the drop-down menu on the left hand side. </li>
+
+                     </ul>
+                  </Accordion.Body>
+               </Accordion.Item>
+            </Accordion>
+            <Accordion defaultActiveKey="-1">
+               <Accordion.Item
+                  eventKey="_0"
+                  key="_0"
+               >
+                  <Accordion.Header>0 Policies:</Accordion.Header>
+                  <Accordion.Body className="text-start" >
+                     <ul className='simpleList'>
+                        {/* {
+                           Object.keys(sources_dict).map(key_str => (
+                              <li key={`${key_str}_key`}>
+                                 <strong><p>{key_str}</p></strong>
+                                 <p>{sources_dict[key_str]}</p>
+                              </li>
+                           ))
+                        } */}
+                        <li>Country was included in the mapping (37 EU MS) but no policies were identified in that particular policy domain in the  national cancer plan / public health action plan or equivalent document searched. </li>
+                     </ul>
+                  </Accordion.Body>
+               </Accordion.Item>
+            </Accordion>
+            <Accordion defaultActiveKey="-1">
+               <Accordion.Item
+                  eventKey="_0"
+                  key="_0"
+               >
+                  <Accordion.Header>Unknown:</Accordion.Header>
+                  <Accordion.Body className="text-start" >
+                     <ul className='simpleList'>
+                        {/* {
+                           Object.keys(sources_dict).map(key_str => (
+                              <li key={`${key_str}_key`}>
+                                 <strong><p>{key_str}</p></strong>
+                                 <p>{sources_dict[key_str]}</p>
+                              </li>
+                           ))
+                        } */}
+
+                        <li>Country was not included in the mapping (non EU MS)</li>
                      </ul>
                   </Accordion.Body>
                </Accordion.Item>

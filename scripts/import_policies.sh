@@ -5,7 +5,7 @@
 # Params:
 
 POSTGRESCRIPTS_RPATH="../services/postgres"
-POLICIES_RFILE="../shared/input/ONCODIR-DELI Policies 2.csv"
+POLICIES_RFILE="../shared/input/policy_data.csv"
 
 # Main
 

@@ -196,7 +196,7 @@ const AnalyticsPanel: React.FC = () => {
       >
       </iframe>
       <div>
-         {iFrame_url}
+         {/* {iFrame_url} */}
       </div>
    </>);
 
