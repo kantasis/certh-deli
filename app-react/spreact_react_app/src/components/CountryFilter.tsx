@@ -93,7 +93,7 @@ const CountryFilter: React.FC<FilterProps> = ({ selectedCountries_lst, set_selec
             className="form-label"
             htmlFor="countrySelect_id"
          >
-            Select Coutnries
+            Select Countries
          </label>
          <Form id="countrySelect_id">
             <Form.Control

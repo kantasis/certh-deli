@@ -13,7 +13,7 @@ const NavbarMain: React.FC = () => {
    useEffect(
       () => {
          setIsLoggedIn(AuthService.isLoggedIn());
-      }, 
+      },
       []
    );
 
@@ -34,15 +34,20 @@ const NavbarMain: React.FC = () => {
          condition: isLoggedIn
       },
       {
-         href: "nutritionPanel",
-         label: "Nutrition Data",
+         href: "riskFactorExposurePanel",
+         label: "Risk Factor Exposure",
          condition: isLoggedIn
       },
-      {
-         href: "LifestylePanel",
-         label: "Lifestyle Data",
-         condition: isLoggedIn
-      },
+      // {
+      //    href: "nutritionPanel",
+      //    label: "Nutrition Data",
+      //    condition: isLoggedIn
+      // },
+      // {
+      //    href: "LifestylePanel",
+      //    label: "Lifestyle Data",
+      //    condition: isLoggedIn
+      // },
       {
          href: "policyPanel",
          label: "Policy Data",
@@ -54,12 +59,12 @@ const NavbarMain: React.FC = () => {
          condition: isLoggedIn
       },
 
-   ].map( (item_dict, index) => item_dict.condition && (
+   ].map((item_dict, index) => item_dict.condition && (
       <li className="nav-item" key={index}>
-         <a 
-            className="nav-link" 
+         <a
+            className="nav-link"
             href={item_dict.href}
-            // onClick={item_dict.onClick ? item_dict.onClick : undefined}
+         // onClick={item_dict.onClick ? item_dict.onClick : undefined}
          >
             {item_dict.label}
          </a>
@@ -88,10 +93,10 @@ const NavbarMain: React.FC = () => {
          onClick: () => logout(),
          condition: isLoggedIn
       },
-   ].map( (item_dict, index) => item_dict.condition && (
+   ].map((item_dict, index) => item_dict.condition && (
       <li className="nav-item" key={index}>
-         <a 
-            className="nav-link" 
+         <a
+            className="nav-link"
             href={item_dict.href}
             onClick={item_dict.onClick ? item_dict.onClick : undefined}
          >
@@ -103,39 +108,39 @@ const NavbarMain: React.FC = () => {
    return (
       <nav className="navbar navbar-expand-lg bg-body-tertiary">
          <div className="container-fluid">
-            <a 
-               className="navbar-brand" 
+            <a
+               className="navbar-brand"
                href="/"
             >
                {/* Policy Analytics Dashboard */}
-               <img 
-                  width="158" 
-                  height="25" 
-                  src="https://www.oncodir.eu/wp-content/uploads/2023/07/ONCODIR-LOGO.svg" 
-                  // className="qodef-header-logo-image qodef--main" 
-                  // alt="logo main"
+               <img
+                  width="158"
+                  height="25"
+                  src="https://www.oncodir.eu/wp-content/uploads/2023/07/ONCODIR-LOGO.svg"
+               // className="qodef-header-logo-image qodef--main" 
+               // alt="logo main"
                />
             </a>
 
-            <button 
-               className="navbar-toggler" 
-               type="button" 
-               data-bs-toggle="collapse" 
-               data-bs-target="#navbarSupportedContent" 
-               aria-controls="navbarSupportedContent" 
-               aria-expanded="false" 
+            <button
+               className="navbar-toggler"
+               type="button"
+               data-bs-toggle="collapse"
+               data-bs-target="#navbarSupportedContent"
+               aria-controls="navbarSupportedContent"
+               aria-expanded="false"
                aria-label="Toggle navigation"
             >
                <span className="navbar-toggler-icon"></span>
             </button>
-            <div 
-               className="collapse navbar-collapse" 
+            <div
+               className="collapse navbar-collapse"
                id="navbarSupportedContent"
             >
                <ul className="navbar-nav me-auto mb-2 mb-lg-0">
                   {leftButtons_tsx}
                </ul>
-               
+
                <ul className="navbar-nav my-2 my-lg-0">
                   {rightButtons_tsx}
                </ul>

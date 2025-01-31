@@ -4,6 +4,8 @@ import { Button, Dropdown } from 'react-bootstrap';
 import CountryFilter from "./CountryFilter.tsx";
 import YearFilter from "./YearFilter.tsx";
 import { Accordion } from 'react-bootstrap';
+import SexFilter from "./SexFilter.tsx";
+import AgeFilter from "./AgeFilter.tsx";
 
 
 const grafana_host = import.meta.env.VITE_GRAFANA_HOST;
@@ -27,13 +29,60 @@ const NewDash: React.FC = () => {
    const [minYear_int, set_minYear] = useState(0);
    const [maxYear_int, set_maxYear] = useState(0);
 
+   const [selectedSex_int, set_selectedSex] = useState(0);
+   const [selectedAge_int, set_selectedAge] = useState(0);
+
+   const sex_dictLst = [
+      {
+         value: 0,
+         label: "Both",
+         var_filter: "Both"
+      },
+      {
+         value: 1,
+         label: "Male",
+         var_filter: "Male"
+      },
+      {
+         value: 2,
+         label: "Female",
+         var_filter: "Female"
+      },
+
+   ];
+   const age_dictLst = [
+      {
+         value: 0,
+         label: "Age-standardized",
+         var_filter: "Age-standardized"
+      },
+      {
+         value: 1,
+         label: "Under 25",
+         var_filter: "Under 25"
+      },
+      {
+         value: 2,
+         label: "25 to 50",
+         var_filter: "25 to 50"
+      },
+      {
+         value: 3,
+         label: "Above 50",
+         var_filter: "Above 50"
+      },
+
+   ];
    const getUriParams = () => {
       let countryFilter_str = selectedCountries_lst.map((country_str, index) => `var-country_filter=${country_str}`).join('&');
       let yearFilter_str = `var-minyear_filter=${minYear_int}&var-maxyear_filter=${maxYear_int}`;
-      return `${countryFilter_str}&${yearFilter_str}`;
+      let selectedSex_str = sex_dictLst[selectedSex_int]['var_filter'];
+      let selectedAge_str = age_dictLst[selectedAge_int]['var_filter'];
+      return `${countryFilter_str}&${yearFilter_str}&var-sex_filter=${selectedSex_str}&var-age_filter=${selectedAge_str}`;
    };
-
+   console.log(selectedSex_int)
    const iFrame_url = `${grafana_url}&${getUriParams()}`;
+
 
    useEffect(
       () => {
@@ -78,6 +127,16 @@ const NewDash: React.FC = () => {
                set_maxYear={set_maxYear}
             />
 
+            <SexFilter
+               selectedSex_int={selectedSex_int}
+               set_selectedSex={set_selectedSex}
+               sex_dictLst={sex_dictLst}
+            />
+            <AgeFilter
+               selectedAge_int={selectedAge_int}
+               set_selectedAge={set_selectedAge}
+               age_dictLst={age_dictLst}
+            />
          </div>
 
          {/* Center Content */}
@@ -92,7 +151,7 @@ const NewDash: React.FC = () => {
                >
                </iframe>
             </div>
-            {/* <p>{iFrame_url}</p> */}
+            {/* {<p>{iFrame_url}</p> } */}
          </div>
 
          {/* Right Navbar */}
