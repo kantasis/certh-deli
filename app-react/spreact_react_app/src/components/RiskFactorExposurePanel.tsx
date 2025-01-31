@@ -178,7 +178,7 @@ const riskFactorExposurePanel: React.FC = () => {
         >
         </iframe>
         {<div>
-            {iFrame_url}
+            {/* {iFrame_url} */}
         </div>}
     </>);
     const getUriParams2 = () => {
@@ -197,7 +197,7 @@ const riskFactorExposurePanel: React.FC = () => {
         <iframe
             id="embeddedPanel_id"
             className="embed-responsive-item"
-            // src={iFrame_url2}
+             src={iFrame_url2}
             width="100%"
             height="600px"
         >
