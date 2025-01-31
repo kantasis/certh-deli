@@ -491,7 +491,7 @@ COPY data_tbl(
    "Air Pollution Population Weighted Average [ug/m3]_PM10",
    "Air Pollution Average [ug/m3]_PM2.5",
    "Air Pollution Population Weighted Average [ug/m3]_PM2.5",
-   "sex"
+   "Sex"
 )
 FROM '/tmp/fused.csv'
 DELIMITER ','

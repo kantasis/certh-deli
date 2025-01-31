@@ -18,7 +18,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 7,
+  "id": 3,
   "links": [],
   "panels": [
     {
@@ -193,21 +193,21 @@
         "x": 0,
         "y": 8
       },
-      "id": 5,
+      "id": 7,
       "options": {
         "baidu": {
           "callback": "bmapReady",
           "key": ""
         },
         "editor": {
-          "format": "none"
+          "format": "auto"
         },
-        "editorMode": "code",
+        "editorMode": "visual",
         "gaode": {
           "key": "",
           "plugin": "AMap.Scale,AMap.ToolBar"
         },
-        "getOption": "function getQueryResult(query_name) {\n   const result = context\n      .panel\n      .data\n      .series\n      .find((series_dict) =>\n         series_dict['refId'] === query_name\n      )\n   ;\n   if (!result)\n    console.log(`Error: Query with name ${query_name} not found`)\n   return result['fields'];\n}\n\nconst queryResult = getQueryResult('A')\nconsole.log(queryResult);\n\nconst countries_strLst = queryResult\n  .find( (column_dict) => column_dict['name'] == 'Country')\n  ['values']\n\nconst values_intLst = queryResult\n  .find( (column_dict) => column_dict['name'] == 'Value')\n  ['values']\n\n\nlet data_opt = []\n\ncountries_strLst\n  .forEach((country_name, index_int) => {\n    data_opt[index_int] = { name: country_name, value: values_intLst[index_int] };\n  })\n;\n//    .forEach((country_name, index_int) => {\n//       const result = { name: country_name, value: slice_dict[country_name] };\n//       data_opt[index_int] = result;\n\noption = {\n   title: {\n      text: 'Number of CRC Prevention Policies per Country',\n      left: 'center'\n   },\n   tooltip: {\n      trigger: 'item'\n   },\n   visualMap: {\n      min: 0,\n      max: 10,\n      left: 'left',\n      top: 'bottom',\n      text: ['High', 'Low'],\n      calculable: true\n   },\n   series: [\n      {\n         name: 'Alcohol',\n         type: 'map',\n         mapType: 'world', // Use 'world' map type, or you can use specific region map type if available\n         center: [15, 50], // Center the map on Europe\n         zoom: 6,\n         roam: false,\n         label: {\n            show: false\n         },\n         data: data_opt\n      }\n   ]\n};\n\nreturn option;\n\n",
+        "getOption": "const series = context.panel.data.series.map((s) => {\n  const sData = s.fields.find((f) => f.type === 'number').values.buffer || s.fields.find((f) => f.type === 'number').values;\n  const sTime = s.fields.find((f) => f.type === 'time').values.buffer || s.fields.find((f) => f.type === 'time').values;\n  \n  return {\n    name: s.refId,\n    type: 'line',\n    showSymbol: false,\n    areaStyle: {\n      opacity: 0.1,\n    },\n    lineStyle: {\n      width: 1,\n    },\n    data: sData.map((d, i) => [sTime[i], d.toFixed(2)]),\n  };\n});\n\n/**\n * Enable Data Zoom by default\n */\nsetTimeout(() => context.panel.chart.dispatchAction({\n  type: 'takeGlobalCursor',\n  key: 'dataZoomSelect',\n  dataZoomSelectActive: true,\n}), 500);\n\n/**\n * Update Time Range on Zoom\n */\ncontext.panel.chart.on('datazoom', function (params) {\n  const startValue = params.batch[0]?.startValue;\n  const endValue = params.batch[0]?.endValue;\n  locationService.partial({ from: startValue, to: endValue });\n});\n\nreturn {\n  backgroundColor: 'transparent',\n  tooltip: {\n    trigger: 'axis',\n  },\n  legend: {\n    left: '0',\n    bottom: '0',\n    data: context.panel.data.series.map((s) => s.refId),\n    textStyle: {\n      color: 'rgba(128, 128, 128, .9)',\n    },\n  },\n  toolbox: {\n    feature: {\n      dataZoom: {\n        yAxisIndex: 'none',\n        icon: {\n          zoom: 'path://',\n          back: 'path://',\n        },\n      },\n      saveAsImage: {},\n    }\n  },\n  xAxis: {\n    type: 'time',\n  },\n  yAxis: {\n    type: 'value',\n    min: 'dataMin',\n  },\n  grid: {\n    left: '2%',\n    right: '2%',\n    top: '2%',\n    bottom: 24,\n    containLabel: true,\n  },\n  series,\n};",
         "google": {
           "callback": "gmapReady",
           "key": ""
@@ -219,7 +219,7 @@
           "name": "default"
         },
         "visualEditor": {
-          "code": "return {\n  dataset: context.editor.dataset,\n  series: context.editor.series,\n  xAxis: {\n    type: 'time',\n  },\n  yAxis: {\n    type: 'value',\n    min: 'dataMin',\n  },\n}\n",
+          "code": "function getQueryResult(query_name) {\n  const result = context\n    .panel\n    .data\n    .series\n    .find((series_dict) =>\n      series_dict['refId'] === query_name\n    )\n    ;\n  if (!result)\n    console.log(`Error: Query with name ${query_name} not found`)\n  return result['fields'];\n}\n\nfunction getVariable(variable_name) {\n  return context.grafana.replaceVariables(`\\${${variable_name}}`);\n}\n\nconst filter_str = getVariable('yearLag_filter');\n\nconsole.log(filter_str)\n\nconst queryResult = getQueryResult('deli_predictive_query')\n\nyearLag_str = '1'\n\n\nconst data_dict = {};\n\nqueryResult.forEach(column_dict => {\n  columnName_dict = column_dict['name'];\n  columnValues_Lst = column_dict['values'];\n  data_dict[columnName_dict] = columnValues_Lst\n});\n\ndata_dict['LoHi'] = [];\nfor (var i = 0; i < data_dict['Values'].length; i++) {\n  data_dict['LoHi'].push([\n    i,\n    data_dict['Values'][i] - data_dict['Error'][i],\n    data_dict['Values'][i] + data_dict['Error'][i],\n  ])\n}\n\noption = {\n  tooltip: {\n    trigger: 'axis',\n    axisPointer: {\n      type: 'shadow'\n    }\n  },\n  // title: {\n  //    text: 'Error bar chart'\n  // },\n  legend: {\n    data: ['Value', 'Error']\n  },\n  // dataZoom: [\n  //    {\n  //       type: 'slider',\n  //       start: 50,\n  //       end: 70\n  //    },\n  //    {\n  //       type: 'inside',\n  //       start: 50,\n  //       end: 70\n  //    }\n  // ],\n  grid: {\n    bottom: 200,\n  },\n  xAxis: {\n    data: data_dict['Risk Factor'],\n    axisLabel: {\n      show: true,\n      interval: 0,\n      rotate: 45,\n    },\n  },\n  yAxis: {},\n  series: [\n    {\n      type: 'bar',\n      name: 'Value',\n      data: data_dict['Values'],\n      itemStyle: {\n        color: '#77bef7'\n      }\n    },\n    {\n      type: 'custom',\n      name: 'Error',\n      itemStyle: {\n        borderWidth: 1.5\n      },\n      renderItem: function (params, api) {\n        var xValue = api.value(0);\n        var highPoint = api.coord([xValue, api.value(1)]);\n\n        var lowPoint = api.coord([xValue, api.value(2)]);\n        var halfWidth = api.size([1, 0])[0] * 0.1;\n        var style = api.style({\n          stroke: api.visual('color'),\n          // stroke: 'red',\n          lineWidth: 2,\n          fill: undefined\n        });\n\n        return {\n          type: 'group',\n          children: [\n            {\n              type: 'line',\n              transition: ['shape'],\n              shape: {\n                x1: highPoint[0] - halfWidth,\n                y1: highPoint[1],\n                x2: highPoint[0] + halfWidth,\n                y2: highPoint[1]\n              },\n              style: style\n            },\n            {\n              type: 'line',\n              transition: ['shape'],\n              shape: {\n                x1: highPoint[0],\n                y1: highPoint[1],\n                x2: lowPoint[0],\n                y2: lowPoint[1]\n              },\n              style: style\n            },\n            {\n              type: 'line',\n              transition: ['shape'],\n              shape: {\n                x1: lowPoint[0] - halfWidth,\n                y1: lowPoint[1],\n                x2: lowPoint[0] + halfWidth,\n                y2: lowPoint[1]\n              },\n              style: style\n            }\n          ]\n        };\n      },\n      encode: {\n        x: 0,\n        y: [1, 2]\n      },\n      data: data_dict['LoHi'],\n      z: 100\n    }\n  ]\n};\n\nreturn option;\n",
           "dataset": [],
           "series": []
         }
@@ -227,15 +227,11 @@
       "pluginVersion": "6.5.0",
       "targets": [
         {
-          "datasource": {
-            "type": "grafana-postgresql-datasource",
-            "uid": "c12d1bf3-ad89-41a8-b362-9eeab766a7ec"
-          },
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT\n   \"Country\",\n   \"Value\"\nFROM policies_tbl\nWHERE true\n   AND \"Policy\" = '${policy_filter}'\n;\n",
-          "refId": "A",
+          "rawSql": "SELECT \r\n   *\r\nFROM predictive_tbl\r\nWHERE true\r\n AND \"Year Lag\" = '${yearLag_filter}'\r\n   --AND \"Risk Factor\" = '${riskFactor_filter}'\r\n;",
+          "refId": "deli_predictive_query",
           "sql": {
             "columns": [
               {
@@ -255,7 +251,7 @@
           }
         }
       ],
-      "title": "Test Visual",
+      "title": "Predictive Analytics - Per Year Lag",
       "type": "volkovlabs-echarts-panel"
     },
     {
@@ -319,7 +315,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT\n   \"Country\",\n   AVG(\"Alcohol use_${factor_filter}\") AS \"Alcohol Use\",\n   AVG(\"Smoking_${factor_filter}\") AS \"Smoking\",\n   AVG(\"Low physical activity_${factor_filter}\") AS \"Low Physical Activity\",\n   AVG(\"High body-mass index_${factor_filter}\") AS \"High Body-Mass Index\"\nFROM data_tbl\nWHERE true\n   AND \"Country\" IN ('Greece', 'Romania', 'Lithuania', 'Belgium', 'Italy', 'Spain')\n   AND \"Year\" BETWEEN ${minyear_filter} AND ${maxyear_filter}\n   AND \"age\" = 'Age-standardized'\nGROUP BY \"Country\"\nORDER BY 1\n;\n",
+          "rawSql": "SELECT\n   \"Country\",\n   AVG(\"Alcohol use_${factor_filter}\") AS \"Alcohol Use\",\n   AVG(\"Smoking_${factor_filter}\") AS \"Smoking\",\n   AVG(\"Low physical activity_${factor_filter}\") AS \"Low Physical Activity\",\n   AVG(\"High body-mass index_${factor_filter}\") AS \"High Body-Mass Index\"\nFROM data_tbl\nWHERE true\n   AND \"Country\" IN (\n   'Belgium', 'Greece', 'Italy', 'Lithuania', 'Romania', 'Spain', \n   'Andorra', 'Cyprus', 'Turkey', 'Switzerland', 'Hungary', 'Luxembourg', \n   'Sweden', 'Norway', 'Belarus', 'United Kingdom', 'Russian Federation', \n   'Netherlands', 'Montenegro', 'Austria', 'Ireland', 'Germany', 'Serbia', \n   'Portugal', 'Finland', 'Malta', 'Albania', 'Ukraine', 'Bulgaria', \n   'Croatia', 'Latvia', 'England', 'Slovenia', 'North Macedonia', 'France', \n   'Estonia', 'Slovakia', 'Monaco', 'Israel', 'Poland', 'Iceland', \n   'Republic of Moldova', 'Denmark', 'Bosnia and Herzegovina', 'Czechia')\n   AND \"Year\" BETWEEN ${minyear_filter} AND ${maxyear_filter}\n   AND \"age\" = 'Age-standardized'\nGROUP BY \"Country\"\nORDER BY 1\n;\n",
           "refId": "deli_lifestyle_query",
           "sql": {
             "columns": [
@@ -357,6 +353,166 @@
         "w": 12,
         "x": 0,
         "y": 16
+      },
+      "id": 5,
+      "options": {
+        "baidu": {
+          "callback": "bmapReady",
+          "key": ""
+        },
+        "editor": {
+          "format": "none"
+        },
+        "editorMode": "code",
+        "gaode": {
+          "key": "",
+          "plugin": "AMap.Scale,AMap.ToolBar"
+        },
+        "getOption": "// Helper function to get selections from a multi-select variable\nfunction getSelections(multiSelectVar_name) {\n   const multiSelect_var = context.grafana.replaceVariables(\"${\" + multiSelectVar_name + \"}\");\n   const result = multiSelect_var.replace(/{/, '').replace(/}/, '').split(',');\n   console.log(`Selections for ${multiSelectVar_name}:`, result); // Debugging\n   return result;\n}\n\n// Helper function to get diet data for a specific country and year\nfunction getDietData(series_name, country_name) {\n   const series = context.panel.data.series;\n   \n   // Log the available series for debugging\n   console.log(\"Available Series Data:\", series);\n\n   // Find the series that has \"country_str\" field (this contains country names)\n   const targetSeries = series.find((series_dict) => {\n      const countryField = series_dict.fields.find(field => field.name === \"country_str\");\n      return countryField && countryField.values.some(value => value === country_name);\n   });\n\n   if (!targetSeries) {\n      console.log(`ERROR: Country \"${country_name}\" not found in series data.`);\n      return [];\n   }\n\n   // Find the desired series based on the dynamic `series_name`\n   const seriesField = targetSeries.fields.find((field) => field.name === series_name);\n   if (!seriesField) {\n      console.log(`ERROR: Series \"${series_name}\" not found in \"${country_name}\".`);\n      return [];\n   }\n\n   // Find the \"year_str\" field\n   const yearField = targetSeries.fields.find((field) => field.name === \"year_str\");\n   const countryField = targetSeries.fields.find((field) => field.name === \"country_str\");\n   const yearValues = yearField ? yearField.values.buffer || yearField.values : [];\n   const countryValues = countryField ? countryField.values.buffer || countryField.values : [];\n   const dietValues = seriesField.values.buffer || seriesField.values;\n\n   // Create a map of year -> diet value for the current country\n   let countryYearData = {};\n   for (let i = 0; i < yearValues.length; i++) {\n      if (countryValues[i] === country_name && yearValues[i] && dietValues[i]) {\n         countryYearData[`${yearValues[i]}-${country_name}`] = dietValues[i]; // Map year-country pair to diet value\n      }\n   }\n\n   console.log(`Mapped Data for \"${country_name}\":`, countryYearData);\n   return countryYearData;\n}\n\n// Helper function to get the x-axis data (years)\nfunction getYearsSeries() {\n   const series = context.panel.data.series;\n   \n   // Log available series for debugging\n   console.log(\"Available Series Data for Years:\", series);\n\n   // Find the series containing the \"year_str\" field\n   const targetSeries = series.find((series_dict) => {\n      return series_dict.fields.find(field => field.name === \"year_str\");\n   });\n\n   if (!targetSeries) {\n      console.log(\"ERROR: Year series not found.\");\n      return [];\n   }\n\n   const yearField = targetSeries.fields.find((field) => field.name === \"year_str\");\n   const yearValues = yearField ? yearField.values.buffer || yearField.values : [];\n\n   // Log the years data\n   console.log(\"Year Data for X-Axis:\", yearValues);\n\n   return Array.from(new Set(yearValues)); // Return unique years\n}\n\n// Fetch selected countries and data\nconst countries_strLst = getSelections(\"country_filter\");\nconst xaxis_ser = getYearsSeries();\n\n// Fetch the dynamic diet type (this can come from a user-selected variable, e.g., \"diet_type_filter\")\nconst selectedDietType = getSelections(\"diet_type_filter\")[0]; // Assuming it's a single selection for the diet type\n\nconsole.log(\"Selected Diet Type:\", selectedDietType);\n\n// Initialize an object to store diet data by country and year\nlet countryDietData = {};\n\n// Loop through each country and fetch the dynamic diet data\ncountries_strLst.forEach((country_name) => {\n   // Get diet data for the country, which is a mapping of year-country -> values\n   const dietData = getDietData(selectedDietType, country_name);\n\n   // Store the diet data for the country in the countryDietData object\n   countryDietData[country_name] = dietData;\n});\n\n// Debugging output to check the country diet data structure\nconsole.log(\"Diet Data by Country:\", countryDietData);\n\n// Create series options for each country\nconst seriesOptions_lst = countries_strLst.map((country_name) => {\n   const countryData = countryDietData[country_name];\n\n   // Create series data using the x-axis years, looking up each year for the country\n   const countrySeriesData = xaxis_ser.map((year) => {\n      // For each year, get the corresponding diet value for the current country\n      const key = `${year}-${country_name}`;\n      return countryData[key] || null; // If no data for this year, return null\n   }).filter(data => data !== null); // Remove null values\n\n   return {\n      data: countrySeriesData,\n      type: 'line',\n      name: country_name,\n   };\n});\n\n// Define the chart options\nconst option = {\n   title: {\n      text: `${selectedDietType} Data`, // Use the selected diet type as part of the title\n   },\n   legend: {\n      type: 'plain',\n      orient: 'vertical',\n      left: 'right',\n   },\n   tooltip: {\n      valueFormatter: (value) => parseFloat(value).toFixed(2),\n   },\n   xAxis: {\n      name: 'Year',\n      nameLocation: 'center',\n      nameGap: 30,\n      type: 'category',\n      data: xaxis_ser, // The x-axis is the years\n   },\n   yAxis: {\n      name: 'Average Value',\n      type: 'value',\n   },\n   dataZoom: [\n      {\n         type: 'slider',\n         show: true,\n         xAxisIndex: [0],\n         start: 0,\n         end: 100,\n      },\n      {\n         type: 'inside',\n         xAxisIndex: [0],\n         start: 0,\n         end: 100,\n      },\n   ],\n   series: seriesOptions_lst, // List of series for each country\n};\n\n// Return the chart options\nreturn option;\n",
+        "google": {
+          "callback": "gmapReady",
+          "key": ""
+        },
+        "map": "none",
+        "renderer": "canvas",
+        "themeEditor": {
+          "config": "{}",
+          "name": "default"
+        },
+        "visualEditor": {
+          "code": "return {\n  dataset: context.editor.dataset,\n  series: context.editor.series,\n  xAxis: {\n    type: 'time',\n  },\n  yAxis: {\n    type: 'value',\n    min: 'dataMin',\n  },\n}\n",
+          "dataset": [],
+          "series": []
+        }
+      },
+      "pluginVersion": "6.5.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "c12d1bf3-ad89-41a8-b362-9eeab766a7ec"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT\n   \"Year\" as year_str,\n   \"Country\" as country_str,\n   AVG(\"Diet low in whole grains_${factor_filter}\") AS \"Diet low in whole grains\",\n   --AVG(\"Diet low in whole grains_${factor_filter}\") AS \"Diet low in whole grains\",\n   AVG(\"Diet low in milk_${factor_filter}\") AS \"Diet low in milk\",\n   AVG(\"Diet high in red meat_${factor_filter}\") AS \"Diet high in red meat\",\n   AVG(\"Diet low in calcium_${factor_filter}\") AS \"Diet low in calcium\",\n   AVG(\"Diet low in fiber_${factor_filter}\") AS \"Diet low in fiber\",\n   AVG(\"Diet high in processed meat_${factor_filter}\") AS \"Diet high in processed meat\"\n   -- AVG(\"Diet low in fruits_${factor_filter}\") AS \"Diet low in fruits\",\n   -- AVG(\"Diet low in vegetables_${factor_filter}\") AS \"Diet low in vegetables\",\nFROM data_tbl\nWHERE true\n   AND \"Country\" IN ('Belgium', 'Greece', 'Italy', 'Lithuania', 'Romania', 'Spain', \n   'Andorra', 'Cyprus', 'Turkey', 'Switzerland', 'Hungary', 'Luxembourg', \n   'Sweden', 'Norway', 'Belarus', 'United Kingdom', 'Russian Federation', \n   'Netherlands', 'Montenegro', 'Austria', 'Ireland', 'Germany', 'Serbia', \n   'Portugal', 'Finland', 'Malta', 'Albania', 'Ukraine', 'Bulgaria', \n   'Croatia', 'Latvia', 'England', 'Slovenia', 'North Macedonia', 'France', \n   'Estonia', 'Slovakia', 'Monaco', 'Israel', 'Poland', 'Iceland', \n   'Republic of Moldova', 'Denmark', 'Bosnia and Herzegovina', 'Czechia')\n   AND \"Year\" BETWEEN ${minyear_filter} AND ${maxyear_filter}\n   AND \"sex\" = '${sex_filter}'\n   AND \"age\" = '${age_filter}'\n  GROUP BY\n      \"Country\",\n      \"Year\"\nORDER BY 1,2\n;",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "Risk Factor Exposure",
+      "type": "volkovlabs-echarts-panel"
+    },
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "c12d1bf3-ad89-41a8-b362-9eeab766a7ec"
+      },
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 24
+      },
+      "id": 8,
+      "options": {
+        "baidu": {
+          "callback": "bmapReady",
+          "key": ""
+        },
+        "editor": {
+          "format": "none"
+        },
+        "editorMode": "code",
+        "gaode": {
+          "key": "",
+          "plugin": "AMap.Scale,AMap.ToolBar"
+        },
+        "getOption": "// Helper function to get selections from a multi-select variable\nfunction getSelections(multiSelectVar_name) {\n   const multiSelect_var = context.grafana.replaceVariables(\"${\" + multiSelectVar_name + \"}\");\n   const result = multiSelect_var.replace(/{/, '').replace(/}/, '').split(',');\n   console.log(`Selections for ${multiSelectVar_name}:`, result); // Debugging\n   return result;\n}\n\n// Helper function to get risk data for a specific country and year\nfunction getRiskData(series_name, country_name) {\n   const series = context.panel.data.series;\n   \n   // Log the available series for debugging\n   console.log(\"Available Series Data:\", series);\n\n   // Find the series that has \"country_str\" field (this contains country names)\n   const targetSeries = series.find((series_dict) => {\n      const countryField = series_dict.fields.find(field => field.name === \"country_str\");\n      return countryField && countryField.values.some(value => value === country_name);\n   });\n\n   if (!targetSeries) {\n      console.log(`ERROR: Country \"${country_name}\" not found in series data.`);\n      return [];\n   }\n\n   // Find the desired series based on the dynamic `series_name`\n   const seriesField = targetSeries.fields.find((field) => field.name === series_name);\n   if (!seriesField) {\n      console.log(`ERROR: Series \"${series_name}\" not found in \"${country_name}\".`);\n      return [];\n   }\n\n   // Find the \"year_str\" field\n   const yearField = targetSeries.fields.find((field) => field.name === \"year_str\");\n   const countryField = targetSeries.fields.find((field) => field.name === \"country_str\");\n   const yearValues = yearField ? yearField.values.buffer || yearField.values : [];\n   const countryValues = countryField ? countryField.values.buffer || countryField.values : [];\n   const riskValues = seriesField.values.buffer || seriesField.values;\n\n   // Create a map of year -> risk value for the current country\n   let countryYearData = {};\n   for (let i = 0; i < yearValues.length; i++) {\n      if (countryValues[i] === country_name && yearValues[i] && riskValues[i]) {\n         countryYearData[`${yearValues[i]}-${country_name}`] = riskValues[i]; // Map year-country pair to risk value\n      }\n   }\n\n   console.log(`Mapped Data for \"${country_name}\":`, countryYearData);\n   return countryYearData;\n}\n\n// Helper function to get the x-axis data (years)\nfunction getYearsSeries() {\n   const series = context.panel.data.series;\n   \n   // Log available series for debugging\n   console.log(\"Available Series Data for Years:\", series);\n\n   // Find the series containing the \"year_str\" field\n   const targetSeries = series.find((series_dict) => {\n      return series_dict.fields.find(field => field.name === \"year_str\");\n   });\n\n   if (!targetSeries) {\n      console.log(\"ERROR: Year series not found.\");\n      return [];\n   }\n\n   const yearField = targetSeries.fields.find((field) => field.name === \"year_str\");\n   const yearValues = yearField ? yearField.values.buffer || yearField.values : [];\n\n   // Log the years data\n   console.log(\"Year Data for X-Axis:\", yearValues);\n\n   return Array.from(new Set(yearValues)); // Return unique years\n}\n\n// Fetch selected countries and data\nconst countries_strLst = getSelections(\"country_filter\");\nconst xaxis_ser = getYearsSeries();\n\n// Fetch the dynamic risk type (this can come from a user-selected variable, e.g., \"riskFactor_filter\")\nconst selectedRiskType = getSelections(\"riskFactor_filter\")[0]; // Assuming it's a single selection for the risk type\n\nconsole.log(\"Selected Risk Type:\", selectedRiskType);\n\n// Initialize an object to store risk data by country and year\nlet countryRiskData = {};\n\n// Loop through each country and fetch the dynamic risk data\ncountries_strLst.forEach((country_name) => {\n   // Get risk data for the country, which is a mapping of year-country -> values\n   const riskData = getRiskData(selectedRiskType, country_name);\n\n   // Store the risk data for the country in the countryRiskData object\n   countryRiskData[country_name] = riskData;\n});\n\n// Debugging output to check the country risk data structure\nconsole.log(\"Risk Data by Country:\", countryRiskData);\n\n// Create series options for each country\nconst seriesOptions_lst = countries_strLst.map((country_name) => {\n   const countryData = countryRiskData[country_name];\n\n   // Create series data using the x-axis years, looking up each year for the country\n   const countrySeriesData = xaxis_ser.map((year) => {\n      // For each year, get the corresponding risk value for the current country\n      const key = `${year}-${country_name}`;\n      return countryData[key] || null; // If no data for this year, return null\n   }).filter(data => data !== null); // Remove null values\n\n   return {\n      data: countrySeriesData,\n      type: 'line',\n      name: country_name,\n   };\n});\n\n// Define the chart options\nconst option = {\n   title: {\n      text: `${selectedRiskType} Data`, // Use the selected risk type as part of the title\n   },\n   legend: {\n      type: 'plain',\n      orient: 'vertical',\n      left: 'right',\n   },\n   tooltip: {\n      valueFormatter: (value) => parseFloat(value).toFixed(2),\n   },\n   xAxis: {\n      name: 'Year',\n      nameLocation: 'center',\n      nameGap: 30,\n      type: 'category',\n      data: xaxis_ser, // The x-axis is the years\n   },\n   yAxis: {\n      name: 'Average Value',\n      type: 'value',\n   },\n   dataZoom: [\n      {\n         type: 'slider',\n         show: true,\n         xAxisIndex: [0],\n         start: 0,\n         end: 100,\n      },\n      {\n         type: 'inside',\n         xAxisIndex: [0],\n         start: 0,\n         end: 100,\n      },\n   ],\n   series: seriesOptions_lst, // List of series for each country\n};\n\n// Return the chart options\nreturn option;\n",
+        "google": {
+          "callback": "gmapReady",
+          "key": ""
+        },
+        "map": "none",
+        "renderer": "canvas",
+        "themeEditor": {
+          "config": "{}",
+          "name": "default"
+        },
+        "visualEditor": {
+          "code": "return {\n  dataset: context.editor.dataset,\n  series: context.editor.series,\n  xAxis: {\n    type: 'time',\n  },\n  yAxis: {\n    type: 'value',\n    min: 'dataMin',\n  },\n}\n",
+          "dataset": [],
+          "series": []
+        }
+      },
+      "pluginVersion": "6.5.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "c12d1bf3-ad89-41a8-b362-9eeab766a7ec"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT\n   \"Year\" as year_str,\n   \"Country\" as country_str,\n   AVG(\"Alcohol use_${factor_filter}\") AS \"Alcohol use\",\n   AVG(\"Smoking_${factor_filter}\") AS \"Smoking\",\n   AVG(\"Low physical activity_${factor_filter}\") AS \"Low Physical Activity\",\n   AVG(\"High body-mass index_${factor_filter}\") AS \"High Body-Mass Index\"\nFROM data_tbl\nWHERE true\n   AND \"Country\" IN ('Belgium', 'Greece', 'Italy', 'Lithuania', 'Romania', 'Spain', \n   'Andorra', 'Cyprus', 'Turkey', 'Switzerland', 'Hungary', 'Luxembourg', \n   'Sweden', 'Norway', 'Belarus', 'United Kingdom', 'Russian Federation', \n   'Netherlands', 'Montenegro', 'Austria', 'Ireland', 'Germany', 'Serbia', \n   'Portugal', 'Finland', 'Malta', 'Albania', 'Ukraine', 'Bulgaria', \n   'Croatia', 'Latvia', 'England', 'Slovenia', 'North Macedonia', 'France', \n   'Estonia', 'Slovakia', 'Monaco', 'Israel', 'Poland', 'Iceland', \n   'Republic of Moldova', 'Denmark', 'Bosnia and Herzegovina', 'Czechia')\n   AND \"Year\" BETWEEN ${minyear_filter} AND ${maxyear_filter}\n   AND \"sex\" = '${sex_filter}'\n   AND \"age\" = '${age_filter}'\n  GROUP BY\n      \"Country\",\n      \"Year\"\nORDER BY 1,2\n;",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "Risk Factor Exposure - Lifestyle",
+      "type": "volkovlabs-echarts-panel"
+    },
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "c12d1bf3-ad89-41a8-b362-9eeab766a7ec"
+      },
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 32
       },
       "id": 1,
       "options": {
@@ -398,8 +554,9 @@
           },
           "editorMode": "code",
           "format": "table",
+          "hide": false,
           "rawQuery": true,
-          "rawSql": "CREATE EXTENSION IF NOT EXISTS tablefunc;\n\nSELECT \n   *\nFROM crosstab('\n   SELECT \n      \"Year\" as year_str,\n      \"Country\" as country_str,\n      AVG(\"CRC_incidence_val_Rate\") as values_f\n   FROM data_tbl \n   WHERE true\n      AND \"Year\" BETWEEN ${minyear_filter} AND ${maxyear_filter}\n      AND \"age\" = ''Age-standardized''\n      AND \"Country\" IN (''Belgium'', ''Greece'', ''Italy'', ''Lithuania'', ''Romania'', ''Spain'')\n   GROUP BY\n      \"Country\",\n      \"Year\"\n   ORDER BY 1, 2\n',\n'\nSELECT \n   *\nFROM ( VALUES \n   (''Belgium''), (''Greece''), (''Italy''), (''Lithuania''), (''Romania''), (''Spain'')\n)\n'\n) AS ct (\n   \"Year\" INT,\n   \"Belgium\" DOUBLE PRECISION,\n   \"Greece\" DOUBLE PRECISION,\n   \"Italy\" DOUBLE PRECISION,\n   \"Lithuania\" DOUBLE PRECISION,\n   \"Romania\" DOUBLE PRECISION,\n   \"Spain\" DOUBLE PRECISION\n)\nORDER BY ct.\"Year\"\n;\n\n",
+          "rawSql": "CREATE EXTENSION IF NOT EXISTS tablefunc;\n\nSELECT \n   *\nFROM crosstab('\n   SELECT \n      \"Year\" as year_str,\n      \"Country\" as country_str,\n      AVG(\"CRC_incidence_val_Rate\") as values_f\n   FROM data_tbl \n   WHERE true\n      AND \"Year\" BETWEEN ${minyear_filter} AND ${maxyear_filter}\n      AND \"age\" = ''${age_filter}''\n      AND \"sex\" = ''${sex_filter}''\n   GROUP BY\n      \"Country\",\n      \"Year\"\n   ORDER BY 1, 2\n',\n'\nSELECT * FROM unnest(ARRAY[\n   ''Belgium'', ''Greece'', ''Italy'', ''Lithuania'', ''Romania'', ''Spain'', \n   ''Andorra'', ''Cyprus'', ''Turkey'', ''Switzerland'', ''Hungary'', ''Luxembourg'', \n   ''Sweden'', ''Norway'', ''Belarus'', ''United Kingdom'', ''Russian Federation'', \n   ''Netherlands'', ''Montenegro'', ''Austria'', ''Ireland'', ''Germany'', ''Serbia'', \n   ''Portugal'', ''Finland'', ''Malta'', ''Albania'', ''Ukraine'', ''Bulgaria'', \n   ''Croatia'', ''Latvia'', ''England'', ''Slovenia'', ''North Macedonia'', ''France'', \n   ''Estonia'', ''Slovakia'', ''Monaco'', ''Israel'', ''Poland'', ''Iceland'', \n   ''Republic of Moldova'', ''Denmark'', ''Bosnia and Herzegovina'', ''Czechia''\n]) AS country_str\n'\n) AS ct (\n   \"Year\" INT,\n   \"Belgium\" DOUBLE PRECISION,\n   \"Greece\" DOUBLE PRECISION,\n   \"Italy\" DOUBLE PRECISION,\n   \"Lithuania\" DOUBLE PRECISION,\n   \"Romania\" DOUBLE PRECISION,\n   \"Spain\" DOUBLE PRECISION,\n   \"Andorra\" DOUBLE PRECISION,\n   \"Cyprus\" DOUBLE PRECISION,\n   \"Turkey\" DOUBLE PRECISION,\n   \"Switzerland\" DOUBLE PRECISION,\n   \"Hungary\" DOUBLE PRECISION,\n   \"Luxembourg\" DOUBLE PRECISION,\n   \"Sweden\" DOUBLE PRECISION,\n   \"Norway\" DOUBLE PRECISION,\n   \"Belarus\" DOUBLE PRECISION,\n   \"United Kingdom\" DOUBLE PRECISION,\n   \"Russian Federation\" DOUBLE PRECISION,\n   \"Netherlands\" DOUBLE PRECISION,\n   \"Montenegro\" DOUBLE PRECISION,\n   \"Austria\" DOUBLE PRECISION,\n   \"Ireland\" DOUBLE PRECISION,\n   \"Germany\" DOUBLE PRECISION,\n   \"Serbia\" DOUBLE PRECISION,\n   \"Portugal\" DOUBLE PRECISION,\n   \"Finland\" DOUBLE PRECISION,\n   \"Malta\" DOUBLE PRECISION,\n   \"Albania\" DOUBLE PRECISION,\n   \"Ukraine\" DOUBLE PRECISION,\n   \"Bulgaria\" DOUBLE PRECISION,\n   \"Croatia\" DOUBLE PRECISION,\n   \"Latvia\" DOUBLE PRECISION,\n   \"England\" DOUBLE PRECISION,\n   \"Slovenia\" DOUBLE PRECISION,\n   \"North Macedonia\" DOUBLE PRECISION,\n   \"France\" DOUBLE PRECISION,\n   \"Estonia\" DOUBLE PRECISION,\n   \"Slovakia\" DOUBLE PRECISION,\n   \"Monaco\" DOUBLE PRECISION,\n   \"Israel\" DOUBLE PRECISION,\n   \"Poland\" DOUBLE PRECISION,\n   \"Iceland\" DOUBLE PRECISION,\n   \"Republic of Moldova\" DOUBLE PRECISION,\n   \"Denmark\" DOUBLE PRECISION,\n   \"Bosnia and Herzegovina\" DOUBLE PRECISION,\n   \"Czechia\" DOUBLE PRECISION\n)\nORDER BY ct.\"Year\";\n",
           "refId": "A",
           "sql": {
             "columns": [
@@ -437,7 +594,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 24
+        "y": 40
       },
       "id": 4,
       "options": {
@@ -453,7 +610,7 @@
           "key": "",
           "plugin": "AMap.Scale,AMap.ToolBar"
         },
-        "getOption": "// Auxiliary function to get a query\nfunction getQueryResult(query_name) {\n   const result = context\n      .panel\n      .data\n      .series\n      .find((series_dict) =>\n         series_dict['refId'] === query_name\n      )\n      ;\n   if (!result)\n      console.log(`Error: Query with name ${query_name} not found`)\n   return result['fields'];\n}\n\n// Auxiliary function to get a variable value\nfunction getVariable(variable_name) {\n   return context.grafana.replaceVariables(`\\${${variable_name}}`);\n}\n\n// Get the policy filter variable value\nconst selectedPolicy_name = getVariable('policy_filter');\n\n// Get Query A\nconst data_QueryResult = getQueryResult('A');\n\nconst dataTypeColumn_dict = data_QueryResult\n   .find((element_dict) => element_dict['name'] === 'Type')\nconst policyTypes_strLst = dataTypeColumn_dict['values'];\n\nconst dataCountriesColumn_dict = data_QueryResult\n   .find((element_dict) => element_dict['name'] === 'Country')\nconst dataCountries_strLst = dataCountriesColumn_dict['values'];\n\n// Get Query B\nconst euCountries_QueryResult = getQueryResult('B');\nconst euCoutriesColumn_dict = euCountries_QueryResult\n   .find((column_dict) => column_dict['name'] === 'Country');\nconst euCountries_strLst = euCoutriesColumn_dict['values']\n\n// Get Query C\nconst bestPractices_QueryResult = getQueryResult('C');\nlet bestPractices_dict = {}\nif (!bestPractices_QueryResult) {\n   console.log('NTO HERE')\n   const bestPracticesCountriesColumn_dict = bestPractices_QueryResult\n      .find((column_dict) => column_dict['name'] === 'Country');\n   const bestPracticesCountriesColumn_strLst = bestPracticesCountriesColumn_dict['values']\n\n   const bestPracticesCommentsColumn_dict = bestPractices_QueryResult\n      .find((column_dict) => column_dict['name'] === 'Comment');\n   const bestPracticesCommentsColumn_strLst = bestPracticesCommentsColumn_dict['values']\n\n   bestPracticesCountriesColumn_strLst\n      .forEach((country_name, index_int) => {\n         bestPractices_dict[country_name] = bestPracticesCommentsColumn_strLst[index_int];\n      })\n      ;\n}\nconsole.log(bestPractices_QueryResult)\n\n// Initialize the countryPolicies_dict var\nlet countryPolicies_dict = {}\neuCountries_strLst\n   .forEach(country_str => {\n      countryPolicies_dict[country_str] = [];\n   })\n   ;\n\n// Add the policies for each country\ndataCountries_strLst\n   .forEach((country_name, index_int) => {\n      countryPolicies_dict[country_name].push(policyTypes_strLst[index_int])\n   })\n   ;\n\n// onclick event to pass from the iframe to the window\ncontext.panel.chart.on('click', function (params_dict) {\n   // console.log(params_dict);\n   const country_name = params_dict['name'];\n   const clickData = {\n      'type': 'click-message',\n      'Country': country_name,\n      \"Best Practices\": bestPractices_dict[country_name],\n      \"Policies\": countryPolicies_dict ? countryPolicies_dict[country_name] : [],\n   };\n   console.log(clickData);\n   window.parent.postMessage(clickData, \"*\"); // Sends data to parent iframe\n});\n\n// Function to format the tooltip\nfunction tooltipFormatter_fun(params_dict, ticket, callback) {\n   const country_name = params_dict['name'];\n   const policies_cnt = params_dict['value'];\n\n   if (!(country_name in countryPolicies_dict))\n      return `<p>Policies: Unknown</p>`;\n\n   const policies_strLst = countryPolicies_dict[country_name];\n\n   if (policies_strLst.length == 0)\n      return `<p>Policies: None</p>`;\n\n   let tooltip_html = policies_strLst\n      .map((policyType_str) => `<li>${policyType_str}</li>`)\n      .join('')\n      ;\n\n   return `\n      <p>Policies:${policies_cnt}</p>\n      <ul style='list-style-type: none; padding:0;'>${tooltip_html}</ul>\n   `;\n}\n\n// This section is for the legend\nlet maxPolicies_f = 0;\n\nlet data_opt = []\nfor (const key in countryPolicies_dict) {\n   data_opt.push({\n      \"name\": key,\n      \"value\": countryPolicies_dict[key].length\n   });\n   maxPolicies_f = Math.max(maxPolicies_f, countryPolicies_dict[key].length);\n}\n\n// The echarts option\noption = {\n   title: {\n      text: 'Number of CRC Prevention Policies per Country',\n      left: 'center'\n   },\n   tooltip: {\n      trigger: 'item',\n      formatter: tooltipFormatter_fun,\n   },\n   visualMap: {\n      min: 0,\n      max: maxPolicies_f,\n      left: 'left',\n      top: 'bottom',\n      text: ['High', 'Low'],\n      calculable: true\n   },\n   series: [\n      {\n         name: selectedPolicy_name,\n         type: 'map',\n         mapType: 'world', // Use 'world' map type, or you can use specific region map type if available\n         center: [15, 50], // Center the map on Europe\n         zoom: 6,\n         roam: false,\n         label: {\n            show: false\n         },\n         data: data_opt\n      }\n   ]\n};\n\nreturn option;\n\n",
+        "getOption": "// Auxiliary function to get a query\nfunction getQueryResult(query_name) {\n   const result = context\n      .panel\n      .data\n      .series\n      .find((series_dict) =>\n         series_dict['refId'] === query_name\n      )\n      ;\n   if (!result)\n      console.log(`Error: Query with name ${query_name} not found`)\n   return result['fields'];\n}\n\n// Auxiliary function to get a variable value\nfunction getVariable(variable_name) {\n   return context.grafana.replaceVariables(`\\${${variable_name}}`);\n}\n\n// Get the policy filter variable value\nconst selectedPolicy_name = getVariable('policy_filter');\n\n// Get Query A\nconst data_QueryResult = getQueryResult('A');\n\nconst dataTypeColumn_dict = data_QueryResult\n   .find((element_dict) => element_dict['name'] === 'Type')\nconst policyTypes_strLst = dataTypeColumn_dict['values'];\n\nconst dataCountriesColumn_dict = data_QueryResult\n   .find((element_dict) => element_dict['name'] === 'Country')\nconst dataCountries_strLst = dataCountriesColumn_dict['values'];\n\n// Get Query B\nconst euCountries_QueryResult = getQueryResult('B');\nconst euCoutriesColumn_dict = euCountries_QueryResult\n   .find((column_dict) => column_dict['name'] === 'Country');\nconst euCountries_strLst = euCoutriesColumn_dict['values']\n\n// Get Query C\nconst bestPractices_QueryResult = getQueryResult('C');\nlet bestPractices_dict = {}\nif (bestPractices_QueryResult) {\n   const bestPracticesCountriesColumn_dict = bestPractices_QueryResult\n      .find((column_dict) => column_dict['name'] === 'Country');\n   console.log('Best Practices Countries:', bestPracticesCountriesColumn_dict);\n\n   const bestPracticesCommentsColumn_dict = bestPractices_QueryResult\n      .find((column_dict) => column_dict['name'] === 'Comment');\n   console.log('Best Practices Comments:', bestPracticesCommentsColumn_dict);\n\n   if (bestPracticesCountriesColumn_dict && bestPracticesCommentsColumn_dict) {\n      const bestPracticesCountriesColumn_strLst =\n         bestPracticesCountriesColumn_dict['values'];\n      const bestPracticesCommentsColumn_strLst =\n         bestPracticesCommentsColumn_dict['values'];\n\n      bestPracticesCountriesColumn_strLst.forEach((country_name, index_int) => {\n         bestPractices_dict[country_name] =\n            bestPracticesCommentsColumn_strLst[index_int];\n      });\n   } else {\n      console.error(\n         'Error: Required columns (\"Country\" or \"Comment\") are missing in Best Practices Query.'\n      );\n   }\n} else {\n   console.error('Error: Best Practices Query (C) did not return any results.');\n}\n\nconsole.log('best practices')\nconsole.log(bestPractices_QueryResult)\n\n// Initialize the countryPolicies_dict var\nlet countryPolicies_dict = {}\neuCountries_strLst\n   .forEach(country_str => {\n      countryPolicies_dict[country_str] = [];\n   })\n   ;\n\n// Add the policies for each country\ndataCountries_strLst\n   .forEach((country_name, index_int) => {\n      countryPolicies_dict[country_name].push(policyTypes_strLst[index_int])\n   })\n   ;\n\n// onclick event to pass from the iframe to the window\ncontext.panel.chart.on('click', function (params_dict) {\n   // console.log(params_dict);\n   const country_name = params_dict['name'];\n   const clickData = {\n      'type': 'click-message',\n      'Country': country_name,\n      \"Best Practices\": bestPractices_dict[country_name],\n      \"Policies\": countryPolicies_dict ? countryPolicies_dict[country_name] : [],\n   };\n   console.log(clickData);\n   window.parent.postMessage(clickData, \"*\"); // Sends data to parent iframe\n});\n\n// Function to format the tooltip\nfunction tooltipFormatter_fun(params_dict, ticket, callback) {\n   const country_name = params_dict['name'];\n   const policies_cnt = params_dict['value'];\n\n   if (!(country_name in countryPolicies_dict))\n      return `<p>Policies: Unknown</p>`;\n\n   const policies_strLst = countryPolicies_dict[country_name];\n\n   if (policies_strLst.length == 0)\n      return `<p>Policies: None</p>`;\n\n   let tooltip_html = policies_strLst\n      .map((policyType_str) => `<li>${policyType_str}</li>`)\n      .join('')\n      ;\n\n   return `\n      <p>Policies:${policies_cnt}</p>`;\n}\n//<ul style='list-style-type: none; padding:0;'>${tooltip_html}</ul>\n\n// This section is for the legend\nlet maxPolicies_f = 0;\n\nlet data_opt = []\nfor (const key in countryPolicies_dict) {\n   data_opt.push({\n      \"name\": key,\n      \"value\": countryPolicies_dict[key].length\n   });\n   maxPolicies_f = Math.max(maxPolicies_f, countryPolicies_dict[key].length);\n}\n\n// The echarts option\noption = {\n   title: {\n      text: 'Number of CRC Prevention Policies per Country',\n      left: 'center'\n   },\n   tooltip: {\n      trigger: 'item',\n      formatter: tooltipFormatter_fun,\n   },\n   // visualMap: {\n   //    min: 0,\n   //    max: maxPolicies_f,\n   //    left: 'left',\n   //    top: 'bottom',\n   //    text: ['High', 'Low'],\n   //    calculable: true\n   // },\n   series: [\n      {\n         name: selectedPolicy_name,\n         type: 'map',\n         mapType: 'world', // Use 'world' map type, or you can use specific region map type if available\n         center: [15, 50], // Center the map on Europe\n         zoom: 6,\n         roam: false,\n         label: {\n            show: false\n         },\n         data: data_opt\n      }\n   ]\n};\n\nreturn option;\n\n",
         "google": {
           "callback": "gmapReady",
           "key": ""
@@ -704,7 +861,7 @@
             "value": "Mental Health"
           }
         ],
-        "query": "Health Education",
+        "query": "Mental Health",
         "type": "textbox"
       },
       {
@@ -721,8 +878,85 @@
             "value": "Alcohol use"
           }
         ],
-        "query": "Alcohol Consumption",
+        "query": "Alcohol use",
         "type": "textbox"
+      },
+      {
+        "current": {
+          "text": "1",
+          "value": "1"
+        },
+        "name": "yearLag_filter",
+        "options": [
+          {
+            "selected": true,
+            "text": "1",
+            "value": "1"
+          }
+        ],
+        "query": "1",
+        "type": "textbox"
+      },
+      {
+        "current": {
+          "text": "Both",
+          "value": "Both"
+        },
+        "description": "",
+        "name": "sex_filter",
+        "options": [
+          {
+            "selected": true,
+            "text": "Both",
+            "value": "Both"
+          }
+        ],
+        "query": "Both",
+        "type": "textbox"
+      },
+      {
+        "current": {
+          "text": "Age-standardized",
+          "value": "Age-standardized"
+        },
+        "name": "age_filter",
+        "options": [
+          {
+            "selected": true,
+            "text": "Age-standardized",
+            "value": "Age-standardized"
+          }
+        ],
+        "query": "Age-standardized",
+        "type": "textbox"
+      },
+      {
+        "current": {
+          "text": "Diet low in whole grains",
+          "value": "Diet low in whole grains"
+        },
+        "name": "diet_type_filter",
+        "options": [
+          {
+            "selected": true,
+            "text": "Diet low in whole grains",
+            "value": "Diet low in whole grains"
+          }
+        ],
+        "query": "Diet low in whole grains",
+        "type": "textbox"
+      },
+      {
+        "current": {
+          "text": "",
+          "value": ""
+        },
+        "name": "query0",
+        "options": [],
+        "query": "",
+        "refresh": 1,
+        "regex": "",
+        "type": "query"
       }
     ]
   },
@@ -734,6 +968,6 @@
   "timezone": "browser",
   "title": "deli_main_dashboard",
   "uid": "edn5ahxrzaw3kc",
-  "version": 22,
+  "version": 41,
   "weekStart": ""
 }

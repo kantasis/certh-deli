@@ -15,32 +15,34 @@ import NutritionPanel from "./components/NutritionPanel.tsx";
 import LifestylePanel from "./components/LifestylePanel.tsx";
 import PolicyPanel from "./components/PolicyPanel.tsx";
 import Analytics from "./components/Analytics.tsx";
+import RiskFactorExposurePanel from "./components/RiskFactorExposurePanel.tsx"
 
 const App: React.FC = () => {
    return (<>
-      
+
       <div className="gk_flexContainer">
          <div className="gk_header">
-            <NavbarMain/>
+            <NavbarMain />
          </div>
-         
+
          <div className="container-fluid gk_content">
             <Routes>
-               <Route   path="/"                      element={<Home />}                  />
-               <Route   path="/home"                  element={<Home />}                  />
-               <Route   path="/login"                 element={<Login />}                 />
+               <Route path="/" element={<Home />} />
+               <Route path="/home" element={<Home />} />
+               <Route path="/login" element={<Login />} />
                {/* <Route   path="/register"  element={<Register />}        /> */}
-               <Route   path="/profile"               element={<Profile />}               />
-               <Route   path="/epidimiologicalPanel"  element={<EpidimiologicalPanel />}  />
-               <Route   path="/nutritionPanel"        element={<NutritionPanel />}        />
-               <Route   path="/lifestylePanel"        element={<LifestylePanel />}        />
-               <Route   path="/policyPanel"           element={<PolicyPanel />}           />
-               <Route   path="/analytics"           element={<Analytics />}           />
+               <Route path="/profile" element={<Profile />} />
+               <Route path="/epidimiologicalPanel" element={<EpidimiologicalPanel />} />
+               <Route path="/riskFactorExposurePanel" element={<RiskFactorExposurePanel />} />
+               {/* <Route path="/nutritionPanel" element={<NutritionPanel />} />
+               <Route path="/lifestylePanel" element={<LifestylePanel />} /> */}
+               <Route path="/policyPanel" element={<PolicyPanel />} />
+               <Route path="/analytics" element={<Analytics />} />
             </Routes>
          </div>
 
-         <div className="gk_footer"> 
-            <img src='EU-Funding-Logo.png' height="20%"/>
+         <div className="gk_footer">
+            <img src='EU-Funding-Logo.png' />
          </div>
       </div>
    </>);

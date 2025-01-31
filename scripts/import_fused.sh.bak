@@ -5,7 +5,7 @@
 # Params:
 
 POSTGRESCRIPTS_RPATH="../services/postgres"
-POLICIES_RFILE="../shared/input/all_fused_european1.csv"
+POLICIES_RFILE="../shared/input/Fused_european_only_new.csv"
 
 # Main
 
