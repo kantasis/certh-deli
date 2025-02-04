@@ -13,7 +13,7 @@ const RiskFactorExposureFilter: React.FC<FilterProps> = ({ selectedRiskFactorExp
 
     useEffect(
         () => {
-          
+
         },
         []
     );

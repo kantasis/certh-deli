@@ -96,8 +96,11 @@ const PolicyPanel: React.FC = () => {
                selectedPolicy_str={selectedPolicy_str}
                set_selectedPolicy={set_selectedPolicy}
             />
+            <br />
+            <div style={{ textAlign: 'left' }}>On this page you can see types and examples of current policies and interventions related to
+               various domains of CRC prevention that are implemented across EU countries.
+            </div>
          </div>
-
          {/* Center Content */}
          <div className="col-sm-8">
             <div className="embed-responsive embed-responsive-16by9">
@@ -133,7 +136,7 @@ const PolicyPanel: React.FC = () => {
                                     {key_str}
                                  </li>
                               ))
-                              : 'Unknown'
+                              : 'non EU MS' 
                         }
                      </ul>
 
@@ -167,7 +170,16 @@ const PolicyPanel: React.FC = () => {
                               </li>
                            ))
                         } */}
-                        <li>On this page you can see types and examples of current policies and interventions related to various domains of CRC prevention that are implemented across EU countries. These are the results of a policy mapping exercise facilitating the development of a decision-support methodology for policy makers based on the ‘Analytic Hierarchy Approach’. The standing national cancer plans, public health action plans or other equivalent documents of the 27 EU member states were reviewed to identify the policies currently established contributing to CRC’s primary prevention independently of whether they were designed and implemented to particularly address it. The policy domains identified can be selected from the drop-down menu on the left hand side. </li>
+                        <li>
+                           CRC prevention policies and interventions as depicted in the standing national cancer plans, public health action plans, or equivalent documents from the 27 EU member states.
+                           Policy domains can be selected from a drop-down menu on the page
+                           {/* These are the results of a policy mapping exercise facilitating the development of a decision-support
+                        methodology for policy makers based on the ‘Analytic Hierarchy Approach’. 
+                        The standing national cancer plans, public health action plans or other equivalent documents of the 
+                        27 EU member states were reviewed to identify the policies currently established contributing to CRC’s
+                         primary prevention independently of whether they were designed and implemented to particularly address it.
+                          The policy domains identified can be selected from the drop-down menu on the left hand side. */}
+                        </li>
 
                      </ul>
                   </Accordion.Body>
@@ -178,7 +190,7 @@ const PolicyPanel: React.FC = () => {
                   eventKey="_0"
                   key="_0"
                >
-                  <Accordion.Header>0 Policies:</Accordion.Header>
+                  <Accordion.Header>0 Policies - Unknown</Accordion.Header>
                   <Accordion.Body className="text-start" >
                      <ul className='simpleList'>
                         {/* {
@@ -189,33 +201,18 @@ const PolicyPanel: React.FC = () => {
                               </li>
                            ))
                         } */}
-                        <li>Country was included in the mapping (37 EU MS) but no policies were identified in that particular policy domain in the  national cancer plan / public health action plan or equivalent document searched. </li>
-                     </ul>
-                  </Accordion.Body>
-               </Accordion.Item>
-            </Accordion>
-            <Accordion defaultActiveKey="-1">
-               <Accordion.Item
-                  eventKey="_0"
-                  key="_0"
-               >
-                  <Accordion.Header>Unknown:</Accordion.Header>
-                  <Accordion.Body className="text-start" >
-                     <ul className='simpleList'>
-                        {/* {
-                           Object.keys(sources_dict).map(key_str => (
-                              <li key={`${key_str}_key`}>
-                                 <strong><p>{key_str}</p></strong>
-                                 <p>{sources_dict[key_str]}</p>
-                              </li>
-                           ))
-                        } */}
+                        {/* <li><strong>0 Policies:</strong> Country was included in the mapping (37 EU MS) but no policies were identified in that particular policy domain in the  national cancer plan / public health action plan or equivalent document searched. </li> */}
+                        <li><strong>0 Policies:</strong> Country included in the mapping (27 EU MS) but no policies were identified in that particular policy domain in the standing national cancer plan / public health action plan or equivalent document.
+                        </li>
 
-                        <li>Country was not included in the mapping (non EU MS)</li>
+
+                        <br></br>
+                        <li><strong>Unknown:</strong> Country was not included in the mapping (non EU MS)</li>
                      </ul>
                   </Accordion.Body>
                </Accordion.Item>
             </Accordion>
+
          </div>
 
       </div>

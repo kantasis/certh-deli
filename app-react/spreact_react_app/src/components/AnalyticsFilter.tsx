@@ -25,7 +25,7 @@ const AnalyticsFilter: React.FC<FilterProps> = ({selectedAnalysis_int, set_selec
             className="form-label"
             htmlFor="factorSelect_id" 
          >
-            <h6>Select Presentation</h6>
+           
          </label>
          <Form id="factorSelect_id">
             <Form.Control 

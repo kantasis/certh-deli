@@ -35,7 +35,7 @@ const NewDash: React.FC = () => {
    const sex_dictLst = [
       {
          value: 0,
-         label: "Both",
+         label: " Both Sexes",
          var_filter: "Both"
       },
       {
@@ -53,7 +53,7 @@ const NewDash: React.FC = () => {
    const age_dictLst = [
       {
          value: 0,
-         label: "Age-standardized",
+         label: "Age Standardized Rate (ASR)",
          var_filter: "Age-standardized"
       },
       {
