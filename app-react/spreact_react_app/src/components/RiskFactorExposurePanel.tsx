@@ -18,13 +18,18 @@ const grafana_port = import.meta.env.VITE_GRAFANA_PORT;
 const grafana_path = import.meta.env.VITE_GRAFANA_PATH;
 const dashboard_name = import.meta.env.VITE_GRAFANA_DASHBOARD;
 // (5,8)
+
 // const panel_id = 5;
 const grafana_url = `http://${grafana_host}:${grafana_port}/${grafana_path}/${dashboard_name}?orgId=1&theme=light`;
 
 const riskFactorExposurePanel: React.FC = () => {
 
     const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [selectedCountries_lst, set_selectedCountries] = useState([]);
+       const [selectedCountries_lst, set_selectedCountries] = useState([
+          "Belgium",
+          "Greece",
+          "Italy",
+       ]);
     const [selectedFactor_str, set_selectedFactor] = useState('');
     const [selectedRiskFactor_int, set_selectedRiskFactors] = useState(0);
     const [minYear_int, set_minYear] = useState(1990);
@@ -33,11 +38,18 @@ const riskFactorExposurePanel: React.FC = () => {
     const [selectedRiskFactorExposure_int, set_selectedRiskFactorExposure] = useState(0);
     const [selectedAge_int, set_selectedAge] = useState(0);
     const [selectedAnalysis_int, set_selectedAnalysis] = useState(0);
+    useEffect(() => {
+        if ([0, 1, 2, 3, 4, 5].includes(riskFactorExposure_dictLst[selectedRiskFactorExposure_int]?.value)) {
+            set_selectedAnalysis(1); //Which graph will load 
+        } else {
+            set_selectedAnalysis(2); //Which graph will load 
+        }
+    }, [selectedRiskFactorExposure_int]);
 
     const sex_dictLst = [
         {
             value: 0,
-            label: "Both",
+            label: "Both Sexes",
             var_filter: "Both"
         },
         {
@@ -56,21 +68,45 @@ const riskFactorExposurePanel: React.FC = () => {
     const riskFactorExposure_dictLst = [
         {
             value: 0,
+            label: "Diet low in whole grains",
+        },
+        {
+            value: 1,
+            label: "Diet low in milk",
+        },
+        {
+            value: 2,
+            label: "Diet high in red meat",
+        },
+        {
+            value: 3,
+            label: "Diet low in calcium",
+        },
+        {
+            value: 4,
+            label: "Diet low in fiber",
+        },
+        {
+            value: 5,
+            label: "Diet high in processed meat",
+        },
+        {
+            value: 6,
             label: "Alcohol use",
             var_filter: "Alcohol use"
         },
         {
-            value: 1,
+            value: 7,
             label: "Smoking",
             var_filter: "Smoking"
         },
         {
-            value: 2,
+            value: 8,
             label: "Low Physical Activity",
             var_filter: "Low Physical Activity"
         },
         {
-            value: 3,
+            value: 9,
             label: "High Body-Mass Index",
             var_filter: "High Body-Mass Index"
         },
@@ -81,7 +117,7 @@ const riskFactorExposurePanel: React.FC = () => {
     const age_dictLst = [
         {
             value: 0,
-            label: "Age-standardized",
+            label: "Age Standardized Rate (ASR)",
             var_filter: "Age-standardized"
         },
         {
@@ -104,40 +140,40 @@ const riskFactorExposurePanel: React.FC = () => {
     const riskFactors_dictLst = [
         {
             value: 0,
-            label: "Alcohol use",
-        },
-        {
-            value: 1,
-            label: "Diet high in red meat",
-        },
-        {
-            value: 2,
-            label: "Diet high in trans fatty acids",
-        },
-        {
-            value: 3,
-            label: "Diet low in polyunsaturated fatty acids",
-        },
-        {
-            value: 4,
-            label: "Diet low in seafood omega-3 fatty acids",
-        },
-        {
-            value: 5,
-            label: "Diet low in vegetables",
-        },
-        {
-            value: 6,
             label: "Diet low in whole grains",
         },
         {
-            value: 7,
-            label: "High body-mass index",
+            value: 1,
+            label: "Diet low in milk",
         },
         {
-            value: 8,
-            label: "Low physical activity",
+            value: 2,
+            label: "Diet high in red meat",
         },
+        {
+            value: 3,
+            label: "Diet low in calcium",
+        },
+        {
+            value: 4,
+            label: "Diet low in fiber",
+        },
+        {
+            value: 5,
+            label: "Diet high in processed meat",
+        },
+        // {
+        //     value: 6,
+        //     label: "Diet low in whole grains",
+        // },
+        // {
+        //     value: 7,
+        //     label: "High body-mass index",
+        // },
+        // {
+        //     value: 8,
+        //     label: "Low physical activity",
+        // },
     ];
 
 
@@ -178,7 +214,7 @@ const riskFactorExposurePanel: React.FC = () => {
         >
         </iframe>
         {<div>
-            {/* {iFrame_url} */}
+          {/* {iFrame_url} */}
         </div>}
     </>);
     const getUriParams2 = () => {
@@ -186,24 +222,26 @@ const riskFactorExposurePanel: React.FC = () => {
         let countryFilter_str = selectedCountries_lst.map((country_str, index) => `var-country_filter=${country_str}`).join('&');
         let yearFilter_str = `var-minyear_filter=${minYear_int}&var-maxyear_filter=${maxYear_int}`;
         let factorFilter_str = `var-factor_filter=${selectedFactor_str}`;
+        
         let selectedSex_str = sex_dictLst[selectedSex_int]['var_filter'];
         let selectedAge_str = age_dictLst[selectedAge_int]['var_filter'];
-        const riskFactorFilter_str = `var-riskFactor_filter=${riskFactors_dictLst[selectedRiskFactor_int].label}`;
-
-        return `&panelId=${panelId}${countryFilter_str}&${yearFilter_str}&${factorFilter_str}&var-sex_filter=${selectedSex_str}&var-age_filter=${selectedAge_str}`;
+        
+        const dietTypeFilter_str = `var-diet_type_filter=${riskFactorExposure_dictLst[selectedRiskFactorExposure_int].label}`;
+        console.log(dietTypeFilter_str)
+        return `&panelId=${panelId}&${countryFilter_str}&${yearFilter_str}&${factorFilter_str}&var-sex_filter=${selectedSex_str}&var-age_filter=${selectedAge_str}&${dietTypeFilter_str}`;
     };
     const iFrame_url2 = `${grafana_url}&${getUriParams2()}`;
     const diet_html = (<>
         <iframe
             id="embeddedPanel_id"
             className="embed-responsive-item"
-             src={iFrame_url2}
+            src={iFrame_url2}
             width="100%"
             height="600px"
         >
         </iframe>
         {<div>
-            {/* {iFrame_url2} */}
+         {/* {iFrame_url2}  */}
         </div>}
     </>);
 
@@ -264,51 +302,52 @@ const riskFactorExposurePanel: React.FC = () => {
         <div className="row">
 
             {/* Left Navbar */}
-            <div className="col-sm-2">
-                <AnalyticsFilter
+            <div className="col-sm-2 mt-3">
+                {/* <h6>Select Risk Factor</h6> */}
+                {/* <AnalyticsFilter
                     selectedAnalysis_int={selectedAnalysis_int}
                     set_selectedAnalysis={set_selectedAnalysis}
                     analyses_dictLst={analyses_dictLst}
+                /> */}
+                <RiskFactorExposureFilter
+                    selectedRiskFactorExposure_int={selectedRiskFactorExposure_int}
+                    set_selectedRiskFactorExposure={set_selectedRiskFactorExposure}
+                    riskFactorExposure_dictLst={riskFactorExposure_dictLst}
                 />
 
-                {(analyses_dictLst[selectedAnalysis_int]['value'] === 1 || analyses_dictLst[selectedAnalysis_int]['value'] === 2) && (
-                    <>
-                        <CountryFilter
-                            selectedCountries_lst={selectedCountries_lst}
-                            set_selectedCountries={set_selectedCountries}
-                        />
-                        <YearFilter
-                            minYear_int={minYear_int}
-                            set_minYear={set_minYear}
-                            maxYear_int={maxYear_int}
-                            set_maxYear={set_maxYear}
-                        />
-                        <FactorFilter
-                            selectedFactor_str={selectedFactor_str}
-                            set_selectedFactor={set_selectedFactor}
-                        />
-                        <SexFilter
-                            selectedSex_int={selectedSex_int}
-                            set_selectedSex={set_selectedSex}
-                            sex_dictLst={sex_dictLst}
-                        />
+
+                <>
+                    <CountryFilter
+                        selectedCountries_lst={selectedCountries_lst}
+                        set_selectedCountries={set_selectedCountries}
+                    />
+                    <YearFilter
+                        minYear_int={minYear_int}
+                        set_minYear={set_minYear}
+                        maxYear_int={maxYear_int}
+                        set_maxYear={set_maxYear}
+                    />
+                    <FactorFilter
+                        selectedFactor_str={selectedFactor_str}
+                        set_selectedFactor={set_selectedFactor}
+                    />
+                    <SexFilter
+                        selectedSex_int={selectedSex_int}
+                        set_selectedSex={set_selectedSex}
+                        sex_dictLst={sex_dictLst}
+                    />
+                  
                         <AgeFilter
                             selectedAge_int={selectedAge_int}
                             set_selectedAge={set_selectedAge}
                             age_dictLst={age_dictLst}
                         />
-                    </>
-                )}
+                  
 
-                {analyses_dictLst[selectedAnalysis_int]['value'] === 2 && (
-                    <RiskFactorExposureFilter
-                        selectedRiskFactorExposure_int={selectedRiskFactorExposure_int}
-                        set_selectedRiskFactorExposure={set_selectedRiskFactorExposure}
-                        riskFactorExposure_dictLst={riskFactorExposure_dictLst}
-                    />
-                )}
+                </>
+
+
             </div>
-
 
 
 

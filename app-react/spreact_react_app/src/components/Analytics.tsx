@@ -142,22 +142,22 @@ const AnalyticsPanel: React.FC = () => {
    const yearLag_dictLst = [
       {
          value: 0,
-         label: "Year Lag 1",
+         label: "1 Year",
          var_filter: 1
       },
       {
          value: 1,
-         label: "Year Lag 3",
+         label: "3 Years",
          var_filter: 3
       },
       {
          value: 2,
-         label: "Year Lag 5",
+         label: "5 Years",
          var_filter: 5
       },
       {
          value: 3,
-         label: "Year Lag 10",
+         label: "10 Years",
          var_filter: 10
       },
    ];
@@ -276,7 +276,7 @@ const AnalyticsPanel: React.FC = () => {
          title: (<>
             <p>
                <br></br>
-               Associations between exposure to various risk factors and CRC incidence for a specific year lag between them.<br /><br />
+               Year lags refer to the time interval between risk factor exposure and CRC incidence.<br /><br />
                Only statistically significant associations between risk factors and CRC incidence are shown. <br /><br />
                Higher coefficients indicate a stronger association between risk factor Summary Exposure Value (SEV) and CRC incidence. <br /><br />
                Negative coefficients may be related to a number of factors, e.g. the presence of confounding variables.
@@ -290,7 +290,7 @@ const AnalyticsPanel: React.FC = () => {
          title: (<>
             <p>
                <br></br>
-               Change of associations between exposure to a specific risk factor and CRC incidence as year lags increase between them.<br /><br />
+               Year lags refer to the time interval between risk factor exposure and CRC incidence.<br /><br />
                Only statistically significant associations between risk factors and CRC incidence are shown. <br /><br />
                Higher coefficients indicate a stronger association between risk factor Summary Exposure Value (SEV) and CRC incidence. <br /><br />
                Negative coefficients may be related to a number of factors, e.g. the presence of confounding variables.
@@ -317,14 +317,15 @@ const AnalyticsPanel: React.FC = () => {
       <div className="row">
 
          {/* Left column */}
-         <div className="col-sm-2">
+         <div className="col-sm-2 mt-2">
+             <h6>Select Presentation</h6>
             <p></p>
             <AnalyticsFilter
                selectedAnalysis_int={selectedAnalysis_int}
                set_selectedAnalysis={set_selectedAnalysis}
                analyses_dictLst={analyses_dictLst}
             />
-           
+
             <br />
             {analyses_dictLst[selectedAnalysis_int]['value'] === 2 && (
                <AnalyticsRiskFactorFilter
@@ -340,7 +341,7 @@ const AnalyticsPanel: React.FC = () => {
                   YearLag_dictLst={yearLag_dictLst}
                />
             )}
-             <p className="text-start">{analyses_dictLst[selectedAnalysis_int]['title']}</p>
+            <p className="text-start">{analyses_dictLst[selectedAnalysis_int]['title']}</p>
          </div>
 
          {/* Centerpiece*/}
