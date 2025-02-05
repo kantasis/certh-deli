@@ -13,7 +13,7 @@ interface FilterProps {
 const YearFilter: React.FC<FilterProps> = ({minYear_int, set_minYear, maxYear_int, set_maxYear}) => {
 
    const floorYear_int = 1990;
-   const ceilYear_int = 2020;
+   const ceilYear_int = 2019;
 
    useEffect(
       () => {
@@ -31,7 +31,7 @@ const YearFilter: React.FC<FilterProps> = ({minYear_int, set_minYear, maxYear_in
                   className="form-label"
                   htmlFor="countrySelect_id" 
                >
-                  Select Min Year: {minYear_int}
+                  <strong>Select Min Year: </strong> <span style={{color:'green', fontWeight: '600'}}>{minYear_int}</span>
                </label>
                <input 
                   id="customRange1"
@@ -50,7 +50,7 @@ const YearFilter: React.FC<FilterProps> = ({minYear_int, set_minYear, maxYear_in
                   className="form-label"
                   htmlFor="countrySelect_id" 
                >
-                  Select Max Year: {maxYear_int}
+                 <strong>  Select Max Year: </strong> <span style={{color:'green', fontWeight: '600'}}>{maxYear_int}</span>
                </label>
                <input 
                   id="customRange1"

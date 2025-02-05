@@ -24,7 +24,7 @@ const AnalyticsRiskFactorFilter: React.FC<FilterProps> = ({selectedRiskFactor_in
             className="form-label"
             htmlFor="factorSelect_id" 
          >
-            <h6>Select Risk Factor</h6>
+            <h6><strong>Select Risk Factor</strong></h6>
          </label>
          <Form id="factorSelect_id">
             <Form.Control 

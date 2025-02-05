@@ -35,7 +35,7 @@ const NavbarMain: React.FC = () => {
       },
       {
          href: "riskFactorExposurePanel",
-         label: "Risk Factor Exposure",
+         label: "Risk Factors",
          condition: isLoggedIn
       },
       // {

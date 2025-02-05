@@ -23,7 +23,7 @@ const RiskFactorExposureFilter: React.FC<FilterProps> = ({ selectedRiskFactorExp
             className="form-label"
             htmlFor="riskFactorExposureSelect_id"
         >
-            <h6>Select Risk Factor</h6>
+            <h6><strong>Select Risk Factor</strong></h6>
         </label>
         <Form id="riskFactorSelect_id">
             <Form.Control
