@@ -46,7 +46,7 @@ const PolicyFilter: React.FC<FilterProps> = ({selectedPolicy_str, set_selectedPo
             className="form-label"
             htmlFor="policySelect_id" 
          >
-            Select Policy Domain
+           <strong> Select Policy Domain </strong>
          </label>
          <Form id="policySelect_id">
             <Form.Control 

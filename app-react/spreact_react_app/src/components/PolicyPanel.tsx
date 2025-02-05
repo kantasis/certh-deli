@@ -67,7 +67,12 @@ const PolicyPanel: React.FC = () => {
       'Spain': "Estrategia en Cáncer del Sistema Nacional de Salud (2010) + Estrategia para el Abordaje de la Cronicidad  en el Sistema Nacional de Salud (2012)",
       'Sweden': "National Cancer Strategy 2009 (No update available)",
    };
-
+   function capitalizeFirstLetter(str) {
+      if (str && str.length > 0) {
+         return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+      }
+      return str;
+   }
    // Add an event listener for messages from the iframe
    window.addEventListener("message", function (event) {
 
@@ -121,7 +126,7 @@ const PolicyPanel: React.FC = () => {
                      <div><strong>Best Practices</strong>: {bestPractices_str}</div>
                      <div><strong>Sources</strong>: <ul className='simpleList'>
                         {sources_dict[country_name] && (
-                           <p>{sources_dict[country_name]}</p>
+                          capitalizeFirstLetter(sources_dict[country_name])
                         )}
                      </ul></div>
                   </div>
@@ -190,7 +195,7 @@ const PolicyPanel: React.FC = () => {
                   eventKey="_0"
                   key="_0"
                >
-                  <Accordion.Header>0 Policies - Unknown</Accordion.Header>
+                  <Accordion.Header>Definitions</Accordion.Header>
                   <Accordion.Body className="text-start" >
                      <ul className='simpleList'>
                         {/* {

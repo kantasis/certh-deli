@@ -24,7 +24,7 @@ const AnalyticsYearLagFilter: React.FC<FilterProps> = ({ selectedYearLag_int, se
             className="form-label"
             htmlFor="yearSelect_id"
         >
-            <h6>Select Year Lag</h6>
+            <h6><strong>Select Year Lag</strong></h6>
         </label>
         <Form id="yearSelect_id">
             <Form.Control

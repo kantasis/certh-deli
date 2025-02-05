@@ -23,7 +23,7 @@ const SexFilter: React.FC<FilterProps> = ({ selectedSex_int, set_selectedSex, se
             className="form-label"
             htmlFor="sexSelect_id"
         >
-            <h6>Select Sex</h6>
+            <h6><strong>Select Sex</strong></h6>
         </label>
         <Form id="sexSelect_id">
             <Form.Control

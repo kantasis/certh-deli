@@ -23,7 +23,7 @@ const AgeFilter: React.FC<FilterProps> = ({ selectedAge_int, set_selectedAge, ag
             className="form-label"
             htmlFor="ageSelect_id"
         >
-            <h6>Select Age</h6>
+            <h6><strong>Select Age </strong></h6>
         </label>
         <Form id="ageSelect_id">
             <Form.Control

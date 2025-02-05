@@ -80,6 +80,7 @@ const AnalyticsPanel: React.FC = () => {
                Time-lag analyses of 1, 3, 5 and 10 years between CRC Incidence and Risk Factors investigated potential downstream effects.<br /><br />
                For example, SEV for 1990 was correlated with CRC incidence for 1991, 1993, 1995 and 2000. <br /><br />
                SEV for 1991 was correlated with CRC incidence for 1992, 1994, 1996 and 2001 and so on.<br /><br />
+               Negative coefficients may be related to a number of factors, e.g. the presence of confounding variables.
             </p>
          </>)
       },
@@ -275,11 +276,11 @@ const AnalyticsPanel: React.FC = () => {
          caption: "Time interval between Risk Factor exposure and CRC incidence",
          title: (<>
             <p>
-               <br></br>
-               Year lags refer to the time interval between risk factor exposure and CRC incidence.<br /><br />
-               Only statistically significant associations between risk factors and CRC incidence are shown. <br /><br />
-               Higher coefficients indicate a stronger association between risk factor Summary Exposure Value (SEV) and CRC incidence. <br /><br />
-               Negative coefficients may be related to a number of factors, e.g. the presence of confounding variables.
+               <br></br><ul>
+               <li>Year lags refer to the time interval between risk factor exposure and CRC incidence.</li><br />
+               <li>Only statistically significant associations between risk factors and CRC incidence are shown. </li><br />
+               <li>Higher coefficients indicate a stronger association between risk factor Summary Exposure Value (SEV) and CRC incidence. </li><br />
+               </ul>
             </p>
          </>),
          html: yearLag_html,
@@ -289,11 +290,11 @@ const AnalyticsPanel: React.FC = () => {
          label: "Per Risk Factor",
          title: (<>
             <p>
-               <br></br>
-               Year lags refer to the time interval between risk factor exposure and CRC incidence.<br /><br />
-               Only statistically significant associations between risk factors and CRC incidence are shown. <br /><br />
-               Higher coefficients indicate a stronger association between risk factor Summary Exposure Value (SEV) and CRC incidence. <br /><br />
-               Negative coefficients may be related to a number of factors, e.g. the presence of confounding variables.
+               <br></br><ul>
+              <li> Year lags refer to the time interval between risk factor exposure and CRC incidence.</li><br />
+              <li>Only statistically significant associations between risk factors and CRC incidence are shown. </li><br />
+              <li> Higher coefficients indicate a stronger association between risk factor Summary Exposure Value (SEV) and CRC incidence. </li><br />
+               </ul>
             </p>
          </>),
          caption: "Summary Exposure Value of various CRC Risk Factors",
@@ -318,7 +319,7 @@ const AnalyticsPanel: React.FC = () => {
 
          {/* Left column */}
          <div className="col-sm-2 mt-2">
-             <h6>Select Presentation</h6>
+             <h6><strong>Select Presentation</strong></h6>
             <p></p>
             <AnalyticsFilter
                selectedAnalysis_int={selectedAnalysis_int}
