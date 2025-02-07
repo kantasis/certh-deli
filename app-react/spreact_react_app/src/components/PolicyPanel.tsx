@@ -87,7 +87,7 @@ const PolicyPanel: React.FC = () => {
       console.log('-----------')
       setCountryName(event.data['Country']);
       setPolicies(event.data['Policies']);
-      setBestPractices(event.data['Best Practices'] || 'None');
+      setBestPractices(event.data['Best Practices']);
 
    });
 
@@ -123,12 +123,12 @@ const PolicyPanel: React.FC = () => {
                <div className="row">
                   <div className="col-sm-6">
                      <div><strong>Country</strong>: {country_name}</div>
-                     <div><strong>Best Practices</strong>: {bestPractices_str}</div>
-                     <div><strong>Sources</strong>: <ul className='simpleList'>
+                     <div><strong>Best Practices</strong>: {policies_strLst && policies_strLst.length >= 1 ? 'None' : bestPractices_str}</div>
+                     <div><strong>Sources</strong>: <span className='simpleList'>
                         {sources_dict[country_name] && (
                           capitalizeFirstLetter(sources_dict[country_name])
                         )}
-                     </ul></div>
+                     </span></div>
                   </div>
                   <div className="col-sm-6">
                      <strong >Policies: </strong>
