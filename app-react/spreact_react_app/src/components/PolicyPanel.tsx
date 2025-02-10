@@ -87,7 +87,10 @@ const PolicyPanel: React.FC = () => {
       console.log('-----------')
       setCountryName(event.data['Country']);
       setPolicies(event.data['Policies']);
+      console.log(event.data['Policies'])
+
       setBestPractices(event.data['Best Practices']);
+      console.log(bestPractices_str)
 
    });
 
@@ -123,10 +126,11 @@ const PolicyPanel: React.FC = () => {
                <div className="row">
                   <div className="col-sm-6">
                      <div><strong>Country</strong>: {country_name}</div>
-                     <div><strong>Best Practices</strong>: {policies_strLst && policies_strLst.length >= 1 ? 'None' : bestPractices_str}</div>
+                     <div><strong>Best Practices</strong>: {policies_strLst && policies_strLst.length >= 1 && policies_strLst.some((policy) => policy.trim().toLowerCase() === 'best practices') ? bestPractices_str : 'No  available data'}</div>
+
                      <div><strong>Sources</strong>: <span className='simpleList'>
                         {sources_dict[country_name] && (
-                          capitalizeFirstLetter(sources_dict[country_name])
+                           capitalizeFirstLetter(sources_dict[country_name])
                         )}
                      </span></div>
                   </div>
@@ -135,13 +139,20 @@ const PolicyPanel: React.FC = () => {
                      <ul className="list-group ">
                         {/* <li className="list-group-item"><h6>asasf</h6></li> */}
                         {
-                           policies_strLst ?
-                              policies_strLst.map(key_str => (
-                                 <li className="list-group-item" key={`${key_str}_key`}>
-                                    {key_str}
-                                 </li>
-                              ))
-                              : 'non EU MS' 
+
+                           policies_strLst ? (
+                              policies_strLst
+                                 .filter(key_str => key_str.trim() !== "Best Practices") // Trim spaces and check against "Best Practices"
+                                 .map(key_str => (
+                                    <li className="list-group-item" key={`${key_str}_key`}>
+                                       {key_str}
+                                    </li>
+                                 ))
+                           ) : (
+                              'non EU MS'
+                           )
+
+
                         }
                      </ul>
 
