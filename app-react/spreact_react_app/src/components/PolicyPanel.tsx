@@ -49,7 +49,7 @@ const PolicyPanel: React.FC = () => {
       'Estonia': "Estonian Cancer Control Plan 2021-2030",
       'Finland': "National Cancer Plan II 2014-2025",
       'France': "FRANCE TEN-YEAR CANCER-CONTROL STRATEGY",
-      'Germany': "Policies at place as found in action plans available in the Federal Ministry of Health website",
+      'Germany': "Nationaler Krebsplan Handlungsfelder, Ziele und Umsetzungsempfehlungen & IN FORM Deutschlands Initiative für gesunde	Ernährung und	mehr Bewegung Nationaler Aktionsplan zur Prävention von Fehlernährung, Bewegungsmangel, Übergewicht und damit zusammenhängenden Krankheiten",
       'Greece': "National Public Health Plan 2021-2025 (Provisions for cancer are incorporated)",
       'Hungary': "National Cancer Program (2006)No Update",
       'Ireland': "National Cancer Strategy 2017-2026 ",
@@ -60,13 +60,14 @@ const PolicyPanel: React.FC = () => {
       'Malta': "National Cancer Plan 2017-2021 (No update available)",
       'Netherlands': "The Dutch Cancer Agenda (2023)",
       'Poland': "Program wieloletni pn. NARODOWA STRATEGIA ONKOLOGICZNA na lata 2020-2030 & National Cancer Strategy 2017-2024",
-      'Portugal': "The National Cancer Plan (2017) has a focus on sreaning and treatment; for primary prevention the only goal that sets is \"to boost the participation of citizens, with particular emphasis on the promotion of healthy lifestyles\". However, there are established primary prevetion policies and are available through the Ministry of Health website.",
+      'Portugal': "<a href='https://www.sns.gov.pt/sns/' target='_blank' >Saúde + – SNS</a>",
       'Romania': "Planul National de Combatere a Cancerului 2022",
       'Slovakia': "National Oncology Program  2021-2025 ",
       'Slovenia': "National Cancer Control Program 2022-2026",
       'Spain': "Estrategia en Cáncer del Sistema Nacional de Salud (2010) + Estrategia para el Abordaje de la Cronicidad  en el Sistema Nacional de Salud (2012)",
       'Sweden': "National Cancer Strategy 2009 (No update available)",
    };
+
    function capitalizeFirstLetter(str) {
       if (str && str.length > 0) {
          return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
@@ -129,9 +130,12 @@ const PolicyPanel: React.FC = () => {
                      <div><strong>Best Practices</strong>: {policies_strLst && policies_strLst.length >= 1 && policies_strLst.some((policy) => policy.trim().toLowerCase() === 'best practices') ? bestPractices_str : 'No  available data'}</div>
 
                      <div><strong>Sources</strong>: <span className='simpleList'>
-                        {sources_dict[country_name] && (
+                     {sources_dict[country_name] && country_name === 'Portugal' ? (
+                           <span dangerouslySetInnerHTML={{ __html: sources_dict[country_name] }} />
+                        ) : (
                            capitalizeFirstLetter(sources_dict[country_name])
                         )}
+
                      </span></div>
                   </div>
                   <div className="col-sm-6">
