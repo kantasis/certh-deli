@@ -6,6 +6,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import jakarta.validation.Valid;
+import com.tutorials.spring_react.security.payloads.ChangePasswordRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -245,5 +246,32 @@ public class AuthController {
       return ResponseEntity.ok()
          .body(new MessageResponse("You've been signed out!"));
    }
+
+   @PostMapping("/update-password")
+   public ResponseEntity<?> updatePassword(
+      @Valid @RequestBody ChangePasswordRequest request
+   ) {
+      Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+      
+      if (!(authentication.getPrincipal() instanceof UserDetailsImpl)) {
+         return ResponseEntity.badRequest().body(new MessageResponse("Error: User not authenticated"));
+      }
+
+      UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+      UserModel user = userRepository.findByUsername(userDetails.getUsername())
+         .orElseThrow(() -> new RuntimeException("Error: User not found"));
+
+      // Verify old password
+      if (!passwordEncoder.matches(request.getOldPassword(), user.getPassword())) {
+         return ResponseEntity.badRequest().body(new MessageResponse("Error: Old password is incorrect"));
+      }
+
+      // Update password
+      user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+      userRepository.save(user);
+
+      return ResponseEntity.ok(new MessageResponse("Password updated successfully"));
+   }
+
 
 }
