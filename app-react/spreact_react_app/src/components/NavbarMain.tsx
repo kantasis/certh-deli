@@ -58,7 +58,22 @@ const NavbarMain: React.FC = () => {
          label: "Predictive Analytics",
          condition: isLoggedIn
       },
-
+      {
+         href: "CRCmortalityPanel",
+         label: "CRC Mortality",
+         condition: isLoggedIn
+      },
+      {
+         href: "ScreeningRiskFactorDataPanel",
+         label: "Screening & Risk Factor Data",
+         condition: isLoggedIn
+      },
+      {
+         href: "CrcIncidenceDataPanel",
+         label: "CRC Incidence Data Panel",
+         condition: isLoggedIn
+      },
+      
    ].map((item_dict, index) => item_dict.condition && (
       <li className="nav-item" key={index}>
          <a

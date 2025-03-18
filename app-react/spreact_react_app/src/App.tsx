@@ -16,6 +16,9 @@ import LifestylePanel from "./components/LifestylePanel.tsx";
 import PolicyPanel from "./components/PolicyPanel.tsx";
 import Analytics from "./components/Analytics.tsx";
 import RiskFactorExposurePanel from "./components/RiskFactorExposurePanel.tsx"
+import CRCmortalityPanel from "./components/CRCmortalityPanel.tsx"
+import ScreeningRiskFactorDataPanel from "./components/ScreeningRiskFactorDataPanel.tsx"
+import CrcIncidenceDataPanel from "./components/CrcIncidenceDataPanel.tsx"
 
 const App: React.FC = () => {
    return (<>
@@ -34,6 +37,9 @@ const App: React.FC = () => {
                <Route path="/profile" element={<Profile />} />
                <Route path="/epidimiologicalPanel" element={<EpidimiologicalPanel />} />
                <Route path="/riskFactorExposurePanel" element={<RiskFactorExposurePanel />} />
+               <Route path="/CRCmortalityPanel" element={< CRCmortalityPanel />} />
+               <Route path="/ScreeningRiskFactorDataPanel" element={< ScreeningRiskFactorDataPanel />} />
+               <Route path="/CrcIncidenceDataPanel" element={< CrcIncidenceDataPanel />} />
                {/* <Route path="/nutritionPanel" element={<NutritionPanel />} />
                <Route path="/lifestylePanel" element={<LifestylePanel />} /> */}
                <Route path="/policyPanel" element={<PolicyPanel />} />

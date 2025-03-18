@@ -1,0 +1,10 @@
+TRUNCATE TABLE spain_screening_risk_factors_tbl;
+
+COPY spain_screening_risk_factors_tbl(
+	"Region",
+	"Risk_Factors",
+	"Value"
+)
+FROM '/tmp/screening_and_risk _factors _data_region_spain.csv'
+DELIMITER ','
+CSV HEADER;
