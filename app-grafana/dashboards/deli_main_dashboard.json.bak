@@ -67,7 +67,7 @@
           "series": []
         }
       },
-      "pluginVersion": "6.5.0",
+      "pluginVersion": "6.6.0",
       "targets": [
         {
           "editorMode": "code",
@@ -144,7 +144,7 @@
           "series": []
         }
       },
-      "pluginVersion": "6.5.0",
+      "pluginVersion": "6.6.0",
       "targets": [
         {
           "datasource": {
@@ -225,7 +225,7 @@
           "series": []
         }
       },
-      "pluginVersion": "6.5.0",
+      "pluginVersion": "6.6.0",
       "targets": [
         {
           "editorMode": "code",
@@ -306,7 +306,7 @@
           "series": []
         }
       },
-      "pluginVersion": "6.5.0",
+      "pluginVersion": "6.6.0",
       "targets": [
         {
           "datasource": {
@@ -369,7 +369,7 @@
           "key": "",
           "plugin": "AMap.Scale,AMap.ToolBar"
         },
-        "getOption": "// Helper function to get selections from a multi-select variable\nfunction getSelections(multiSelectVar_name) {\n   const multiSelect_var = context.grafana.replaceVariables(\"${\" + multiSelectVar_name + \"}\");\n   const result = multiSelect_var.replace(/{/, '').replace(/}/, '').split(',');\n   console.log(`Selections for ${multiSelectVar_name}:`, result); // Debugging\n   return result;\n}\n\n// Helper function to get diet data for a specific country and year\nfunction getDietData(series_name, country_name) {\n   const series = context.panel.data.series;\n   \n   // Log the available series for debugging\n   console.log(\"Available Series Data:\", series);\n\n   // Find the series that has \"country_str\" field (this contains country names)\n   const targetSeries = series.find((series_dict) => {\n      const countryField = series_dict.fields.find(field => field.name === \"country_str\");\n      return countryField && countryField.values.some(value => value === country_name);\n   });\n\n   if (!targetSeries) {\n      console.log(`ERROR: Country \"${country_name}\" not found in series data.`);\n      return [];\n   }\n\n   // Find the desired series based on the dynamic `series_name`\n   const seriesField = targetSeries.fields.find((field) => field.name === series_name);\n   if (!seriesField) {\n      console.log(`ERROR: Series \"${series_name}\" not found in \"${country_name}\".`);\n      return [];\n   }\n\n   // Find the \"year_str\" field\n   const yearField = targetSeries.fields.find((field) => field.name === \"year_str\");\n   const countryField = targetSeries.fields.find((field) => field.name === \"country_str\");\n   const yearValues = yearField ? yearField.values.buffer || yearField.values : [];\n   const countryValues = countryField ? countryField.values.buffer || countryField.values : [];\n   const dietValues = seriesField.values.buffer || seriesField.values;\n\n   // Create a map of year -> diet value for the current country\n   let countryYearData = {};\n   for (let i = 0; i < yearValues.length; i++) {\n      if (countryValues[i] === country_name && yearValues[i] && dietValues[i]) {\n         countryYearData[`${yearValues[i]}-${country_name}`] = dietValues[i]; // Map year-country pair to diet value\n      }\n   }\n\n   console.log(`Mapped Data for \"${country_name}\":`, countryYearData);\n   return countryYearData;\n}\n\n// Helper function to get the x-axis data (years)\nfunction getYearsSeries() {\n   const series = context.panel.data.series;\n   \n   // Log available series for debugging\n   console.log(\"Available Series Data for Years:\", series);\n\n   // Find the series containing the \"year_str\" field\n   const targetSeries = series.find((series_dict) => {\n      return series_dict.fields.find(field => field.name === \"year_str\");\n   });\n\n   if (!targetSeries) {\n      console.log(\"ERROR: Year series not found.\");\n      return [];\n   }\n\n   const yearField = targetSeries.fields.find((field) => field.name === \"year_str\");\n   const yearValues = yearField ? yearField.values.buffer || yearField.values : [];\n\n   // Log the years data\n   console.log(\"Year Data for X-Axis:\", yearValues);\n\n   return Array.from(new Set(yearValues)); // Return unique years\n}\n\n// Fetch selected countries and data\nconst countries_strLst = getSelections(\"country_filter\");\nconst xaxis_ser = getYearsSeries();\n\n// Fetch the dynamic diet type (this can come from a user-selected variable, e.g., \"diet_type_filter\")\nconst selectedDietType = getSelections(\"diet_type_filter\")[0]; // Assuming it's a single selection for the diet type\n\nconsole.log(\"Selected Diet Type:\", selectedDietType);\n\n// Initialize an object to store diet data by country and year\nlet countryDietData = {};\n\n// Loop through each country and fetch the dynamic diet data\ncountries_strLst.forEach((country_name) => {\n   // Get diet data for the country, which is a mapping of year-country -> values\n   const dietData = getDietData(selectedDietType, country_name);\n\n   // Store the diet data for the country in the countryDietData object\n   countryDietData[country_name] = dietData;\n});\n\n// Debugging output to check the country diet data structure\nconsole.log(\"Diet Data by Country:\", countryDietData);\n\n// Create series options for each country\nconst seriesOptions_lst = countries_strLst.map((country_name) => {\n   const countryData = countryDietData[country_name];\n\n   // Create series data using the x-axis years, looking up each year for the country\n   const countrySeriesData = xaxis_ser.map((year) => {\n      // For each year, get the corresponding diet value for the current country\n      const key = `${year}-${country_name}`;\n      return countryData[key] || null; // If no data for this year, return null\n   }).filter(data => data !== null); // Remove null values\n\n   return {\n      data: countrySeriesData,\n      type: 'line',\n      name: country_name,\n   };\n});\nfunction getVariable(variable_name) {\n  return context.grafana.replaceVariables(`\\${${variable_name}}`);\n}\n\nconst age_str = getVariable('age_filter');\nconst sex_str = getVariable('sex_filter');\nconst factor_str = getVariable('factor_filter');\n// Define the chart options\nconst option = {\ntitle: {\n   text: `{line1|${\n      factor_str === 'Rate_SEV_val'\n         ? 'Summary Exposure Value'\n         : factor_str === 'Rate_DALYs_val'\n         ? 'DALYs'\n         : factor_str === 'Rate_Deaths_val'\n         ? 'Deaths'\n         : factor_str === 'Rate_YLDs_val'\n         ? 'YLDs'\n         : factor_str === 'Rate_YLLs_val'\n         ? 'YLLs'\n         : `${factor_str}`\n   }} \\n{line2|${selectedDietType} - ${age_str === 'Age-standardized' ? 'Age Standardized Rate (ASR)' : `Age ${age_str}`} - ${sex_str === 'Both' ? 'Both Sexes' : `${sex_str}`}}`,\n   top:-10,\n   textStyle: {\n      rich: {\n         line1: {\n            fontSize: 12, // Font size for the first line\n            fontWeight: 'bold', // Bold styling for the first line\n            //color: '#333', // Optional: color for the first line\n            lineHeight: 30, // Add spacing between lines\n         },\n         line2: {\n            fontSize: 18, // Font size for the second line\n           // color: '#666', // Optional: color for the second line\n            lineHeight: 30, // Ensure consistent spacing\n         },\n      },\n   },\n   },\n   legend: {\n      type: 'plain',\n      orient: 'vertical',\n      left: 'right',\n   },\n   tooltip: {\n      valueFormatter: (value) => parseFloat(value).toFixed(2),\n   },\n\n   xAxis: {\n      name: 'Year',\n      nameLocation: 'center',\n      nameGap: 30,\n      type: 'category',\n      data: xaxis_ser, // The x-axis is the years\n   },\n   yAxis: {\n      name:  factor_str === 'Rate_SEV_val'\n         ? 'Summary Exposure Value'\n         : factor_str === 'Rate_DALYs_val'\n         ? 'DALYs'\n         : factor_str === 'Rate_Deaths_val'\n         ? 'Deaths'\n         : factor_str === 'Rate_YLDs_val'\n         ? 'YLDs'\n         : factor_str === 'Rate_YLLs_val'\n         ? 'YLLs'\n         : `${factor_str}`,\n      type: 'value',\n      min: (value) => value.min, // Dynamically set the minimum value\n      max: (value) => value.max, // Dynamically set the maximum value\n      nameGap: 60,\n      nameLocation: 'middle',\n       axisLabel: {\n         formatter: (value) => value.toFixed(0) \n      }\n   },\n   dataZoom: [\n      {\n         type: 'slider',\n         show: true,\n         xAxisIndex: [0],\n         start: 0,\n         end: 100,\n      },\n      {\n         type: 'inside',\n         xAxisIndex: [0],\n         start: 0,\n         end: 100,\n      },\n   ],\n   series: seriesOptions_lst, // List of series for each country\n};\n\n// Return the chart options\nreturn option;\n",
+        "getOption": "// Helper function to get selections from a multi-select variable\nfunction getSelections(multiSelectVar_name) {\n   const multiSelect_var = context.grafana.replaceVariables(\"${\" + multiSelectVar_name + \"}\");\n   const result = multiSelect_var.replace(/{/, '').replace(/}/, '').split(',');\n   console.log(`Selections for ${multiSelectVar_name}:`, result); // Debugging\n   return result;\n}\n\n// Helper function to get diet data for a specific country and year\nfunction getDietData(series_name, country_name) {\n   const series = context.panel.data.series;\n   \n   // Log the available series for debugging\n   console.log(\"Available Series Data:\", series);\n\n   // Find the series that has \"country_str\" field (this contains country names)\n   const targetSeries = series.find((series_dict) => {\n      const countryField = series_dict.fields.find(field => field.name === \"country_str\");\n      return countryField && countryField.values.some(value => value === country_name);\n   });\n\n   if (!targetSeries) {\n      console.log(`ERROR: Country \"${country_name}\" not found in series data.`);\n      return [];\n   }\n\n   // Find the desired series based on the dynamic `series_name`\n   const seriesField = targetSeries.fields.find((field) => field.name === series_name);\n   if (!seriesField) {\n      console.log(`ERROR: Series \"${series_name}\" not found in \"${country_name}\".`);\n      return [];\n   }\n\n   // Find the \"year_str\" field\n   const yearField = targetSeries.fields.find((field) => field.name === \"year_str\");\n   const countryField = targetSeries.fields.find((field) => field.name === \"country_str\");\n   const yearValues = yearField ? yearField.values.buffer || yearField.values : [];\n   const countryValues = countryField ? countryField.values.buffer || countryField.values : [];\n   const dietValues = seriesField.values.buffer || seriesField.values;\n\n   // Create a map of year -> diet value for the current country\n   let countryYearData = {};\n   for (let i = 0; i < yearValues.length; i++) {\n      if (countryValues[i] === country_name && yearValues[i] && dietValues[i]) {\n         countryYearData[`${yearValues[i]}-${country_name}`] = dietValues[i]; // Map year-country pair to diet value\n      }\n   }\n\n   console.log(`Mapped Data for \"${country_name}\":`, countryYearData);\n   return countryYearData;\n}\n\n// Helper function to get the x-axis data (years)\nfunction getYearsSeries() {\n   const series = context.panel.data.series;\n   \n   // Log available series for debugging\n   console.log(\"Available Series Data for Years:\", series);\n\n   // Find the series containing the \"year_str\" field\n   const targetSeries = series.find((series_dict) => {\n      return series_dict.fields.find(field => field.name === \"year_str\");\n   });\n\n   if (!targetSeries) {\n      console.log(\"ERROR: Year series not found.\");\n      return [];\n   }\n\n   const yearField = targetSeries.fields.find((field) => field.name === \"year_str\");\n   const yearValues = yearField ? yearField.values.buffer || yearField.values : [];\n\n   // Log the years data\n   console.log(\"Year Data for X-Axis:\", yearValues);\n\n   return Array.from(new Set(yearValues)); // Return unique years\n}\n\n// Fetch selected countries and data\nconst countries_strLst = getSelections(\"country_filter\");\nconst xaxis_ser = getYearsSeries();\n\n// Fetch the dynamic diet type (this can come from a user-selected variable, e.g., \"diet_type_filter\")\nconst selectedDietType = getSelections(\"diet_type_filter\")[0]; // Assuming it's a single selection for the diet type\n\nconsole.log(\"Selected Diet Type:\", selectedDietType);\n\n// Initialize an object to store diet data by country and year\nlet countryDietData = {};\n\n// Loop through each country and fetch the dynamic diet data\ncountries_strLst.forEach((country_name) => {\n   // Get diet data for the country, which is a mapping of year-country -> values\n   const dietData = getDietData(selectedDietType, country_name);\n\n   // Store the diet data for the country in the countryDietData object\n   countryDietData[country_name] = dietData;\n});\n\n// Debugging output to check the country diet data structure\nconsole.log(\"Diet Data by Country:\", countryDietData);\n\n// Create series options for each country\nconst seriesOptions_lst = countries_strLst.map((country_name) => {\n   const countryData = countryDietData[country_name];\n\n   // Create series data using the x-axis years, looking up each year for the country\n   const countrySeriesData = xaxis_ser.map((year) => {\n      // For each year, get the corresponding diet value for the current country\n      const key = `${year}-${country_name}`;\n      return countryData[key] || null; // If no data for this year, return null\n   }).filter(data => data !== null); // Remove null values\n\n   return {\n      data: countrySeriesData,\n      type: 'line',\n      name: country_name,\n   };\n});\nfunction getVariable(variable_name) {\n  return context.grafana.replaceVariables(`\\${${variable_name}}`);\n}\n\nconst age_str = getVariable('age_filter');\nconst sex_str = getVariable('sex_filter');\nconst factor_str = getVariable('factor_filter');\n// Define the chart options\nconst option = {\ntitle: {\n   text: `{line1|${\n      factor_str === 'Rate_SEV_val'\n         ? 'Summary Exposure Value'\n         : factor_str === 'Rate_DALYs_val'\n         ? 'DALYs'\n         : factor_str === 'Rate_Deaths_val'\n         ? 'Deaths'\n         : factor_str === 'Rate_YLDs_val'\n         ? 'YLDs'\n         : factor_str === 'Rate_YLLs_val'\n         ? 'YLLs'\n         : `${factor_str}`\n   }} \\n{line2|${selectedDietType} - ${age_str === 'Age-standardized' ? 'Age Standardized Rate (ASR)' : `Age ${age_str}`} - ${sex_str === 'Both' ? 'Both Sexes' : `${sex_str}`}}`,\n   top:-10,\n   textStyle: {\n      rich: {\n         line1: {\n            fontSize: 12, // Font size for the first line\n            fontWeight: 'bold', // Bold styling for the first line\n            //color: '#333', // Optional: color for the first line\n            lineHeight: 30, // Add spacing between lines\n         },\n         line2: {\n            fontSize: 18, // Font size for the second line\n           // color: '#666', // Optional: color for the second line\n            lineHeight: 30, // Ensure consistent spacing\n         },\n      },\n   },\n   },\n   legend: {\n      type: 'plain',\n      orient: 'vertical',\n      left: 'right',\n   },\n   tooltip: {\n      valueFormatter: (value) => parseFloat(value).toFixed(2),\n   },\n\n   xAxis: {\n      name: 'Year',\n      nameLocation: 'center',\n      nameGap: 30,\n      type: 'category',\n      data: xaxis_ser, // The x-axis is the years\n   },\n   yAxis: {\n      name:  factor_str === 'Rate_SEV_val'\n         ? 'Summary Exposure Value'\n         : factor_str === 'Rate_DALYs_val'\n         ? 'DALYs'\n         : factor_str === 'Rate_Deaths_val'\n         ? 'Deaths'\n         : factor_str === 'Rate_YLDs_val'\n         ? 'YLDs'\n         : factor_str === 'Rate_YLLs_val'\n         ? 'YLLs'\n         : `${factor_str}`,\n      type: 'value',\n      min: 0, // Dynamically set the minimum value\n      max: (value) => value.max, // Dynamically set the maximum value\n      nameGap: 60,\n      nameLocation: 'middle',\n       axisLabel: {\n         formatter: (value) => value.toFixed(0) \n      }\n   },\n   dataZoom: [\n      {\n         type: 'slider',\n         show: true,\n         xAxisIndex: [0],\n         start: 0,\n         end: 100,\n      },\n      {\n         type: 'inside',\n         xAxisIndex: [0],\n         start: 0,\n         end: 100,\n      },\n   ],\n   series: seriesOptions_lst, // List of series for each country\n};\n\n// Return the chart options\nreturn option;\n",
         "google": {
           "callback": "gmapReady",
           "key": ""
@@ -386,7 +386,7 @@
           "series": []
         }
       },
-      "pluginVersion": "6.5.0",
+      "pluginVersion": "6.6.0",
       "targets": [
         {
           "datasource": {
@@ -432,10 +432,10 @@
       "gridPos": {
         "h": 8,
         "w": 12,
-        "x": 0,
-        "y": 24
+        "x": 12,
+        "y": 16
       },
-      "id": 8,
+      "id": 10,
       "options": {
         "baidu": {
           "callback": "bmapReady",
@@ -449,7 +449,92 @@
           "key": "",
           "plugin": "AMap.Scale,AMap.ToolBar"
         },
-        "getOption": "// Helper function to get selections from a multi-select variable\nfunction getSelections(multiSelectVar_name) {\n   const multiSelect_var = context.grafana.replaceVariables(\"${\" + multiSelectVar_name + \"}\");\n   const result = multiSelect_var.replace(/{/, '').replace(/}/, '').split(',');\n   console.log(`Selections for ${multiSelectVar_name}:`, result); // Debugging\n   return result;\n}\n\n// Helper function to get risk data for a specific country and year\nfunction getRiskData(series_name, country_name) {\n   const series = context.panel.data.series;\n   \n   // Log the available series for debugging\n   console.log(\"Available Series Data:\", series);\n\n   // Find the series that has \"country_str\" field (this contains country names)\n   const targetSeries = series.find((series_dict) => {\n      const countryField = series_dict.fields.find(field => field.name === \"country_str\");\n      return countryField && countryField.values.some(value => value === country_name);\n   });\n\n   if (!targetSeries) {\n      console.log(`ERROR: Country \"${country_name}\" not found in series data.`);\n      return [];\n   }\n\n   // Find the desired series based on the dynamic `series_name`\n   const seriesField = targetSeries.fields.find((field) => field.name === series_name);\n   if (!seriesField) {\n      console.log(`ERROR: Series \"${series_name}\" not found in \"${country_name}\".`);\n      return [];\n   }\n\n   // Find the \"year_str\" field\n   const yearField = targetSeries.fields.find((field) => field.name === \"year_str\");\n   const countryField = targetSeries.fields.find((field) => field.name === \"country_str\");\n   const yearValues = yearField ? yearField.values.buffer || yearField.values : [];\n   const countryValues = countryField ? countryField.values.buffer || countryField.values : [];\n   const riskValues = seriesField.values.buffer || seriesField.values;\n\n   // Create a map of year -> risk value for the current country\n   let countryYearData = {};\n   for (let i = 0; i < yearValues.length; i++) {\n      if (countryValues[i] === country_name && yearValues[i] && riskValues[i]) {\n         countryYearData[`${yearValues[i]}-${country_name}`] = riskValues[i]; // Map year-country pair to risk value\n      }\n   }\n\n   console.log(`Mapped Data for \"${country_name}\":`, countryYearData);\n   return countryYearData;\n}\n\n// Helper function to get the x-axis data (years)\nfunction getYearsSeries() {\n   const series = context.panel.data.series;\n   \n   // Log available series for debugging\n   console.log(\"Available Series Data for Years:\", series);\n\n   // Find the series containing the \"year_str\" field\n   const targetSeries = series.find((series_dict) => {\n      return series_dict.fields.find(field => field.name === \"year_str\");\n   });\n\n   if (!targetSeries) {\n      console.log(\"ERROR: Year series not found.\");\n      return [];\n   }\n\n   const yearField = targetSeries.fields.find((field) => field.name === \"year_str\");\n   const yearValues = yearField ? yearField.values.buffer || yearField.values : [];\n\n   // Log the years data\n   console.log(\"Year Data for X-Axis:\", yearValues);\n\n   return Array.from(new Set(yearValues)); // Return unique years\n}\n\n// Fetch selected countries and data\nconst countries_strLst = getSelections(\"country_filter\");\nconst xaxis_ser = getYearsSeries();\n\n// Fetch the dynamic risk type (this can come from a user-selected variable, e.g., \"riskFactor_filter\")\nconst selectedRiskType = getSelections(\"riskFactor_filter\")[0]; // Assuming it's a single selection for the risk type\n\nconsole.log(\"Selected Risk Type:\", selectedRiskType);\n\n// Initialize an object to store risk data by country and year\nlet countryRiskData = {};\n\n// Loop through each country and fetch the dynamic risk data\ncountries_strLst.forEach((country_name) => {\n   // Get risk data for the country, which is a mapping of year-country -> values\n   const riskData = getRiskData(selectedRiskType, country_name);\n\n   // Store the risk data for the country in the countryRiskData object\n   countryRiskData[country_name] = riskData;\n});\n\n// Debugging output to check the country risk data structure\nconsole.log(\"Risk Data by Country:\", countryRiskData);\n\n// Create series options for each country\nconst seriesOptions_lst = countries_strLst.map((country_name) => {\n   const countryData = countryRiskData[country_name];\n\n   // Create series data using the x-axis years, looking up each year for the country\n   const countrySeriesData = xaxis_ser.map((year) => {\n      // For each year, get the corresponding risk value for the current country\n      const key = `${year}-${country_name}`;\n      return countryData[key] || null; // If no data for this year, return null\n   }).filter(data => data !== null); // Remove null values\n\n   return {\n      data: countrySeriesData,\n      type: 'line',\n      name: country_name,\n   };\n});\nfunction getVariable(variable_name) {\n  return context.grafana.replaceVariables(`\\${${variable_name}}`);\n}\nconst factor_str = getVariable('factor_filter');\nconst age_str = getVariable('age_filter');\nconst sex_str = getVariable('sex_filter');\n// Define the chart options\nconst option = {\n   title: {\n   text: `{line1|${\n      factor_str === 'Rate_SEV_val'\n         ? 'Summary Exposure Value'\n         : factor_str === 'Rate_DALYs_val'\n         ? 'DALYs'\n         : factor_str === 'Rate_Deaths_val'\n         ? 'Deaths'\n          : factor_str === 'Rate_YLDs_val'\n         ? 'YLDs'\n          : factor_str === 'Rate_YLLs_val'\n         ? 'YLLs'\n         : `${factor_str}`\n  }}\\n{line2|${selectedRiskType} - ${age_str === 'Age-standardized' ? 'Age Standardized Rate (ASR)' : `Age ${age_str}`} - ${sex_str === 'Both' ? 'Both Sexes' : `${sex_str}`}}`,// Add line breaks and use rich styles\n      textStyle: {\n         rich: {\n            line1: {\n               fontSize: 12, // Font size for the first line\n               fontWeight: 'bold', // Make it bold\n               lineHeight: 30\n            },\n            line2: {\n               fontSize: 18, // Font size for the second line\n            //  lineHeight: 30\n            },\n         },\n   },\n   },\n   legend: {\n      type: 'plain',\n      orient: 'vertical',\n      left: 'right',\n   },\n   tooltip: {\n      valueFormatter: (value) => parseFloat(value).toFixed(2),\n   },\n   xAxis: {\n      name: 'Year',\n      nameLocation: 'center',\n      nameGap: 30,\n      type: 'category',\n      data: xaxis_ser, // The x-axis is the years\n   },\n   yAxis: {\n       name:  factor_str === 'Rate_SEV_val'\n         ? 'Summary Exposure Value'\n         : factor_str === 'Rate_DALYs_val'\n         ? 'DALYs'\n         : factor_str === 'Rate_Deaths_val'\n         ? 'Deaths'\n          : factor_str === 'Rate_YLDs_val'\n         ? 'YLDs'\n          : factor_str === 'Rate_YLLs_val'\n         ? 'YLLs'\n         : `${factor_str}`,\n      type: 'value',\n      nameLocation: 'center',\n      nameGap: 55,  \n       min: (value) => value.min, // Dynamically set the minimum value\n       max: (value) => value.max, // Dynamically set the maximum value\n    axisLabel: {\n         formatter: (value) => value.toFixed(0) \n      }\n   },\n   dataZoom: [\n      {\n         type: 'slider',\n         show: true,\n         xAxisIndex: [0],\n         start: 0,\n         end: 100,\n      },\n      {\n         type: 'inside',\n         xAxisIndex: [0],\n         start: 0,\n         end: 100,\n      },\n   ],\n   series: seriesOptions_lst, // List of series for each country\n};\n\n// Return the chart options\nreturn option;\n",
+        "getOption": "function getQueryResult(query_name) {\n   return context\n      .panel\n      .data\n      .series\n      .find((series_dict) =>\n         series_dict['refId'] === query_name\n      );\n}\n\n// Get the query result for the data\nconst queryResult = getQueryResult('deli_lifestyle_query');\nconsole.log(\"Query Result:\", queryResult);\n\nif (!queryResult || !queryResult.fields) {\n   console.error(\"Error: Query result is undefined or missing fields.\");\n   return {}; // Return empty object if no data is found\n}\n\n// Log query fields to see the available columns\nconsole.log(\"Query Result Fields:\", queryResult.fields);\n\n// Adjust field name to match your SQL alias \"region_str\"\nconst allRegionsField = queryResult.fields.find((column_dict) => column_dict.name === 'region_str');\n\nif (!allRegionsField) {\n   console.error(\"Error: 'region_str' field is missing in query result.\");\n   return {};\n}\n\nconst allRegions_strLst = allRegionsField.values; // All available regions from the query\n\nlet dataFrame = {};\ndataFrame['data'] = {};\n\n// Loop through all available regions and get their corresponding values\nallRegions_strLst.forEach((region_name) => {\n   const region_idx = allRegions_strLst.indexOf(region_name);\n\n   if (region_idx === -1) {\n      console.warn(`Warning: Region '${region_name}' not found in query result.`);\n      return;\n   }\n\n   const regionValues_arr = queryResult.fields\n      .filter((column_dict) => column_dict.name !== 'region_str') // Exclude 'region_str'\n      .map((column_dict) => column_dict.values[region_idx]);\n\n   // Filter out regions where any value is null, undefined, or empty\n   if (regionValues_arr.some(value => value === null || value === undefined || value === '')) {\n      return; // Skip this region if it contains null or empty values\n   }\n\n   dataFrame['data'][region_name] = regionValues_arr;\n});\n\n// Get the list of risk factors (column names other than region_str)\ndataFrame['index'] = queryResult.fields\n   .filter((column_dict) => column_dict.name !== 'region_str')\n   .map((column_dict) => column_dict.name);\n\n// Store column names (regions)\ndataFrame['columns'] = Object.keys(dataFrame['data']);\n\n// Debug: Log structured data\nconsole.log(\"DataFrame:\", dataFrame);\n\n// Prepare data format for ECharts dataset\nconst data_opt = [\n   ['Risk Factor', ...Object.keys(dataFrame['data'])], // Header row with all regions\n   ...dataFrame['index'].map((index_str, index_idx) => {\n      let temp = [];\n      Object.keys(dataFrame['data']).forEach((region_name) => {\n         temp.push(dataFrame.data[region_name][index_idx]);\n      });\n\n      return [index_str, ...temp];\n   }),\n];\n\n// Debug: Log transformed data for visualization\nconsole.log(\"ECharts Data Source (data_opt):\", data_opt);\nfunction getVariable(variable_name) {\n  return context.grafana.replaceVariables(`\\${${variable_name}}`);\n}\nconst riskFactorRegion_filter = getVariable('riskFactorRegion_filter');\n// Determine the correct label based on riskFactorRegion_filter\n      let factorLabel = \n         riskFactorRegion_filter === 'CS2019' ? 'CS2019 - Coverage of CRC screening (%)' :\n         riskFactorRegion_filter === 'POS2019' ? 'POS2019 - Positive cases (% over total tests)' :\n         riskFactorRegion_filter === 'PR2023' ? 'PR2023 - Positive cases (% over total tests)' :\n         riskFactorRegion_filter === 'PCI2023' ? 'PCI2023 - Per capita income (Euros)' :\n\n         riskFactorRegion_filter === 'CS2017' ? 'CS2017 - Coverage of CRC screening (%)' :\n         riskFactorRegion_filter === 'POS2017' ? 'POS2017 - Positive cases (% over total tests)' :\n         riskFactorRegion_filter === 'OW2017' ? 'OW2017 - BMI (25-30), >18 years old' :\n         riskFactorRegion_filter === 'OBE2017' ? 'OBE2017 - BMI (>30), >18 years old' :\n         riskFactorRegion_filter === 'SMO2017' ? 'SMO2017 - >15 years old daily smoking' :\n         riskFactorRegion_filter === 'ALC2017' ? 'ALC2017 - >15 years old daily drinking' :\n         riskFactorRegion_filter === 'SED2017' ? 'SED2017 - Sedentarism' :\n         `${riskFactorRegion_filter}`;  // Fallback: use the raw value if no match\n// Determine title line1 based on riskFactorRegion_filter\nlet titleLine1 = ['CS2017', 'POS2017', 'OW2017', 'OBE2017', 'SMO2017', 'ALC2017', 'SED2017'].includes(riskFactorRegion_filter) \n   ? 'Screening Data' \n   : 'Risk Factor Data';\n\n\n// Configure ECharts options for Grafana\nconst option = {\n   title: {\n   text: `{line1|${titleLine1}}\\n{line2|${factorLabel}}`,   \n   left: 'left'\n},\ntextStyle: {\n   rich: {\n      line1: {\n         fontSize: 16,\n         fontWeight: 'bold',\n         lineHeight: 30\n      },\n      line2: {\n         fontSize: 14,\n      }\n   }\n},\n\n   legend: {\n      type: 'scroll',\n      orient: 'vertical',\n      left: 'right'\n   },\n   tooltip: {\n   trigger: 'item',  // Trigger tooltip for each individual item (bar)\n   formatter: function (params) {\n      const coefficientSymbol = params.marker;\n      const regionName = params.seriesName;  // Get the region name\n      const value = params.value;            // Get the value of the bar\n\n      \n\n      return `${factorLabel}<br/>${coefficientSymbol} ${regionName}: ${value}%`;\n   },\n   textStyle: {\n      rich: {\n         bold: {\n            fontWeight: 'bold',\n            fontSize: 14,  // Optional: Adjust font size\n            color: '#333'  // Optional: Adjust color\n         }\n      }\n   }\n},\n\n   xAxis: {\n      type: 'category',\n      name: 'Regions of Spain', // Display as a label on the X-axis\n   nameLocation: 'center',   // Position at the center of the X-axis\n   nameTextStyle: {\n      fontWeight: 'bold',    // Make the text bold\n      fontSize: 14,          // Adjust font size\n      padding: [10, 0, 0, 0] // Add some spacing\n   },\n      data:[], // Risk Factor names on X-axis\n      axisLabel: {\n        // rotate: 45, // Rotate labels if too long\n         interval: 0 // Show all labels\n      }\n   },\n   yAxis: {\n      type: 'value', // Y-axis shows numeric values\n       name: factorLabel, // Display the `riskFactorRegion_filter` value as Y-axis label\n   nameLocation: 'center',        // Position the name in the center of Y-axis\n   nameTextStyle: {\n      fontWeight: 'bold',        // Bold the text\n      fontSize: 10,              // Adjust the font size\n      padding: [0, 30, 30, 0] ,    // Add some padding to space it out a bit\n      max: 100,      // Set max value for Y-axis\n   },\n   },\n   dataset: {\n      source: data_opt\n   },\n   series: Object.keys(dataFrame['data']).map((region_name) => {\n      return {\n         name: region_name,\n         type: 'bar', // Use bar chart\n         data: data_opt.slice(1).map((row) => row[Object.keys(dataFrame['data']).indexOf(region_name) + 1])\n      };\n   })\n};\n\nreturn option;\n",
+        "google": {
+          "callback": "gmapReady",
+          "key": ""
+        },
+        "map": "none",
+        "renderer": "canvas",
+        "themeEditor": {
+          "config": "{}",
+          "name": "default"
+        },
+        "visualEditor": {
+          "code": "let averages_flst = [];\nlet maxes_flst = [];\nlet countries_slst = [];\n\ndata.series.map((s) => {\n\n  // console.log(s)\n\n  values_fLst = s.fields.find((f) =>\n    f.name === 'averages'\n  ).values;\n\n  maxes_flst = s.fields.find((f) =>\n    f.name === 'maxes'\n  ).values;\n\n  countries_sLst = s.fields.find((f) =>\n    f.name === 'countries'\n  ).values;\n\n});\n\n\nindicator_Lst = [];\nmax_f = Math.max(...values_fLst);\n\nconsole.log(maxes_flst);\nconsole.log(countries_sLst);\nconsole.log(max_f);\n\nfor (let i in countries_sLst) {\n  indicator_Lst[i] = {\n    name: countries_sLst[i],\n    max: max_f,\n  }\n};\n\nreturn {\n  title: {\n    text: 'Basic Radar Chart'\n  },\n  // legend: {\n  //    data: ['Allocated Budget', 'Actual Spending']\n  // },\n  radar: {\n    // shape: 'circle',\n    indicator: indicator_Lst\n  },\n  series: [\n    {\n      name: 'Budget vs spending',\n      type: 'radar',\n      data: [\n        {\n          value: values_fLst\n          // name: 'Allocated Budget'\n        }\n      ]\n    }\n  ]\n};\n",
+          "dataset": [
+            {
+              "name": "averages",
+              "source": "deli_spider_query"
+            }
+          ],
+          "series": []
+        }
+      },
+      "pluginVersion": "6.6.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "adn5a5w1lineoe"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT\n   \"Region\" as region_str,\n   \"Value\" as value_str\n\nFROM spain_screening_risk_factors_tbl\nWHERE true\n   AND \"Region\" IN ('Andalucia', 'Aragon', 'Asturias', 'Baleares', 'Canarias', 'Cantabria', \n                  'Castilla-La Mancha', 'Castilla y Leon', 'Catalonia', 'Comunitat Valenciana', \n                  'Extremadura', 'Galicia', 'Madrid', 'Murcia', 'Navarra', 'Basque Country', 'Rioja')\n   AND \"Risk_Factors\" = '${riskFactorRegion_filter}' \nGROUP BY \"Region\",\"Value\"\nORDER BY 1\n;\n",
+          "refId": "deli_lifestyle_query",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "",
+      "type": "volkovlabs-echarts-panel"
+    },
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "c12d1bf3-ad89-41a8-b362-9eeab766a7ec"
+      },
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 24
+      },
+      "id": 9,
+      "options": {
+        "baidu": {
+          "callback": "bmapReady",
+          "key": ""
+        },
+        "editor": {
+          "format": "none"
+        },
+        "editorMode": "code",
+        "gaode": {
+          "key": "",
+          "plugin": "AMap.Scale,AMap.ToolBar"
+        },
+        "getOption": "// Helper function to get selections from a multi-select variable\nfunction getSelections(multiSelectVar_name) {\n   const multiSelect_var = context.grafana.replaceVariables(\"${\" + multiSelectVar_name + \"}\");\n   if (!multiSelect_var || multiSelect_var === \"{}\") {\n      console.log(`ERROR: No selections found for ${multiSelectVar_name}`);\n      return [];\n   }\n   const result = multiSelect_var.replace(/{/, '').replace(/}/, '').split(',').map(item => item.trim());\n   console.log(`Selections for ${multiSelectVar_name}:`, result);\n   return result.filter(Boolean); // Remove empty values\n}\n\n// Function to get variable from Grafana\nfunction getVariable(variable_name) {\n   return context.grafana.replaceVariables(`\\${${variable_name}}`);\n}\n\n// Helper function to extract region data\nfunction getRegionData(region_name) {\n   const series = context.panel.data.series;\n\n   console.log(\"Available Series Data:\", series);\n\n   if (!series || series.length === 0) {\n      console.log(\"ERROR: No series data available.\");\n      return {};\n   }\n\n   // Log field names to confirm actual names in your dataset\n   console.log(\"Field names in dataset:\", series[0].fields.map(f => f.name));\n\n   // Identify correct field names for year, region, and value\n   const dataSeries = series[0]; // Assuming all data is in the first series object\n   const yearField = dataSeries.fields.find(field => field.name.includes(\"year\"));\n   const regionField = dataSeries.fields.find(field => field.name.includes(\"region\"));\n   const valueField = dataSeries.fields.find(field => !field.name.includes(\"year\") && !field.name.includes(\"region\"));\n\n   if (!yearField || !regionField || !valueField) {\n      console.log(\"ERROR: Could not detect correct field names for year, region, or value.\");\n      return {};\n   }\n\n   const years = yearField.values.buffer || yearField.values;\n   const regions = regionField.values.buffer || regionField.values;\n   const values = valueField.values.buffer || valueField.values;\n\n   let regionYearData = {};\n   for (let i = 0; i < years.length; i++) {\n      if (regions[i] === region_name) {\n         regionYearData[`${years[i]}-${region_name}`] = values[i];\n      }\n   }\n\n   console.log(`Mapped Data for \"${region_name}\":`, regionYearData);\n   return regionYearData;\n}\n\n// Helper function to get unique years\nfunction getYearsSeries() {\n   const series = context.panel.data.series;\n\n   if (!series || series.length === 0) {\n      console.log(\"ERROR: No series data available.\");\n      return [];\n   }\n\n   const dataSeries = series[0];\n   const yearField = dataSeries.fields.find(field => field.name.includes(\"year\"));\n   if (!yearField) {\n      console.log(\"ERROR: Year field not found.\");\n      return [];\n   }\n\n   const yearValues = yearField.values.buffer || yearField.values;\n   return Array.from(new Set(yearValues)).sort(); // Ensure unique sorted years\n}\n\n// Fetch selected regions and x-axis data\nconst region_strLst = getSelections(\"region_filter\");\nconst xaxis_ser = getYearsSeries();\n\n// Fetch optional filters\nconst sex_str = getVariable('sex_filter');\n\n// Initialize an object to store risk data by region and year\nlet allRegionData = {};\n\n// Loop through each region and fetch data\nregion_strLst.forEach((region_name, index) => {\n   if (!region_name) {\n      console.log(`ERROR: Region name at index ${index} is undefined.`);\n      return;\n   }\n   console.log(`Processing data for region: ${region_name}`);\n\n   const regionDataForCurrentRegion = getRegionData(region_name);\n   allRegionData[region_name] = regionDataForCurrentRegion;\n});\n\n// Debugging output to check extracted region risk data\nconsole.log(\"Final Data by region:\", allRegionData);\n\n// Create series options for each region\nconst seriesOptions_lst = region_strLst.map(region_name => {\n   const regionDataForCurrentRegion = allRegionData[region_name];\n\n   const regionSeriesData = xaxis_ser.map(year => {\n      const key = `${year}-${region_name}`;\n      return regionDataForCurrentRegion[key] || null; // Default to null if no data\n   });\n\n   return {\n      data: regionSeriesData,\n      type: 'line',\n      name: region_name,\n   };\n});\n\n// Define the chart options\nconst option = {\n   title: {\n      text: `{line1|CRC Mortality Rate - Spanish Regions}\\n{line2| ${sex_str === 'Both' ? 'Both Sexes' : `${sex_str}`}}`,\n      textStyle: {\n         rich: {\n            line1: {\n               fontSize: 16,\n               fontWeight: 'bold',\n               lineHeight: 30\n            },\n            line2: {\n               fontSize: 12,\n            },\n         },\n      },\n   },\n   legend: {\n      type: 'plain',\n      orient: 'vertical',\n      left: 'right',\n   },\n   tooltip: {\n      valueFormatter: value => parseFloat(value).toFixed(2) + '%',\n   },\n   xAxis: {\n      name: 'Year',\n      nameLocation: 'center',\n      nameGap: 30,\n      type: 'category',\n      data: xaxis_ser,\n   },\n   yAxis: {\n      name: 'Mortality Rate',\n      type: 'value',\n      nameLocation: 'center',\n      nameGap: 55,\n      min: 0,\n      max: value => value.max,\n      axisLabel: {\n         formatter: value => value.toFixed(0),\n      },\n   },\n   dataZoom: [\n      {\n         type: 'slider',\n         show: true,\n         xAxisIndex: [0],\n         start: 0,\n         end: 100,\n      },\n      {\n         type: 'inside',\n         xAxisIndex: [0],\n         start: 0,\n         end: 100,\n      },\n   ],\n   series: seriesOptions_lst,\n};\n\n// Return the chart options\nreturn option;\n",
         "google": {
           "callback": "gmapReady",
           "key": ""
@@ -466,7 +551,167 @@
           "series": []
         }
       },
-      "pluginVersion": "6.5.0",
+      "pluginVersion": "6.6.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "c12d1bf3-ad89-41a8-b362-9eeab766a7ec"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT\n   \"Year\" AS year_str,\n   \"Region\" AS region_str,\n   \"Value\" AS value_str\nFROM spain_mortality_tbl\nWHERE true\n   AND \"Region\" IN ('Spain','Andalucia', 'Aragon', 'Asturias', 'Baleares', 'Canarias', 'Cantabria', \n                  'Castilla-La Mancha', 'Castilla y Leon', 'Catalonia', 'Comunitat Valenciana', \n                  'Extremadura', 'Galicia', 'Madrid', 'Murcia', 'Navarra', 'Basque Country', 'Rioja')\n   AND \"Year\" BETWEEN ${minyear_filter} AND ${maxyear_filter}\n   AND \"Sex\" = '${sex_filter}' \n  GROUP BY\n      \"Region\",\n      \"Year\",\n      \"Value\"\nORDER BY 1,2\n;",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "",
+      "type": "volkovlabs-echarts-panel"
+    },
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "c12d1bf3-ad89-41a8-b362-9eeab766a7ec"
+      },
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 32
+      },
+      "id": 11,
+      "options": {
+        "baidu": {
+          "callback": "bmapReady",
+          "key": ""
+        },
+        "editor": {
+          "format": "none"
+        },
+        "editorMode": "code",
+        "gaode": {
+          "key": "",
+          "plugin": "AMap.Scale,AMap.ToolBar"
+        },
+        "getOption": "// Helper function to get selections from a multi-select variable\nfunction getSelections(multiSelectVar_name) {\n   const multiSelect_var = context.grafana.replaceVariables(\"${\" + multiSelectVar_name + \"}\");\n   if (!multiSelect_var || multiSelect_var === \"{}\") {\n      console.log(`ERROR: No selections found for ${multiSelectVar_name}`);\n      return [];\n   }\n   const result = multiSelect_var.replace(/{/, '').replace(/}/, '').split(',').map(item => item.trim());\n   console.log(`Selections for ${multiSelectVar_name}:`, result);\n   return result.filter(Boolean); // Remove empty values\n}\n\n// Function to get variable from Grafana\nfunction getVariable(variable_name) {\n   return context.grafana.replaceVariables(`\\${${variable_name}}`);\n}\n\n// Helper function to extract region data\nfunction getRegionData(region_name) {\n   const series = context.panel.data.series;\n\n   console.log(\"Available Series Data:\", series);\n\n   if (!series || series.length === 0) {\n      console.log(\"ERROR: No series data available.\");\n      return {};\n   }\n\n   // Log field names to confirm actual names in your dataset\n   console.log(\"Field names in dataset:\", series[0].fields.map(f => f.name));\n\n   // Identify correct field names for year, region, and value\n   const dataSeries = series[0]; // Assuming all data is in the first series object\n   const yearField = dataSeries.fields.find(field => field.name.includes(\"year\"));\n   const regionField = dataSeries.fields.find(field => field.name.includes(\"region\"));\n   const valueField = dataSeries.fields.find(field => !field.name.includes(\"year\") && !field.name.includes(\"region\"));\n\n   if (!yearField || !regionField || !valueField) {\n      console.log(\"ERROR: Could not detect correct field names for year, region, or value.\");\n      return {};\n   }\n\n   const years = yearField.values.buffer || yearField.values;\n   const regions = regionField.values.buffer || regionField.values;\n   const values = valueField.values.buffer || valueField.values;\n\n   let regionYearData = {};\n   for (let i = 0; i < years.length; i++) {\n      if (regions[i] === region_name) {\n         regionYearData[`${years[i]}-${region_name}`] = values[i];\n      }\n   }\n\n   console.log(`Mapped Data for \"${region_name}\":`, regionYearData);\n   return regionYearData;\n}\n\n// Helper function to get unique years\nfunction getYearsSeries() {\n   const series = context.panel.data.series;\n\n   if (!series || series.length === 0) {\n      console.log(\"ERROR: No series data available.\");\n      return [];\n   }\n\n   const dataSeries = series[0];\n   const yearField = dataSeries.fields.find(field => field.name.includes(\"year\"));\n   if (!yearField) {\n      console.log(\"ERROR: Year field not found.\");\n      return [];\n   }\n\n   const yearValues = yearField.values.buffer || yearField.values;\n   return Array.from(new Set(yearValues)).sort(); // Ensure unique sorted years\n}\n\n// Fetch selected regions and x-axis data\nconst region_strLst = getSelections(\"region_filter\");\nconst xaxis_ser = getYearsSeries();\n\n// Fetch optional filters\nconst sex_str = getVariable('sex_filter');\n\n// Initialize an object to store risk data by region and year\nlet allRegionData = {};\n\n// Loop through each region and fetch data\nregion_strLst.forEach((region_name, index) => {\n   if (!region_name) {\n      console.log(`ERROR: Region name at index ${index} is undefined.`);\n      return;\n   }\n   console.log(`Processing data for region: ${region_name}`);\n\n   const regionDataForCurrentRegion = getRegionData(region_name);\n   allRegionData[region_name] = regionDataForCurrentRegion;\n});\n\n// Debugging output to check extracted region risk data\nconsole.log(\"Final Data by region:\", allRegionData);\n\n// Create series options for each region\nconst seriesOptions_lst = region_strLst.map(region_name => {\n   const regionDataForCurrentRegion = allRegionData[region_name];\n\n   const regionSeriesData = xaxis_ser.map(year => {\n      const key = `${year}-${region_name}`;\n      return regionDataForCurrentRegion[key] || null; // Default to null if no data\n   });\n\n   return {\n      data: regionSeriesData,\n      type: 'bar',\n      name: region_name,\n      //        stack: 'x',\n      // areaStyle: {}\n   };\n});\n\n// Define the chart options\nconst option = {\n   title: {\n      text: `{line1|CRC incidence data - Spanish Regions}\\n{line2| ${sex_str === 'Both' ? 'Both Sexes' : `${sex_str}`}}`,\n      textStyle: {\n         rich: {\n            line1: {\n               fontSize: 16,\n               fontWeight: 'bold',\n               lineHeight: 30\n            },\n            line2: {\n               fontSize: 12,\n            },\n         },\n      },\n   },\n   legend: {\n      type: 'plain',\n      orient: 'vertical',\n      left: 'right',\n   },\n   tooltip: {\n      valueFormatter: value => parseFloat(value).toFixed(2) + '%',\n   },\n   xAxis: {\n      name: 'Year',\n      nameLocation: 'center',\n      nameGap: 30,\n      type: 'category',\n      data: xaxis_ser,\n    \n   },\n   yAxis: {\n      name: 'New cases/100.000 inhabitants',\n      type: 'value',\n      nameLocation: 'center',\n      nameGap: 55,\n      min: value => value.min,\n      max: value => value.max,\n      axisLabel: {\n         formatter: value => value.toFixed(0),\n      },\n   },\n   dataZoom: [\n      {\n         type: 'slider',\n         show: true,\n         xAxisIndex: [0],\n         start: 0,\n         end: 100,\n      },\n      {\n         type: 'inside',\n         xAxisIndex: [0],\n         start: 0,\n         end: 100,\n      },\n   ],\n   series: seriesOptions_lst,\n};\n\n// Return the chart options\nreturn option;\n",
+        "google": {
+          "callback": "gmapReady",
+          "key": ""
+        },
+        "map": "none",
+        "renderer": "canvas",
+        "themeEditor": {
+          "config": "{}",
+          "name": "default"
+        },
+        "visualEditor": {
+          "code": "return {\n  dataset: context.editor.dataset,\n  series: context.editor.series,\n  xAxis: {\n    type: 'time',\n  },\n  yAxis: {\n    type: 'value',\n    min: 'dataMin',\n  },\n}\n",
+          "dataset": [],
+          "series": []
+        }
+      },
+      "pluginVersion": "6.6.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "c12d1bf3-ad89-41a8-b362-9eeab766a7ec"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT\n   \"Year\" AS year_str,\n   \"Region\" AS region_str,\n   \"Value\" AS value_str\nFROM spain_incidence_by_crc_tbl\nWHERE \"Region\" IN ('Andalucia', 'Aragon', 'Asturias', 'Baleares', 'Canarias', 'Cantabria', \n                   'Castilla-La Mancha', 'Castilla y Leon', 'Catalonia', 'Comunitat Valenciana', \n                   'Extremadura', 'Galicia', 'Madrid', 'Murcia', 'Navarra', 'Basque Country', 'Rioja')\n   AND \"Year\" BETWEEN ${minyear_filter} AND ${maxyear_filter}\n   AND \"Sex\" = '${sex_filter}'\n   AND \"Age_Group\" = '${Age_Group}'\nORDER BY \"Year\", \"Region\";\n",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "",
+      "type": "volkovlabs-echarts-panel"
+    },
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "c12d1bf3-ad89-41a8-b362-9eeab766a7ec"
+      },
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 40
+      },
+      "id": 8,
+      "options": {
+        "baidu": {
+          "callback": "bmapReady",
+          "key": ""
+        },
+        "editor": {
+          "format": "none"
+        },
+        "editorMode": "code",
+        "gaode": {
+          "key": "",
+          "plugin": "AMap.Scale,AMap.ToolBar"
+        },
+        "getOption": "// Helper function to get selections from a multi-select variable\nfunction getSelections(multiSelectVar_name) {\n   const multiSelect_var = context.grafana.replaceVariables(\"${\" + multiSelectVar_name + \"}\");\n   const result = multiSelect_var.replace(/{/, '').replace(/}/, '').split(',');\n   console.log(`Selections for ${multiSelectVar_name}:`, result); // Debugging\n   return result;\n}\n\n// Helper function to get risk data for a specific country and year\nfunction getRiskData(series_name, country_name) {\n   const series = context.panel.data.series;\n   \n   // Log the available series for debugging\n   console.log(\"Available Series Data:\", series);\n\n   // Find the series that has \"country_str\" field (this contains country names)\n   const targetSeries = series.find((series_dict) => {\n      const countryField = series_dict.fields.find(field => field.name === \"country_str\");\n      return countryField && countryField.values.some(value => value === country_name);\n   });\n\n   if (!targetSeries) {\n      console.log(`ERROR: Country \"${country_name}\" not found in series data.`);\n      return [];\n   }\n\n   // Find the desired series based on the dynamic `series_name`\n   const seriesField = targetSeries.fields.find((field) => field.name === series_name);\n   if (!seriesField) {\n      console.log(`ERROR: Series \"${series_name}\" not found in \"${country_name}\".`);\n      return [];\n   }\n\n   // Find the \"year_str\" field\n   const yearField = targetSeries.fields.find((field) => field.name === \"year_str\");\n   const countryField = targetSeries.fields.find((field) => field.name === \"country_str\");\n   const yearValues = yearField ? yearField.values.buffer || yearField.values : [];\n   const countryValues = countryField ? countryField.values.buffer || countryField.values : [];\n   const riskValues = seriesField.values.buffer || seriesField.values;\n\n   // Create a map of year -> risk value for the current country\n   let countryYearData = {};\n   for (let i = 0; i < yearValues.length; i++) {\n      if (countryValues[i] === country_name && yearValues[i] && riskValues[i]) {\n         countryYearData[`${yearValues[i]}-${country_name}`] = riskValues[i]; // Map year-country pair to risk value\n      }\n   }\n\n   console.log(`Mapped Data for \"${country_name}\":`, countryYearData);\n   return countryYearData;\n}\n\n// Helper function to get the x-axis data (years)\nfunction getYearsSeries() {\n   const series = context.panel.data.series;\n   \n   // Log available series for debugging\n   console.log(\"Available Series Data for Years:\", series);\n\n   // Find the series containing the \"year_str\" field\n   const targetSeries = series.find((series_dict) => {\n      return series_dict.fields.find(field => field.name === \"year_str\");\n   });\n\n   if (!targetSeries) {\n      console.log(\"ERROR: Year series not found.\");\n      return [];\n   }\n\n   const yearField = targetSeries.fields.find((field) => field.name === \"year_str\");\n   const yearValues = yearField ? yearField.values.buffer || yearField.values : [];\n\n   // Log the years data\n   console.log(\"Year Data for X-Axis:\", yearValues);\n\n   return Array.from(new Set(yearValues)); // Return unique years\n}\n\n// Fetch selected countries and data\nconst countries_strLst = getSelections(\"country_filter\");\nconst xaxis_ser = getYearsSeries();\n\n// Fetch the dynamic risk type (this can come from a user-selected variable, e.g., \"riskFactor_filter\")\nconst selectedRiskType = getSelections(\"riskFactor_filter\")[0]; // Assuming it's a single selection for the risk type\n\nconsole.log(\"Selected Risk Type:\", selectedRiskType);\n\n// Initialize an object to store risk data by country and year\nlet countryRiskData = {};\n\n// Loop through each country and fetch the dynamic risk data\ncountries_strLst.forEach((country_name) => {\n   // Get risk data for the country, which is a mapping of year-country -> values\n   const riskData = getRiskData(selectedRiskType, country_name);\n\n   // Store the risk data for the country in the countryRiskData object\n   countryRiskData[country_name] = riskData;\n});\n\n// Debugging output to check the country risk data structure\nconsole.log(\"Risk Data by Country:\", countryRiskData);\n\n// Create series options for each country\nconst seriesOptions_lst = countries_strLst.map((country_name) => {\n   const countryData = countryRiskData[country_name];\n\n   // Create series data using the x-axis years, looking up each year for the country\n   const countrySeriesData = xaxis_ser.map((year) => {\n      // For each year, get the corresponding risk value for the current country\n      const key = `${year}-${country_name}`;\n      return countryData[key] || null; // If no data for this year, return null\n   }).filter(data => data !== null); // Remove null values\n\n   return {\n      data: countrySeriesData,\n      type: 'line',\n      name: country_name,\n   };\n});\nfunction getVariable(variable_name) {\n  return context.grafana.replaceVariables(`\\${${variable_name}}`);\n}\nconst factor_str = getVariable('factor_filter');\nconst age_str = getVariable('age_filter');\nconst sex_str = getVariable('sex_filter');\n// Define the chart options\nconst option = {\n   title: {\n   text: `{line1|${\n      factor_str === 'Rate_SEV_val'\n         ? 'Summary Exposure Value'\n         : factor_str === 'Rate_DALYs_val'\n         ? 'DALYs'\n         : factor_str === 'Rate_Deaths_val'\n         ? 'Deaths'\n          : factor_str === 'Rate_YLDs_val'\n         ? 'YLDs'\n          : factor_str === 'Rate_YLLs_val'\n         ? 'YLLs'\n         : `${factor_str}`\n  }}\\n{line2|${selectedRiskType} - ${age_str === 'Age-standardized' ? 'Age Standardized Rate (ASR)' : `Age ${age_str}`} - ${sex_str === 'Both' ? 'Both Sexes' : `${sex_str}`}}`,// Add line breaks and use rich styles\n      textStyle: {\n         rich: {\n            line1: {\n               fontSize: 12, // Font size for the first line\n               fontWeight: 'bold', // Make it bold\n               lineHeight: 30\n            },\n            line2: {\n               fontSize: 18, // Font size for the second line\n            //  lineHeight: 30\n            },\n         },\n   },\n   },\n   legend: {\n      type: 'plain',\n      orient: 'vertical',\n      left: 'right',\n   },\n   tooltip: {\n      valueFormatter: (value) => parseFloat(value).toFixed(2),\n   },\n   xAxis: {\n      name: 'Year',\n      nameLocation: 'center',\n      nameGap: 30,\n      type: 'category',\n      data: xaxis_ser, // The x-axis is the years\n   },\n   yAxis: {\n       name:  factor_str === 'Rate_SEV_val'\n         ? 'Summary Exposure Value'\n         : factor_str === 'Rate_DALYs_val'\n         ? 'DALYs'\n         : factor_str === 'Rate_Deaths_val'\n         ? 'Deaths'\n          : factor_str === 'Rate_YLDs_val'\n         ? 'YLDs'\n          : factor_str === 'Rate_YLLs_val'\n         ? 'YLLs'\n         : `${factor_str}`,\n      type: 'value',\n      nameLocation: 'center',\n      nameGap: 55,  \n       min: 0,// Dynamically set the minimum value\n       max: (value) => value.max, // Dynamically set the maximum value\n    axisLabel: {\n         formatter: (value) => value.toFixed(0) \n      }\n   },\n   dataZoom: [\n      {\n         type: 'slider',\n         show: true,\n         xAxisIndex: [0],\n         start: 0,\n         end: 100,\n      },\n      {\n         type: 'inside',\n         xAxisIndex: [0],\n         start: 0,\n         end: 100,\n      },\n   ],\n   series: seriesOptions_lst, // List of series for each country\n};\n\n// Return the chart options\nreturn option;\n",
+        "google": {
+          "callback": "gmapReady",
+          "key": ""
+        },
+        "map": "none",
+        "renderer": "canvas",
+        "themeEditor": {
+          "config": "{}",
+          "name": "default"
+        },
+        "visualEditor": {
+          "code": "return {\n  dataset: context.editor.dataset,\n  series: context.editor.series,\n  xAxis: {\n    type: 'time',\n  },\n  yAxis: {\n    type: 'value',\n    min: 'dataMin',\n  },\n}\n",
+          "dataset": [],
+          "series": []
+        }
+      },
+      "pluginVersion": "6.6.0",
       "targets": [
         {
           "datasource": {
@@ -513,7 +758,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 32
+        "y": 48
       },
       "id": 1,
       "options": {
@@ -529,7 +774,7 @@
           "key": "",
           "plugin": "AMap.Scale,AMap.ToolBar"
         },
-        "getOption": "\nfunction getSelections(multiSelectVar_name) {\n   // Get the variable\n   const multiSelect_var = context.grafana.replaceVariables(\"${\" + multiSelectVar_name + \"}\");\n   // Parse it if its multiselect\n   result = multiSelect_var.replace(/{/, '').replace(/}/, '').split(',');\n   return result;\n }\n \nfunction getSeriesByName(series_name) {\n   return context\n      .panel\n      .data\n      .series\n      .map((series_dict) => {\n         \n         const series_temp = series_dict\n            .fields\n            .find((item) => item.name === series_name)\n         ;\n\n         if (series_temp === undefined) {\n            console.log(`ERROR (getSeriesByName()): Could not find series by name: ${series_name}`)\n            return null;\n         }\n\n         const seriesValues_temp = series_temp.values\n         return seriesValues_temp.buffer || seriesValues_temp;\n      })[0];\n}\n\nconst countries_strLst = getSelections(\"country_filter\")\nconst series_lst = countries_strLst.map((country_name) => getSeriesByName(country_name))\nconst xaxis_ser = getSeriesByName(\"Year\");\n\nfunction getVariable(variable_name) {\n  return context.grafana.replaceVariables(`\\${${variable_name}}`);\n}\n\nconst age_str = getVariable('age_filter');\nconst sex_str = getVariable('sex_filter');\n\n\nconst seriesOptions_lst = series_lst.map((data_series, index) => {\n   return {\n      data: data_series,\n      type: 'line',\n      name: countries_strLst[index]\n   }\n});\n\noption = {\n   title: {\n      text: `${age_str === 'Age-standardized' ? 'Age Standardized Rate (ASR)' : `Age ${age_str}`} - ${sex_str === 'Both' ? 'Both Sexes':`${sex_str}`}`,\n   },\n   legend: {\n      type: 'plain',\n      orient: 'vertical',\n      left: 'right'\n   },\n   tooltip: {\n      valueFormatter: (value) => parseFloat(value).toFixed(2)\n   },\n   xAxis: {\n      name: 'Year',\n      nameLocation: 'center',\n      nameGap: 30,\n      type: 'category',\n      data: xaxis_ser\n   },\n   yAxis: {\n      name: 'CRC Incidence Rate',\n      nameLocation: 'center',\n      nameGap: 60,\n      type: 'value',\n      min: 'dataMin',\n      axisLabel: {\n         formatter: (value) => value.toFixed(0) \n      }\n   },\n   dataZoom: [\n      {\n         type: 'slider',\n         show: true,\n         xAxisIndex: [0],\n         start: 0,\n         end: 100\n      },\n      {\n         type: 'inside',\n         xAxisIndex: [0],\n         start: 0,\n         end: 100\n      }\n   ],\n   series: seriesOptions_lst\n};\n\nreturn option;\n",
+        "getOption": "\nfunction getSelections(multiSelectVar_name) {\n   // Get the variable\n   const multiSelect_var = context.grafana.replaceVariables(\"${\" + multiSelectVar_name + \"}\");\n   // Parse it if its multiselect\n   result = multiSelect_var.replace(/{/, '').replace(/}/, '').split(',');\n   return result;\n }\n \nfunction getSeriesByName(series_name) {\n   return context\n      .panel\n      .data\n      .series\n      .map((series_dict) => {\n         \n         const series_temp = series_dict\n            .fields\n            .find((item) => item.name === series_name)\n         ;\n\n         if (series_temp === undefined) {\n            console.log(`ERROR (getSeriesByName()): Could not find series by name: ${series_name}`)\n            return null;\n         }\n\n         const seriesValues_temp = series_temp.values\n         return seriesValues_temp.buffer || seriesValues_temp;\n      })[0];\n}\n\nconst countries_strLst = getSelections(\"country_filter\")\nconst series_lst = countries_strLst.map((country_name) => getSeriesByName(country_name))\nconst xaxis_ser = getSeriesByName(\"Year\");\n\nfunction getVariable(variable_name) {\n  return context.grafana.replaceVariables(`\\${${variable_name}}`);\n}\n\nconst age_str = getVariable('age_filter');\nconst sex_str = getVariable('sex_filter');\n\n\nconst seriesOptions_lst = series_lst.map((data_series, index) => {\n   return {\n      data: data_series,\n      type: 'line',\n      name: countries_strLst[index]\n   }\n});\n\noption = {\n   title: {\n      text: `${age_str === 'Age-standardized' ? 'Age Standardized Rate (ASR)' : `Age ${age_str}`} - ${sex_str === 'Both' ? 'Both Sexes':`${sex_str}`}`,\n   },\n   legend: {\n      type: 'plain',\n      orient: 'vertical',\n      left: 'right'\n   },\n   tooltip: {\n      valueFormatter: (value) => parseFloat(value).toFixed(2)\n   },\n   xAxis: {\n      name: 'Year',\n      nameLocation: 'center',\n      nameGap: 30,\n      type: 'category',\n      data: xaxis_ser\n   },\n   yAxis: {\n      name: 'CRC Incidence Rate',\n      nameLocation: 'center',\n      nameGap: 60,\n      type: 'value',\n      min: 0,\n      axisLabel: {\n         formatter: (value) => value.toFixed(0) \n      }\n   },\n   dataZoom: [\n      {\n         type: 'slider',\n         show: true,\n         xAxisIndex: [0],\n         start: 0,\n         end: 100\n      },\n      {\n         type: 'inside',\n         xAxisIndex: [0],\n         start: 0,\n         end: 100\n      }\n   ],\n   series: seriesOptions_lst\n};\n\nreturn option;\n",
         "google": {
           "callback": "gmapReady",
           "key": ""
@@ -546,7 +791,7 @@
           "series": []
         }
       },
-      "pluginVersion": "6.5.0",
+      "pluginVersion": "6.6.0",
       "targets": [
         {
           "datasource": {
@@ -595,7 +840,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 40
+        "y": 56
       },
       "id": 4,
       "options": {
@@ -637,7 +882,7 @@
           "series": []
         }
       },
-      "pluginVersion": "6.5.0",
+      "pluginVersion": "6.6.0",
       "targets": [
         {
           "datasource": {
@@ -733,7 +978,7 @@
   ],
   "preload": false,
   "refresh": "",
-  "schemaVersion": 40,
+  "schemaVersion": 41,
   "tags": [],
   "templating": {
     "list": [
@@ -862,7 +1107,7 @@
             "value": "Mental Health"
           }
         ],
-        "query": "Environmental Factors ",
+        "query": "Mental Health",
         "type": "textbox"
       },
       {
@@ -949,15 +1194,145 @@
       },
       {
         "current": {
-          "text": "",
-          "value": ""
+          "text": [
+            "Andalucia",
+            "Aragon",
+            "Asturias"
+          ],
+          "value": [
+            "Andalucia",
+            "Aragon",
+            "Asturias"
+          ]
         },
-        "name": "query0",
-        "options": [],
-        "query": "",
-        "refresh": 1,
-        "regex": "",
-        "type": "query"
+        "multi": true,
+        "name": "region_filter",
+        "options": [
+          {
+            "selected": false,
+            "text": "Spain",
+            "value": "Spain"
+          },
+          {
+            "selected": true,
+            "text": "Andalucia",
+            "value": "Andalucia"
+          },
+          {
+            "selected": true,
+            "text": "Aragon",
+            "value": "Aragon"
+          },
+          {
+            "selected": true,
+            "text": "Asturias",
+            "value": "Asturias"
+          },
+          {
+            "selected": false,
+            "text": "Baleares",
+            "value": "Baleares"
+          },
+          {
+            "selected": false,
+            "text": "Canarias",
+            "value": "Canarias"
+          },
+          {
+            "selected": false,
+            "text": "Cantabria",
+            "value": "Cantabria"
+          },
+          {
+            "selected": false,
+            "text": "Castilla-La Mancha",
+            "value": "Castilla-La Mancha"
+          },
+          {
+            "selected": false,
+            "text": "Castilla y Leon",
+            "value": "Castilla y Leon"
+          },
+          {
+            "selected": false,
+            "text": "Catalonia",
+            "value": "Catalonia"
+          },
+          {
+            "selected": false,
+            "text": "Comunitat Valenciana",
+            "value": "Comunitat Valenciana"
+          },
+          {
+            "selected": false,
+            "text": "Extremadura",
+            "value": "Extremadura"
+          },
+          {
+            "selected": false,
+            "text": "Galicia",
+            "value": "Galicia"
+          },
+          {
+            "selected": false,
+            "text": "Madrid",
+            "value": "Madrid"
+          },
+          {
+            "selected": false,
+            "text": "Murcia",
+            "value": "Murcia"
+          },
+          {
+            "selected": false,
+            "text": "Navarra",
+            "value": "Navarra"
+          },
+          {
+            "selected": false,
+            "text": "Basque Country",
+            "value": "Basque Country"
+          },
+          {
+            "selected": false,
+            "text": "Rioja",
+            "value": "Rioja"
+          }
+        ],
+        "query": "Spain,Andalucia,Aragon,Asturias,Baleares,Canarias,Cantabria,Castilla-La Mancha,Castilla y Leon,Catalonia,Comunitat Valenciana,Extremadura,Galicia,Madrid,Murcia,Navarra,Basque Country,Rioja",
+        "type": "custom"
+      },
+      {
+        "current": {
+          "text": "CS2019",
+          "value": "CS2019"
+        },
+        "name": "riskFactorRegion_filter",
+        "options": [
+          {
+            "selected": true,
+            "text": "CS2019",
+            "value": "CS2019"
+          }
+        ],
+        "query": "CS2019",
+        "type": "textbox"
+      },
+      {
+        "current": {
+          "text": "60-64",
+          "value": "60-64"
+        },
+        "name": "Age_Group",
+        "options": [
+          {
+            "selected": true,
+            "text": "60-64",
+            "value": "60-64"
+          }
+        ],
+        "query": "60-64",
+        "type": "textbox"
       }
     ]
   },
@@ -969,6 +1344,6 @@
   "timezone": "browser",
   "title": "deli_main_dashboard",
   "uid": "edn5ahxrzaw3kc",
-  "version": 8,
+  "version": 52,
   "weekStart": ""
 }
