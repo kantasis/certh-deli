@@ -140,7 +140,7 @@ const CrcIncidenceDataPanel: React.FC = () => {
                >
                </iframe>
             </div>
-            {<p>{iFrame_url}</p> }
+            {/* {<p>{iFrame_url}</p> } */}
          </div>
 
          {/* Right Navbar */}

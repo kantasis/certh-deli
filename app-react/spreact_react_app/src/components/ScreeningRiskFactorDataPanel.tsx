@@ -17,11 +17,11 @@ const RiskFactorSpainRegionFilter: React.FC<FilterProps> = ({
 }) => {
     // Categorize data into Screening and Risk Factors
     const screeningData = riskFactorSpainRegion_dictLst.filter(item =>
-        ["CS2017", "POS2017", "OW2017", "OBE2017", "SMO2017", "ALC2017", "SED2017"].includes(item.value)
+        ["CS2017", "POS2017","CS2019" ,"POS2019","PR2023"].includes(item.value)
     );
-
+//"OW2017", "OBE2017", "SMO2017", "ALC2017", "SED2017"
     const riskFactors = riskFactorSpainRegion_dictLst.filter(item =>
-        !["CS2017", "POS2017", "OW2017", "OBE2017", "SMO2017", "ALC2017", "SED2017"].includes(item.value)
+        !["CS2017", "POS2017","CS2019" ,"POS2019","PR2023"].includes(item.value)
     );
 
 

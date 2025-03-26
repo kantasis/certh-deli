@@ -39,7 +39,7 @@ const App: React.FC = () => {
                <Route path="/riskFactorExposurePanel" element={<RiskFactorExposurePanel />} />
                <Route path="/CRCmortalityPanel" element={< CRCmortalityPanel />} />
                <Route path="/ScreeningRiskFactorDataPanel" element={< ScreeningRiskFactorDataPanel />} />
-               <Route path="/CrcIncidenceDataPanel" element={< CrcIncidenceDataPanel />} />
+               {/* <Route path="/CrcIncidenceDataPanel" element={< CrcIncidenceDataPanel />} /> */}
                {/* <Route path="/nutritionPanel" element={<NutritionPanel />} />
                <Route path="/lifestylePanel" element={<LifestylePanel />} /> */}
                <Route path="/policyPanel" element={<PolicyPanel />} />
