@@ -2,7 +2,7 @@ import { Routes, Route, Link } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import * as AuthService from "../services/auth.service";
 import EventBus from "../common/EventBus";
-
+import { getUserRole } from '../services/auth.service';
 
 const NavbarMain: React.FC = () => {
 
@@ -16,6 +16,8 @@ const NavbarMain: React.FC = () => {
       },
       []
    );
+const userRole = getUserRole();
+console.log(userRole);
 
    const logout = () => {
       AuthService.logout();
@@ -29,12 +31,12 @@ const NavbarMain: React.FC = () => {
       //    condition: isLoggedIn
       // },
       {
-         href: "epidimiologicalPanel",
+         href: "crc-incidence",
          label: "CRC Incidence",
          condition: isLoggedIn
       },
       {
-         href: "riskFactorExposurePanel",
+         href: "riskFactorsExposurePanel",
          label: "Risk Factors",
          condition: isLoggedIn
       },
@@ -49,30 +51,43 @@ const NavbarMain: React.FC = () => {
       //    condition: isLoggedIn
       // },
       {
-         href: "policyPanel",
+         href: "policy-data",
          label: "Policy Data",
          condition: isLoggedIn
       },
       {
-         href: "analytics",
+         href: "predictive-analytics",
          label: "Predictive Analytics",
          condition: isLoggedIn
       },
-      {
-         href: "CRCmortalityPanel",
-         label: "CRC Mortality",
-         condition: isLoggedIn
-      },
-      {
-         href: "ScreeningRiskFactorDataPanel",
-         label: "Screening & Risk Factor Data",
-         condition: isLoggedIn
-      },
+      // {
+      //    href: "CRCmortalityPanel",
+      //    label: "CRC Mortality",
+      //    condition: isLoggedIn
+      // },
+      // {
+      //    href: "ScreeningRiskFactorDataPanel",
+      //    label: "Screening & Risk Factor Data",
+      //    condition: isLoggedIn
+      // },
       // {
       //    href: "CrcIncidenceDataPanel",
       //    label: "CRC Incidence Data Panel",
       //    condition: isLoggedIn
       // },
+      {
+         
+         href: "LIT03",
+         label: "LIT03",
+         condition: isLoggedIn 
+      },
+      {
+         
+         href: "comments",
+         label: "Comments",
+         condition: isLoggedIn && userRole == "ROLE_ADMIN"
+      },
+   
       
    ].map((item_dict, index) => item_dict.condition && (
       <li className="nav-item" key={index}>

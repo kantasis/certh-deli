@@ -12,7 +12,7 @@ const api_url = `http://${authentication_host}:${authentication_port}/api/v1/aut
 export const register = (username: string, email: string, password: string) => {
    return axios
       .post(
-         api_url + "signup", 
+         api_url + "register", 
          {
             username,
             email,
@@ -62,12 +62,18 @@ export const logout = () => {
 
 
 export const getCurrentUser = () => {
-   const user_json = localStorage.getItem("user");
-   // console.log("asking the current user:" + user_json);
-   if (user_json) 
-      return JSON.parse(user_json);
-
-   return null;
+   const user = localStorage.getItem('user'); // Or sessionStorage
+   return user ? JSON.parse(user) : null; // Return the user object if it exists, otherwise null
+};
+export const getUserRole = (): string | null => {
+   const user = localStorage.getItem('user'); // Or sessionStorage if you're using that
+   if (user) {
+       const parsedUser = JSON.parse(user);
+       if (parsedUser.roles && parsedUser.roles.length > 0) {
+           return parsedUser.roles[0]; // If you want to return the first role
+       }
+   }
+   return null; // Return null if no role is found or no user is stored
 };
 
 

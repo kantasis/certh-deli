@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
 import * as AuthService from "../services/auth.service.tsx";
 import { Button, Dropdown } from 'react-bootstrap';
-import SpainRegionsFilter from "./SpainRegionsFilter.tsx";
-import YearFilter from "./YearFilter.tsx";
+// import SpainRegionsFilter from "./SpainRegionsFilter.tsx";
+// import YearFilter from "./YearFilter.tsx";
 import { Accordion } from 'react-bootstrap';
-import SexFilter from "./SexFilter.tsx";
-import AgeGroupFilter from "./AgeGroups.tsx";
+import Comments from "./Comments.tsx";
+// import SexFilter from "./SexFilter.tsx";
+// import AgeGroupFilter from "./AgeGroups.tsx";
 
 
 const grafana_host = import.meta.env.VITE_GRAFANA_HOST;
@@ -13,66 +14,66 @@ const grafana_port = import.meta.env.VITE_GRAFANA_PORT;
 const grafana_path = import.meta.env.VITE_GRAFANA_PATH;
 const dashboard_name = import.meta.env.VITE_GRAFANA_DASHBOARD;
 
-const panel_id = 11;
+const panel_id = 12;
 const grafana_url = `http://${grafana_host}:${grafana_port}/${grafana_path}/${dashboard_name}?panelId=${panel_id}&orgId=1&theme=light`
 
 // var envs_json = JSON.stringify(import.meta.env, null, 2); // spacing level = 2
 
 const CrcIncidenceDataPanel: React.FC = () => {
 
-   const [isLoggedIn, setIsLoggedIn] = useState(false);
-   const [selectedRegions_lst, set_selectedRegions] = useState([
-      'Andalucia', 'Asturias', 'Aragon', 
-   ]);
-   const [minYear_int, set_minYear] = useState(2012);
-   const [maxYear_int, set_maxYear] = useState(2023);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+   // const [selectedRegions_lst, set_selectedRegions] = useState([
+   //    'Andalucia', 'Asturias', 'Aragon', 
+   // ]);
+   // const [minYear_int, set_minYear] = useState(2012);
+   // const [maxYear_int, set_maxYear] = useState(2023);
 
-   const [selectedSex_int, set_selectedSex] = useState(0);
-   const [selectedAgeGroup_int, set_selectedAgeGroup] = useState(0);
+   // const [selectedSex_int, set_selectedSex] = useState(0);
+   // const [selectedAgeGroup_int, set_selectedAgeGroup] = useState(0);
 
-   const sex_dictLst = [
-    //   {
-    //      value: 0,
-    //      label: " Both Sexes",
-    //      var_filter: "Both"
-    //   },
-      {
-         value: 0,
-         label: "Male",
-         var_filter: "Male"
-      },
-      {
-         value: 1,
-         label: "Female",
-         var_filter: "Female"
-      },
+   // const sex_dictLst = [
+   //  //   {
+   //  //      value: 0,
+   //  //      label: " Both Sexes",
+   //  //      var_filter: "Both"
+   //  //   },
+   //    {
+   //       value: 0,
+   //       label: "Male",
+   //       var_filter: "Male"
+   //    },
+   //    {
+   //       value: 1,
+   //       label: "Female",
+   //       var_filter: "Female"
+   //    },
 
-   ];
-   const ageGroup_dictLst = [
-      {
-         value: 0,
-         label: "Age Group (45-49)",
-         var_filter: "45-49"
-      },
-      {
-        value: 1,
-        label: "Age Group (60-64)",
-        var_filter: "60-64"
-     },
+   // ];
+   // const ageGroup_dictLst = [
+   //    {
+   //       value: 0,
+   //       label: "Age Group (45-49)",
+   //       var_filter: "45-49"
+   //    },
+   //    {
+   //      value: 1,
+   //      label: "Age Group (60-64)",
+   //      var_filter: "60-64"
+   //   },
      
 
-   ];
-   const getUriParams = () => {
-      let regionFilter_str = selectedRegions_lst.map((region_str, index) => `var-region_filter=${region_str}`).join('&');
-      let yearFilter_str = `var-minyear_filter=${minYear_int}&var-maxyear_filter=${maxYear_int}`;
-      let selectedSex_str = sex_dictLst[selectedSex_int]['var_filter'];
-      let selectedAgeGroup_str = ageGroup_dictLst[selectedAgeGroup_int]['var_filter'];
-      return `${regionFilter_str}&${yearFilter_str}&var-sex_filter=${selectedSex_str}&var-ageGroup_filter=${selectedAgeGroup_str}`;
-   };
-   console.log(selectedSex_int)
-   const iFrame_url = `${grafana_url}&${getUriParams()}`;
+   // ];
+   // const getUriParams = () => {
+   //    let regionFilter_str = selectedRegions_lst.map((region_str, index) => `var-region_filter=${region_str}`).join('&');
+   //    let yearFilter_str = `var-minyear_filter=${minYear_int}&var-maxyear_filter=${maxYear_int}`;
+   //    let selectedSex_str = sex_dictLst[selectedSex_int]['var_filter'];
+   //    let selectedAgeGroup_str = ageGroup_dictLst[selectedAgeGroup_int]['var_filter'];
+   //    return `${regionFilter_str}&${yearFilter_str}&var-sex_filter=${selectedSex_str}&var-ageGroup_filter=${selectedAgeGroup_str}`;
+   // };
+   // console.log(selectedSex_int)
+   //const iFrame_url = `${grafana_url}&${getUriParams()}`;
 
-
+   const iFrame_url = grafana_url;
    useEffect(
       () => {
          setIsLoggedIn(AuthService.isLoggedIn());
@@ -101,7 +102,7 @@ const CrcIncidenceDataPanel: React.FC = () => {
          {/* Left Navbar */}
          <div className="col-sm-2">
 
-            <SpainRegionsFilter
+            {/* <SpainRegionsFilter
                selectedRegions_lst={selectedRegions_lst}
                set_selectedRegions={set_selectedRegions}
                showSpain={false} 
@@ -125,7 +126,7 @@ const CrcIncidenceDataPanel: React.FC = () => {
                selectedAgeGroup_int={selectedAgeGroup_int}
                set_selectedAgeGroup={set_selectedAgeGroup}
                ageGroup_dictLst={ageGroup_dictLst}
-            />
+            /> */}
          </div>
 
          {/* Center Content */}
@@ -158,6 +159,7 @@ const CrcIncidenceDataPanel: React.FC = () => {
                   </Accordion.Item>
                ))}
             </Accordion>
+            <Comments />
          </div>
 
       </div>

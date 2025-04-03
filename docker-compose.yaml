@@ -98,3 +98,18 @@ services:
       depends_on:
          - db_label
 
+   express_label:
+         build:
+            context: ./services/express
+         container_name: ${PROJECT_NAME}_express_container
+         ports:
+            - 8435:9080
+         # env_file:
+         #    - ./services/express/.env
+         restart: ${RESTART_POLICY}
+         volumes:
+            - ./services/express:/app
+         networks:
+            - main_network
+         depends_on:
+            - db_label  # Wait for DB service to be ready

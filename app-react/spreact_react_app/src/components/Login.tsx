@@ -69,6 +69,7 @@ const Login: React.FC<Props> = () => {
   
    return (
       <div className="col-md-12">
+         <h2>Sign In</h2>
          <div className="card card-container">
             <img
                src="//ssl.gstatic.com/accounts/ui/avatar_2x.png"
@@ -109,7 +110,7 @@ const Login: React.FC<Props> = () => {
                      />
                   </div>
       
-                  <div className="form-group">
+                  <div className="form-group mt-3">
                      <button 
                         type="submit" 
                         className="btn btn-primary btn-block" 

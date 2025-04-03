@@ -8,6 +8,7 @@ import { register } from "../services/auth.service";
 const Register: React.FC = () => {
    const [successful, setSuccessful] = useState<boolean>(false);
    const [message, setMessage] = useState<string>("");
+   const [loading, setLoading] = useState<boolean>(false); // New state for loading
 
    const initialValues: IUser = {
       username: "",
@@ -43,12 +44,14 @@ const Register: React.FC = () => {
 
    const handleRegister = (formValue: IUser) => {
       const { username, email, password } = formValue;
+      setLoading(true); // Start loading when registration begins
 
       register(username, email, password)
          .then(
             (response) => {
                setMessage(response.data.message);
                setSuccessful(true);
+               setLoading(false); // End loading after response
             },
             (error) => {
                const resMessage =
@@ -60,12 +63,14 @@ const Register: React.FC = () => {
 
                setMessage(resMessage);
                setSuccessful(false);
+               setLoading(false); // End loading after error
             }
          );
    };
 
    return (
       <div className="col-md-12">
+         <h2>Create Account</h2>
          <div className="card card-container">
          <img
             src="//ssl.gstatic.com/accounts/ui/avatar_2x.png"
@@ -124,12 +129,13 @@ const Register: React.FC = () => {
                            />
                         </div>
 
-                        <div className="form-group">
+                        <div className="form-group mt-3">
                            <button 
                               type="submit" 
                               className="btn btn-primary btn-block"
+                              disabled={loading} // Disable button while loading
                            >
-                              Sign Up
+                              {loading ? "Signing Up..." : "Sign Up"} 
                            </button>
                         </div>
                      </div>
