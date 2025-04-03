@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Form } from "react-bootstrap";
 import { Accordion } from "react-bootstrap";
 import * as AuthService from "../services/auth.service.tsx";
-
+import Comments from "./Comments.tsx";
 // Interface for the properties of this component
 interface FilterProps {
     selectedRiskFactor: string;
@@ -136,7 +136,22 @@ const ScreeningRiskFactorDataPanel: React.FC = () => {
 
             {/* Right Panel - Glossary Accordion */}
             <div className="col-sm-2">
-                <h5>Glossary</h5>
+            <h5>Sources</h5>
+                <div style={{
+                    border: '1px solid #e2e6e9',
+                    borderRadius: 'var(--bs-border-radius)',
+                    padding: '10px'
+                }}>Spanish National Health Survey <br />
+                    <a target="_blank" href="https://www.sanidad.gob.es/estadEstudios/estadisticas/encuestaNacional/home.htm">Link</a>
+                </div>
+                <div style={{
+                    border: '1px solid #e2e6e9',
+                    borderRadius: 'var(--bs-border-radius)',
+                    padding: '10px'
+                }}>Spanish network of cancer screening programs <br />
+                    <a target="_blank" href="https://cribadocancer.es/indicadores-cancer-colorrectal/">Link</a>
+                </div>
+                {/* <h5>Glossary</h5>
                 <Accordion defaultActiveKey="-1">
                     {accordionContent_dictLst.map((accordionContent_dict, index) => (
                         <Accordion.Item eventKey={index.toString()} key={index}>
@@ -146,7 +161,8 @@ const ScreeningRiskFactorDataPanel: React.FC = () => {
                             </Accordion.Body>
                         </Accordion.Item>
                     ))}
-                </Accordion>
+                </Accordion> */}
+                <Comments />
             </div>
         </div>
     );

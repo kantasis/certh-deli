@@ -3,6 +3,7 @@ import * as AuthService from "../services/auth.service.tsx";
 import { Button, Dropdown } from 'react-bootstrap';
 import PolicyFilter from "./PolicyFilter.tsx";
 import { Accordion } from 'react-bootstrap';
+import Comments from "./Comments.tsx";
 
 const grafana_host = import.meta.env.VITE_GRAFANA_HOST;
 const grafana_port = import.meta.env.VITE_GRAFANA_PORT;
@@ -232,7 +233,7 @@ const PolicyPanel: React.FC = () => {
                   </Accordion.Body>
                </Accordion.Item>
             </Accordion>
-
+            <Comments/>
          </div>
 
       </div>

@@ -10,6 +10,7 @@ import AgeFilter from "./AgeFilter.tsx";
 import AnalyticsRiskFactorFilter from "./AnalyticsRiskFactorFilter.tsx";
 import AnalyticsFilter from "./AnalyticsFilter.tsx";
 import RiskFactorExposureFilter from "./RiskFactorExposureFilter.tsx";
+import Comments from "./Comments.tsx";
 
 
 
@@ -374,6 +375,7 @@ const riskFactorExposurePanel: React.FC = () => {
             {/* Right Navbar */}
             <div className="col-sm-2">
                 <Glossary />
+                <Comments />
             </div>
 
         </div>

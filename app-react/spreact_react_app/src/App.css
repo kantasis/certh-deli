@@ -79,6 +79,7 @@ label {
 .gk_header {
    position: sticky;
    top: 0;
+   z-index:1000;
 }
 
 .gk_content {
@@ -105,3 +106,4 @@ label {
 .policyList {
    text-align: left;
 }
+

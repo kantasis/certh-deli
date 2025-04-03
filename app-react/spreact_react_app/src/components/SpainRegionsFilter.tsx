@@ -11,7 +11,7 @@ interface FilterProps {
 const SpainRegionFilter: React.FC<FilterProps> = ({ selectedRegions_lst, set_selectedRegions, showSpain = true }) => {
     // Define all available regions, including 'Spain'
     const regions_strLst = [
-        'Spain', 'Andalucia', 'Aragon', 'Asturias', 'Baleares', 'Canarias', 'Cantabria',
+        'Andalucia', 'Aragon', 'Asturias', 'Baleares', 'Canarias', 'Cantabria',
         'Castilla-La Mancha', 'Castilla y Leon', 'Catalonia', 'Comunitat Valenciana',
         'Extremadura', 'Galicia', 'Madrid', 'Murcia', 'Navarra', 'Basque Country', 'Rioja'
     ];
@@ -20,10 +20,10 @@ const SpainRegionFilter: React.FC<FilterProps> = ({ selectedRegions_lst, set_sel
     const filteredRegions = regions_strLst.filter(region => showSpain || region !== 'Spain');
 
     // Set default region if none is selected
-    useEffect(() => {
-        if (selectedRegions_lst.length === 0)
-            set_selectedRegions([filteredRegions[0]]);
-    }, [showSpain]); // Reset selection when showSpain changes
+    // useEffect(() => {
+    //     if (selectedRegions_lst.length === 0)
+    //         set_selectedRegions([filteredRegions[0]]);
+    // }, [showSpain]); // Reset selection when showSpain changes
 
     const toggleRegion_cbk = (selection_str: string) => {
         // Toggle region in the selected list
@@ -40,7 +40,7 @@ const SpainRegionFilter: React.FC<FilterProps> = ({ selectedRegions_lst, set_sel
                 {/* <strong>Select Country</strong> */}
             </label>
             {/* Dropdown for selecting Spain */}
-            {showSpain && (
+            {/* {showSpain && (
                 <Form id="regionSelect_id">
                     <Form.Control
                         as="select"
@@ -57,6 +57,22 @@ const SpainRegionFilter: React.FC<FilterProps> = ({ selectedRegions_lst, set_sel
                         <option value="">Select ...</option>
                         <option value="Spain">Spain</option>
                     </Form.Control>
+                </Form>
+            )} */}
+            { (
+                <Form id="regionSelect_id">
+                    {/* <Form.Control
+                        as="select"
+                        value={selectedRegions_lst}
+                        onChange={(e) => {
+                            const selectedValue = e.target.value;
+                          
+                            set_selectedRegions(selectedRegions_lst.filter(region => region));
+                            
+                        }}
+                    >
+                
+                    </Form.Control> */}
                 </Form>
             )}
 

@@ -10,8 +10,8 @@ const Profile: React.FC = () => {
       () => {
          setUserDict(AuthService.getCurrentUser());
          setIsLoggedIn(AuthService.isLoggedIn());
-         console.log("Profile: "+ isLoggedIn);
-      }, 
+         console.log("Profile: " + isLoggedIn);
+      },
       []
    );
 
@@ -21,28 +21,43 @@ const Profile: React.FC = () => {
 
 
    return (
-      <div className="container">
-         <header className="jumbotron">
-            <h3>
-               <strong>{user_dict.username}</strong> Profile
-            </h3>
-         </header>
-         <p>
-            <strong>Id:</strong> {user_dict.id}
-         </p>
-         <p>
-            <strong>Email:</strong> {user_dict.email}
-         </p>
-         <strong>Authorities:</strong>
-         <ul>
-            {
-               user_dict.roles 
-               && user_dict
-                  .roles
-                  .map((role: string, index: number)  => <li key={index}>{role}</li>)
-            }
-         </ul>
-      </div>
+      <div className="container mt-5">
+      <header className="jumbotron">
+        <h3>Profile</h3>
+      </header>
+      <table className="table table-bordered mt-5">
+        <tbody>
+          <tr>
+            <th>Username</th>
+            <td>{user_dict.username}</td>
+          </tr>
+          <tr>
+            <th>Id</th>
+            <td>{user_dict.id}</td>
+          </tr>
+          <tr>
+            <th>Email</th>
+            <td>{user_dict.email}</td>
+          </tr>
+          <tr>
+            <th>Authorities</th>
+            <td>
+              {user_dict.roles &&
+                user_dict.roles
+                  .map((role: string) =>
+                    role === "ROLE_USER"
+                      ? "User"
+                      : role === "ROLE_ADMIN"
+                      ? "Administrator"
+                      : role
+                  )
+                  .join(", ")}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    
    );
 };
 

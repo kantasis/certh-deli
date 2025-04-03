@@ -82,7 +82,8 @@ const Glossary: React.FC = () => {
 
    return (<>
 
-      <h5>Glossary</h5>
+      {/* <h5>Glossary</h5> */}
+      <div className="mt-5">
       <Accordion defaultActiveKey="-1">
          {accordionContent_dictLst.map((accordionContent_dict, itemIndex_int) => (
             <Accordion.Item 
@@ -94,7 +95,7 @@ const Glossary: React.FC = () => {
             </Accordion.Item>
          ))}
       </Accordion>
-
+      </div>
    </>);
 };
 

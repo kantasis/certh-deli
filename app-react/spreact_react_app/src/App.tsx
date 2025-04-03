@@ -6,7 +6,7 @@ import "./index.css";
 
 import NavbarMain from "./components/NavbarMain.js";
 import Login from "./components/Login.jsx";
-// import Register from "./components/Register.jsx";
+import Register from "./components/Register.jsx";
 import Home from "./components/Home.jsx";
 import Profile from "./components/Profile.jsx";
 import Dashboard from "./components/Dashboard.jsx";
@@ -19,7 +19,8 @@ import RiskFactorExposurePanel from "./components/RiskFactorExposurePanel.tsx"
 import CRCmortalityPanel from "./components/CRCmortalityPanel.tsx"
 import ScreeningRiskFactorDataPanel from "./components/ScreeningRiskFactorDataPanel.tsx"
 import CrcIncidenceDataPanel from "./components/CrcIncidenceDataPanel.tsx"
-
+import PreviousComments from "./components/PreviousComments.tsx"
+import LIT03 from "./components/Lit03.tsx"
 const App: React.FC = () => {
    return (<>
 
@@ -33,17 +34,19 @@ const App: React.FC = () => {
                <Route path="/" element={<Home />} />
                <Route path="/home" element={<Home />} />
                <Route path="/login" element={<Login />} />
-               {/* <Route   path="/register"  element={<Register />}        /> */}
+               <Route   path="/register"  element={<Register />} />
                <Route path="/profile" element={<Profile />} />
-               <Route path="/epidimiologicalPanel" element={<EpidimiologicalPanel />} />
-               <Route path="/riskFactorExposurePanel" element={<RiskFactorExposurePanel />} />
-               <Route path="/CRCmortalityPanel" element={< CRCmortalityPanel />} />
+               <Route path="/crc-incidence" element={<EpidimiologicalPanel />} />
+               <Route path="/riskFactorsExposurePanel" element={<RiskFactorExposurePanel />} />
+               {/* <Route path="/CRCmortalityPanel" element={< CRCmortalityPanel />} />
                <Route path="/ScreeningRiskFactorDataPanel" element={< ScreeningRiskFactorDataPanel />} />
-               {/* <Route path="/CrcIncidenceDataPanel" element={< CrcIncidenceDataPanel />} /> */}
+              <Route path="/CrcIncidenceDataPanel" element={< CrcIncidenceDataPanel />} />  */}
+              <Route path="/LIT03" element={< LIT03 />} /> 
+              <Route path="/comments" element={< PreviousComments />} /> 
                {/* <Route path="/nutritionPanel" element={<NutritionPanel />} />
                <Route path="/lifestylePanel" element={<LifestylePanel />} /> */}
-               <Route path="/policyPanel" element={<PolicyPanel />} />
-               <Route path="/analytics" element={<Analytics />} />
+               <Route path="/policy-data" element={<PolicyPanel />} />
+               <Route path="/predictive-analytics" element={<Analytics />} />
             </Routes>
          </div>
 

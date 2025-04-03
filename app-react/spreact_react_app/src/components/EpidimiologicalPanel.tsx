@@ -6,6 +6,7 @@ import YearFilter from "./YearFilter.tsx";
 import { Accordion } from 'react-bootstrap';
 import SexFilter from "./SexFilter.tsx";
 import AgeFilter from "./AgeFilter.tsx";
+import Comments from "./Comments.tsx";
 
 
 const grafana_host = import.meta.env.VITE_GRAFANA_HOST;
@@ -169,6 +170,7 @@ const NewDash: React.FC = () => {
                   </Accordion.Item>
                ))}
             </Accordion>
+            <Comments />
          </div>
 
       </div>

@@ -6,6 +6,7 @@ import AnalyticsFilter from "./AnalyticsFilter.tsx";
 import Glossary from "./Glossary.tsx";
 import AnalyticsRiskFactorFilter from "./AnalyticsRiskFactorFilter.tsx";
 import AnalyticsYearLagFilter from "./AnalyticsYearLagFilter.tsx";
+import Comments from "./Comments.tsx";
 
 const grafana_host = import.meta.env.VITE_GRAFANA_HOST;
 const grafana_port = import.meta.env.VITE_GRAFANA_PORT;
@@ -256,8 +257,7 @@ const AnalyticsPanel: React.FC = () => {
          title: "",
          caption: "",
          html: (<>
-            <p>.</p>
-            <p>.</p>
+         
             <p>
                In this page you can see the results of a regression analysis showing the impact of exposure to various risk factors on CRC incidence.
                <br />
@@ -372,6 +372,7 @@ const AnalyticsPanel: React.FC = () => {
                   </Accordion.Item>
                ))}
             </Accordion>
+            <Comments />
          </div>
 
       </div>
