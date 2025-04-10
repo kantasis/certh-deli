@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Form } from "react-bootstrap";
-import { Accordion } from "react-bootstrap";
 import * as AuthService from "../services/auth.service.tsx";
 import Comments from "./Comments.tsx";
+
 // Interface for the properties of this component
 interface FilterProps {
     selectedRiskFactor: string;
@@ -17,19 +17,23 @@ const RiskFactorSpainRegionFilter: React.FC<FilterProps> = ({
 }) => {
     // Categorize data into Screening and Risk Factors
     const screeningData = riskFactorSpainRegion_dictLst.filter(item =>
-        ["CS2017", "POS2017","CS2019" ,"POS2019","PR2023"].includes(item.value)
-    );
-//"OW2017", "OBE2017", "SMO2017", "ALC2017", "SED2017"
-    const riskFactors = riskFactorSpainRegion_dictLst.filter(item =>
-        !["CS2017", "POS2017","CS2019" ,"POS2019","PR2023"].includes(item.value)
+        ["", "CS2017", "POS2017", "CS2019", "POS2019"].includes(item.value)
     );
 
+    const riskFactors = riskFactorSpainRegion_dictLst.filter(item =>
+        !["CS2017", "POS2017", "CS2019", "POS2019", "PR2023"].includes(item.value)
+    );
+
+    const screeningMetrics = [
+        { value: "COVERAGE", label: "Coverage of CRC screening (%)" },
+        { value: "POSITIVE", label: "Positive cases (% over total tests)" }
+    ];
 
     return (
         <>
             {/* Dropdown for Screening Data */}
             <label className="form-label"><h6><strong>Select Screening Data</strong></h6></label>
-            <Form.Control
+            {/* <Form.Control
                 as="select"
                 value={screeningData.some(item => item.value === selectedRiskFactor) ? selectedRiskFactor : ""}
                 onChange={(e) => setSelectedRiskFactor(e.target.value)}
@@ -38,17 +42,14 @@ const RiskFactorSpainRegionFilter: React.FC<FilterProps> = ({
                 {screeningData.map((item) => (
                     <option key={item.value} value={item.value}>{item.label}</option>
                 ))}
-            </Form.Control>
-
-            {/* Dropdown for Risk Factors */}
-            <label className="form-label mt-3"><h6><strong>Select Risk Factor</strong></h6></label>
+            </Form.Control> */}
             <Form.Control
                 as="select"
-                value={riskFactors.some(item => item.value === selectedRiskFactor) ? selectedRiskFactor : ""}
+                value={selectedRiskFactor}
                 onChange={(e) => setSelectedRiskFactor(e.target.value)}
             >
-                <option value="" disabled>Select Risk Factor</option>
-                {riskFactors.map((item) => (
+                <option value="" disabled>Select Screening Metric</option>
+                {screeningMetrics.map((item) => (
                     <option key={item.value} value={item.value}>{item.label}</option>
                 ))}
             </Form.Control>
@@ -56,26 +57,26 @@ const RiskFactorSpainRegionFilter: React.FC<FilterProps> = ({
     );
 };
 
-const ScreeningRiskFactorDataPanel: React.FC = () => {
+const ScreeningDataPanel: React.FC = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
 
     // List of available screening and risk factors
     const riskFactorSpainRegion_dictLst = [
-        { value: "CS2017", label: "CS2017 - Coverage of CRC screening (%)" },
-        { value: "POS2017", label: "POS2017 - Positive cases (% over total tests)" },
-        { value: "OW2017", label: "OW2017 - BMI (25-30), >18 years old" },
-        { value: "OBE2017", label: "OBE2017 - BMI (>30), >18 years old" },
-        { value: "SMO2017", label: "SMO2017 - > 15 years old daily smoking" },
-        { value: "ALC2017", label: "ALC2017 - > 15 years old daily drinking" },
-        { value: "SED2017", label: "SED2017 - Sedentarism" },
-        { value: "CS2019", label: "CS2019 - Coverage of CRC screening (%)" },
-        { value: "POS2019", label: "POS2019 - Positive cases (% over total tests)" },
-        { value: "PR2023", label: "PR2023 - Positive cases (% over total tests)" },
-        { value: "PCI2023", label: "PCI2023 - Per capita income (Euros)" },
+        { value: "CS2017", label: "2017 - Coverage of CRC screening (%)" },
+        { value: "POS2017", label: "2017 - Positive cases (% over total tests)" },
+        { value: "OW2017", label: "2017 - BMI (25-30), >18 years old" },
+        { value: "OBE2017", label: "2017 - BMI (>30), >18 years old" },
+        { value: "SMO2017", label: "2017 - > 15 years old daily smoking" },
+        { value: "ALC2017", label: "2017 - > 15 years old daily drinking" },
+        { value: "SED2017", label: "2017 - Sedentarism" },
+        { value: "CS2019", label: "2019 - Coverage of CRC screening (%)" },
+        { value: "POS2019", label: "2019 - Positive cases (% over total tests)" },
+        { value: "PR2023", label: "2023 - Positive cases (% over total tests)" },
+        { value: "PCI2023", label: "2023 - Per capita income (Euros)" },
     ];
 
-    // Use state to store the selected risk factor
-    const [selectedRiskFactor, setSelectedRiskFactor] = useState(riskFactorSpainRegion_dictLst[0].value);
+    // Use state to store the selected screening data
+    const [selectedRiskFactor, setSelectedRiskFactor] = useState("");
 
     // Grafana environment variables
     const grafana_host = import.meta.env.VITE_GRAFANA_HOST;
@@ -85,7 +86,23 @@ const ScreeningRiskFactorDataPanel: React.FC = () => {
 
     // Construct Grafana iframe URL dynamically
     const grafana_url = `http://${grafana_host}:${grafana_port}/${grafana_path}/${dashboard_name}?orgId=1&theme=light`;
-    const getUriParams = () => `panelId=10&var-riskFactorRegion_filter=${selectedRiskFactor}`;
+    const getUriParams = () => {
+        let selectedMetrics: string[] = [];
+    
+        switch (selectedRiskFactor) {
+            case "COVERAGE":
+                selectedMetrics = ["CS2017", "CS2019"];
+                break;
+            case "POSITIVE":
+                selectedMetrics = ["POS2017", "POS2019"];
+                break;
+            default:
+                selectedMetrics = [];
+        }
+    
+        return selectedMetrics.map(m => `panelId=13&var-screening_data_metric=${m}`).join("&");
+    };
+    //const getUriParams = () => `panelId=12&var-riskFactorRegion_filter=${selectedRiskFactor}`;
     const iFrame_url = `${grafana_url}&${getUriParams()}`;
 
     // Log for debugging
@@ -96,19 +113,6 @@ const ScreeningRiskFactorDataPanel: React.FC = () => {
     }, []);
 
     if (!isLoggedIn) return <h2>Unauthorized</h2>;
-
-    // Accordion content
-    const accordionContent_dictLst = [
-        {
-            title: "Source",
-            content: (
-                <p>
-                    The screening data comes from reports of the respective programs of the ACs, and the risk factors are derived from the Spanish National Health Survey.
-                    These data are the most recent available (2019 for screening data and 2017 for risk factors).
-                </p>
-            ),
-        },
-    ];
 
     return (
         <div className="row">
@@ -121,51 +125,39 @@ const ScreeningRiskFactorDataPanel: React.FC = () => {
                 />
             </div>
 
-            {/* Middle Panel - Grafana iframe */}
+            {/* Middle Panel - Conditional Rendering of Grafana iframe */}
             <div className="col-sm-8 mt-5">
-                <div className="embed-responsive embed-responsive-16by9">
-                    <iframe
-                        id="embeddedPanel_id"
-                        className="embed-responsive-item"
-                        src={iFrame_url}
-                        width="100%"
-                        height="500px"
-                    ></iframe>
-                </div>
+                {selectedRiskFactor && selectedRiskFactor !== "" ? (
+                    <div className="embed-responsive embed-responsive-16by9">
+                        <iframe
+                            id="embeddedPanel_id"
+                            className="embed-responsive-item"
+                            src={iFrame_url}
+                            width="100%"
+                            height="500px"
+                        ></iframe>
+                    </div>
+                ) : (
+                    <p>Please select a Screening data metric from the dropdown to display the data.</p>
+                )}
             </div>
 
-            {/* Right Panel - Glossary Accordion */}
+            {/* Right Panel - Glossary Accordion and Comments */}
             <div className="col-sm-2">
-            <h5>Sources</h5>
+                <h5>Sources</h5>
                 <div style={{
                     border: '1px solid #e2e6e9',
                     borderRadius: 'var(--bs-border-radius)',
                     padding: '10px'
-                }}>Spanish National Health Survey <br />
-                    <a target="_blank" href="https://www.sanidad.gob.es/estadEstudios/estadisticas/encuestaNacional/home.htm">Link</a>
-                </div>
-                <div style={{
-                    border: '1px solid #e2e6e9',
-                    borderRadius: 'var(--bs-border-radius)',
-                    padding: '10px'
-                }}>Spanish network of cancer screening programs <br />
+                }}>
+                    Spanish network of cancer screening programs <br />
                     <a target="_blank" href="https://cribadocancer.es/indicadores-cancer-colorrectal/">Link</a>
+                   
                 </div>
-                {/* <h5>Glossary</h5>
-                <Accordion defaultActiveKey="-1">
-                    {accordionContent_dictLst.map((accordionContent_dict, index) => (
-                        <Accordion.Item eventKey={index.toString()} key={index}>
-                            <Accordion.Header>{accordionContent_dict.title}</Accordion.Header>
-                            <Accordion.Body className="text-start">
-                                {accordionContent_dict.content}
-                            </Accordion.Body>
-                        </Accordion.Item>
-                    ))}
-                </Accordion> */}
                 <Comments />
             </div>
         </div>
     );
 };
 
-export default ScreeningRiskFactorDataPanel;
+export default ScreeningDataPanel;

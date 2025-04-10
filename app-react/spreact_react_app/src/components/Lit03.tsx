@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Dropdown } from "react-bootstrap";
 import NewDash from "./CRCmortalityPanel";
-import ScreeningRiskFactorDataPanel from "./ScreeningRiskFactorDataPanel";
+import ScreeningDataPanel from "./ScreeningRiskFactorDataPanel";
+import SpanishRiskFactors from "./SpanishRiskFactors";
 import CrcIncidenceDataPanel from "./CrcIncidenceDataPanel";
 import * as AuthService from "../services/auth.service.tsx";
 
@@ -17,9 +18,9 @@ const LIT03: React.FC = () => {
         if (selectedPanel) {
             let panelLabel = selectedPanel === "NewDash"
                 ? "CRC Mortality"
-                : selectedPanel === "ScreeningRiskFactorDataPanel"
-                    ? "Screening & Risk Factors"
-                    : "CRC Incidence Data";
+                : selectedPanel === "ScreeningDataPanel"
+                    ? "Screening Data"
+                    : "Risk Factors";
 
             localStorage.setItem("lit03Panel", panelLabel); // ✅ Save dropdown text
         }
@@ -31,10 +32,10 @@ const LIT03: React.FC = () => {
         switch (selectedPanel) {
             case "NewDash":
                 return <NewDash />;
-            case "ScreeningRiskFactorDataPanel":
-                return <ScreeningRiskFactorDataPanel />;
-            case "CrcIncidenceDataPanel":
-                return <CrcIncidenceDataPanel />;
+            case "ScreeningDataPanel":
+                return <ScreeningDataPanel />;
+            case "SpanishRiskFactors":
+                return <SpanishRiskFactors />;
             default:
                 return (
                     <div className="text-center mt-5">
@@ -50,19 +51,19 @@ const LIT03: React.FC = () => {
             <div className="row">
                 <div className="col-sm-2">
                     <Dropdown onSelect={(eventKey) => setSelectedPanel(eventKey)}>
-                        <Dropdown.Toggle variant="" className="w-100" style={{ backgroundColor: '#186480', color:'white' }}>
+                        <Dropdown.Toggle variant="" className="w-100" style={{ backgroundColor: '#186480', color: 'white' }}>
                             {selectedPanel
                                 ? selectedPanel === "NewDash"
                                     ? "CRC Mortality"
-                                    : selectedPanel === "ScreeningRiskFactorDataPanel"
-                                        ? "Screening & Risk Factors"
-                                        : "CRC Incidence Data"
+                                    : selectedPanel === "ScreeningDataPanel"
+                                        ? "Screening Data"
+                                        : "Risk Factors"
                                 : "Select Dashboard"}
                         </Dropdown.Toggle>
                         <Dropdown.Menu>
                             <Dropdown.Item eventKey="NewDash">CRC Mortality</Dropdown.Item>
-                            <Dropdown.Item eventKey="ScreeningRiskFactorDataPanel">Screening & Risk Factors</Dropdown.Item>
-                            <Dropdown.Item eventKey="CrcIncidenceDataPanel">CRC Incidence Data</Dropdown.Item>
+                            <Dropdown.Item eventKey="ScreeningDataPanel">Screening Data</Dropdown.Item>
+                            <Dropdown.Item eventKey="SpanishRiskFactors">Risk Factors</Dropdown.Item>
                         </Dropdown.Menu>
                     </Dropdown>
                 </div>

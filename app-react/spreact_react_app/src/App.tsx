@@ -20,6 +20,7 @@ import CRCmortalityPanel from "./components/CRCmortalityPanel.tsx"
 import ScreeningRiskFactorDataPanel from "./components/ScreeningRiskFactorDataPanel.tsx"
 import CrcIncidenceDataPanel from "./components/CrcIncidenceDataPanel.tsx"
 import PreviousComments from "./components/PreviousComments.tsx"
+import PasswordReset from "./components/PasswordReset.tsx";
 import LIT03 from "./components/Lit03.tsx"
 const App: React.FC = () => {
    return (<>
@@ -34,19 +35,20 @@ const App: React.FC = () => {
                <Route path="/" element={<Home />} />
                <Route path="/home" element={<Home />} />
                <Route path="/login" element={<Login />} />
-               <Route   path="/register"  element={<Register />} />
+               <Route path="/register" element={<Register />} />
                <Route path="/profile" element={<Profile />} />
                <Route path="/crc-incidence" element={<EpidimiologicalPanel />} />
-               <Route path="/riskFactorsExposurePanel" element={<RiskFactorExposurePanel />} />
+               <Route path="/crc-risk-factors" element={<RiskFactorExposurePanel />} />
+               <Route path="/change-password" element={<PasswordReset />} />
                {/* <Route path="/CRCmortalityPanel" element={< CRCmortalityPanel />} />
                <Route path="/ScreeningRiskFactorDataPanel" element={< ScreeningRiskFactorDataPanel />} />
               <Route path="/CrcIncidenceDataPanel" element={< CrcIncidenceDataPanel />} />  */}
-              <Route path="/LIT03" element={< LIT03 />} /> 
-              <Route path="/comments" element={< PreviousComments />} /> 
+               <Route path="/LIT03" element={< LIT03 />} />
+               <Route path="/comments" element={< PreviousComments />} />
                {/* <Route path="/nutritionPanel" element={<NutritionPanel />} />
                <Route path="/lifestylePanel" element={<LifestylePanel />} /> */}
-               <Route path="/policy-data" element={<PolicyPanel />} />
-               <Route path="/predictive-analytics" element={<Analytics />} />
+               <Route path="/crc-policy-data" element={<PolicyPanel />} />
+               <Route path="/crc-predictive-analytics" element={<Analytics />} />
             </Routes>
          </div>
 

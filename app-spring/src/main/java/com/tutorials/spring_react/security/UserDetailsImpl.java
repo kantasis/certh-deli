@@ -27,6 +27,10 @@ public class UserDetailsImpl implements UserDetails{
 
    private String email;
 
+   private String name;
+
+   private String surName;
+
    @JsonIgnore
    private String password;
 
@@ -47,6 +51,8 @@ public class UserDetailsImpl implements UserDetails{
          user.getId(), 
          user.getUsername(), 
          user.getEmail(), 
+         user.getName(),        // ✅ name
+         user.getSurname(),     // ✅ surname
          user.getPassword(), 
          authorities
       );
@@ -82,5 +88,10 @@ public class UserDetailsImpl implements UserDetails{
       UserDetailsImpl user = (UserDetailsImpl) o;
       return Objects.equals(id, user.id);
    }
-
+    public String getName() {
+        return name;
+    }
+        public String getSurname() {
+        return surName;  // Getter for surname
+    }
 }

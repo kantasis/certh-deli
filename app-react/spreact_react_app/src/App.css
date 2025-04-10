@@ -81,7 +81,18 @@ label {
    top: 0;
    z-index:1000;
 }
+/* Show the dropdown menu on hover */
+.nav-item.dropdown:hover .dropdown-menu {
+   display: block;
+   right:5px;
+}
 
+/* Optional: Adds a transition effect */
+.nav-item.dropdown .dropdown-menu {
+   display: none;
+   transition: all 0.3s ease;
+   
+}
 .gk_content {
    flex: 1;
    overflow-y: auto;
