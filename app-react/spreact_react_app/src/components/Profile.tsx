@@ -3,31 +3,31 @@ import * as AuthService from "../services/auth.service";
 
 const Profile: React.FC = () => {
 
-   const [isLoggedIn, setIsLoggedIn] = useState(false);
-   const [user_dict, setUserDict] = useState();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [user_dict, setUserDict] = useState();
 
-   useEffect(
-      () => {
-         setUserDict(AuthService.getCurrentUser());
-         setIsLoggedIn(AuthService.isLoggedIn());
-         console.log("Profile: " + isLoggedIn);
-      },
-      []
-   );
-
-
-   if (!isLoggedIn)
-      return <h2>Unauthorized</h2>;
+  useEffect(
+    () => {
+      setUserDict(AuthService.getCurrentUser());
+      setIsLoggedIn(AuthService.isLoggedIn());
+      console.log("Profile: " + isLoggedIn);
+    },
+    []
+  );
 
 
-   return (
-      <div className="container mt-5">
+  if (!isLoggedIn)
+    return <h2>Unauthorized</h2>;
+
+
+  return (
+    <div className="container mt-5">
       <header className="jumbotron">
         <h3>Profile</h3>
       </header>
       <table className="table table-bordered mt-5">
         <tbody>
-        <tr>
+          <tr>
             <th>Name</th>
             <td>{user_dict.name}</td>
           </tr>
@@ -56,8 +56,8 @@ const Profile: React.FC = () => {
                     role === "ROLE_USER"
                       ? "User"
                       : role === "ROLE_ADMIN"
-                      ? "Administrator"
-                      : role
+                        ? "Administrator"
+                        : role
                   )
                   .join(", ")}
             </td>
@@ -65,8 +65,8 @@ const Profile: React.FC = () => {
         </tbody>
       </table>
     </div>
-    
-   );
+
+  );
 };
 
 export default Profile;
