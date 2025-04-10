@@ -74,6 +74,7 @@ public class AuthController {
 
       // System.out.printf("--- GK> Someone tried to login with [%s] / [%s] \n",loginRequest.getUsername(),loginRequest.getPassword() );
       UsernamePasswordAuthenticationToken userpass = new UsernamePasswordAuthenticationToken(
+         
          loginRequest.getUsername(), 
          loginRequest.getPassword()
       );
@@ -112,6 +113,8 @@ public class AuthController {
          userDetails.getId(), 
          userDetails.getUsername(), 
          userDetails.getEmail(), 
+         userDetails.getName(),       
+         userDetails.getSurname(),
          roles
       );
 
@@ -143,14 +146,30 @@ public class AuthController {
             .badRequest()
             .body(new MessageResponse("Error: Email is already in use!"))
          ;
+            // System.out.println("Password for new user: " + signupRequest.getPassword());
+            // System.out.println("Encoded password: " + passwordEncoder.encode(signupRequest.getPassword()));
+            String rawPassword = signupRequest.getPassword();
+            String encodedPassword = passwordEncoder.encode(rawPassword);
 
+        
+
+            // Use this encoded password in your UserModel
+            UserModel user = new UserModel(
+               signupRequest.getUsername(),
+               signupRequest.getEmail(),
+               encodedPassword, // Save this exact string!
+               signupRequest.getName(),
+               signupRequest.getSurname()
+            );
 
       // Create new user's account
-      UserModel user = new UserModel(
-         signupRequest.getUsername(),
-         signupRequest.getEmail(),
-         passwordEncoder.encode(signupRequest.getPassword())
-      );
+      // UserModel user = new UserModel(
+      //    signupRequest.getUsername(),
+      //    signupRequest.getEmail(),
+      //    passwordEncoder.encode(signupRequest.getPassword()),
+      //    signupRequest.getName(), // name field
+      //    signupRequest.getSurname() // surname field
+      // );
 
 
       // This entire section if hurtful to watch

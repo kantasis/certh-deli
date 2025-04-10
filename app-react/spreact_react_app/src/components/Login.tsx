@@ -83,7 +83,7 @@ const Login: React.FC<Props> = () => {
             >
                <Form>
                   <div className="form-group">
-                     <label htmlFor="username">Username</label>
+                     <label htmlFor="username">Username \ Email</label>
                      <Field 
                         name="username" 
                         type="text" 

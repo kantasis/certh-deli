@@ -45,7 +45,7 @@ public class UserModel {
    private String id;
 
    @NotBlank
-   @Size(max = 20)
+   @Size(min = 3, max = 50) 
    private String username;
 
    @NotBlank
@@ -57,6 +57,17 @@ public class UserModel {
    @Size(max = 120)
    private String password;
 
+   @NotBlank
+   @Size(max = 100)  // You can adjust the max length as needed
+    private String name;
+
+    @NotBlank
+    @Size(max = 100)  // You can adjust the max length as needed
+    private String surname;
+
+
+
+
    @ManyToMany(fetch = FetchType.LAZY)
    @JoinTable(
       name = "userRoles_tbl", 
@@ -66,10 +77,12 @@ public class UserModel {
 
    private Set<RoleModel> roles = new HashSet<>();
 
-   public UserModel(String username, String email, String password) {
-      this.username = username;
-      this.email = email;
-      this.password = password;
-   }
+    public UserModel(String username, String email, String password, String name, String surname) {
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.name = name;
+        this.surname = surname;
+    }
 
 }

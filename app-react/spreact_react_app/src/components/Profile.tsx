@@ -27,6 +27,14 @@ const Profile: React.FC = () => {
       </header>
       <table className="table table-bordered mt-5">
         <tbody>
+        <tr>
+            <th>Name</th>
+            <td>{user_dict.name}</td>
+          </tr>
+          <tr>
+            <th>Surname</th>
+            <td>{user_dict.surName}</td>
+          </tr>
           <tr>
             <th>Username</th>
             <td>{user_dict.username}</td>

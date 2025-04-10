@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import * as AuthService from "../services/auth.service";
 import EventBus from "../common/EventBus";
 import { getUserRole } from '../services/auth.service';
-
+import ChangePasswordDropdown from "./ChangePasswordDropdown";
 const NavbarMain: React.FC = () => {
 
    const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -36,8 +36,8 @@ console.log(userRole);
          condition: isLoggedIn
       },
       {
-         href: "riskFactorsExposurePanel",
-         label: "Risk Factors",
+         href: "crc-risk-factors",
+         label: "CRC Risk Factors",
          condition: isLoggedIn
       },
       // {
@@ -51,13 +51,13 @@ console.log(userRole);
       //    condition: isLoggedIn
       // },
       {
-         href: "policy-data",
-         label: "Policy Data",
+         href: "crc-policy-data",
+         label: "CRC Policy Data",
          condition: isLoggedIn
       },
       {
-         href: "predictive-analytics",
-         label: "Predictive Analytics",
+         href: "crc-predictive-analytics",
+         label: "CRC Predictive Analytics",
          condition: isLoggedIn
       },
       // {
@@ -78,7 +78,7 @@ console.log(userRole);
       {
          
          href: "LIT03",
-         label: "LIT03",
+         label: "Spanish CRC Regional Data",
          condition: isLoggedIn 
       },
       {
@@ -101,39 +101,47 @@ console.log(userRole);
       </li>
    ));
 
-   const rightButtons_tsx = [
-      {
-         href: "login",
-         label: "Login",
-         condition: !isLoggedIn
-      },
-      {
-         href: "register",
-         label: "Register",
-         condition: !isLoggedIn
-      },
-      {
-         href: "profile",
-         label: "Profile",
-         condition: isLoggedIn
-      },
-      {
-         href: "login",
-         label: "Logout",
-         onClick: () => logout(),
-         condition: isLoggedIn
-      },
-   ].map((item_dict, index) => item_dict.condition && (
-      <li className="nav-item" key={index}>
-         <a
-            className="nav-link"
-            href={item_dict.href}
-            onClick={item_dict.onClick ? item_dict.onClick : undefined}
-         >
-            {item_dict.label}
-         </a>
+   const rightButtons_tsx = [];
+
+if (!isLoggedIn) {
+   rightButtons_tsx.push(
+      <li className="nav-item" key="login">
+         <a className="nav-link" href="login">Login</a>
+      </li>,
+      <li className="nav-item" key="register">
+         <a className="nav-link" href="register">Register</a>
       </li>
-   ));
+   );
+} else {
+   rightButtons_tsx.push(
+      // Dropdown for Profile
+      <li className="nav-item dropdown" key="profile">
+         <a
+            className="nav-link dropdown-toggle"
+            href="#"
+            id="navbarDropdown"
+            role="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+         >
+            Profile
+         </a>
+         <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+            <li>
+               <a className="dropdown-item" href="/profile">View Profile</a>
+            </li>
+            <li>
+               <a className="dropdown-item" href="/change-password">Change Password</a>
+            </li>
+         </ul>
+      </li>,
+
+      // Logout button
+      <li className="nav-item" key="logout">
+         <a className="nav-link" href="login" onClick={logout}>Logout</a>
+      </li>
+   );
+}
 
    return (
       <nav className="navbar navbar-expand-lg bg-body-tertiary">
