@@ -126,7 +126,8 @@ const ScreeningDataPanel: React.FC = () => {
             </div>
 
             {/* Middle Panel - Conditional Rendering of Grafana iframe */}
-            <div className="col-sm-8 mt-5">
+            <div className="col-sm-8 ">
+
                 {selectedRiskFactor && selectedRiskFactor !== "" ? (
                     <div className="embed-responsive embed-responsive-16by9">
                         <iframe
@@ -138,7 +139,11 @@ const ScreeningDataPanel: React.FC = () => {
                         ></iframe>
                     </div>
                 ) : (
-                    <p>Please select a Screening data metric from the dropdown to display the data.</p>
+
+    <div className="text-center">
+    <div className=""><h5 className="mb-5">Data on the coverage of CRC screening programmes by autonomous communities are presented, as well as the percentages of positivity. </h5></div>
+    <div className=""><h5>Please select a screening data metric from the dropdown menu on the left to display the data.</h5></div>
+</div>
                 )}
             </div>
 

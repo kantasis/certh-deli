@@ -60,7 +60,7 @@ const SpanishRiskFactorsDataPanel: React.FC = () => {
         { value: "SED2017", label: "2017 - Sedentarism" },
         { value: "CS2019", label: "2019 - Coverage of CRC screening (%)" },
         { value: "POS2019", label: "2019 - Positive cases (% over total tests)" },
-        { value: "PR2023", label: "2023 - Positive cases (% over total tests)" },
+        { value: "PR2023", label: "2023 - Poverty Risk % persons living below poverty line" },
         { value: "PCI2023", label: "2023 - Per capita income (Euros)" },
     ];
 
@@ -99,7 +99,7 @@ const SpanishRiskFactorsDataPanel: React.FC = () => {
             </div>
 
             {/* Middle Panel - Conditional Rendering of Grafana iframe */}
-            <div className="col-sm-8 mt-5">
+            <div className="col-sm-8 ">
                 {selectedRiskFactor && selectedRiskFactor !== "" ? (
                     <div className="embed-responsive embed-responsive-16by9">
                         <iframe
@@ -111,7 +111,12 @@ const SpanishRiskFactorsDataPanel: React.FC = () => {
                         ></iframe>
                     </div>
                 ) : (
-                    <p>Please select a Risk factor from the dropdown to display the data.</p>
+                    <div>
+                    <div className=""><div><h5 className="mb-5">Data on risk factors for CRC are presented by autonomous communities. Comparison of these frequencies makes it possible
+                         to identify the differences between autonomous communities.</h5></div>
+                         </div>
+                <div className=""><h5>Please select a risk factor from the dropdown menu on the left to display the data.</h5></div>
+                    </div>
                 )}
             </div>
 
