@@ -147,7 +147,7 @@ const CrcIncidenceDataPanel: React.FC = () => {
          {/* Right Navbar */}
          <div className="col-sm-2">
             {/* TODO: use a component for this perhaps? */}
-            <h5>Glossary</h5>
+            {/* <h5>Glossary</h5> */}
             <Accordion defaultActiveKey="-1">
                {accordionContent_dictLst.map((accordionContent_dict, itemIndex_int) => (
                   <Accordion.Item
