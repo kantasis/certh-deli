@@ -3,7 +3,9 @@ import authHeader from "./auth-header";
 
 // TODO: Make this be loaded from one place
 // const API_URL = "http://localhost:3000/api/auth/";
-const API_URL = "http://localhost:8081/api/v1/content/";
+const authentication_host = import.meta.env.VITE_AUTHENTICATION_HOST;
+const API_URL = `${authentication_host}:8081/api/v1/content/`;
+//const API_URL = "http://localhost:8081/api/v1/content/";
 
 // TODO: This is not a user.service but a content.service
 export const getPublicContent = () => {

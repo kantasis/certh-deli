@@ -86,7 +86,7 @@ const AnalyticsPanel: React.FC = () => {
                </Button>
 
             </div>
-            <div className="mt-3 text-center">Click <a href="/src/assets/Bias_Analysis_Report.pdf">here</a> to download the Bias Analysis Report</div>
+            <div className="mt-3 text-center">Click <a href="/src/assets/Bias_Analysis_Report.pdf" target="_blank">here</a> to download the Bias Analysis Report</div>
          </>
       );
    };
