@@ -111,7 +111,7 @@ const NewDash: React.FC = () => {
    ];
 
    return (<>
-      <div className="row">
+      <div className="row mt-5">
 
          {/* Left Navbar */}
          <div className="col-sm-2">
@@ -158,7 +158,7 @@ const NewDash: React.FC = () => {
          {/* Right Navbar */}
          <div className="col-sm-2">
             {/* TODO: use a component for this perhaps? */}
-            <h5>Glossary</h5>
+            {/* <h5>Glossary</h5> */}
             <Accordion defaultActiveKey="-1">
                {accordionContent_dictLst.map((accordionContent_dict, itemIndex_int) => (
                   <Accordion.Item

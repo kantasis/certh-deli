@@ -38,9 +38,16 @@ const LIT03: React.FC = () => {
                 return <SpanishRiskFactors />;
             default:
                 return (
-                    <div className="text-center mt-5">
-                        <h2>Welcome to the LIT03 Dashboard</h2>
-                        <p>Please use the dropdown menu to select and view the Spanish Regions data.</p>
+                    <div className="text-center my-5">
+                       
+                    <div className="container w-75 my-5">
+                                            <h5>This section of the dashboard presents data from the Autonomous 
+                            Communities of Spain related to mortality, risk factors and CRC screening. 
+                            Decision-making for CRC prevention is performed at the subnational level. 
+                            Therefore, Spain has been selected for this analysis.</h5>
+                            </div>
+                        <h5 className="">Please use the dropdown menu on the left to select
+                        and view the data.</h5>
                     </div>
                 );
         }
@@ -58,11 +65,11 @@ const LIT03: React.FC = () => {
                                     : selectedPanel === "ScreeningDataPanel"
                                         ? "Screening Data"
                                         : "Risk Factors"
-                                : "Select Dashboard"}
+                                : "Select Data"}
                         </Dropdown.Toggle>
                         <Dropdown.Menu>
-                            <Dropdown.Item eventKey="NewDash">CRC Mortality</Dropdown.Item>
-                            <Dropdown.Item eventKey="ScreeningDataPanel">Screening Data</Dropdown.Item>
+                            <Dropdown.Item eventKey="NewDash">Mortality</Dropdown.Item>
+                            <Dropdown.Item eventKey="ScreeningDataPanel">Screening</Dropdown.Item>
                             <Dropdown.Item eventKey="SpanishRiskFactors">Risk Factors</Dropdown.Item>
                         </Dropdown.Menu>
                     </Dropdown>

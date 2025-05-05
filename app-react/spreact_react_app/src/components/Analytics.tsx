@@ -7,6 +7,7 @@ import Glossary from "./Glossary.tsx";
 import AnalyticsRiskFactorFilter from "./AnalyticsRiskFactorFilter.tsx";
 import AnalyticsYearLagFilter from "./AnalyticsYearLagFilter.tsx";
 import Comments from "./Comments.tsx";
+import { Modal } from 'react-bootstrap';
 
 const grafana_host = import.meta.env.VITE_GRAFANA_HOST;
 const grafana_port = import.meta.env.VITE_GRAFANA_PORT;
@@ -23,6 +24,26 @@ const AnalyticsPanel: React.FC = () => {
    const [selectedRiskFactor_int, set_selectedRiskFactors] = useState(0);
    const [selectedYearLag_int, set_selectedYearLag] = useState(0);
 
+   const [showModal, setShowModal] = useState(false);
+   const [modalContent, setModalContent] = useState<React.ReactNode>(null);
+   const [modalTitle, setModalTitle] = useState<string>('');
+
+   const [isBiasModal, setIsBiasModal] = useState(false);
+   const [biasContent, setBiasContent] = useState<string[]>([]);
+   const [currentPage, setCurrentPage] = useState(0);
+   const itemsPerPage = 5;
+
+   useEffect(() => {
+      fetch("/src/assets/bias_assessment.json")
+         .then((res) => res.json())
+         .then((data) => {
+            const alerts = data?.["Alerts Consolidation"]?.["Bias Analysis Alerts"];
+            if (Array.isArray(alerts)) {
+               setBiasContent(alerts);
+            }
+         })
+         .catch((err) => console.error("Failed to load Bias Analysis Alerts:", err));
+   }, []);
 
    useEffect(
       () => {
@@ -30,7 +51,51 @@ const AnalyticsPanel: React.FC = () => {
       },
       []
    );
+   const paginatedBiasContent = () => {
+      const totalPages = Math.ceil(biasContent.length / itemsPerPage);
+      const start = currentPage * itemsPerPage;
+      const end = start + itemsPerPage;
+      const currentItems = biasContent.slice(start, end);
 
+      return (
+         <>
+            <ul>
+               {currentItems.map((item, idx) => (
+                  <li key={idx}>{item}</li>
+               ))}
+            </ul>
+            <div className="d-flex justify-content-between align-items-center mt-3">
+               <Button
+                  variant="primary"
+                  onClick={() => setCurrentPage(p => p - 1)}
+                  disabled={currentPage === 0}
+               >
+                  Previous
+               </Button>
+
+               <span className="mx-3">
+                  Page {currentPage + 1} of {totalPages}
+               </span>
+
+               <Button
+                  variant="primary"
+                  onClick={() => setCurrentPage(p => p + 1)}
+                  disabled={end >= biasContent.length}
+               >
+                  Next
+               </Button>
+
+            </div>
+            <div className="mt-3 text-center">Click <a href="/src/assets/Bias_Analysis_Report.pdf" target="_blank">here</a> to download the Bias Analysis Report</div>
+         </>
+      );
+   };
+
+   const handleAccordionModal = (title: string, isBias: boolean) => {
+      setModalTitle(title);
+      setIsBiasModal(isBias);
+      setShowModal(true);
+   };
    if (!isLoggedIn)
       return <h2>Unauthorized</h2>;
 
@@ -84,7 +149,18 @@ const AnalyticsPanel: React.FC = () => {
                Negative coefficients may be related to a number of factors, e.g. the presence of confounding variables.
             </p>
          </>)
+
       },
+      ...(biasContent.length > 0 ? [{
+         title: 'Bias Assessment',
+         content: (
+            <ul>
+               {biasContent.map((item, idx) => (
+                  <li key={idx}>{item}</li>
+               ))}
+            </ul>
+         )
+      }] : [])
    ];
 
    const yearLagsImages_strLst = [
@@ -257,7 +333,7 @@ const AnalyticsPanel: React.FC = () => {
          title: "",
          caption: "",
          html: (<>
-         
+
             <p>
                In this page you can see the results of a regression analysis showing the impact of exposure to various risk factors on CRC incidence.
                <br />
@@ -277,9 +353,9 @@ const AnalyticsPanel: React.FC = () => {
          title: (<>
             <p>
                <br></br><ul>
-               <li>Year lags refer to the time interval between risk factor exposure and CRC incidence.</li><br />
-               <li>Only statistically significant associations between risk factors and CRC incidence are shown. </li><br />
-               <li>Higher coefficients indicate a stronger association between risk factor Summary Exposure Value (SEV) and CRC incidence. </li><br />
+                  <li>Year lags refer to the time interval between risk factor exposure and CRC incidence.</li><br />
+                  <li>Only statistically significant associations between risk factors and CRC incidence are shown. </li><br />
+                  <li>Higher coefficients indicate a stronger association between risk factor Summary Exposure Value (SEV) and CRC incidence. </li><br />
                </ul>
             </p>
          </>),
@@ -291,9 +367,9 @@ const AnalyticsPanel: React.FC = () => {
          title: (<>
             <p>
                <br></br><ul>
-              <li> Year lags refer to the time interval between risk factor exposure and CRC incidence.</li><br />
-              <li>Only statistically significant associations between risk factors and CRC incidence are shown. </li><br />
-              <li> Higher coefficients indicate a stronger association between risk factor Summary Exposure Value (SEV) and CRC incidence. </li><br />
+                  <li> Year lags refer to the time interval between risk factor exposure and CRC incidence.</li><br />
+                  <li>Only statistically significant associations between risk factors and CRC incidence are shown. </li><br />
+                  <li> Higher coefficients indicate a stronger association between risk factor Summary Exposure Value (SEV) and CRC incidence. </li><br />
                </ul>
             </p>
          </>),
@@ -319,7 +395,7 @@ const AnalyticsPanel: React.FC = () => {
 
          {/* Left column */}
          <div className="col-sm-2 mt-2">
-             <h6><strong>Select Presentation</strong></h6>
+            <h6><strong>Select Presentation</strong></h6>
             <p></p>
             <AnalyticsFilter
                selectedAnalysis_int={selectedAnalysis_int}
@@ -360,19 +436,51 @@ const AnalyticsPanel: React.FC = () => {
          {/* Right column */}
          <div className="col-sm-2">
             <p>.</p>
-            <h5>Glossary</h5>
+            {/* <h5>Glossary</h5> */}
             <Accordion defaultActiveKey="-1">
-               {accordionContent_dictLst.map((accordionContent_dict, itemIndex_int) => (
-                  <Accordion.Item
-                     eventKey={itemIndex_int.toString()}
-                     key={itemIndex_int}
-                  >
-                     <Accordion.Header>{accordionContent_dict['title']}</Accordion.Header>
-                     <Accordion.Body className="text-start" >{accordionContent_dict['content']}</Accordion.Body>
-                  </Accordion.Item>
-               ))}
+               {accordionContent_dictLst.map((accordionContent_dict, itemIndex_int) => {
+                  const isBiasAssessment = accordionContent_dict.title === "Bias Assessment";
+
+                  return (
+                     <Accordion.Item
+                        eventKey={itemIndex_int.toString()}
+                        key={itemIndex_int}
+                     >
+                        <Accordion.Header
+                           onClick={(e) => {
+                              if (isBiasAssessment) {
+                                 e.preventDefault(); // prevent default expand behavior
+                                 handleAccordionModal(
+                                    accordionContent_dict.title = "The following biases were detected in the data used for the CRC Predictive Analytics:",
+                                    true
+                                 );
+                              }
+                           }}
+                        >
+                           {accordionContent_dict.title}
+                        </Accordion.Header>
+
+                        {/* Only render body for non-Bias Assessment */}
+                        {!isBiasAssessment && (
+                           <Accordion.Body className="text-start">
+                              {accordionContent_dict.content}
+                           </Accordion.Body>
+                        )}
+                     </Accordion.Item>
+                  );
+               })}
             </Accordion>
+
             <Comments />
+            {/* Modal */}
+            <Modal show={showModal} onHide={() => setShowModal(false)} centered size="lg">
+               <Modal.Header closeButton>
+                  <Modal.Title>{modalTitle}</Modal.Title>
+               </Modal.Header>
+               <Modal.Body style={{ maxHeight: '60vh', overflowY: 'auto' }}>
+                  {isBiasModal ? paginatedBiasContent() : modalContent}
+               </Modal.Body>
+            </Modal>
          </div>
 
       </div>

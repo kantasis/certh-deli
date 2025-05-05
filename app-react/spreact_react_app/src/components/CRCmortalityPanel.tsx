@@ -222,8 +222,10 @@ const NewDash: React.FC = () => {
                     {/* Show message when filters are not yet fully selected */}
                     {!isAllFiltersSelected ? (
                         <div className="text-center">
-                            <h4>Please use the filters to refine your selection.</h4>
-                            <p>Make sure to select a region, year range, and sex filter.</p>
+                            <h5 className="my-5">The evolution of CRC mortality rates in the autonomous
+                                communities of Spain is presented so that the different patterns can be compared.</h5>
+                            <div className=""><h5 className="mb-5" >Please use the filters to refine your selection.</h5>
+                            <p> Make sure to select a <strong>region</strong>, <strong>year range</strong>, and <strong>sex filter.</strong></p></div>
                         </div>
                     ) : (
                         <iframe
