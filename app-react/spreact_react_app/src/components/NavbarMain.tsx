@@ -83,6 +83,12 @@ console.log(userRole);
       },
       {
          
+         href: "trend-and-association-analysis",
+         label: "Trend and Association Analysis",
+         condition: isLoggedIn 
+      },
+      {
+         
          href: "comments",
          label: "Comments",
          condition: isLoggedIn && userRole == "ROLE_ADMIN"

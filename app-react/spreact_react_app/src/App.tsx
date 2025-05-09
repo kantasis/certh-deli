@@ -22,6 +22,7 @@ import CrcIncidenceDataPanel from "./components/CrcIncidenceDataPanel.tsx"
 import PreviousComments from "./components/PreviousComments.tsx"
 import PasswordReset from "./components/PasswordReset.tsx";
 import LIT03 from "./components/Lit03.tsx"
+import TrendAnalysis from "./components/TrendAnalysis.tsx"
 const App: React.FC = () => {
    return (<>
 
@@ -44,6 +45,7 @@ const App: React.FC = () => {
                <Route path="/ScreeningRiskFactorDataPanel" element={< ScreeningRiskFactorDataPanel />} />
               <Route path="/CrcIncidenceDataPanel" element={< CrcIncidenceDataPanel />} />  */}
                <Route path="/LIT03" element={< LIT03 />} />
+               <Route path="/trend-and-association-analysis" element={< TrendAnalysis />} />
                <Route path="/comments" element={< PreviousComments />} />
                {/* <Route path="/nutritionPanel" element={<NutritionPanel />} />
                <Route path="/lifestylePanel" element={<LifestylePanel />} /> */}
