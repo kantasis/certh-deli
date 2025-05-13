@@ -6,6 +6,7 @@ import YearFilter from "./YearFilter.tsx";
 import { Accordion } from 'react-bootstrap';
 import SexFilter from "./SexFilter.tsx";
 import AgeFilter from "./AgeFilter.tsx";
+import CrcFactorsFilter from "./CrcFactorsFilter.tsx";
 import Comments from "./Comments.tsx";
 
 
@@ -32,6 +33,9 @@ const NewDash: React.FC = () => {
 
    const [selectedSex_int, set_selectedSex] = useState(0);
    const [selectedAge_int, set_selectedAge] = useState(0);
+
+
+   const [selectedCrcFactors_int, set_selectedCrcFactors] = useState(0);
 
    const sex_dictLst = [
       {
@@ -74,12 +78,40 @@ const NewDash: React.FC = () => {
       },
 
    ];
+   const crcFactors_dictLst = [
+      {
+         value: 0,
+         label: "Incidence",
+         var_filter: "CRC_incidence_val_Rate"
+      },
+      {
+         value: 1,
+         label: "DALYs",
+         var_filter: "Colon and rectum cancer_Rate_DALYs_val"
+      },
+      {
+         value: 2,
+         label: "YLDs",
+         var_filter: "Colon and rectum cancer_Rate_YLDs_val"
+      },
+      {
+         value: 3,
+         label: "YLLs",
+         var_filter: "Colon and rectum cancer_Rate_YLLs_val"
+      },
+   ];
+
+
+
+
+
    const getUriParams = () => {
       let countryFilter_str = selectedCountries_lst.map((country_str, index) => `var-country_filter=${country_str}`).join('&');
       let yearFilter_str = `var-minyear_filter=${minYear_int}&var-maxyear_filter=${maxYear_int}`;
       let selectedSex_str = sex_dictLst[selectedSex_int]['var_filter'];
       let selectedAge_str = age_dictLst[selectedAge_int]['var_filter'];
-      return `${countryFilter_str}&${yearFilter_str}&var-sex_filter=${selectedSex_str}&var-age_filter=${selectedAge_str}`;
+      let selectedCrcFactor_str = crcFactors_dictLst[selectedCrcFactors_int]['var_filter'];
+      return `${countryFilter_str}&${yearFilter_str}&var-sex_filter=${selectedSex_str}&var-age_filter=${selectedAge_str}&var-crcFactor_filter=${selectedCrcFactor_str}`;
    };
    console.log(selectedSex_int)
    const iFrame_url = `${grafana_url}&${getUriParams()}`;
@@ -127,7 +159,11 @@ const NewDash: React.FC = () => {
                maxYear_int={maxYear_int}
                set_maxYear={set_maxYear}
             />
-
+            <CrcFactorsFilter
+               selectedCrcFactor_int={selectedCrcFactors_int}
+               set_selectedCrcFactor={set_selectedCrcFactors}
+               crcFactor_dictLst={crcFactors_dictLst}
+            />
             <SexFilter
                selectedSex_int={selectedSex_int}
                set_selectedSex={set_selectedSex}
@@ -138,6 +174,7 @@ const NewDash: React.FC = () => {
                set_selectedAge={set_selectedAge}
                age_dictLst={age_dictLst}
             />
+
          </div>
 
          {/* Center Content */}

@@ -18,7 +18,7 @@ const YearFilter: React.FC<FilterProps> = ({
    maxYear_int, 
    set_maxYear, 
    floorYear_int = 1990, 
-   ceilYear_int = 2019 
+   ceilYear_int = 2021 
 }) => {
 
    useEffect(() => {

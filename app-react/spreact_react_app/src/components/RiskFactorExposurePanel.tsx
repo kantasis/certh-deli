@@ -11,6 +11,7 @@ import AnalyticsRiskFactorFilter from "./AnalyticsRiskFactorFilter.tsx";
 import AnalyticsFilter from "./AnalyticsFilter.tsx";
 import RiskFactorExposureFilter from "./RiskFactorExposureFilter.tsx";
 import Comments from "./Comments.tsx";
+import CrcFactorsFilter from "./CrcFactorsFilter.tsx";
 
 
 
@@ -26,11 +27,11 @@ const grafana_url = `http://${grafana_host}:${grafana_port}/${grafana_path}/${da
 const riskFactorExposurePanel: React.FC = () => {
 
     const [isLoggedIn, setIsLoggedIn] = useState(false);
-       const [selectedCountries_lst, set_selectedCountries] = useState([
-          "Belgium",
-          "Greece",
-          "Italy",
-       ]);
+    const [selectedCountries_lst, set_selectedCountries] = useState([
+        "Belgium",
+        "Greece",
+        "Italy",
+    ]);
     const [selectedFactor_str, set_selectedFactor] = useState('');
     const [selectedRiskFactor_int, set_selectedRiskFactors] = useState(0);
     const [minYear_int, set_minYear] = useState(1990);
@@ -39,6 +40,8 @@ const riskFactorExposurePanel: React.FC = () => {
     const [selectedRiskFactorExposure_int, set_selectedRiskFactorExposure] = useState(0);
     const [selectedAge_int, set_selectedAge] = useState(0);
     const [selectedAnalysis_int, set_selectedAnalysis] = useState(0);
+    const [selectedCrcFactors_int, set_selectedCrcFactors] = useState(0);
+
     useEffect(() => {
         if ([0, 1, 2, 3, 4, 5].includes(riskFactorExposure_dictLst[selectedRiskFactorExposure_int]?.value)) {
             set_selectedAnalysis(1); //Which graph will load 
@@ -177,6 +180,28 @@ const riskFactorExposurePanel: React.FC = () => {
         // },
     ];
 
+    const crcFactors_dictLst = [
+        {
+            value: 0,
+            label: "CRC Incidence",
+            var_filter: "CRC_incidence_val_Rate"
+        },
+        {
+            value: 1,
+            label: "DALYs",
+            var_filter: "Colon and rectum cancer_Rate_DALYs_val"
+        },
+        {
+            value: 2,
+            label: "YLDs",
+            var_filter: "Colon and rectum cancer_Rate_YLDs_val"
+        },
+        {
+            value: 3,
+            label: "YLLs",
+            var_filter: "Colon and rectum cancer_Rate_YLLs_val"
+        },
+    ];
 
     useEffect(
         () => {
@@ -197,8 +222,9 @@ const riskFactorExposurePanel: React.FC = () => {
         let factorFilter_str = `var-factor_filter=${selectedFactor_str}`;
         let selectedSex_str = sex_dictLst[selectedSex_int]['var_filter'];
         let selectedAge_str = age_dictLst[selectedAge_int]['var_filter'];
+        let selectedCrcFactor_str = crcFactors_dictLst[selectedCrcFactors_int]['var_filter'];
         const riskFactorExposureFilter_str = riskFactorExposure_dictLst[selectedRiskFactorExposure_int]['var_filter'];
-        return `${countryFilter_str}&${yearFilter_str}&${factorFilter_str}&var-sex_filter=${selectedSex_str}&var-age_filter=${selectedAge_str}&var-riskFactor_filter=${riskFactorExposureFilter_str}&panelId=${panelId}`;
+        return `${countryFilter_str}&${yearFilter_str}&${factorFilter_str}&var-sex_filter=${selectedSex_str}&var-age_filter=${selectedAge_str}&var-riskFactor_filter=${riskFactorExposureFilter_str}&var-crcFactor_filter=${selectedCrcFactor_str}&panelId=${panelId}`;
         // return `${countryFilter_str}&${yearFilter_str}&${factorFilter_str}&var-sex_filter=${selectedSex_str}&var-age_filter=${selectedAge_str}`;
     };
 
@@ -215,7 +241,7 @@ const riskFactorExposurePanel: React.FC = () => {
         >
         </iframe>
         {<div>
-          {/* {iFrame_url} */}
+            {/* {iFrame_url} */}
         </div>}
     </>);
     const getUriParams2 = () => {
@@ -223,13 +249,13 @@ const riskFactorExposurePanel: React.FC = () => {
         let countryFilter_str = selectedCountries_lst.map((country_str, index) => `var-country_filter=${country_str}`).join('&');
         let yearFilter_str = `var-minyear_filter=${minYear_int}&var-maxyear_filter=${maxYear_int}`;
         let factorFilter_str = `var-factor_filter=${selectedFactor_str}`;
-        
+
         let selectedSex_str = sex_dictLst[selectedSex_int]['var_filter'];
         let selectedAge_str = age_dictLst[selectedAge_int]['var_filter'];
-        
+        let selectedCrcFactor_str = crcFactors_dictLst[selectedCrcFactors_int]['var_filter'];
         const dietTypeFilter_str = `var-diet_type_filter=${riskFactorExposure_dictLst[selectedRiskFactorExposure_int].label}`;
         console.log(dietTypeFilter_str)
-        return `&panelId=${panelId}&${countryFilter_str}&${yearFilter_str}&${factorFilter_str}&var-sex_filter=${selectedSex_str}&var-age_filter=${selectedAge_str}&${dietTypeFilter_str}`;
+        return `&panelId=${panelId}&${countryFilter_str}&${yearFilter_str}&${factorFilter_str}&var-sex_filter=${selectedSex_str}&var-crcFactor_filter=${selectedCrcFactor_str}&var-age_filter=${selectedAge_str}&${dietTypeFilter_str}`;
     };
     const iFrame_url2 = `${grafana_url}&${getUriParams2()}`;
     const diet_html = (<>
@@ -242,7 +268,7 @@ const riskFactorExposurePanel: React.FC = () => {
         >
         </iframe>
         {<div>
-         {/* {iFrame_url2}  */}
+            {/* {iFrame_url2}  */}
         </div>}
     </>);
 
@@ -337,13 +363,17 @@ const riskFactorExposurePanel: React.FC = () => {
                         set_selectedSex={set_selectedSex}
                         sex_dictLst={sex_dictLst}
                     />
-                  
-                        <AgeFilter
-                            selectedAge_int={selectedAge_int}
-                            set_selectedAge={set_selectedAge}
-                            age_dictLst={age_dictLst}
-                        />
-                  
+
+                    <AgeFilter
+                        selectedAge_int={selectedAge_int}
+                        set_selectedAge={set_selectedAge}
+                        age_dictLst={age_dictLst}
+                    />
+                    {/* <CrcFactorsFilter
+                        selectedCrcFactor_int={selectedCrcFactors_int}
+                        set_selectedCrcFactor={set_selectedCrcFactors}
+                        crcFactor_dictLst={crcFactors_dictLst}
+                    /> */}
 
                 </>
 

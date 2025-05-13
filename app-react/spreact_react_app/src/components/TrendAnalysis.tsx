@@ -3,6 +3,7 @@ import ReactECharts from "echarts-for-react";
 import * as echarts from "echarts";
 import worldJson from "../assets/map/world.json";
 import { Form } from 'react-bootstrap';
+import Comments from "./Comments.tsx";
 
 echarts.registerMap("world", worldJson);
 
@@ -517,7 +518,7 @@ const EuropeMap = () => {
                             <Form.Label style={{ fontWeight: "bold" }}>
                                 Select Risk Factors (max 10):
                             </Form.Label>
-                            <div className="form-control" style={{ maxHeight: "280px", overflowY: "auto", padding: "5px" }}>
+                            <div className="form-control" style={{ maxHeight: "280px", overflowY: "auto", padding: "5px", textAlign:"left" }}>
                                 {uniqueRiskFactors.map((factor, index) => {
                                     const isSelected = selectedRiskFactors.includes(factor);
                                     const disableCheckbox = selectedRiskFactors.length >= 10 && !isSelected;
@@ -660,7 +661,8 @@ const EuropeMap = () => {
                 </div>
 
                 {/* Right Column (Optional) */}
-                <div className="col-2">{/* Reserved for future content */}</div>
+                <div className="col-2">{/* Reserved for future content */}
+                <Comments /></div>
             </div>
         </div>
 

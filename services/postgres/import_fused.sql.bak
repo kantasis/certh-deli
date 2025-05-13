@@ -491,8 +491,45 @@ COPY data_tbl(
    "Air Pollution Population Weighted Average [ug/m3]_PM10",
    "Air Pollution Average [ug/m3]_PM2.5",
    "Air Pollution Population Weighted Average [ug/m3]_PM2.5",
-   "Sex"
+   "sex",
+   "Diet Low in Omega-6 Polyunsaturated Fatty Acids_Rate_val",
+   "Diet Low in Omega-6 Polyunsaturated Fatty Acids_Rate_value_uppe",
+   "Diet Low in Omega-6 Polyunsaturated Fatty Acids_Rate_value_lowe",
+   "High LDL cholesterol_Rate_Summary exposure value_val",
+   "High LDL cholesterol_Rate_Summary exposure value_upper",
+   "High LDL cholesterol_Rate_Summary exposure value_lower",
+   "High fasting plasma glucose_Rate_Summary exposure value_val",
+   "High fasting plasma glucose_Rate_Summary exposure value_upper",
+   "High fasting plasma glucose_Rate_Summary exposure value_lower",
+   "Socio-Development Index_mean_value",
+   "Socio-Development Index_lower_value",
+   "Socio-Development Index_upper_value",
+   "Human Development Index",
+   "GDP per capita, PPP (constant 2021 international $)",
+   "Colon and rectum cancer_Percent_DALYs_val",
+   "Colon and rectum cancer_Percent_DALYs_upper",
+   "Colon and rectum cancer_Percent_DALYs_lower",
+   "Colon and rectum cancer_Rate_DALYs_val",
+   "Colon and rectum cancer_Rate_DALYs_upper",
+   "Colon and rectum cancer_Rate_DALYs_lower",
+   "Colon and rectum cancer_Percent_YLDs_val",
+   "Colon and rectum cancer_Percent_YLDs_upper",
+   "Colon and rectum cancer_Percent_YLDs_lower",
+   "Colon and rectum cancer_Rate_YLDs_val",
+   "Colon and rectum cancer_Rate_YLDs_upper",
+   "Colon and rectum cancer_Rate_YLDs_lower",
+   "Colon and rectum cancer_Percent_YLLs_val",
+   "Colon and rectum cancer_Percent_YLLs_upper",
+   "Colon and rectum cancer_Percent_YLLs_lower",
+   "Colon and rectum cancer_Rate_YLLs_val",
+   "Colon and rectum cancer_Rate_YLLs_upper",
+   "Colon and rectum cancer_Rate_YLLs_lower"
 )
 FROM '/tmp/fused.csv'
 DELIMITER ','
 CSV HEADER;
+
+ALTER TABLE data_tbl
+ADD COLUMN "Colon and rectum cancer_Rate_YLLs_val" DOUBLE PRECISION,
+ADD COLUMN "Colon and rectum cancer_Rate_YLLs_upper" DOUBLE PRECISION,
+ADD COLUMN "Colon and rectum cancer_Rate_YLLs_lower" DOUBLE PRECISION;
