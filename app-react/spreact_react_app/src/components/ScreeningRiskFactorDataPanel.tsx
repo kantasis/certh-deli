@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Form } from "react-bootstrap";
 import * as AuthService from "../services/auth.service.tsx";
 import Comments from "./Comments.tsx";
+import SaveGraphButton from "./SaveGraphButton.tsx";
 
 // Interface for the properties of this component
 interface FilterProps {
@@ -129,7 +130,9 @@ const ScreeningDataPanel: React.FC = () => {
             <div className="col-sm-8 ">
 
                 {selectedRiskFactor && selectedRiskFactor !== "" ? (
+                    
                     <div className="embed-responsive embed-responsive-16by9">
+                               
                         <iframe
                             id="embeddedPanel_id"
                             className="embed-responsive-item"
@@ -137,6 +140,7 @@ const ScreeningDataPanel: React.FC = () => {
                             width="100%"
                             height="500px"
                         ></iframe>
+                         <SaveGraphButton iframeUrl={iFrame_url} />
                     </div>
                 ) : (
 

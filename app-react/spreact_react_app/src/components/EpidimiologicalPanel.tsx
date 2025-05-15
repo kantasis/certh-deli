@@ -8,6 +8,8 @@ import SexFilter from "./SexFilter.tsx";
 import AgeFilter from "./AgeFilter.tsx";
 import CrcFactorsFilter from "./CrcFactorsFilter.tsx";
 import Comments from "./Comments.tsx";
+import { useLocation } from "react-router-dom";
+import SaveGraphButton from "./SaveGraphButton.tsx";
 
 
 const grafana_host = import.meta.env.VITE_GRAFANA_HOST;
@@ -21,6 +23,30 @@ const grafana_url = `http://${grafana_host}:${grafana_port}/${grafana_path}/${da
 // var envs_json = JSON.stringify(import.meta.env, null, 2); // spacing level = 2
 
 const NewDash: React.FC = () => {
+
+   const location = useLocation();
+  const savedIframeUrl = location.state?.iframeUrl;
+
+    useEffect(() => {
+    if (!savedIframeUrl) return;
+
+    const url = new URL(savedIframeUrl);
+    const params = new URLSearchParams(url.search);
+
+    const countryFilters = params.getAll("var-country_filter");
+    const minYear = parseInt(params.get("var-minyear_filter") || "0");
+    const maxYear = parseInt(params.get("var-maxyear_filter") || "0");
+    const sexParam = params.get("var-sex_filter");
+    const ageParam = params.get("var-age_filter");
+    const factorParam = params.get("var-crcFactor_filter");
+
+    set_selectedCountries(countryFilters);
+    set_minYear(minYear);
+    set_maxYear(maxYear);
+    set_selectedSex(sex_dictLst.findIndex(s => s.var_filter === sexParam));
+    set_selectedAge(age_dictLst.findIndex(a => a.var_filter === ageParam));
+    set_selectedCrcFactors(crcFactors_dictLst.findIndex(f => f.var_filter === factorParam));
+  }, [savedIframeUrl]);
 
    const [isLoggedIn, setIsLoggedIn] = useState(false);
    const [selectedCountries_lst, set_selectedCountries] = useState([
@@ -129,14 +155,47 @@ const NewDash: React.FC = () => {
 
    const accordionContent_dictLst = [
       {
-         title: 'Source',
+         title: 'Data Sources',
          content: (<>
             <p>
-               Global Burden of Disease 2019.<br /><br />
-               Data from 1990 to 2019.<br /><br />
-               Data from 34 European countries<br /><br />
-               CRC Incidence Age-Standardised Rate (ASR)<br /><br />
-               Data aggregated for Both sexes<br /><br />
+               <li><strong>Source: </strong>Global Burden of Disease Study 2021</li><br />
+               <li><strong>Years: </strong>1990-2021</li><br />
+               <li><strong>Age Groups: </strong>Under 25 (0–24 years), 25–50 (25 to 49 years), Above 50 (50 and older), Age-Standardized (Adjusted rates that account for differences in age distributions across populations)</li> <br />
+               <li><strong>Sex Groups: </strong>Both Sexes (Aggregated data for males and females), Males (males only), and Females (females only)</li><br />
+
+            </p>
+         </>)
+      },
+      {
+         title: 'Incidence',
+         content: (<>
+            <p>
+               Number of new CRC cases diagnosed per 100,000 population
+
+            </p>
+         </>)
+      },
+      {
+         title: 'Disability adjusted life years (DALYs)',
+         content: (<>
+            <p>
+               Number of DALYs in the population per 100,000.
+            </p>
+         </>)
+      },
+      {
+         title: 'Years of life lost (YLLs)',
+         content: (<>
+            <p>
+               Number of YLLs in the population per 100,000
+            </p>
+         </>)
+      },
+      {
+         title: 'Years lived with disability (YLDs)',
+         content: (<>
+            <p>
+               Number of YLDs in the population per 100,000
             </p>
          </>)
       },
@@ -189,6 +248,7 @@ const NewDash: React.FC = () => {
                >
                </iframe>
             </div>
+               <SaveGraphButton iframeUrl={iFrame_url} />
             {/* {<p>{iFrame_url}</p> } */}
          </div>
 

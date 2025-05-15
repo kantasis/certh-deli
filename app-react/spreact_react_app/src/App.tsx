@@ -23,6 +23,8 @@ import PreviousComments from "./components/PreviousComments.tsx"
 import PasswordReset from "./components/PasswordReset.tsx";
 import LIT03 from "./components/Lit03.tsx"
 import TrendAnalysis from "./components/TrendAnalysis.tsx"
+import MyDashboards from "./components/MyDashboards.tsx"
+
 const App: React.FC = () => {
    return (<>
 
@@ -51,6 +53,7 @@ const App: React.FC = () => {
                <Route path="/lifestylePanel" element={<LifestylePanel />} /> */}
                <Route path="/crc-policy-data" element={<PolicyPanel />} />
                <Route path="/crc-predictive-analytics" element={<Analytics />} />
+                <Route path="/saved-dashboards" element={<MyDashboards />} />
             </Routes>
          </div>
 

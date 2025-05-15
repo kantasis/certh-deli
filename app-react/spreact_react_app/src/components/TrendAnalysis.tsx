@@ -4,6 +4,7 @@ import * as echarts from "echarts";
 import worldJson from "../assets/map/world.json";
 import { Form } from 'react-bootstrap';
 import Comments from "./Comments.tsx";
+import { Accordion } from 'react-bootstrap';
 
 echarts.registerMap("world", worldJson);
 
@@ -31,6 +32,128 @@ const EuropeMap = () => {
     const [selectedRiskFactors, setSelectedRiskFactors] = useState(DEFAULT_RISK_FACTORS);
 
 
+    const accordionContentTrend_dictLst = [
+        {
+            title: 'Data Sources',
+            content: (<>
+
+                <p>
+                    <li><strong>Source: </strong>Global Burden of Disease Study 2021</li><br />
+
+                    <li><strong>Years: </strong>1990-2021</li><br />
+
+                    <li><strong>Geographic Coverage: </strong>46 countries in Europe</li><br />
+
+                    <li><strong>Age Groups: </strong>Under 25 (0–24 years), 25–50 (25 to 49 years), Above 50 (50 and older), Age-Standardized (Adjusted rates that account for differences in age distributions across populations)</li><br />
+
+                    <li><strong>Sex Groups: </strong>Both Sexes (Aggregated data for males and females), Males (males only), and Females (females only)</li><br />
+
+                    <li><strong>CRC Incidence Rate: </strong>Number of new CRC cases diagnosed per 100,000 population in a year</li><br />
+
+                    <li><strong>Risk factors: </strong>22 risk factors, comprising 4 lifestyle factors, 15 nutrition factors, 2 comorbidities, and 1 socioeconomic factor</li><br />
+
+                    <li><strong>Summary Exposure Value (SEV) rates: </strong>This metric represents the relative risk-weighted prevalence of exposure, accounting for both the extent of exposure and its contribution to disease burden. SEV is the metric for 21 risk factors (excluding socioeconomic factor)</li><br />
+                </p>
+
+            </>)
+        },
+        {
+            title: 'Methodology',
+            content: (<>
+
+                <p>
+                    <strong>Trend Analysis</strong><br /><br />
+
+                    Temporal trends in CRC incidence were analyzed utilizing the <strong>Estimated Annual Percentage Change (EAPC)</strong> over multiple intervals: 5, 10, 15, 20, 25, and 30 years.<br /><br />
+
+                    The EAPC describes the rate of change in Age-Standardized Rates (ASRs) over time by fitting a regression model to the natural logarithm of ASRs, using time as the explanatory variable. This approach applies a Generalized Linear Model with a Gaussian distribution and assumes a constant rate of change on the logarithmic scale.<br /><br />
+
+                    <strong>Interpreting Trends:</strong><br />
+                    <strong>Increasing trend:</strong> EAPC and 95% CI {">"} 0<br />
+                    <strong>Decreasing trend: </strong>EAPC and 95% CI {"<"} 0<br />
+                    <strong>Stable trend: </strong>95% CI includes 0 (no statistically significant change)<br />
+
+                </p>
+
+            </>)
+        },
+        {
+            title: 'References',
+            content: (<>
+
+                <p>
+                    B. F. Hankey, L. A. Ries, C. L. Kosary, E. J. Feuer, R. M. Merrill, L. X. Clegg, and B. K. Edwards, “Partitioning linear trends in age-adjusted rates,” Cancer causes & control, vol. 11, pp. 31–35, 2000. <br /><br />
+
+                    L. X. Clegg, B. F. Hankey, R. Tiwari, E. J. Feuer, and B. K. Edwards, “Estimating average annual per cent change in trend analysis,” Statistics in medicine, vol. 28, no. 29, pp. 3670–3682, 2009.<br /><br />
+
+                </p>
+
+            </>)
+        },
+    ];
+
+    const accordionContentAssociation_dictLst = [{
+        title: 'Data Sources',
+        content: (<>
+
+            <p>
+                <li><strong>Source: </strong>Global Burden of Disease Study 2021</li><br />
+
+                <li><strong>Years: </strong>1990-2021</li><br />
+
+                <li><strong>Geographic Coverage: </strong>46 countries in Europe</li><br />
+
+                <li><strong>Age Groups: </strong>Under 25 (0–24 years), 25–50 (25 to 49 years), Above 50 (50 and older), Age-Standardized (Adjusted rates that account for differences in age distributions across populations)</li><br />
+
+                <li><strong>Sex Groups: </strong>Both Sexes (Aggregated data for males and females), Males (males only), and Females (females only)</li><br />
+
+                <li><strong>CRC Incidence Rate: </strong>Number of new CRC cases diagnosed per 100,000 population in a year</li><br />
+
+                <li><strong>Risk factors: </strong>22 risk factors, comprising 4 lifestyle factors, 15 nutrition factors, 2 comorbidities, and 1 socioeconomic factor</li><br />
+
+                <li><strong>Summary Exposure Value (SEV) rates: </strong>This metric represents the relative risk-weighted prevalence of exposure, accounting for both the extent of exposure and its contribution to disease burden. SEV is the metric for 21 risk factors (excluding socioeconomic factor)</li><br />
+            </p>
+
+        </>)
+    }, {
+        title: 'Methodology',
+        content: (<>
+
+            <p>
+                <strong>Association analysis</strong><br /><br />
+
+                Associations between CRC incidence and modifiable risk factors were assessed using a <strong>Fixed-Effects Regression Model</strong>, applied across 46 countries and 20 years.<br /><br />
+
+                A Fixed-Effects Regression Model is a longitudinal analysis that accounts for repeated measurements within each country while capturing the shared influence of risk factors across Europe.<br /><br />
+
+                To address the latency between exposure and cancer development, a <strong>10-year time lag</strong> was applied, pairing risk factor data from 1990–2011 with CRC incidence data from 2000–2021. <br /><br />
+
+                The analysis included <strong>22 risk factors</strong> and was performed across defined <strong>age</strong> and <strong>sex groups</strong>.<br /><br />
+
+                <strong>Interpreting Associations:</strong><br /><br />
+                <strong>Positive association: </strong>regression coefficients (β) {">"} 0 and p-value {"<"} 0.05<br /><br />
+                <strong>Negative association: </strong>β {"<"} 0 and p-value  {"<"} 0.05<br /><br />
+                <strong>No statistically significant association: </strong>p ≥ 0.05<br /><br />
+
+
+
+
+            </p>
+
+        </>)
+    }, {
+        title: 'References',
+        content: (<>
+
+            <p>
+                P. D. Allison, Fixed effects regression models. SAGE publications, 2009. <br /><br />
+
+                B. Hicks, J. A. Kaye, L. Azoulay, K. B. Kristensen, L. A. Habel, and A. Pottegard, “The application of lag times in cancer pharmacoepidemi ology: a narrative review,” Annals of Epidemiology, vol. 84, pp. 25–32, 2023.<br /><br />
+
+            </p>
+
+        </>)
+    }];
 
     const toggleRiskFactor = (factor) => {
         setSelectedRiskFactors((prev) => {
@@ -490,9 +613,15 @@ const EuropeMap = () => {
         ]
     };
 
-
+    const accordionContent_dictLst =
+        analysisType === "Trend Analysis"
+            ? accordionContentTrend_dictLst
+            : analysisType === "Association Analysis"
+                ? accordionContentAssociation_dictLst
+                : [];
     //    #5470c6
     return (
+
         <div className="container-fluid mt-5">
             <div className="row">
                 {/* Left Column */}
@@ -518,7 +647,7 @@ const EuropeMap = () => {
                             <Form.Label style={{ fontWeight: "bold" }}>
                                 Select Risk Factors (max 10):
                             </Form.Label>
-                            <div className="form-control" style={{ maxHeight: "280px", overflowY: "auto", padding: "5px", textAlign:"left" }}>
+                            <div className="form-control" style={{ maxHeight: "280px", overflowY: "auto", padding: "5px", textAlign: "left" }}>
                                 {uniqueRiskFactors.map((factor, index) => {
                                     const isSelected = selectedRiskFactors.includes(factor);
                                     const disableCheckbox = selectedRiskFactors.length >= 10 && !isSelected;
@@ -604,6 +733,15 @@ const EuropeMap = () => {
 
                 {/* Center Column */}
                 <div className="col-8">
+                    {!analysisType && (
+                        <div>
+                            <p>In this page, you can explore insights through two types of analysis: <strong>Trend Analysis</strong> and <strong>Association Analysis</strong> on various age and sex groups.</p>
+
+                            <p>Please select the desired type of analysis results from the <strong>drop-down menu on the left.</strong></p>
+
+                            <p>In the menu on the<strong> right-hand side</strong>, you can find detailed information about the <strong>data sources</strong> and <strong>methodology</strong> of the analysis.</p>
+                        </div>
+                    )}
                     {analysisType === "Trend Analysis" && (
                         <>
                             <h5>
@@ -643,6 +781,7 @@ const EuropeMap = () => {
                                 </div>
                             )}
                             <ReactECharts key={JSON.stringify(chartData)} option={trendOption} style={{ height: "550px", width: "100%" }} />
+
                         </>
                     )}
 
@@ -656,13 +795,24 @@ const EuropeMap = () => {
                                 option={associationOption}
                                 style={{ height: "600px", width: "100%" }}
                             />
+
                         </>
                     )}
                 </div>
 
                 {/* Right Column (Optional) */}
                 <div className="col-2">{/* Reserved for future content */}
-                <Comments /></div>
+
+                    <Accordion defaultActiveKey="-1">
+                        {accordionContent_dictLst.map(({ title, content }, index) => (
+                            <Accordion.Item eventKey={index.toString()} key={index}>
+                                <Accordion.Header className="text-left">{title}</Accordion.Header>
+                                <Accordion.Body className="text-start">{content}</Accordion.Body>
+                            </Accordion.Item>
+                        ))}
+                    </Accordion>
+
+                    <Comments /></div>
             </div>
         </div>
 

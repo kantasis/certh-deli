@@ -93,6 +93,12 @@ console.log(userRole);
          label: "Comments",
          condition: isLoggedIn && userRole == "ROLE_ADMIN"
       },
+          {
+         
+         href: "saved-dashboards",
+         label: "Saved Dashboards",
+         condition: isLoggedIn && userRole == "ROLE_ADMIN"
+      },
    
       
    ].map((item_dict, index) => item_dict.condition && (
