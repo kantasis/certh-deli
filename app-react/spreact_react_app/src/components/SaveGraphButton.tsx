@@ -31,6 +31,7 @@ const SaveGraphButton: React.FC<SaveGraphButtonProps> = ({ iframeUrl }) => {
     }, []);
 
     const handleSave = async () => {
+        console.log("Saving URL:", iframeUrl);
         if (!userId) {
             setModalTitle("Not logged in");
             setModalMessage("You must be logged in to save graphs.");

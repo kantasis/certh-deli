@@ -16,8 +16,8 @@ const NavbarMain: React.FC = () => {
       },
       []
    );
-const userRole = getUserRole();
-console.log(userRole);
+   const userRole = getUserRole();
+   console.log(userRole);
 
    const logout = () => {
       AuthService.logout();
@@ -58,7 +58,9 @@ console.log(userRole);
       {
          href: "crc-predictive-analytics",
          label: "CRC Predictive Analytics",
-         condition: isLoggedIn
+         condition: isLoggedIn,
+
+
       },
       // {
       //    href: "CRCmortalityPanel",
@@ -76,37 +78,38 @@ console.log(userRole);
       //    condition: isLoggedIn
       // },
       {
-         
+
          href: "LIT03",
          label: "Spanish CRC Regional Data",
-         condition: isLoggedIn 
+         condition: isLoggedIn,
+         onClick: () => localStorage.setItem("lit03Panel", "")
       },
       {
-         
+
          href: "trend-and-association-analysis",
          label: "Trend and Association Analysis",
-         condition: isLoggedIn 
+         condition: isLoggedIn
       },
       {
-         
+
          href: "comments",
          label: "Comments",
          condition: isLoggedIn && userRole == "ROLE_ADMIN"
       },
-          {
-         
+      {
+
          href: "saved-dashboards",
          label: "Saved Dashboards",
          condition: isLoggedIn && userRole == "ROLE_ADMIN"
       },
-   
-      
+
+
    ].map((item_dict, index) => item_dict.condition && (
       <li className="nav-item" key={index}>
          <a
             className="nav-link"
             href={item_dict.href}
-         // onClick={item_dict.onClick ? item_dict.onClick : undefined}
+            onClick={item_dict.onClick}
          >
             {item_dict.label}
          </a>
@@ -115,45 +118,45 @@ console.log(userRole);
 
    const rightButtons_tsx = [];
 
-if (!isLoggedIn) {
-   rightButtons_tsx.push(
-      <li className="nav-item" key="login">
-         <a className="nav-link" href="login">Login</a>
-      </li>,
-      <li className="nav-item" key="register">
-         <a className="nav-link" href="register">Register</a>
-      </li>
-   );
-} else {
-   rightButtons_tsx.push(
-      // Dropdown for Profile
-      <li className="nav-item dropdown" key="profile">
-         <a
-            className="nav-link dropdown-toggle"
-            href="#"
-            id="navbarDropdown"
-            role="button"
-            data-bs-toggle="dropdown"
-            aria-expanded="false"
-         >
-            Profile
-         </a>
-         <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-            <li>
-               <a className="dropdown-item" href="/profile">View Profile</a>
-            </li>
-            <li>
-               <a className="dropdown-item" href="/change-password">Change Password</a>
-            </li>
-         </ul>
-      </li>,
+   if (!isLoggedIn) {
+      rightButtons_tsx.push(
+         <li className="nav-item" key="login">
+            <a className="nav-link" href="login">Login</a>
+         </li>,
+         <li className="nav-item" key="register">
+            <a className="nav-link" href="register">Register</a>
+         </li>
+      );
+   } else {
+      rightButtons_tsx.push(
+         // Dropdown for Profile
+         <li className="nav-item dropdown" key="profile">
+            <a
+               className="nav-link dropdown-toggle"
+               href="#"
+               id="navbarDropdown"
+               role="button"
+               data-bs-toggle="dropdown"
+               aria-expanded="false"
+            >
+               Profile
+            </a>
+            <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+               <li>
+                  <a className="dropdown-item" href="/profile">View Profile</a>
+               </li>
+               <li>
+                  <a className="dropdown-item" href="/change-password">Change Password</a>
+               </li>
+            </ul>
+         </li>,
 
-      // Logout button
-      <li className="nav-item" key="logout">
-         <a className="nav-link" href="login" onClick={logout}>Logout</a>
-      </li>
-   );
-}
+         // Logout button
+         <li className="nav-item" key="logout">
+            <a className="nav-link" href="login" onClick={logout}>Logout</a>
+         </li>
+      );
+   }
 
    return (
       <nav className="navbar navbar-expand-lg bg-body-tertiary">

@@ -11,19 +11,19 @@ interface FilterProps {
    floorYear_int?: number,  // Optional: Default 1990
    ceilYear_int?: number,   // Optional: Default 2019
 }
- 
+
 const YearFilter: React.FC<FilterProps> = ({
-   minYear_int, 
-   set_minYear, 
-   maxYear_int, 
-   set_maxYear, 
-   floorYear_int = 1990, 
-   ceilYear_int = 2021 
+   minYear_int,
+   set_minYear,
+   maxYear_int,
+   set_maxYear,
+   floorYear_int = 1990,
+   ceilYear_int = 2021
 }) => {
 
    useEffect(() => {
-      set_minYear(floorYear_int);
-      set_maxYear(ceilYear_int);
+      if (minYear_int === 0) set_minYear(floorYear_int);
+      if (maxYear_int === 0) set_maxYear(ceilYear_int);
    }, [floorYear_int, ceilYear_int, set_minYear, set_maxYear]);
 
    return (
@@ -31,12 +31,12 @@ const YearFilter: React.FC<FilterProps> = ({
          <div className="row">
             <div className="col-lg">
                <label className="form-label">
-                  <strong>Select Min Year: </strong> 
-                  <span style={{color:'green', fontWeight: '600'}}>{minYear_int}</span>
+                  <strong>Select Min Year: </strong>
+                  <span style={{ color: 'green', fontWeight: '600' }}>{minYear_int}</span>
                </label>
-               <input 
-                  className="form-range" 
-                  type="range" 
+               <input
+                  className="form-range"
+                  type="range"
                   min={floorYear_int}
                   max={ceilYear_int}
                   value={minYear_int}
@@ -47,12 +47,12 @@ const YearFilter: React.FC<FilterProps> = ({
          <div className="row">
             <div className="col-lg">
                <label className="form-label">
-                  <strong>Select Max Year: </strong> 
-                  <span style={{color:'green', fontWeight: '600'}}>{maxYear_int}</span>
+                  <strong>Select Max Year: </strong>
+                  <span style={{ color: 'green', fontWeight: '600' }}>{maxYear_int}</span>
                </label>
-               <input 
-                  className="form-range" 
-                  type="range" 
+               <input
+                  className="form-range"
+                  type="range"
                   min={floorYear_int}
                   max={ceilYear_int}
                   value={maxYear_int}

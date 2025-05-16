@@ -4,6 +4,9 @@ import { Button, Dropdown } from 'react-bootstrap';
 import PolicyFilter from "./PolicyFilter.tsx";
 import { Accordion } from 'react-bootstrap';
 import Comments from "./Comments.tsx";
+import SaveGraphButton from "./SaveGraphButton.tsx";
+import { useLocation } from "react-router-dom";
+
 
 const grafana_host = import.meta.env.VITE_GRAFANA_HOST;
 const grafana_port = import.meta.env.VITE_GRAFANA_PORT;
@@ -17,10 +20,32 @@ const grafana_url = `${grafanaHost_url}/${grafana_path}/${dashboard_name}?panelI
 const PolicyPanel: React.FC = () => {
 
    const [isLoggedIn, setIsLoggedIn] = useState(false);
-   const [selectedPolicy_str, set_selectedPolicy] = useState('');
+   const [selectedPolicy_str, set_selectedPolicy] = useState('Alcohol Consumption');
    const [country_name, setCountryName] = useState('Default');
    const [policies_strLst, setPolicies] = useState([]);
    const [bestPractices_str, setBestPractices] = useState('');
+
+   const location = useLocation();
+   const savedIframeUrl = location.state?.iframeUrl;
+
+   useEffect(() => {
+      if (!savedIframeUrl) return;
+
+      const url = new URL(savedIframeUrl);
+      const params = new URLSearchParams(url.search);
+
+
+      const policyFilter = params.get("var-policy_filter");
+
+
+      if (policyFilter) {
+         set_selectedPolicy(policyFilter);
+      } else {
+         set_selectedPolicy('');
+      }
+
+
+   }, [savedIframeUrl]);
 
    const getUriParams = () => {
       let policyFilter_str = `var-policy_filter=${encodeURIComponent(selectedPolicy_str)}`;
@@ -84,15 +109,15 @@ const PolicyPanel: React.FC = () => {
 
       // Handle the message from Grafana
       // const messageData = event.data;
-      console.log('+++++++++++')
-      console.log(event.data)
-      console.log('-----------')
+      // console.log('+++++++++++')
+      // console.log(event.data)
+      // console.log('-----------')
       setCountryName(event.data['Country']);
       setPolicies(event.data['Policies']);
-      console.log(event.data['Policies'])
+      // console.log(event.data['Policies'])
 
       setBestPractices(event.data['Best Practices']);
-      console.log(bestPractices_str)
+      // console.log(bestPractices_str)
 
    });
 
@@ -106,6 +131,7 @@ const PolicyPanel: React.FC = () => {
                selectedPolicy_str={selectedPolicy_str}
                set_selectedPolicy={set_selectedPolicy}
             />
+
             <br />
             <div style={{ textAlign: 'left' }}>On this page you can see types and examples of current policies and interventions related to
                various domains of CRC prevention that are implemented across EU countries.
@@ -122,6 +148,9 @@ const PolicyPanel: React.FC = () => {
                   height="600px"
                >
                </iframe>
+
+               {/* {iFrame_url} */}
+               <SaveGraphButton iframeUrl={iFrame_url} />
             </div>
             {/* <div>{iFrame_url}</div> */}
             <div style={{ textAlign: 'left' }}>
@@ -131,7 +160,7 @@ const PolicyPanel: React.FC = () => {
                      <div><strong>Best Practices</strong>: {policies_strLst && policies_strLst.length >= 1 && policies_strLst.some((policy) => policy.trim().toLowerCase() === 'best practices') ? bestPractices_str : 'No  available data'}</div>
 
                      <div><strong>Sources</strong>: <span className='simpleList'>
-                     {sources_dict[country_name] && country_name === 'Portugal' ? (
+                        {sources_dict[country_name] && country_name === 'Portugal' ? (
                            <span dangerouslySetInnerHTML={{ __html: sources_dict[country_name] }} />
                         ) : (
                            capitalizeFirstLetter(sources_dict[country_name])
@@ -233,7 +262,7 @@ const PolicyPanel: React.FC = () => {
                   </Accordion.Body>
                </Accordion.Item>
             </Accordion>
-            <Comments/>
+            <Comments />
          </div>
 
       </div>

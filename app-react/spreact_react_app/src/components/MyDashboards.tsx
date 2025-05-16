@@ -37,7 +37,24 @@ const SavedDashboards: React.FC = () => {
     if (loading) return <p>Loading...</p>;
 
     const handleGoToGraph = (entry: DashboardEntry) => {
+        // Parse the saved_url to get query parameters
+        try {
+            const url = new URL(entry.saved_url);
+            const panelLabel = url.searchParams.get('panelLabel');
+
+            if (panelLabel) {
+                localStorage.setItem('lit03Panel', panelLabel);
+            }else{
+                localStorage.setItem('lit03Panel', '');
+            }
+        } catch (error) {
+            console.warn('Invalid URL in saved_url:', entry.saved_url);
+        }
+
+        // Navigate and pass iframeUrl as before
         navigate(`/${entry.page_name}`, { state: { iframeUrl: entry.saved_url } });
+
+        console.log('PAOKARA ' + JSON.stringify({ state: { iframeUrl: entry.saved_url } }));
     };
 
     const confirmDelete = (id: number) => {
@@ -67,7 +84,15 @@ const SavedDashboards: React.FC = () => {
                             <iframe src={d.saved_url} width="100%" height="200px" title={`dashboard-${d.id}`} />
                             <Card.Body>
                                 <Card.Text>Page: {d.page_name}</Card.Text>
-                                <Card.Text>Saved on {new Date(d.created_at).toLocaleString()}</Card.Text>
+                                <Card.Text>
+                                    Saved on {(() => {
+                                        const date = new Date(d.created_at);
+                                        const day = String(date.getDate()).padStart(2, '0');
+                                        const month = String(date.getMonth() + 1).padStart(2, '0');
+                                        const year = date.getFullYear();
+                                        return `${day}/${month}/${year}`;
+                                    })()}
+                                </Card.Text>
                                 <Button variant="primary" onClick={() => handleGoToGraph(d)}>
                                     Go to Graph
                                 </Button>{" "}
