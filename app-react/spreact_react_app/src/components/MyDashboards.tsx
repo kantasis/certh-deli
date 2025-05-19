@@ -4,6 +4,7 @@ import * as AuthService from "../services/auth.service";
 import { Button, Card, Modal } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 
+
 interface DashboardEntry {
     id: number;
     saved_url: string;
@@ -12,14 +13,22 @@ interface DashboardEntry {
 }
 
 const SavedDashboards: React.FC = () => {
+
     const [dashboards, setDashboards] = useState<DashboardEntry[]>([]);
     const [loading, setLoading] = useState(true);
     const [modalShow, setModalShow] = useState(false);
     const [modalMessage, setModalMessage] = useState("");
     const [deleteId, setDeleteId] = useState<number | null>(null);
     const navigate = useNavigate();
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+
 
     useEffect(() => {
+        setIsLoggedIn(AuthService.isLoggedIn());
+    }, []);
+
+    useEffect(() => {
+        if (!isLoggedIn) return;
         const load = async () => {
             try {
                 const user = AuthService.getCurrentUser();
@@ -32,8 +41,8 @@ const SavedDashboards: React.FC = () => {
             }
         };
         load();
-    }, []);
-
+    }, [isLoggedIn]);
+    if (!isLoggedIn) return <h2>Unauthorized</h2>;
     if (loading) return <p>Loading...</p>;
 
     const handleGoToGraph = (entry: DashboardEntry) => {
@@ -44,7 +53,7 @@ const SavedDashboards: React.FC = () => {
 
             if (panelLabel) {
                 localStorage.setItem('lit03Panel', panelLabel);
-            }else{
+            } else {
                 localStorage.setItem('lit03Panel', '');
             }
         } catch (error) {

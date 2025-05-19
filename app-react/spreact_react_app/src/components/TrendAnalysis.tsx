@@ -1,14 +1,30 @@
-import React, { useEffect, useState } from "react";
+import React, { useRef, useEffect, useState } from "react";
+import * as AuthService from "../services/auth.service.tsx";
 import ReactECharts from "echarts-for-react";
 import * as echarts from "echarts";
 import worldJson from "../assets/map/world.json";
 import { Form } from 'react-bootstrap';
 import Comments from "./Comments.tsx";
 import { Accordion } from 'react-bootstrap';
+import SaveGraphButton from "./SaveGraphButton.tsx";
+import { useLocation } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 
 echarts.registerMap("world", worldJson);
 
 const EuropeMap = () => {
+
+
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const chartRef = useRef<ReactECharts>(null);          // NEW
+    const [chartIframeUrl, setChartIframeUrl] = useState("");
+
+
+    useEffect(() => {
+        setIsLoggedIn(AuthService.isLoggedIn());
+    }, []);
+
+
     const DEFAULT_RISK_FACTORS = [
         "High alcohol use",
         "Smoking",
@@ -31,7 +47,60 @@ const EuropeMap = () => {
     const [associationData, setAssociationData] = useState([]);
     const [selectedRiskFactors, setSelectedRiskFactors] = useState(DEFAULT_RISK_FACTORS);
 
+    /* on first mount only */
 
+
+    const location = useLocation();
+    const savedIframeUrl = location.state?.iframeUrl;
+
+    useEffect(() => {
+
+        if (!savedIframeUrl) return;
+
+        const url = new URL(savedIframeUrl);
+        const params = new URLSearchParams(url.search);
+
+        const analysis = params.get("analysis") || "";
+        const sex = params.get("sex") || "Both";
+        const age = params.get("age") || "Age-standardized";
+        const years = params.get("years") || "5 years (2016-2021)";
+        const risks = params.get("risks")?.split("|") || [];
+
+
+        // Set your states here, which trigger fetch of JSON and rerender graph
+        console.log(analysis)
+        setAnalysisType(analysis);
+        setSexFilter(sex);
+        setAgeFilter(age);
+        setYearInterval(years);
+        setSelectedRiskFactors(risks);
+
+    }, [savedIframeUrl, location.state]);
+
+    // helper now receives the analysisType you already store in state
+    const getChartImageUrl = (analysisType: string) => {
+        if (!chartRef.current) return "";
+
+        const ec = chartRef.current.getEchartsInstance();
+
+        if (analysisType === "Trend Analysis") {
+            // smaller pixelRatio so the data‑URL is shorter
+            return ec.getDataURL({
+                type: "webp",
+                quality: 0.7,
+                pixelRatio: 0.8,
+                backgroundColor: "#fff",
+            });
+        }
+
+        // default (Association Analysis or anything else)
+        return ec.getDataURL({
+            type: "webp",
+            quality: 0.7,
+            pixelRatio: 1,      // full resolution
+            backgroundColor: "#fff",
+        });
+    };
     const accordionContentTrend_dictLst = [
         {
             title: 'Data Sources',
@@ -170,6 +239,7 @@ const EuropeMap = () => {
 
 
     useEffect(() => {
+
         if (analysisType !== "Trend Analysis") return;
 
         setLoading(true);
@@ -225,6 +295,7 @@ const EuropeMap = () => {
 
 
     useEffect(() => {
+        if (!isLoggedIn) return;
         if (!rawData.length || analysisType !== "Trend Analysis") return;
 
         setLoading(true);
@@ -430,7 +501,33 @@ const EuropeMap = () => {
         d.sex === sexFilter &&
         d.age === ageFilter
     );
+    // … keep every thing else …
+    useEffect(() => {
+        if (!chartRef.current) return;
 
+        // choose parameters based on the analysisType you already calculated
+        const params =
+            analysisType === "Trend Analysis"
+                ? { type: "webp", quality: 0.7, pixelRatio: 0.8, backgroundColor: "#fff" }
+                : { type: "webp", quality: 0.7, pixelRatio: 1, backgroundColor: "#fff" };
+
+        // let the browser finish painting before grabbing the dataURL
+        //   (small timeout avoids a rare race condition)
+        setTimeout(() => {
+            const url = chartRef.current!
+                .getEchartsInstance()
+                .getDataURL(params);
+
+            setChartIframeUrl(url);   // ← state update triggers re‑render
+        });
+    }, [
+        analysisType,
+        sexFilter,
+        ageFilter,
+        yearInterval,
+        chartData,                // after your data array changes
+        filteredAssociationData
+    ]);
     // Calculate the dynamic range for the Y-axis based on Coefficients and Confidence Intervals
     // Parse numbers from strings returned by toFixed
     const coefValues = filteredAssociationData.map(item => item.Coef);
@@ -441,29 +538,7 @@ const EuropeMap = () => {
     const yMinRaw = Math.min(...coefValues, ...ciLowerValues);
     const yMaxRaw = Math.max(...coefValues, ...ciUpperValues);
 
-    // function getAdjustedMin(minVal) {
-    //     if (minVal < 0.0005) return minVal - 0.0005;
-    //     if (minVal < 0.005) return minVal - 0.005;
-    //     if (minVal < 0.05) return minVal - 0.05;
-    //     if (minVal < 0.5) return minVal - 0.5;
-    //     if (minVal < 1) return minVal - 5;
-    //     return minVal;
-    // }
 
-    // function getAdjustedMax(maxVal) {
-    //     if (maxVal < 0.0005) return maxVal + 0.0005;
-    //     if (maxVal < 0.005) return maxVal + 0.005;
-    //     if (maxVal < 0.05) return maxVal + 0.05;
-    //     if (maxVal < 0.5) return maxVal + 0.5;
-    //     if (maxVal < 1) return maxVal + 5;
-    //     return maxVal;
-    // }
-
-    // // Log adjusted values
-    // const adjustedMin = getAdjustedMin(yMinRaw);
-    // const adjustedMax = getAdjustedMax(yMaxRaw);
-    // console.log("AdjustedMin:", adjustedMin);
-    // console.log("AdjustedMax:", adjustedMax);
     let padding = 0;
     const range = yMaxRaw - yMinRaw;
 
@@ -620,6 +695,8 @@ const EuropeMap = () => {
                 ? accordionContentAssociation_dictLst
                 : [];
     //    #5470c6
+
+    if (!isLoggedIn) return <h2>Unauthorized</h2>;
     return (
 
         <div className="container-fluid mt-5">
@@ -780,8 +857,8 @@ const EuropeMap = () => {
                                     </div>
                                 </div>
                             )}
-                            <ReactECharts key={JSON.stringify(chartData)} option={trendOption} style={{ height: "550px", width: "100%" }} />
-
+                            <ReactECharts ref={chartRef} key={JSON.stringify(chartData)} option={trendOption} style={{ height: "550px", width: "100%" }} />
+                            <SaveGraphButton iframeUrl={getChartImageUrl(chartIframeUrl)} />
                         </>
                     )}
 
@@ -792,10 +869,11 @@ const EuropeMap = () => {
                                
                             </h5> */}
                             <ReactECharts
+                                ref={chartRef}
                                 option={associationOption}
                                 style={{ height: "600px", width: "100%" }}
                             />
-
+                            <SaveGraphButton iframeUrl={getChartImageUrl(chartIframeUrl)} />
                         </>
                     )}
                 </div>

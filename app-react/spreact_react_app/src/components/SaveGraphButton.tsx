@@ -6,6 +6,7 @@ import { saveDashboard, getSavedDashboards } from "../services/dashboard.service
 
 interface SaveGraphButtonProps {
     iframeUrl: string;
+    
 }
 
 const SaveGraphButton: React.FC<SaveGraphButtonProps> = ({ iframeUrl }) => {
@@ -32,6 +33,21 @@ const SaveGraphButton: React.FC<SaveGraphButtonProps> = ({ iframeUrl }) => {
 
     const handleSave = async () => {
         console.log("Saving URL:", iframeUrl);
+        // console.log("Saving IMG URL:", getImageUrl());
+        // const chartImageUrl = getImageUrl?.() || "";
+  
+        const urlToSave =
+            iframeUrl;
+
+        if (!urlToSave) {
+            setModalTitle("Nothing to save");
+            setModalMessage("The graph hasn’t rendered yet. Please try again in a moment.");
+            setModalVariant("danger");
+            setModalShow(true);
+            return;
+        }
+
+
         if (!userId) {
             setModalTitle("Not logged in");
             setModalMessage("You must be logged in to save graphs.");
@@ -43,7 +59,7 @@ const SaveGraphButton: React.FC<SaveGraphButtonProps> = ({ iframeUrl }) => {
         const pageName = location.pathname.replace("/", "") || "home";
 
         try {
-            await saveDashboard(userId, iframeUrl, pageName);
+            await saveDashboard(userId, urlToSave, pageName);
 
             const dashboards = await getSavedDashboards(userId);
             setSavedCount(dashboards.length);
@@ -69,6 +85,7 @@ const SaveGraphButton: React.FC<SaveGraphButtonProps> = ({ iframeUrl }) => {
             setModalVariant("danger");
             setModalShow(true);
         }
+
     };
 
     return (
