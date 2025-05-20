@@ -37,7 +37,9 @@ const EuropeMap = () => {
         "High fasting plasma glucose",
         // "Socio-Demographic Index",
     ];
-    const [analysisType, setAnalysisType] = useState("");
+
+
+    const [analysisType, setAnalysisType] = useState('');
     const [rawData, setRawData] = useState([]);
     const [chartData, setChartData] = useState([]);
     const [sexFilter, setSexFilter] = useState("Male");
@@ -46,36 +48,74 @@ const EuropeMap = () => {
     const [loading, setLoading] = useState(false);
     const [associationData, setAssociationData] = useState([]);
     const [selectedRiskFactors, setSelectedRiskFactors] = useState(DEFAULT_RISK_FACTORS);
+    const [isRestoring, setIsRestoring] = useState(false);
+    const [chartImageUrl, setChartImageUrl] = useState("");
+
+    // const getUriParams = () => {
+    //     const params = new URLSearchParams();
+
+    //     params.set("analysis", analysisType);
+    //     params.set("var-sex_filter", sexFilter);
+    //     params.set("age", ageFilter);
+    //     params.set("years", yearInterval);
+
+    //     if (analysisType === "Association Analysis") {
+    //         params.set("risks", selectedRiskFactors.join("|"));
+    //     }
+
+    //     return params.toString();
+    // };
 
     /* on first mount only */
 
+    // useEffect(() => {
+    //     const paramsString = getUriParams();
+    //     localStorage.setItem('savedUriParams', paramsString);
+    // }, [analysisType, sexFilter, ageFilter, yearInterval, selectedRiskFactors]);
+    const getUriParams = () => {
+
+
+        const paramsObj = {
+            analysis: analysisType,
+            sexFilter,
+            ageFilter,
+            yearInterval,
+            selectedRiskFactors,
+        };
+
+
+        return paramsObj;
+    };
 
     const location = useLocation();
     const savedIframeUrl = location.state?.iframeUrl;
 
     useEffect(() => {
-
         if (!savedIframeUrl) return;
 
-        const url = new URL(savedIframeUrl);
-        const params = new URLSearchParams(url.search);
+        try {
+            const parsed = JSON.parse(savedIframeUrl);
+            const params = parsed.params;
 
-        const analysis = params.get("analysis") || "";
-        const sex = params.get("sex") || "Both";
-        const age = params.get("age") || "Age-standardized";
-        const years = params.get("years") || "5 years (2016-2021)";
-        const risks = params.get("risks")?.split("|") || [];
+            console.log("Restoring with params:", params);
+
+            if (!params) return;
+
+            setIsRestoring(true);
+
+            setAnalysisType(params.analysis);
+            setSexFilter(params.sexFilter);
+            setAgeFilter(params.ageFilter);
+            setYearInterval(params.yearInterval);
+            setSelectedRiskFactors(params.selectedRiskFactors || []);
+
+            setTimeout(() => setIsRestoring(false), 1500);
+        } catch (error) {
+            console.error("Invalid savedIframeUrl format", error);
+        }
+    }, [savedIframeUrl]);
 
 
-        // Set your states here, which trigger fetch of JSON and rerender graph
-        console.log(analysis)
-        setAnalysisType(analysis);
-        setSexFilter(sex);
-        setAgeFilter(age);
-        setYearInterval(years);
-        setSelectedRiskFactors(risks);
-
-    }, [savedIframeUrl, location.state]);
 
     // helper now receives the analysisType you already store in state
     const getChartImageUrl = (analysisType: string) => {
@@ -241,7 +281,6 @@ const EuropeMap = () => {
     useEffect(() => {
 
         if (analysisType !== "Trend Analysis") return;
-
         setLoading(true);
         fetch("/DF_trends_results.json")
             .then((res) => {
@@ -502,32 +541,25 @@ const EuropeMap = () => {
         d.age === ageFilter
     );
     // … keep every thing else …
+    // When your filteredAssociationData or options change, wait for chart to render, then generate image
     useEffect(() => {
         if (!chartRef.current) return;
 
-        // choose parameters based on the analysisType you already calculated
-        const params =
-            analysisType === "Trend Analysis"
+        // Delay to allow the chart to re-render fully
+        const timeout = setTimeout(() => {
+            const echartsInstance = chartRef.current.getEchartsInstance();
+            if (!echartsInstance) return;
+
+            const params = analysisType === "Trend Analysis"
                 ? { type: "webp", quality: 0.7, pixelRatio: 0.8, backgroundColor: "#fff" }
                 : { type: "webp", quality: 0.7, pixelRatio: 1, backgroundColor: "#fff" };
 
-        // let the browser finish painting before grabbing the dataURL
-        //   (small timeout avoids a rare race condition)
-        setTimeout(() => {
-            const url = chartRef.current!
-                .getEchartsInstance()
-                .getDataURL(params);
+            const url = echartsInstance.getDataURL(params);
+            setChartImageUrl(url);
+        }, 500);  // 500ms delay to ensure rendering done
 
-            setChartIframeUrl(url);   // ← state update triggers re‑render
-        });
-    }, [
-        analysisType,
-        sexFilter,
-        ageFilter,
-        yearInterval,
-        chartData,                // after your data array changes
-        filteredAssociationData
-    ]);
+        return () => clearTimeout(timeout);  // cleanup on unmount or param changes
+    }, [analysisType, chartData, filteredAssociationData]);
     // Calculate the dynamic range for the Y-axis based on Coefficients and Confidence Intervals
     // Parse numbers from strings returned by toFixed
     const coefValues = filteredAssociationData.map(item => item.Coef);
@@ -858,7 +890,8 @@ const EuropeMap = () => {
                                 </div>
                             )}
                             <ReactECharts ref={chartRef} key={JSON.stringify(chartData)} option={trendOption} style={{ height: "550px", width: "100%" }} />
-                            <SaveGraphButton iframeUrl={getChartImageUrl(chartIframeUrl)} />
+                            <SaveGraphButton iframeUrl={{ url: getChartImageUrl(chartIframeUrl), params: getUriParams() }} />
+
                         </>
                     )}
 
@@ -873,7 +906,8 @@ const EuropeMap = () => {
                                 option={associationOption}
                                 style={{ height: "600px", width: "100%" }}
                             />
-                            <SaveGraphButton iframeUrl={getChartImageUrl(chartIframeUrl)} />
+                            <SaveGraphButton iframeUrl={{ url: getChartImageUrl(chartIframeUrl), params: getUriParams() }} />
+
                         </>
                     )}
                 </div>

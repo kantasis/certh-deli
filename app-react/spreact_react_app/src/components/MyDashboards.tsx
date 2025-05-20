@@ -4,16 +4,14 @@ import * as AuthService from "../services/auth.service";
 import { Button, Card, Modal } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 
-
 interface DashboardEntry {
     id: number;
-    saved_url: string;
+    saved_url: string | string[];
     page_name: string;
     created_at: string;
 }
 
 const SavedDashboards: React.FC = () => {
-
     const [dashboards, setDashboards] = useState<DashboardEntry[]>([]);
     const [loading, setLoading] = useState(true);
     const [modalShow, setModalShow] = useState(false);
@@ -21,7 +19,6 @@ const SavedDashboards: React.FC = () => {
     const [deleteId, setDeleteId] = useState<number | null>(null);
     const navigate = useNavigate();
     const [isLoggedIn, setIsLoggedIn] = useState(false);
-
 
     useEffect(() => {
         setIsLoggedIn(AuthService.isLoggedIn());
@@ -42,28 +39,17 @@ const SavedDashboards: React.FC = () => {
         };
         load();
     }, [isLoggedIn]);
-    if (!isLoggedIn) return <h2>Unauthorized</h2>;
-    if (loading) return <p>Loading...</p>;
 
     const handleGoToGraph = (entry: DashboardEntry) => {
-        // Parse the saved_url to get query parameters
         try {
-            const url = new URL(entry.saved_url);
+            const url = new URL(typeof entry.saved_url === "string" ? entry.saved_url : entry.saved_url[0]);
             const panelLabel = url.searchParams.get('panelLabel');
-
-            if (panelLabel) {
-                localStorage.setItem('lit03Panel', panelLabel);
-            } else {
-                localStorage.setItem('lit03Panel', '');
-            }
+            localStorage.setItem('lit03Panel', panelLabel || '');
         } catch (error) {
             console.warn('Invalid URL in saved_url:', entry.saved_url);
         }
 
-        // Navigate and pass iframeUrl as before
         navigate(`/${entry.page_name}`, { state: { iframeUrl: entry.saved_url } });
-
-        console.log('PAOKARA ' + JSON.stringify({ state: { iframeUrl: entry.saved_url } }));
     };
 
     const confirmDelete = (id: number) => {
@@ -83,35 +69,58 @@ const SavedDashboards: React.FC = () => {
         }
     };
 
+    if (!isLoggedIn) return <h2>Unauthorized</h2>;
+    if (loading) return <p>Loading...</p>;
+
     return (
         <div className="container mt-4">
             <h3>My Saved Dashboards</h3>
             <div className="row">
-                {dashboards.map((d) => (
-                    <div className="col-md-4" key={d.id}>
-                        <Card className="mb-4">
-                            <iframe src={d.saved_url} width="100%" height="200px" title={`dashboard-${d.id}`} />
-                            <Card.Body>
-                                <Card.Text>Page: {d.page_name}</Card.Text>
-                                <Card.Text>
-                                    Saved on {(() => {
-                                        const date = new Date(d.created_at);
-                                        const day = String(date.getDate()).padStart(2, '0');
-                                        const month = String(date.getMonth() + 1).padStart(2, '0');
-                                        const year = date.getFullYear();
-                                        return `${day}/${month}/${year}`;
-                                    })()}
-                                </Card.Text>
-                                <Button variant="primary" onClick={() => handleGoToGraph(d)}>
-                                    Go to Graph
-                                </Button>{" "}
-                                <Button variant="danger" onClick={() => confirmDelete(d.id)}>
-                                    Delete
-                                </Button>
-                            </Card.Body>
-                        </Card>
-                    </div>
-                ))}
+                {dashboards.map((d) => {
+                    let srcUrl: string = typeof d.saved_url === 'string' ? d.saved_url : d.saved_url[0];
+
+                    // Try to parse if it's stored as a JSON string
+                    try {
+                        const parsed = JSON.parse(srcUrl);
+                        if (parsed.url) {
+                            srcUrl = parsed.url;
+                        }
+                    } catch (e) {
+                        console.warn("Could not parse saved_url as JSON:", srcUrl);
+                    }
+
+                    return (
+                        <div className="col-md-4" key={d.id}>
+                            <Card className="mb-4">
+                                <iframe
+                                    src={srcUrl}
+                                    width="100%"
+                                    height="200px"
+                                    title={`dashboard-${d.id}`}
+                                />
+                                <Card.Body>
+                                    <Card.Text>Page: {d.page_name}</Card.Text>
+                                    <Card.Text>
+                                        Saved on {(() => {
+                                            const date = new Date(d.created_at);
+                                            const day = String(date.getDate()).padStart(2, "0");
+                                            const month = String(date.getMonth() + 1).padStart(2, "0");
+                                            const year = date.getFullYear();
+                                            return `${day}/${month}/${year}`;
+                                        })()}
+
+                                    </Card.Text>
+                                    <Button variant="primary" onClick={() => handleGoToGraph(d)}>
+                                        Go to Graph
+                                    </Button>{" "}
+                                    <Button variant="danger" onClick={() => confirmDelete(d.id)}>
+                                        Delete
+                                    </Button>
+                                </Card.Body>
+                            </Card>
+                        </div>
+                    );
+                })}
             </div>
 
             <Modal show={modalShow} onHide={() => setModalShow(false)} centered>

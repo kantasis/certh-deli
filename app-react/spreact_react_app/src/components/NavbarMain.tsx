@@ -87,7 +87,7 @@ const NavbarMain: React.FC = () => {
       {
 
          href: "trend-and-association-analysis",
-         label: "Trend and Association Analysis",
+         label: "CRC Trend & Association Analysis",
          condition: isLoggedIn
       },
       {
@@ -100,7 +100,7 @@ const NavbarMain: React.FC = () => {
 
          href: "saved-dashboards",
          label: "Saved Dashboards",
-         condition: isLoggedIn && userRole == "ROLE_ADMIN"
+         condition: isLoggedIn 
       },
 
 

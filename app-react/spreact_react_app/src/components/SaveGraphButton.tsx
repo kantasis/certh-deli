@@ -5,11 +5,14 @@ import * as AuthService from "../services/auth.service";
 import { saveDashboard, getSavedDashboards } from "../services/dashboard.service";
 
 interface SaveGraphButtonProps {
-    iframeUrl: string;
-    
+    iframeUrl: {
+        url: string;
+        params?: any; // or more specific type if you know it
+    };
 }
 
 const SaveGraphButton: React.FC<SaveGraphButtonProps> = ({ iframeUrl }) => {
+    const { url, params } = iframeUrl;
     const [userId, setUserId] = useState<string | null>(null);
     const location = useLocation();
 
@@ -35,7 +38,7 @@ const SaveGraphButton: React.FC<SaveGraphButtonProps> = ({ iframeUrl }) => {
         console.log("Saving URL:", iframeUrl);
         // console.log("Saving IMG URL:", getImageUrl());
         // const chartImageUrl = getImageUrl?.() || "";
-  
+
         const urlToSave =
             iframeUrl;
 
