@@ -9,6 +9,7 @@ import { Accordion } from 'react-bootstrap';
 import SaveGraphButton from "./SaveGraphButton.tsx";
 import { useLocation } from "react-router-dom";
 import { useSearchParams } from "react-router-dom";
+import { height } from "@fortawesome/free-solid-svg-icons/fa0";
 
 echarts.registerMap("world", worldJson);
 
@@ -145,45 +146,45 @@ const EuropeMap = () => {
         {
             title: 'Data Sources',
             content: (<>
+                <div style={{ height: '340px', overflow: 'scroll' }}>
+                    <p>
+                        <li><strong>Source: </strong>Global Burden of Disease Study 2021</li><br />
 
-                <p>
-                    <li><strong>Source: </strong>Global Burden of Disease Study 2021</li><br />
+                        <li><strong>Years: </strong>1990-2021</li><br />
 
-                    <li><strong>Years: </strong>1990-2021</li><br />
+                        <li><strong>Geographic Coverage: </strong>46 countries in Europe</li><br />
 
-                    <li><strong>Geographic Coverage: </strong>46 countries in Europe</li><br />
+                        <li><strong>Age Groups: </strong>Under 25 (0–24 years), 25–50 (25 to 49 years), Above 50 (50 and older), Age-Standardized (Adjusted rates that account for differences in age distributions across populations)</li><br />
 
-                    <li><strong>Age Groups: </strong>Under 25 (0–24 years), 25–50 (25 to 49 years), Above 50 (50 and older), Age-Standardized (Adjusted rates that account for differences in age distributions across populations)</li><br />
+                        <li><strong>Sex Groups: </strong>Both Sexes (Aggregated data for males and females), Males (males only), and Females (females only)</li><br />
 
-                    <li><strong>Sex Groups: </strong>Both Sexes (Aggregated data for males and females), Males (males only), and Females (females only)</li><br />
+                        <li><strong>CRC Incidence Rate: </strong>Number of new CRC cases diagnosed per 100,000 population in a year</li><br />
 
-                    <li><strong>CRC Incidence Rate: </strong>Number of new CRC cases diagnosed per 100,000 population in a year</li><br />
+                        <li><strong>Risk factors: </strong>22 risk factors, comprising 4 lifestyle factors, 15 nutrition factors, 2 comorbidities, and 1 socioeconomic factor</li><br />
 
-                    <li><strong>Risk factors: </strong>22 risk factors, comprising 4 lifestyle factors, 15 nutrition factors, 2 comorbidities, and 1 socioeconomic factor</li><br />
-
-                    <li><strong>Summary Exposure Value (SEV) rates: </strong>This metric represents the relative risk-weighted prevalence of exposure, accounting for both the extent of exposure and its contribution to disease burden. SEV is the metric for 21 risk factors (excluding socioeconomic factor)</li><br />
-                </p>
-
+                        <li><strong>Summary Exposure Value (SEV) rates: </strong>This metric represents the relative risk-weighted prevalence of exposure, accounting for both the extent of exposure and its contribution to disease burden. SEV is the metric for 21 risk factors (excluding socioeconomic factor)</li><br />
+                    </p>
+                </div>
             </>)
         },
         {
             title: 'Methodology',
             content: (<>
+                <div style={{ height: '340px', overflow: 'scroll' }}>
+                    <p>
+                        <strong>Trend Analysis</strong><br /><br />
 
-                <p>
-                    <strong>Trend Analysis</strong><br /><br />
+                        Temporal trends in CRC incidence were analyzed utilizing the <strong>Estimated Annual Percentage Change (EAPC)</strong> over multiple intervals: 5, 10, 15, 20, 25, and 30 years.<br /><br />
 
-                    Temporal trends in CRC incidence were analyzed utilizing the <strong>Estimated Annual Percentage Change (EAPC)</strong> over multiple intervals: 5, 10, 15, 20, 25, and 30 years.<br /><br />
+                        The EAPC describes the rate of change in Age-Standardized Rates (ASRs) over time by fitting a regression model to the natural logarithm of ASRs, using time as the explanatory variable. This approach applies a Generalized Linear Model with a Gaussian distribution and assumes a constant rate of change on the logarithmic scale.<br /><br />
 
-                    The EAPC describes the rate of change in Age-Standardized Rates (ASRs) over time by fitting a regression model to the natural logarithm of ASRs, using time as the explanatory variable. This approach applies a Generalized Linear Model with a Gaussian distribution and assumes a constant rate of change on the logarithmic scale.<br /><br />
+                        <strong>Interpreting Trends:</strong><br />
+                        <strong>Increasing trend:</strong> EAPC and 95% CI {">"} 0<br />
+                        <strong>Decreasing trend: </strong>EAPC and 95% CI {"<"} 0<br />
+                        <strong>Stable trend: </strong>95% CI includes 0 (no statistically significant change)<br />
 
-                    <strong>Interpreting Trends:</strong><br />
-                    <strong>Increasing trend:</strong> EAPC and 95% CI {">"} 0<br />
-                    <strong>Decreasing trend: </strong>EAPC and 95% CI {"<"} 0<br />
-                    <strong>Stable trend: </strong>95% CI includes 0 (no statistically significant change)<br />
-
-                </p>
-
+                    </p>
+                </div>
             </>)
         },
         {
@@ -204,51 +205,51 @@ const EuropeMap = () => {
     const accordionContentAssociation_dictLst = [{
         title: 'Data Sources',
         content: (<>
+            <div style={{ height: '340px', overflow: 'scroll' }}>
+                <p>
+                    <li><strong>Source: </strong>Global Burden of Disease Study 2021</li><br />
 
-            <p>
-                <li><strong>Source: </strong>Global Burden of Disease Study 2021</li><br />
+                    <li><strong>Years: </strong>1990-2021</li><br />
 
-                <li><strong>Years: </strong>1990-2021</li><br />
+                    <li><strong>Geographic Coverage: </strong>46 countries in Europe</li><br />
 
-                <li><strong>Geographic Coverage: </strong>46 countries in Europe</li><br />
+                    <li><strong>Age Groups: </strong>Under 25 (0–24 years), 25–50 (25 to 49 years), Above 50 (50 and older), Age-Standardized (Adjusted rates that account for differences in age distributions across populations)</li><br />
 
-                <li><strong>Age Groups: </strong>Under 25 (0–24 years), 25–50 (25 to 49 years), Above 50 (50 and older), Age-Standardized (Adjusted rates that account for differences in age distributions across populations)</li><br />
+                    <li><strong>Sex Groups: </strong>Both Sexes (Aggregated data for males and females), Males (males only), and Females (females only)</li><br />
 
-                <li><strong>Sex Groups: </strong>Both Sexes (Aggregated data for males and females), Males (males only), and Females (females only)</li><br />
+                    <li><strong>CRC Incidence Rate: </strong>Number of new CRC cases diagnosed per 100,000 population in a year</li><br />
 
-                <li><strong>CRC Incidence Rate: </strong>Number of new CRC cases diagnosed per 100,000 population in a year</li><br />
+                    <li><strong>Risk factors: </strong>22 risk factors, comprising 4 lifestyle factors, 15 nutrition factors, 2 comorbidities, and 1 socioeconomic factor</li><br />
 
-                <li><strong>Risk factors: </strong>22 risk factors, comprising 4 lifestyle factors, 15 nutrition factors, 2 comorbidities, and 1 socioeconomic factor</li><br />
-
-                <li><strong>Summary Exposure Value (SEV) rates: </strong>This metric represents the relative risk-weighted prevalence of exposure, accounting for both the extent of exposure and its contribution to disease burden. SEV is the metric for 21 risk factors (excluding socioeconomic factor)</li><br />
-            </p>
-
+                    <li><strong>Summary Exposure Value (SEV) rates: </strong>This metric represents the relative risk-weighted prevalence of exposure, accounting for both the extent of exposure and its contribution to disease burden. SEV is the metric for 21 risk factors (excluding socioeconomic factor)</li><br />
+                </p>
+            </div>
         </>)
     }, {
         title: 'Methodology',
         content: (<>
+            <div style={{ height: '340px', overflow: 'scroll' }}>
+                <p>
+                    <strong>Association analysis</strong><br /><br />
 
-            <p>
-                <strong>Association analysis</strong><br /><br />
+                    Associations between CRC incidence and modifiable risk factors were assessed using a <strong>Fixed-Effects Regression Model</strong>, applied across 46 countries and 20 years.<br /><br />
 
-                Associations between CRC incidence and modifiable risk factors were assessed using a <strong>Fixed-Effects Regression Model</strong>, applied across 46 countries and 20 years.<br /><br />
+                    A Fixed-Effects Regression Model is a longitudinal analysis that accounts for repeated measurements within each country while capturing the shared influence of risk factors across Europe.<br /><br />
 
-                A Fixed-Effects Regression Model is a longitudinal analysis that accounts for repeated measurements within each country while capturing the shared influence of risk factors across Europe.<br /><br />
+                    To address the latency between exposure and cancer development, a <strong>10-year time lag</strong> was applied, pairing risk factor data from 1990–2011 with CRC incidence data from 2000–2021. <br /><br />
 
-                To address the latency between exposure and cancer development, a <strong>10-year time lag</strong> was applied, pairing risk factor data from 1990–2011 with CRC incidence data from 2000–2021. <br /><br />
+                    The analysis included <strong>22 risk factors</strong> and was performed across defined <strong>age</strong> and <strong>sex groups</strong>.<br /><br />
 
-                The analysis included <strong>22 risk factors</strong> and was performed across defined <strong>age</strong> and <strong>sex groups</strong>.<br /><br />
-
-                <strong>Interpreting Associations:</strong><br /><br />
-                <strong>Positive association: </strong>regression coefficients (β) {">"} 0 and p-value {"<"} 0.05<br /><br />
-                <strong>Negative association: </strong>β {"<"} 0 and p-value  {"<"} 0.05<br /><br />
-                <strong>No statistically significant association: </strong>p ≥ 0.05<br /><br />
-
-
+                    <strong>Interpreting Associations:</strong><br /><br />
+                    <strong>Positive association: </strong>regression coefficients (β) {">"} 0 and p-value {"<"} 0.05<br /><br />
+                    <strong>Negative association: </strong>β {"<"} 0 and p-value  {"<"} 0.05<br /><br />
+                    <strong>No statistically significant association: </strong>p ≥ 0.05<br /><br />
 
 
-            </p>
 
+
+                </p>
+            </div>
         </>)
     }, {
         title: 'References',

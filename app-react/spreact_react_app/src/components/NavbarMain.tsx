@@ -86,7 +86,7 @@ const NavbarMain: React.FC = () => {
       },
       {
 
-         href: "trend-and-association-analysis",
+         href: "crc-trend-and-association-analysis",
          label: "CRC Trend & Association Analysis",
          condition: isLoggedIn
       },
@@ -96,12 +96,12 @@ const NavbarMain: React.FC = () => {
          label: "Comments",
          condition: isLoggedIn && userRole == "ROLE_ADMIN"
       },
-      {
+      // {
 
-         href: "saved-dashboards",
-         label: "Saved Dashboards",
-         condition: isLoggedIn 
-      },
+      //    href: "saved-dashboards",
+      //    label: "Saved Dashboards",
+      //    condition: isLoggedIn 
+      // },
 
 
    ].map((item_dict, index) => item_dict.condition && (
@@ -129,7 +129,6 @@ const NavbarMain: React.FC = () => {
       );
    } else {
       rightButtons_tsx.push(
-         // Dropdown for Profile
          <li className="nav-item dropdown" key="profile">
             <a
                className="nav-link dropdown-toggle"
@@ -148,14 +147,16 @@ const NavbarMain: React.FC = () => {
                <li>
                   <a className="dropdown-item" href="/change-password">Change Password</a>
                </li>
+               <li>
+                  <a className="dropdown-item" href="/my-dashboards">My Dashboards</a>
+               </li>
             </ul>
          </li>,
-
-         // Logout button
          <li className="nav-item" key="logout">
             <a className="nav-link" href="login" onClick={logout}>Logout</a>
          </li>
       );
+
    }
 
    return (

@@ -47,13 +47,13 @@ const App: React.FC = () => {
                <Route path="/ScreeningRiskFactorDataPanel" element={< ScreeningRiskFactorDataPanel />} />
               <Route path="/CrcIncidenceDataPanel" element={< CrcIncidenceDataPanel />} />  */}
                <Route path="/LIT03" element={< LIT03 />} />
-               <Route path="/trend-and-association-analysis" element={< TrendAnalysis />} />
+               <Route path="/crc-trend-and-association-analysis" element={< TrendAnalysis />} />
                <Route path="/comments" element={< PreviousComments />} />
                {/* <Route path="/nutritionPanel" element={<NutritionPanel />} />
                <Route path="/lifestylePanel" element={<LifestylePanel />} /> */}
                <Route path="/crc-policy-data" element={<PolicyPanel />} />
                <Route path="/crc-predictive-analytics" element={<Analytics />} />
-                <Route path="/saved-dashboards" element={<MyDashboards />} />
+                <Route path="/my-dashboards" element={<MyDashboards />} />
             </Routes>
          </div>
 

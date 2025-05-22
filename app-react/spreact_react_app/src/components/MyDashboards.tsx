@@ -76,7 +76,7 @@ const SavedDashboards: React.FC = () => {
         <div className="container mt-4">
             <h3>My Saved Dashboards</h3>
             <div className="row">
-                {dashboards.map((d) => {
+                {dashboards.map((d, index) => {
                     let srcUrl: string = typeof d.saved_url === 'string' ? d.saved_url : d.saved_url[0];
 
                     // Try to parse if it's stored as a JSON string
@@ -99,9 +99,21 @@ const SavedDashboards: React.FC = () => {
                                     title={`dashboard-${d.id}`}
                                 />
                                 <Card.Body>
-                                    <Card.Text>Page: {d.page_name}</Card.Text>
                                     <Card.Text>
-                                        Saved on {(() => {
+                                        <strong>Graph : </strong>{dashboards.length - index} / 6
+                                    </Card.Text>
+                                    <Card.Text>
+                                        <strong>Page: </strong>{d.page_name
+                                            .split('-')                                // Split on hyphens
+                                            .map(word => word.toUpperCase() === 'CRC'  // Keep 'CRC' all uppercase
+                                                ? 'CRC'
+                                                : word.charAt(0).toUpperCase() + word.slice(1)
+                                            )
+                                            .join(' ')                                  // Join back into a string
+                                        }
+                                    </Card.Text>
+                                    <Card.Text>
+                                        <strong>Saved on:</strong> {(() => {
                                             const date = new Date(d.created_at);
                                             const day = String(date.getDate()).padStart(2, "0");
                                             const month = String(date.getMonth() + 1).padStart(2, "0");

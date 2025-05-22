@@ -11,9 +11,11 @@
    will-change: filter;
    transition: filter 300ms;
 }
+
 .logo:hover {
    filter: drop-shadow(0 0 2em #646cffaa);
 }
+
 .logo.react:hover {
    filter: drop-shadow(0 0 2em #61dafbaa);
 }
@@ -22,6 +24,7 @@
    from {
       transform: rotate(0deg);
    }
+
    to {
       transform: rotate(360deg);
    }
@@ -79,20 +82,22 @@ label {
 .gk_header {
    position: sticky;
    top: 0;
-   z-index:1000;
+   z-index: 1000;
 }
+
 /* Show the dropdown menu on hover */
 .nav-item.dropdown:hover .dropdown-menu {
    display: block;
-   right:5px;
+   right: 5px;
 }
 
 /* Optional: Adds a transition effect */
 .nav-item.dropdown .dropdown-menu {
    display: none;
    transition: all 0.3s ease;
-   
+
 }
+
 .gk_content {
    flex: 1;
    overflow-y: auto;
@@ -105,16 +110,15 @@ label {
    text-align: left;
 }
 
-.gk_footer > img {
+.gk_footer>img {
    width: 15%;
 }
 
 .simpleList {
    list-style-type: none;
-   padding:0;
+   padding: 0;
 }
 
 .policyList {
    text-align: left;
 }
-
