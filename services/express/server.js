@@ -107,7 +107,7 @@ app.post('/api/save-dashboard', async (req, res) => {
         const count = parseInt(countRows[0].count);
 
         if (count >= 6) {
-            return res.status(400).json({ error: 'You can only save up to 6 dashboards.' });
+            return res.status(400).json({ error: 'You can only save up to 6 graphs.' });
         }
 
         const result = await pool.query(
@@ -115,10 +115,10 @@ app.post('/api/save-dashboard', async (req, res) => {
             [user_id, saved_url, page_name]
         );
 
-        res.status(201).json({ message: 'Dashboard saved successfully.', data: result.rows[0] });
+        res.status(201).json({ message: 'Graph saved successfully.', data: result.rows[0] });
     } catch (error) {
-        console.error('Error saving dashboard:', error.message);
-        res.status(500).json({ error: 'Database error while saving dashboard' });
+        console.error('Error saving graph:', error.message);
+        res.status(500).json({ error: 'Database error while saving graph' });
     }
 });
 
@@ -135,8 +135,8 @@ app.get('/api/user-dashboards/:user_id', async (req, res) => {
 
         res.status(200).json(result.rows);
     } catch (error) {
-        console.error('Error fetching user dashboards:', error.message);
-        res.status(500).json({ error: 'Database error while fetching dashboards' });
+        console.error('Error fetching user graphs:', error.message);
+        res.status(500).json({ error: 'Database error while fetching graphs' });
     }
 });
 
@@ -149,8 +149,8 @@ app.delete('/api/delete-dashboard/:id', async (req, res) => {
         await pool.query('DELETE FROM user_saved_dashboards WHERE id = $1', [id]);
         res.status(204).send(); // 204 = No Content, which is OK
     } catch (error) {
-        console.error('Error deleting dashboard:', error.message);
-        res.status(500).json({ error: 'Database error while deleting dashboard' });
+        console.error('Error deleting graph:', error.message);
+        res.status(500).json({ error: 'Database error while deleting graph' });
     }
 });
 

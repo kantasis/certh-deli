@@ -73,7 +73,7 @@ const SaveGraphButton: React.FC<SaveGraphButtonProps> = ({ iframeUrl }) => {
             setModalShow(true);
         } catch (err: any) {
             const backendMessage = err?.response?.data?.error;
-            if (backendMessage === "You can only save up to 6 dashboards.") {
+            if (backendMessage === "You can only save up to 6 graphs.") {
                 setModalTitle("Save Failed");
                 setModalMessage(
                     <>
@@ -83,7 +83,7 @@ const SaveGraphButton: React.FC<SaveGraphButtonProps> = ({ iframeUrl }) => {
                 );
             } else {
                 setModalTitle("Save Failed");
-                setModalMessage("Could not save dashboard.");
+                setModalMessage("Could not save graph.");
             }
             setModalVariant("danger");
             setModalShow(true);
