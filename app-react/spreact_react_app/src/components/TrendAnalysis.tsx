@@ -890,9 +890,9 @@ const EuropeMap = () => {
                                     </div>
                                 </div>
                             )}
-                            <ReactECharts ref={chartRef} key={JSON.stringify(chartData)} option={trendOption} style={{ height: "550px", width: "100%" }} />
+                            <ReactECharts ref={chartRef} key={JSON.stringify(chartData)} option={trendOption} style={{ height: "550px", width: "100%", margin: "15px 0px " }} />
                             <SaveGraphButton iframeUrl={{ url: getChartImageUrl(chartIframeUrl), params: getUriParams() }} />
-
+                       
                         </>
                     )}
 

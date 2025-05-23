@@ -122,3 +122,115 @@ label {
 .policyList {
    text-align: left;
 }
+
+/* Navbar container */
+.navbar {
+   background-color: #186480;
+   /* Dark blue background */
+   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Brand logo/link */
+.navbar-brand img {
+   /* filter: brightness(0) invert(1); */
+   /* invert colors if logo is dark */
+   transition: filter 0.3s ease;
+}
+
+/* .navbar-brand:hover img {
+   filter: brightness(1) invert(0.8);
+} */
+
+/* Nav items container */
+.navbar-nav {
+   align-items: center;
+}
+
+/* Nav links */
+.nav-link {
+   color: black;
+   padding: 10px 15px;
+   font-weight: 600;
+   transition: color 0.3s ease, background-color 0.3s ease;
+   border-radius: 5px;
+}
+
+.nav-link:hover,
+.nav-link:focus {
+   color: #186480;
+
+  background-color: rgba(77, 113, 243, 0.15);
+   text-decoration: none;
+}
+
+/* Active nav link style (optional) */
+.nav-link.active {
+   color: #186480;
+   background-color: rgba(77, 113, 243, 0.15);
+}
+
+/* Dropdown */
+.nav-item.dropdown .dropdown-menu {
+   /* background-color: #186480; */
+   border: none;
+   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+.dropdown-menu .dropdown-item {
+   color: black;
+   padding: 8px 20px;
+   font-weight: 600;
+   transition: background-color 0.3s ease;
+}
+
+.dropdown-menu .dropdown-item:hover,
+.dropdown-menu .dropdown-item:focus {
+   background-color:rgba(77, 113, 243, 0.15);
+   color: #186480;
+   font-weight: 600;
+}
+
+/* Navbar toggler button (hamburger) */
+.navbar-toggler {
+   border: none;
+   outline: none;
+   background-color: transparent;
+}
+
+/* .navbar-toggler-icon {
+   filter: invert(1);
+} */
+
+/* Responsive adjustments */
+@media (max-width: 991.98px) {
+   .navbar-nav {
+      background-color: #186480;
+      padding: 10px;
+   }
+
+   .nav-link {
+      padding: 12px 10px;
+   }
+}
+
+.nav-link.active {
+   color: #186480 !important;
+   font-weight: bold;
+   /* text-decoration: underline; */
+}
+
+/* .dropdown-item.active{
+   background-color: #186480 ;
+   color: black;
+} 
+
+.dropdown-item.active:hover{
+   background-color: #186480 ;
+   color: black;
+}  */
+  
+.dropdown-item.active, .dropdown-item:active{
+       background-color:rgba(77, 113, 243, 0.15);
+       color: #186480;
+}

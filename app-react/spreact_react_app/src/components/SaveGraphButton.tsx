@@ -78,7 +78,7 @@ const SaveGraphButton: React.FC<SaveGraphButtonProps> = ({ iframeUrl }) => {
                 setModalMessage(
                     <>
                         You’ve reached the maximum of {MAX_SAVES} saved dashboards.<br />
-                        Please <Link to="/saved-dashboards" onClick={() => setModalShow(false)}>go to your saved dashboards</Link> and delete some to save a new view.
+                        Please <Link to="/my-dashboards" onClick={() => setModalShow(false)}>go to your saved dashboards</Link> and delete some to save a new view.
                     </>
                 );
             } else {
