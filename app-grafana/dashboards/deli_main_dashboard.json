@@ -1513,7 +1513,11 @@
             "value": "CS2019"
           }
         ],
+<<<<<<< Updated upstream
         "query": "CS2019",
+=======
+        "query": "SED2017",
+>>>>>>> Stashed changes
         "type": "textbox"
       },
       {
@@ -3195,5 +3199,9 @@
   "timezone": "browser",
   "title": "deli_main_dashboard",
   "uid": "edn5ahxrzaw3kc",
+<<<<<<< Updated upstream
   "version": 121
+=======
+  "version": 107
+>>>>>>> Stashed changes
 }

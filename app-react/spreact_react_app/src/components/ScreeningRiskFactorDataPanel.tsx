@@ -165,10 +165,17 @@ const ScreeningDataPanel: React.FC = () => {
                     </div>
                 ) : (
 
+<<<<<<< Updated upstream
                     <div className="text-center">
                         <div className=""><h5 className="mb-5">Data on the coverage of CRC screening programmes by autonomous communities are presented, as well as the percentages of positivity. </h5></div>
                         <div className=""><h5>Please select a screening data metric from the dropdown menu on the left to display the data.</h5></div>
                     </div>
+=======
+    <div className="text-center">
+    <div className=""><h5 className="mb-5">Data on the coverage of CRC screening programmes by autonomous communities are presented, as well as the percentages of positivity. </h5></div>
+    <div className=""><h5>Please select a screening data metric from the dropdown menu on the left to display the data.</h5></div>
+</div>
+>>>>>>> Stashed changes
                 )}
             </div>
 
