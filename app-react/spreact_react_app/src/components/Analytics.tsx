@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import * as AuthService from "../services/auth.service.tsx";
 import { Button, Dropdown } from 'react-bootstrap';
 import { Accordion } from 'react-bootstrap';
@@ -8,6 +8,8 @@ import AnalyticsRiskFactorFilter from "./AnalyticsRiskFactorFilter.tsx";
 import AnalyticsYearLagFilter from "./AnalyticsYearLagFilter.tsx";
 import Comments from "./Comments.tsx";
 import { Modal } from 'react-bootstrap';
+import SaveGraphButton from "./SaveGraphButton.tsx";
+import { useLocation } from "react-router-dom";
 
 const grafana_host = import.meta.env.VITE_GRAFANA_HOST;
 const grafana_port = import.meta.env.VITE_GRAFANA_PORT;
@@ -18,6 +20,7 @@ const dashboard_name = import.meta.env.VITE_GRAFANA_DASHBOARD;
 const grafana_url = `http://${grafana_host}:${grafana_port}/${grafana_path}/${dashboard_name}?orgId=1&theme=light`;
 
 const AnalyticsPanel: React.FC = () => {
+   const savedParamsRef = useRef<{ analysis: number, riskFactor: string | null, yearLag: number } | null>(null);
 
    const [isLoggedIn, setIsLoggedIn] = useState(false);
    const [selectedAnalysis_int, set_selectedAnalysis] = useState(0);
@@ -32,6 +35,121 @@ const AnalyticsPanel: React.FC = () => {
    const [biasContent, setBiasContent] = useState<string[]>([]);
    const [currentPage, setCurrentPage] = useState(0);
    const itemsPerPage = 5;
+   const yearLag_dictLst = [
+      {
+         value: 0,
+         label: "1 Year",
+         var_filter: 1
+      },
+      {
+         value: 1,
+         label: "3 Years",
+         var_filter: 3
+      },
+      {
+         value: 2,
+         label: "5 Years",
+         var_filter: 5
+      },
+      {
+         value: 3,
+         label: "10 Years",
+         var_filter: 10
+      },
+   ];
+   // TODO: Get this from the DB
+   const riskFactors_dictLst = [
+      {
+         value: 0,
+         label: "Alcohol use",
+      },
+      {
+         value: 1,
+         label: "Diet high in red meat",
+      },
+      {
+         value: 2,
+         label: "Diet high in trans fatty acids",
+      },
+      {
+         value: 3,
+         label: "Diet low in polyunsaturated fatty acids",
+      },
+      {
+         value: 4,
+         label: "Diet low in seafood omega-3 fatty acids",
+      },
+      {
+         value: 5,
+         label: "Diet low in vegetables",
+      },
+      {
+         value: 6,
+         label: "Diet low in whole grains",
+      },
+      {
+         value: 7,
+         label: "High body-mass index",
+      },
+      {
+         value: 8,
+         label: "Low physical activity",
+      },
+   ];
+   const location = useLocation();
+   const savedIframeUrl = location.state?.iframeUrl;
+
+
+   useEffect(() => {
+      if (!savedIframeUrl) return;
+
+      const url = new URL(savedIframeUrl);
+      const params = new URLSearchParams(url.search);
+
+      const analysis = parseInt(params.get("var-analysis_filter") || "0", 10);
+      const yearLag = parseInt(params.get("var-yearLag_filter") || "0", 10);
+      const riskFactor = params.get("var-riskFactor_filter");
+
+      set_selectedAnalysis(analysis);
+
+      if (analysis === 2 && riskFactor) {
+         const index = riskFactors_dictLst.findIndex(item => item.label === riskFactor);
+         if (index !== -1) set_selectedRiskFactors(index);
+      }
+
+      if (analysis === 1) {
+         const yearLagIndex = yearLag_dictLst.findIndex(i => Number(i.var_filter) === yearLag);
+         if (yearLagIndex !== -1) set_selectedYearLag(yearLagIndex);
+      }
+   }, [savedIframeUrl]);
+
+
+   useEffect(() => {
+      if (!savedParamsRef.current) return;
+
+      const { analysis, riskFactor, yearLag } = savedParamsRef.current;
+
+      console.log("Applying saved params:", { analysis, riskFactor, yearLag });
+
+      if (analysis === 2 && riskFactor) {
+         const index = riskFactors_dictLst.findIndex(item => item.label === riskFactor);
+         console.log("Risk factor index found:", index);
+         if (index !== -1) set_selectedRiskFactors(index);
+      }
+
+      if (analysis === 1) {
+         const yearLagIndex = yearLag_dictLst.findIndex(i => Number(i.var_filter) === yearLag);
+         console.log("Year lag index found:", yearLagIndex);
+         if (yearLagIndex !== -1) set_selectedYearLag(yearLagIndex);
+      }
+
+      savedParamsRef.current = null;
+   }, [selectedAnalysis_int]);
+
+
+
+
+
 
    useEffect(() => {
       fetch("/src/assets/bias_assessment.json")
@@ -217,74 +335,17 @@ const AnalyticsPanel: React.FC = () => {
             })} */}
       </tbody></table>
    </>);
-   const yearLag_dictLst = [
-      {
-         value: 0,
-         label: "1 Year",
-         var_filter: 1
-      },
-      {
-         value: 1,
-         label: "3 Years",
-         var_filter: 3
-      },
-      {
-         value: 2,
-         label: "5 Years",
-         var_filter: 5
-      },
-      {
-         value: 3,
-         label: "10 Years",
-         var_filter: 10
-      },
-   ];
-   // TODO: Get this from the DB
-   const riskFactors_dictLst = [
-      {
-         value: 0,
-         label: "Alcohol use",
-      },
-      {
-         value: 1,
-         label: "Diet high in red meat",
-      },
-      {
-         value: 2,
-         label: "Diet high in trans fatty acids",
-      },
-      {
-         value: 3,
-         label: "Diet low in polyunsaturated fatty acids",
-      },
-      {
-         value: 4,
-         label: "Diet low in seafood omega-3 fatty acids",
-      },
-      {
-         value: 5,
-         label: "Diet low in vegetables",
-      },
-      {
-         value: 6,
-         label: "Diet low in whole grains",
-      },
-      {
-         value: 7,
-         label: "High body-mass index",
-      },
-      {
-         value: 8,
-         label: "Low physical activity",
-      },
-   ];
+
 
    const selectedFactor_str = riskFactors_dictLst[selectedRiskFactor_int]['label'];
 
    const getUriParams = () => {
-      const factorFilter_str = `var-riskFactor_filter=${riskFactors_dictLst[selectedRiskFactor_int].label}`;
-      const panelId = 6; // Panel for Risk Factor
-      return `${factorFilter_str}&panelId=${panelId}`;
+      const analysis = selectedAnalysis_int;
+      console.log(analysis)
+
+         const riskFactor = riskFactors_dictLst[selectedRiskFactor_int].label;
+         return `var-riskFactor_filter=${encodeURIComponent(riskFactor)}&var-analysis_filter=${analysis}&panelId=6`;
+
    };
 
    const iFrame_url = `${grafana_url}&${getUriParams()}`;
@@ -299,16 +360,18 @@ const AnalyticsPanel: React.FC = () => {
       >
       </iframe>
       {<div>
+         <SaveGraphButton iframeUrl={iFrame_url} />
          {/* {iFrame_url} */}
       </div>}
    </>);
    const selectedYearLag_str = yearLag_dictLst[selectedYearLag_int]['var_filter'];
 
    const getUriParams2 = () => {
-      const panelId = 7;
-      let yearLag_str = `var-yearLag_filter=${selectedYearLag_str}`;
-      console.log(yearLag_str)
-      return `${yearLag_str}&panelId=${panelId}`;
+      const analysis = selectedAnalysis_int;
+      const yearLag = yearLag_dictLst[selectedYearLag_int].var_filter;
+
+
+      return `var-yearLag_filter=${yearLag}&var-analysis_filter=${analysis}&panelId=7`;
    };
    const iFrame_url2 = `${grafana_url}&${getUriParams2()}`;
    // yearLag_filter
@@ -322,6 +385,7 @@ const AnalyticsPanel: React.FC = () => {
       >
       </iframe>
       {<div>
+         <SaveGraphButton iframeUrl={iFrame_url2} />
          {/* {iFrame_url2} */}
       </div>}
    </>);

@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Form } from "react-bootstrap";
 import * as AuthService from "../services/auth.service.tsx";
 import Comments from "./Comments.tsx";
-
+import { useLocation } from "react-router-dom";
+import SaveGraphButton from "./SaveGraphButton.tsx";
 // Interface for the properties of this component
 interface FilterProps {
     selectedRiskFactor: string;
@@ -49,6 +50,26 @@ const RiskFactorSpainRegionFilter: React.FC<FilterProps> = ({
 const SpanishRiskFactorsDataPanel: React.FC = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
 
+    const location = useLocation();
+    const savedIframeUrl = location.state?.iframeUrl;
+
+    useEffect(() => {
+        if (!savedIframeUrl) return;
+
+        const url = new URL(savedIframeUrl);
+        const params = new URLSearchParams(url.search);
+
+        const riskFactor = params.get("var-riskFactorRegion_filter");
+        if (riskFactor) setSelectedRiskFactor(riskFactor);
+
+        // Optionally, save the panel label to localStorage for LIT03
+        const panelLabel = location.state?.panelLabel;
+        if (panelLabel) {
+            localStorage.setItem("lit03Panel", panelLabel);
+        }
+    }, [savedIframeUrl, location.state]);
+
+
     // List of available screening and risk factors
     const riskFactorSpainRegion_dictLst = [
         { value: "CS2017", label: "2017 - Coverage of CRC screening (%)" },
@@ -66,7 +87,7 @@ const SpanishRiskFactorsDataPanel: React.FC = () => {
 
     // Use state to store the selected risk factor
     const [selectedRiskFactor, setSelectedRiskFactor] = useState("");
-
+    const panelLabel = localStorage.getItem("lit03Panel");
     // Grafana environment variables
     const grafana_host = import.meta.env.VITE_GRAFANA_HOST;
     const grafana_port = import.meta.env.VITE_GRAFANA_PORT;
@@ -75,7 +96,7 @@ const SpanishRiskFactorsDataPanel: React.FC = () => {
 
     // Construct Grafana iframe URL dynamically
     const grafana_url = `http://${grafana_host}:${grafana_port}/${grafana_path}/${dashboard_name}?orgId=1&theme=light`;
-    const getUriParams = () => `panelId=10&var-riskFactorRegion_filter=${selectedRiskFactor}`;
+    const getUriParams = () => `panelId=10&var-riskFactorRegion_filter=${selectedRiskFactor}&panelLabel=${panelLabel}`;
     const iFrame_url = `${grafana_url}&${getUriParams()}`;
 
     // Log for debugging
@@ -109,13 +130,15 @@ const SpanishRiskFactorsDataPanel: React.FC = () => {
                             width="100%"
                             height="500px"
                         ></iframe>
+                        <SaveGraphButton iframeUrl={iFrame_url} />
+                        {/* {iFrame_url} */}
                     </div>
                 ) : (
                     <div>
-                    <div className=""><div><h5 className="mb-5">Data on risk factors for CRC are presented by autonomous communities. Comparison of these frequencies makes it possible
-                         to identify the differences between autonomous communities.</h5></div>
-                         </div>
-                <div className=""><h5>Please select a risk factor from the dropdown menu on the left to display the data.</h5></div>
+                        <div className=""><div><h5 className="mb-5">Data on risk factors for CRC are presented by autonomous communities. Comparison of these frequencies makes it possible
+                            to identify the differences between autonomous communities.</h5></div>
+                        </div>
+                        <div className=""><h5>Please select a risk factor from the dropdown menu on the left to display the data.</h5></div>
                     </div>
                 )}
             </div>
@@ -128,7 +151,7 @@ const SpanishRiskFactorsDataPanel: React.FC = () => {
                     borderRadius: 'var(--bs-border-radius)',
                     padding: '10px'
                 }}>
-                     Spanish National Health Survey <br />
+                    Spanish National Health Survey <br />
                     <a target="_blank" href="https://www.sanidad.gob.es/estadEstudios/estadisticas/encuestaNacional/home.htm">Link</a>
                 </div>
                 <Comments />

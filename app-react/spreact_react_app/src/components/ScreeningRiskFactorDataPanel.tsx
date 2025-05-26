@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Form } from "react-bootstrap";
 import * as AuthService from "../services/auth.service.tsx";
 import Comments from "./Comments.tsx";
+import SaveGraphButton from "./SaveGraphButton.tsx";
+import { useLocation } from "react-router-dom";
 
 // Interface for the properties of this component
 interface FilterProps {
@@ -59,6 +61,24 @@ const RiskFactorSpainRegionFilter: React.FC<FilterProps> = ({
 
 const ScreeningDataPanel: React.FC = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const location = useLocation();
+    const savedIframeUrl = location.state?.iframeUrl;
+
+    useEffect(() => {
+        if (!savedIframeUrl) return;
+
+        const url = new URL(savedIframeUrl);
+        const params = new URLSearchParams(url.search);
+
+        const riskFactor = params.get("selectedMetric");
+        if (riskFactor) setSelectedRiskFactor(riskFactor);
+
+        // Optionally, save the panel label to localStorage for LIT03
+        const panelLabel = location.state?.panelLabel;
+        if (panelLabel) {
+            localStorage.setItem("lit03Panel", panelLabel);
+        }
+    }, [savedIframeUrl, location.state]);
 
     // List of available screening and risk factors
     const riskFactorSpainRegion_dictLst = [
@@ -86,9 +106,10 @@ const ScreeningDataPanel: React.FC = () => {
 
     // Construct Grafana iframe URL dynamically
     const grafana_url = `http://${grafana_host}:${grafana_port}/${grafana_path}/${dashboard_name}?orgId=1&theme=light`;
+        const panelLabel = localStorage.getItem("lit03Panel");
     const getUriParams = () => {
         let selectedMetrics: string[] = [];
-    
+
         switch (selectedRiskFactor) {
             case "COVERAGE":
                 selectedMetrics = ["CS2017", "CS2019"];
@@ -99,8 +120,8 @@ const ScreeningDataPanel: React.FC = () => {
             default:
                 selectedMetrics = [];
         }
-    
-        return selectedMetrics.map(m => `panelId=13&var-screening_data_metric=${m}`).join("&");
+
+        return selectedMetrics.map(m => `panelId=13&var-screening_data_metric=${m}&panelLabel=${panelLabel}&selectedMetric=${selectedRiskFactor}`).join("&");
     };
     //const getUriParams = () => `panelId=12&var-riskFactorRegion_filter=${selectedRiskFactor}`;
     const iFrame_url = `${grafana_url}&${getUriParams()}`;
@@ -129,7 +150,9 @@ const ScreeningDataPanel: React.FC = () => {
             <div className="col-sm-8 ">
 
                 {selectedRiskFactor && selectedRiskFactor !== "" ? (
+
                     <div className="embed-responsive embed-responsive-16by9">
+
                         <iframe
                             id="embeddedPanel_id"
                             className="embed-responsive-item"
@@ -137,13 +160,15 @@ const ScreeningDataPanel: React.FC = () => {
                             width="100%"
                             height="500px"
                         ></iframe>
+                        {/* {iFrame_url} */}
+                        <SaveGraphButton iframeUrl={iFrame_url} />
                     </div>
                 ) : (
 
-    <div className="text-center">
-    <div className=""><h5 className="mb-5">Data on the coverage of CRC screening programmes by autonomous communities are presented, as well as the percentages of positivity. </h5></div>
-    <div className=""><h5>Please select a screening data metric from the dropdown menu on the left to display the data.</h5></div>
-</div>
+                    <div className="text-center">
+                        <div className=""><h5 className="mb-5">Data on the coverage of CRC screening programmes by autonomous communities are presented, as well as the percentages of positivity. </h5></div>
+                        <div className=""><h5>Please select a screening data metric from the dropdown menu on the left to display the data.</h5></div>
+                    </div>
                 )}
             </div>
 
@@ -157,7 +182,7 @@ const ScreeningDataPanel: React.FC = () => {
                 }}>
                     Spanish network of cancer screening programs <br />
                     <a target="_blank" href="https://cribadocancer.es/indicadores-cancer-colorrectal/">Link</a>
-                   
+
                 </div>
                 <Comments />
             </div>

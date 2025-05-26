@@ -11,7 +11,7 @@ app.use(express.json());
 // ✅ Fix CORS: Allow requests from React frontend
 app.use(cors({
     origin: '*', // Change to your frontend URL for security (e.g., http://localhost:5173)
-    methods: ['GET', 'POST', 'OPTIONS'],
+    methods: ['GET', 'POST', 'OPTIONS','DELETE'],
     allowedHeaders: ['Content-Type'],
 }));
 // Handle OPTIONS requests manually (important!)
@@ -86,6 +86,79 @@ app.use((req, res, next) => {
     console.log('Headers:', req.headers);
     next();
 });
+
+
+
+
+// Save a dashboard for a user (max 6 per user)
+app.post('/api/save-dashboard', async (req, res) => {
+    const { user_id, saved_url, page_name } = req.body;
+
+    if (!user_id || !saved_url || !page_name) {
+        return res.status(400).json({ error: 'Missing user_id, saved_url or page_name' });
+    }
+
+    try {
+        const { rows: countRows } = await pool.query(
+            'SELECT COUNT(*) FROM user_saved_dashboards WHERE user_id = $1',
+            [user_id]
+        );
+
+        const count = parseInt(countRows[0].count);
+
+        if (count >= 6) {
+            return res.status(400).json({ error: 'You can only save up to 6 graphs.' });
+        }
+
+        const result = await pool.query(
+            'INSERT INTO user_saved_dashboards (user_id, saved_url, page_name) VALUES ($1, $2, $3) RETURNING *',
+            [user_id, saved_url, page_name]
+        );
+
+        res.status(201).json({ message: 'Graph saved successfully.', data: result.rows[0] });
+    } catch (error) {
+        console.error('Error saving graph:', error.message);
+        res.status(500).json({ error: 'Database error while saving graph' });
+    }
+});
+
+
+// Get saved dashboards for a user
+app.get('/api/user-dashboards/:user_id', async (req, res) => {
+    const { user_id } = req.params;
+
+    try {
+        const result = await pool.query(
+            'SELECT * FROM user_saved_dashboards WHERE user_id = $1 ORDER BY created_at DESC LIMIT 6',
+            [user_id]
+        );
+
+        res.status(200).json(result.rows);
+    } catch (error) {
+        console.error('Error fetching user graphs:', error.message);
+        res.status(500).json({ error: 'Database error while fetching graphs' });
+    }
+});
+
+
+// Delete a saved dashboard by ID
+app.delete('/api/delete-dashboard/:id', async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        await pool.query('DELETE FROM user_saved_dashboards WHERE id = $1', [id]);
+        res.status(204).send(); // 204 = No Content, which is OK
+    } catch (error) {
+        console.error('Error deleting graph:', error.message);
+        res.status(500).json({ error: 'Database error while deleting graph' });
+    }
+});
+
+
+
+
+
+
 // Start Server
 const PORT = process.env.PORT || 9080;
 app.listen(PORT,'0.0.0.0', () => {

@@ -1,23 +1,16 @@
-import { Routes, Route, Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import * as AuthService from "../services/auth.service";
-import EventBus from "../common/EventBus";
 import { getUserRole } from '../services/auth.service';
-import ChangePasswordDropdown from "./ChangePasswordDropdown";
+
 const NavbarMain: React.FC = () => {
-
    const [isLoggedIn, setIsLoggedIn] = useState(false);
-   // const [user_dict, setUserDict] = useState(false);
 
-   // TODO: Check it out https://www.bezkoder.com/handle-jwt-token-expiration-react/
-   useEffect(
-      () => {
-         setIsLoggedIn(AuthService.isLoggedIn());
-      },
-      []
-   );
-const userRole = getUserRole();
-console.log(userRole);
+   useEffect(() => {
+      setIsLoggedIn(AuthService.isLoggedIn());
+   }, []);
+
+   const userRole = getUserRole();
 
    const logout = () => {
       AuthService.logout();
@@ -25,140 +18,140 @@ console.log(userRole);
    };
 
    const leftButtons_tsx = [
-      // {
-      //    href: "dashboard",
-      //    label: "Dashboard",
-      //    condition: isLoggedIn
-      // },
       {
-         href: "crc-incidence",
+         href: "/crc-incidence",
          label: "CRC Incidence",
          condition: isLoggedIn
       },
       {
-         href: "crc-risk-factors",
+         href: "/crc-risk-factors",
          label: "CRC Risk Factors",
          condition: isLoggedIn
       },
-      // {
-      //    href: "nutritionPanel",
-      //    label: "Nutrition Data",
-      //    condition: isLoggedIn
-      // },
-      // {
-      //    href: "LifestylePanel",
-      //    label: "Lifestyle Data",
-      //    condition: isLoggedIn
-      // },
       {
-         href: "crc-policy-data",
+         href: "/crc-policy-data",
          label: "CRC Policy Data",
          condition: isLoggedIn
       },
       {
-         href: "crc-predictive-analytics",
+         href: "/crc-predictive-analytics",
          label: "CRC Predictive Analytics",
          condition: isLoggedIn
       },
-      // {
-      //    href: "CRCmortalityPanel",
-      //    label: "CRC Mortality",
-      //    condition: isLoggedIn
-      // },
-      // {
-      //    href: "ScreeningRiskFactorDataPanel",
-      //    label: "Screening & Risk Factor Data",
-      //    condition: isLoggedIn
-      // },
-      // {
-      //    href: "CrcIncidenceDataPanel",
-      //    label: "CRC Incidence Data Panel",
-      //    condition: isLoggedIn
-      // },
       {
-         
-         href: "LIT03",
+         href: "/LIT03",
          label: "Spanish CRC Regional Data",
-         condition: isLoggedIn 
+         condition: isLoggedIn,
+         onClick: () => localStorage.setItem("lit03Panel", "")
       },
       {
-         
-         href: "comments",
-         label: "Comments",
-         condition: isLoggedIn && userRole == "ROLE_ADMIN"
+         href: "/crc-trend-and-association-analysis",
+         label: "CRC Trend & Association Analysis",
+         condition: isLoggedIn
       },
-   
-      
-   ].map((item_dict, index) => item_dict.condition && (
-      <li className="nav-item" key={index}>
-         <a
-            className="nav-link"
-            href={item_dict.href}
-         // onClick={item_dict.onClick ? item_dict.onClick : undefined}
-         >
-            {item_dict.label}
-         </a>
-      </li>
-   ));
+      {
+         href: "/comments",
+         label: "Comments",
+         condition: isLoggedIn && userRole === "ROLE_ADMIN"
+      }
+   ].map((item, index) =>
+      item.condition ? (
+         <li className="nav-item" key={index}>
+            <NavLink
+               to={item.href}
+               className={({ isActive }) =>
+                  isActive ? "nav-link active" : "nav-link"
+               }
+               onClick={item.onClick}
+            >
+               {item.label}
+            </NavLink>
+         </li>
+      ) : null
+   );
 
    const rightButtons_tsx = [];
 
-if (!isLoggedIn) {
-   rightButtons_tsx.push(
-      <li className="nav-item" key="login">
-         <a className="nav-link" href="login">Login</a>
-      </li>,
-      <li className="nav-item" key="register">
-         <a className="nav-link" href="register">Register</a>
-      </li>
-   );
-} else {
-   rightButtons_tsx.push(
-      // Dropdown for Profile
-      <li className="nav-item dropdown" key="profile">
-         <a
-            className="nav-link dropdown-toggle"
-            href="#"
-            id="navbarDropdown"
-            role="button"
-            data-bs-toggle="dropdown"
-            aria-expanded="false"
-         >
-            Profile
-         </a>
-         <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-            <li>
-               <a className="dropdown-item" href="/profile">View Profile</a>
-            </li>
-            <li>
-               <a className="dropdown-item" href="/change-password">Change Password</a>
-            </li>
-         </ul>
-      </li>,
-
-      // Logout button
-      <li className="nav-item" key="logout">
-         <a className="nav-link" href="login" onClick={logout}>Logout</a>
-      </li>
-   );
-}
+   if (!isLoggedIn) {
+      rightButtons_tsx.push(
+         <li className="nav-item" key="login">
+            <NavLink
+               to="/login"
+               className={({ isActive }) =>
+                  isActive ? "nav-link active" : "nav-link"
+               }
+            >
+               Login
+            </NavLink>
+         </li>,
+         <li className="nav-item" key="register">
+            <NavLink
+               to="/register"
+               className={({ isActive }) =>
+                  isActive ? "nav-link active" : "nav-link"
+               }
+            >
+               Register
+            </NavLink>
+         </li>
+      );
+   } else {
+      rightButtons_tsx.push(
+         <li className="nav-item dropdown" key="profile">
+            <a
+               className="nav-link dropdown-toggle"
+               href="#"
+               id="navbarDropdown"
+               role="button"
+               data-bs-toggle="dropdown"
+               aria-expanded="false"
+            >
+               Profile
+            </a>
+            <ul
+               className="dropdown-menu dropdown-menu-end"
+               aria-labelledby="navbarDropdown"
+            >
+               <li>
+                  <NavLink className="dropdown-item" to="/profile">
+                     View Profile
+                  </NavLink>
+               </li>
+               <li>
+                  <NavLink className="dropdown-item" to="/change-password">
+                     Change Password
+                  </NavLink>
+               </li>
+               <li>
+                  <NavLink className="dropdown-item" to="/my-dashboards">
+                     My Dashboards
+                  </NavLink>
+               </li>
+            </ul>
+         </li>,
+         <li className="nav-item" key="logout">
+            <NavLink
+               to="/login"
+               className="nav-link"
+               onClick={logout}
+            >
+               Logout
+            </NavLink>
+         </li>
+      );
+   }
 
    return (
       <nav className="navbar navbar-expand-lg bg-body-tertiary">
          <div className="container-fluid">
-            <a
-               className="navbar-brand"
-               href="/"
-            >
-               {/* Policy Analytics Dashboard */}
+            <NavLink className="navbar-brand" to="/">
                <img
                   width="158"
                   height="25"
                   src="https://www.oncodir.eu/wp-content/uploads/2023/07/ONCODIR-LOGO.svg"
-               // className="qodef-header-logo-image qodef--main" 
-               // alt="logo main"
+                  alt="Logo"
                />
-            </a>
+            </NavLink>
 
             <button
                className="navbar-toggler"
@@ -171,22 +164,14 @@ if (!isLoggedIn) {
             >
                <span className="navbar-toggler-icon"></span>
             </button>
-            <div
-               className="collapse navbar-collapse"
-               id="navbarSupportedContent"
-            >
-               <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-                  {leftButtons_tsx}
-               </ul>
 
-               <ul className="navbar-nav my-2 my-lg-0">
-                  {rightButtons_tsx}
-               </ul>
+            <div className="collapse navbar-collapse" id="navbarSupportedContent">
+               <ul className="navbar-nav me-auto mb-2 mb-lg-0">{leftButtons_tsx}</ul>
+               <ul className="navbar-nav my-2 my-lg-0">{rightButtons_tsx}</ul>
             </div>
          </div>
       </nav>
    );
-
 };
 
 export default NavbarMain;

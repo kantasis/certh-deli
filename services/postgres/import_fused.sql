@@ -528,3 +528,5 @@ COPY data_tbl(
 FROM '/tmp/fused.csv'
 DELIMITER ','
 CSV HEADER;
+
+

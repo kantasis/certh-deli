@@ -27,7 +27,7 @@ const Glossary: React.FC = () => {
 
    const accordionContent_dictLst = [
       {
-         title: 'Source',
+         title: 'Data Sources',
          content: (<>
             <p>
                Global Burden of Disease 2019.<br/><br/>

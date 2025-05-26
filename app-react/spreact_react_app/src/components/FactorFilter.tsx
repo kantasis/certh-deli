@@ -34,13 +34,13 @@ const FactorFilter: React.FC<FilterProps> = ({selectedFactor_str, set_selectedFa
       },
    ];
 
-   useEffect(
-      () => {
-         let temp = factors_dictLst[0]['value'];
-         set_selectedFactor(temp);
-      },
-      []
-   );
+   // useEffect(
+   //    () => {
+   //       let temp = factors_dictLst[0]['value'];
+   //       set_selectedFactor(temp);
+   //    },
+   //    []
+   // );
 
    return (<>
       <div className="col-lg">
