@@ -31,14 +31,14 @@ const PolicyFilter: React.FC<FilterProps> = ({selectedPolicy_str, set_selectedPo
       "Vaccinations & Communicable Di ",
    ];
 
-   useEffect(
-      () => {
-         let temp = policies_strLst[0];
-         console.log(`Setting: ${temp}`);
-         set_selectedPolicy(temp);
-      },
-      []
-   );
+   // useEffect(
+   //    () => {
+   //       let temp = policies_strLst[0];
+   //       console.log(`Setting: ${temp}`);
+   //       set_selectedPolicy(temp);
+   //    },
+   //    []
+   // );
 
    return (<>
       <div className="col-sm">
