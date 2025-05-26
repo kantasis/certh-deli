@@ -1,7 +1,10 @@
 import axios from 'axios';
 
+
 const authentication_host = import.meta.env.VITE_AUTHENTICATION_HOST;
 const API_URL = `http://${authentication_host}:8435`; //"http://localhost:8435"; // Use container name, NOT localhost
+
+
 
 
 export const submitComment = async (text: string, username: string, page_name: string) => {

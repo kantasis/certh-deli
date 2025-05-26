@@ -4,7 +4,7 @@ import { getCurrentUser } from '../services/auth.service'; // Import your authen
 import { getUserRole } from '../services/auth.service';
 
 
-const API_URL = 'http://localhost:8435';
+const API_URL = 'http://160.40.53.35:8435';
 interface Comment {
     id: number;
     content: string;

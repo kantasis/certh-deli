@@ -3,7 +3,7 @@ import axios from 'axios';
 import { getCurrentUser } from '../services/auth.service';
 import { submitComment } from '../services/comments-submit';
 
-const API_URL = 'http://localhost:8435';
+const API_URL = 'http://160.40.53.35:8435';
 
 interface Comment {
     id: number;
