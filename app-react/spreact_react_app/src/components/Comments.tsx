@@ -3,7 +3,9 @@ import axios from 'axios';
 import { getCurrentUser } from '../services/auth.service';
 import { submitComment } from '../services/comments-submit';
 
-const API_URL = 'http://160.40.53.35:8435';
+
+const authentication_host = import.meta.env.VITE_AUTHENTICATION_HOST;
+const API_URL = `http://${authentication_host}:8435`;
 
 interface Comment {
     id: number;
@@ -99,7 +101,7 @@ const Comments: React.FC = () => {
                 </button>
             </form>
 
-          
+
         </div>
     );
 };
