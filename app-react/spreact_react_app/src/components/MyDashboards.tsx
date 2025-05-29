@@ -293,77 +293,82 @@ const SavedDashboards: React.FC = () => {
                                                 );
                                             }
 
-                                        
+
 
                                             // Riskfactorregion -> display as Risk Factor and map codes (example)
                                             if (normalizedFilter === "riskfactorregion") {
-                                            displayLabel = "Risk Factor";
-                                        // Example mapping codes to full strings
-                                        const mapping: Record<string, string> = {
-                                            OW2017: "2017 - BMI (25-30), >18 years old",
+                                                displayLabel = "Risk Factor";
+                                                // Example mapping codes to full strings
+                                                const mapping: Record<string, string> = {
+                                                    OW2017: "2017 - BMI (25-30), >18 years old",
                                                     OBE2017: "2017 - BMI (>30), >18 years old",
                                                     SMO2017: "2017 - >15 years old daily smoking",
                                                     ALC2017: "2017 - >15 years old daily drinking",
-                                        SED2017: "2017 - Sedentarism",
-                                        PR2023: "2023 - Poverty Risk % persons living below poverty line",
-                                        PCI2023: "2023 - Per capita income (Euros)",
+                                                    SED2017: "2017 - Sedentarism",
+                                                    PR2023: "2023 - Poverty Risk % persons living below poverty line",
+                                                    PCI2023: "2023 - Per capita income (Euros)",
                                                 };
-                                        displayValues = values
+                                                displayValues = values
                                                     .map(v => mapping[v] || v)
-                                        .join(", ");
+                                                    .join(", ");
                                             }
 
-                                        // Screening Data Metric special mapping
-                                        if (normalizedFilter === "screening data metric") {
-                                            displayLabel = "Screening Data Metric";
-                                        const metricMap: Record<string, string> = {
-                                            POS2017: "Coverage of CRC screening (%) for first case",
-                                        POS2019: "Coverage of CRC screening (%) for first case",
-                                        CS2017: "Positive cases (% over total tests)",
-                                        CS2019: "Positive cases (% over total tests)",
-                                                };
-                                        displayValues = values
-                                                    .map(v => metricMap[v] || v)
-                                        .join(", ");
-                                            }
-                                        const analysisValues = filters["analysis"] || [];
-                                        const isTrendAnalysis = analysisValues.includes("Trend Analysis");
+                                            // Screening Data Metric special mapping
+                                            // Screening Data Metric special mapping
+                                            if (normalizedFilter === "screening data metric") {
+                                                displayLabel = "Screening Data Metric";
 
-                                        // If Analysis is Trend Analysis, skip rendering Risk Factors badge
-                                        if ((label.toLowerCase() === "risk factors" || label.toLowerCase() === "selected risk factors") && isTrendAnalysis) {
+                                                const displaySet = new Set<string>();
+
+                                                if (values.some(v => v === "POS2017" || v === "POS2019")) {
+                                                    displaySet.add("Positive cases (% over total tests)");
+                                                }
+
+                                                if (values.some(v => v === "CS2017" || v === "CS2019")) {
+                                                    displaySet.add("Coverage of CRC screening (%)");
+                                                }
+
+                                                displayValues = Array.from(displaySet);
+                                            }
+
+                                            const analysisValues = filters["analysis"] || [];
+                                            const isTrendAnalysis = analysisValues.includes("Trend Analysis");
+
+                                            // If Analysis is Trend Analysis, skip rendering Risk Factors badge
+                                            if ((label.toLowerCase() === "risk factors" || label.toLowerCase() === "selected risk factors") && isTrendAnalysis) {
                                                 return null;
                                             }
-                                        // Special case for "risk factors"
-                                        if (label.toLowerCase() === "selected risk factors" || label.toLowerCase() === "risk factors") {
+                                            // Special case for "risk factors"
+                                            if (label.toLowerCase() === "selected risk factors" || label.toLowerCase() === "risk factors") {
                                                 const displayLabel = "Risk Factors";
-                                        const displayValues = values.length.toString();
+                                                const displayValues = values.length.toString();
 
-                                        return (
-                                        <OverlayTrigger
-                                            key={filter}
-                                            placement="top"
-                                            overlay={
-                                                <Tooltip id={`tooltip-${filter}`}>
-                                                    {values.join(", ")}
-                                                </Tooltip>
-                                            }
-                                        >
-                                            <Badge
-                                                pill
-                                                bg=""
-                                                style={{ cursor: "pointer", backgroundColor: "#dee5fa", color: "#206985" }}
-                                            >
-                                                {displayLabel}: {displayValues}
-                                            </Badge>
-                                        </OverlayTrigger>
-                                        );
+                                                return (
+                                                    <OverlayTrigger
+                                                        key={filter}
+                                                        placement="top"
+                                                        overlay={
+                                                            <Tooltip id={`tooltip-${filter}`}>
+                                                                {values.join(", ")}
+                                                            </Tooltip>
+                                                        }
+                                                    >
+                                                        <Badge
+                                                            pill
+                                                            bg=""
+                                                            style={{ cursor: "pointer", backgroundColor: "#dee5fa", color: "#206985" }}
+                                                        >
+                                                            {displayLabel}: {displayValues}
+                                                        </Badge>
+                                                    </OverlayTrigger>
+                                                );
                                             }
 
-                                        return (
-                                        <Badge pill bg="" key={filter} style={{ backgroundColor: "#dee5fa", color: "#206985" }}>
-                                            {displayLabel}: {displayValues}
-                                        </Badge>
-                                        );
+                                            return (
+                                                <Badge pill bg="" key={filter} style={{ backgroundColor: "#dee5fa", color: "#206985" }}>
+                                                    {displayLabel}: {displayValues}
+                                                </Badge>
+                                            );
                                         })}
                                     </div>
 
