@@ -20,6 +20,7 @@ export const saveDashboard = async (userId: string, iframeUrl: string, pageName:
 export const getSavedDashboards = async (userId: string) => {
     try {
         const response = await axios.get(`${DASHBOARD_API_URL}/api/user-dashboards/${userId}`);
+        console.log(response.data)
         return response.data;
     } catch (error) {
         console.error("Error fetching graphs:", error.response?.data || error.message);

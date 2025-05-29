@@ -279,31 +279,119 @@ const EuropeMap = () => {
 
 
 
-    useEffect(() => {
+    // useEffect(() => {
 
+    //     if (analysisType !== "Trend Analysis") return;
+    //     setLoading(true);
+    //     fetch("/DF_trends_results.json")
+    //         .then((res) => {
+    //             if (!res.ok) throw new Error(`HTTP error: ${res.status}`);
+    //             return res.json();
+    //         })
+    //         .then((data) => {
+    //             setRawData(data);
+    //         })
+    //         .catch((err) => {
+    //             console.error("Failed to load JSON:", err);
+    //         })
+    //         .finally(() => setLoading(false));
+    // }, [analysisType]);  // <- triggers when analysisType changes
+
+    // useEffect(() => {
+    //     if (analysisType !== "Association Analysis") return;
+    //     fetch("/DF_associations_results.json")
+    //         .then((res) => res.json())
+    //         .then((json) => setAssociationData(json))
+    //         .catch((err) => console.error("Failed to fetch association data:", err));
+    // }, [analysisType]);
+    const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOnsidXNlcm5hbWUiOiJkZXBvIn0sImV4cCI6MTc0ODM0NTY0Nn0.oTnFEJPmmsusrPLkMV6G7_nX9jt57e4uki6nLBnabUk';
+
+    useEffect(() => {
         if (analysisType !== "Trend Analysis") return;
+
+        const controller = new AbortController();
         setLoading(true);
-        fetch("/DF_trends_results.json")
+        const params = new URLSearchParams({
+            sex: sexFilter,
+            age: ageFilter,
+            year_interval: yearInterval.split(" ")[0],
+
+        });
+
+        fetch(`http://oncodir.catalink.eu:7565/v1/data-fusion/extra/trends?${params.toString()}`, {
+            method: "GET",
+            signal: controller.signal,
+            headers: {
+                "Content-Type": "application/json",
+                // Add auth if needed:
+                "Authorization": `Bearer ${token}`
+            }
+        })
+            .then((res) => {
+                if (!res.ok) throw new Error(`HTTP error: ${res.status}`);
+                console.log(res)
+                return res.json();
+            })
+            .then((data) => {
+                console.log("Trend Analysis Data:", data.results);  // 👈 Logging here
+
+                setRawData(data.results);
+            })
+            .catch((err) => {
+                if (err.name !== "AbortError") {
+                    console.error("Failed to load trend data:", err);
+                }
+            })
+            .finally(() => setTimeout(() => {
+                // ...your code
+                setLoading(false);
+            }, 300));
+
+        return () => controller.abort();
+    }, [analysisType, sexFilter, ageFilter, yearInterval]);
+
+
+
+    useEffect(() => {
+        if (analysisType !== "Association Analysis") return;
+
+        const controller = new AbortController();
+        setLoading(true);
+
+        const params = new URLSearchParams({
+            sex: sexFilter,
+            age: ageFilter,
+            year_interval: yearInterval.split(" ")[0],
+        });
+        // selectedRiskFactors.forEach((rf) => {
+        //     params.append("Risk_Factor", rf);
+        // });
+        fetch(`http://oncodir.catalink.eu:7565/v1/data-fusion/extra/association/?${params.toString()}`, {
+            method: "GET",
+            signal: controller.signal,
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            }
+        })
             .then((res) => {
                 if (!res.ok) throw new Error(`HTTP error: ${res.status}`);
                 return res.json();
             })
             .then((data) => {
-                setRawData(data);
+                console.log("Association Analysis Data:", data.results);  // 👈 Logging here
+                console.log("Full API URL:", `http://oncodir.catalink.eu:7565/v1/data-fusion/extra/association?${params.toString()}`);
+                setAssociationData(data.results)
             })
             .catch((err) => {
-                console.error("Failed to load JSON:", err);
+                if (err.name !== "AbortError") {
+                    console.error("Failed to load association data:", err);
+                }
             })
             .finally(() => setLoading(false));
-    }, [analysisType]);  // <- triggers when analysisType changes
 
-    useEffect(() => {
-        if (analysisType !== "Association Analysis") return;
-        fetch("/DF_associations_results.json")
-            .then((res) => res.json())
-            .then((json) => setAssociationData(json))
-            .catch((err) => console.error("Failed to fetch association data:", err));
-    }, [analysisType]);
+        return () => controller.abort();
+    }, [analysisType, sexFilter, ageFilter, selectedRiskFactors]);
 
 
     // FOR API
@@ -338,7 +426,7 @@ const EuropeMap = () => {
         if (!isLoggedIn) return;
         if (!rawData.length || analysisType !== "Trend Analysis") return;
 
-        setLoading(true);
+        // setLoading(true);
 
         setTimeout(() => {
             const filtered = rawData.filter(
@@ -385,7 +473,7 @@ const EuropeMap = () => {
             setEapcMax(maxEapc);
             setLoading(false);
         }, 300);
-    }, [rawData, sexFilter, ageFilter, yearInterval]);
+    }, [rawData]);
 
 
     const [eapcMin, setEapcMin] = useState(-3);
@@ -534,9 +622,24 @@ const EuropeMap = () => {
                 data: chartData,
             },
         ],
+        toolbox: {
+            feature: {
+                saveAsImage: {
+                    show: true,
+                    title: 'Download as Image',
+                    type: 'png', // or 'jpeg'
+                    backgroundColor: '#fff',
+                    // Optional: specify pixelRatio for higher resolution
+                    pixelRatio: 2,
+                }
+            },
+            right: 20,
+            top: 0,
+        },
     };
     const uniqueRiskFactors = Array.from(new Set(associationData.map((d) => d.Risk_Factor)));
     const filteredAssociationData = associationData.filter((d) =>
+
         selectedRiskFactors.includes(d.Risk_Factor) &&
         d.sex === sexFilter &&
         d.age === ageFilter
@@ -759,6 +862,7 @@ const EuropeMap = () => {
                             </Form.Label>
                             <div className="form-control" style={{ maxHeight: "280px", overflowY: "auto", padding: "5px", textAlign: "left" }}>
                                 {uniqueRiskFactors.map((factor, index) => {
+
                                     const isSelected = selectedRiskFactors.includes(factor);
                                     const disableCheckbox = selectedRiskFactors.length >= 10 && !isSelected;
 
@@ -773,6 +877,7 @@ const EuropeMap = () => {
                                             disabled={disableCheckbox}
                                         />
                                     );
+
                                 })}
                             </div>
                         </Form>
@@ -892,16 +997,50 @@ const EuropeMap = () => {
                             )}
                             <ReactECharts ref={chartRef} key={JSON.stringify(chartData)} option={trendOption} style={{ height: "550px", width: "100%", margin: "15px 0px " }} />
                             <SaveGraphButton iframeUrl={{ url: getChartImageUrl(chartIframeUrl), params: getUriParams() }} />
-                       
+
                         </>
                     )}
 
                     {analysisType === "Association Analysis" && (
                         <>
+
                             {/* <h5>
                                 <strong>Association Analysis</strong>
                                
                             </h5> */}
+                            {loading && (
+                                <div
+                                    style={{
+                                        position: "absolute",
+                                        top: 0,
+                                        left: 0,
+                                        width: "100%",
+                                        height: "100%",
+                                        backgroundColor: "rgba(255, 255, 255, 0.7)",
+                                        display: "flex",
+                                        flexDirection: "column",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        zIndex: 10,
+                                    }}
+                                >
+                                    <div
+                                        className="spinner-border text-primary"
+                                        role="status"
+                                        style={{ width: "3rem", height: "3rem" }}
+                                    ></div>
+                                    <div
+                                        style={{
+                                            marginTop: "1rem",
+                                            fontWeight: "bold",
+                                            fontSize: "1rem",
+                                            color: "#333",
+                                        }}
+                                    >
+                                        Loading...
+                                    </div>
+                                </div>
+                            )}
                             <ReactECharts
                                 ref={chartRef}
                                 option={associationOption}
@@ -910,6 +1049,7 @@ const EuropeMap = () => {
                             <SaveGraphButton iframeUrl={{ url: getChartImageUrl(chartIframeUrl), params: getUriParams() }} />
 
                         </>
+
                     )}
                 </div>
 

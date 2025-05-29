@@ -3,8 +3,8 @@ import axios from 'axios';
 import { getCurrentUser } from '../services/auth.service'; // Import your authentication helper
 import { getUserRole } from '../services/auth.service';
 
-
-const API_URL = 'http://localhost:8435';
+const authentication_host = import.meta.env.VITE_AUTHENTICATION_HOST;
+const API_URL = `http://${authentication_host}:8435`;
 interface Comment {
     id: number;
     content: string;
