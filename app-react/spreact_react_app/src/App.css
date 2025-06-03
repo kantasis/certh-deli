@@ -234,3 +234,18 @@ label {
        background-color:rgba(77, 113, 243, 0.15);
        color: #186480;
 }
+
+/* .dropdown-submenu {
+  position: relative;
+}
+
+.dropdown-submenu > .dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -0.3rem;
+  display: none;
+}
+
+.dropdown-submenu:hover > .dropdown-menu {
+  display: block;
+} */

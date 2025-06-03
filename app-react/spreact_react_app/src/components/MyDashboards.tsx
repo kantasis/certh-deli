@@ -1,103 +1,114 @@
 import React, { useEffect, useState } from "react";
 import { getSavedDashboards, deleteDashboard } from "../services/dashboard.service";
 import * as AuthService from "../services/auth.service";
-import { Button, Card, Modal, Badge, OverlayTrigger, Tooltip } from "react-bootstrap";
+import { Button, Card, Modal, Badge, Form, Spinner, Tooltip, OverlayTrigger } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 
+// Updated interface
 interface DashboardEntry {
     id: number;
+    dashboard_id: number;
+    dashboard_name: string;
     saved_url: string | { url: string; params: Record<string, any> };
     page_name: string;
     created_at: string;
 }
+const ignoreFilters = new Set(["theme", "orgid", "panelid", "refresh", "fullscreen", "kiosk", "edit", "crcfactor"]);
+function extractFiltersFromParams(params: Record<string, any>): Record<string, string[]> {
+    const filters: Record<string, string[]> = {};
 
+    for (const key in params) {
+        if (!params.hasOwnProperty(key)) continue;
+
+        let label = key
+            .replace(/([a-z])([A-Z])/g, "$1 $2")     // Split camelCase (e.g., ageFilter → age Filter)
+            .replace(/_/g, " ")                      // Replace underscores
+            .replace(/\b\w/g, char => char.toUpperCase()); // Capitalize each word
+
+        const value = params[key];
+
+        if (Array.isArray(value)) {
+            filters[label] = value.map(String);
+        } else if (typeof value === "string") {
+            filters[label] = [value];
+        } else if (value !== null && value !== undefined) {
+            filters[label] = [String(value)];
+        }
+    }
+
+    return filters;
+}
+
+
+// Extract filters from a URL string (fallback)
+const extractFiltersFromUrl = (url: string): Record<string, string[]> => {
+    const filters: Record<string, string[]> = {};
+    try {
+        const parsedUrl = new URL(url);
+        const seen = new Set<string>();
+
+        for (const [key] of parsedUrl.searchParams.entries()) {
+            if (key.startsWith("var-") && !seen.has(key)) {
+                seen.add(key);
+
+                const filterName = key
+                    .replace(/^var-/, "")
+                    .replace(/_filter$/, "")
+                    .replace(/_/g, " ")
+                    .toLowerCase();
+
+                if (ignoreFilters.has(filterName)) {
+                    continue;
+                }
+
+                const values = parsedUrl.searchParams.getAll(key);
+                filters[filterName] = values;
+            }
+        }
+    } catch (err) {
+        console.warn("Invalid URL for filter parsing:", url);
+    }
+    return filters;
+};
+
+
+
+const formatFilterLabel = (raw: string): string => {
+    const cleaned = raw.toLowerCase().replace(/ filter$/, "").replace(/_/g, " ");
+    console.log(cleaned)
+    const mappings: Record<string, string> = {
+        country: "Countries",
+        minyear: "Min Year",
+        maxyear: "Max Year",
+        sex: "Sex",
+        age: "Age",
+        region: "Regions",
+        riskfactor: "Risk Factor",
+        crcfactor: "CRC Factor",
+        yearlag: "Year Lag",
+        analysis: "Analysis",
+        "diet type": "Risk Factor",
+        "screening data metric": "Screening Data Metric",
+
+    };
+    return mappings[cleaned] || cleaned.charAt(0).toUpperCase() + cleaned.slice(1);
+};
+
+// Component
 const SavedDashboards: React.FC = () => {
     const [dashboards, setDashboards] = useState<DashboardEntry[]>([]);
     const [loading, setLoading] = useState(true);
     const [modalShow, setModalShow] = useState(false);
     const [modalMessage, setModalMessage] = useState("");
     const [deleteId, setDeleteId] = useState<number | null>(null);
-    const navigate = useNavigate();
+    const [selectedDashboardId, setSelectedDashboardId] = useState<number | "">("");
     const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-    const ignoreFilters = new Set(["crcfactor"]); // filters to ignore
-
-    // Extract filters from a URL string (fallback)
-    const extractFiltersFromUrl = (url: string): Record<string, string[]> => {
-        const filters: Record<string, string[]> = {};
-        try {
-            const parsedUrl = new URL(url);
-            const seen = new Set<string>();
-
-            for (const [key] of parsedUrl.searchParams.entries()) {
-                if (key.startsWith("var-") && !seen.has(key)) {
-                    seen.add(key);
-
-                    const filterName = key
-                        .replace(/^var-/, "")
-                        .replace(/_filter$/, "")
-                        .replace(/_/g, " ")
-                        .toLowerCase();
-
-                    if (ignoreFilters.has(filterName)) {
-                        continue;
-                    }
-
-                    const values = parsedUrl.searchParams.getAll(key);
-                    filters[filterName] = values;
-                }
-            }
-        } catch (err) {
-            console.warn("Invalid URL for filter parsing:", url);
-        }
-        return filters;
-    };
-
-    // Extract filters from params object
-    const extractFiltersFromParams = (paramsObj: Record<string, any>): Record<string, string[]> => {
-        const filters: Record<string, string[]> = {};
-
-        for (const [key, value] of Object.entries(paramsObj)) {
-            // normalize keys, remove "_filter", convert camelCase to space + lowercase if you want
-            let filterName = key
-                .replace(/_filter$/i, "")
-                // Optionally convert camelCase to spaces, e.g. yearInterval -> year interval
-                .replace(/([a-z])([A-Z])/g, '$1 $2')
-                .toLowerCase();
-
-            if (ignoreFilters.has(filterName)) continue;
-
-            if (Array.isArray(value)) {
-                filters[filterName] = value.map(String);
-            } else if (typeof value === "string") {
-                filters[filterName] = value.split(",").map(v => v.trim());
-            } else {
-                filters[filterName] = [String(value)];
-            }
-        }
-
-        return filters;
-    };
+    const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
+    const dashboardIndex = searchParams.get("index");
 
 
-    const formatFilterLabel = (raw: string): string => {
-        const cleaned = raw.toLowerCase().replace(/ filter$/, "").replace(/_/g, " ");
-        const mappings: Record<string, string> = {
-            country: "Countries",
-            minyear: "Min Year",
-            maxyear: "Max Year",
-            sex: "Sex",
-            age: "Age",
-            region: "Regions",
-            riskfactor: "Risk Factor",
-            yearlag: "Year Lag",
-            analysis: "Analysis",
-            "diet type": "Risk Factor",
-            "screening data metric": "Screening Data Metric",
-
-        };
-        return mappings[cleaned] || cleaned.charAt(0).toUpperCase() + cleaned.slice(1);
-    };
 
     useEffect(() => {
         setIsLoggedIn(AuthService.isLoggedIn());
@@ -108,8 +119,20 @@ const SavedDashboards: React.FC = () => {
         const load = async () => {
             try {
                 const user = AuthService.getCurrentUser();
-                const data = await getSavedDashboards(user.id);
-                setDashboards(data);
+                const rawData = await getSavedDashboards(user.id);
+
+                const flattened: DashboardEntry[] = rawData.flatMap((collection: any) =>
+                    (collection.graphs || []).map((g: any) => ({
+                        id: g.id,
+                        dashboard_id: collection.id,
+                        dashboard_name: collection.name,
+                        saved_url: g.saved_url,
+                        page_name: g.page_name,
+                        created_at: g.created_at,
+                    }))
+                );
+
+                setDashboards(flattened);
             } catch {
                 alert("Failed to load dashboards.");
             } finally {
@@ -118,6 +141,38 @@ const SavedDashboards: React.FC = () => {
         };
         load();
     }, [isLoggedIn]);
+
+    const dashboardCollections = React.useMemo(() => {
+        const map = new Map<number, string>();
+        dashboards.forEach((d) => {
+            if (!map.has(d.dashboard_id)) {
+                map.set(d.dashboard_id, d.dashboard_name);
+            }
+        });
+        return Array.from(map.entries()).map(([id, name]) => ({ id, name }));
+    }, [dashboards]);
+
+    useEffect(() => {
+        if (dashboardCollections.length > 0 && !selectedDashboardId) {
+            setSelectedDashboardId(dashboardCollections[0].id);
+        }
+    }, [dashboardCollections, selectedDashboardId]);
+
+
+    useEffect(() => {
+        if (dashboardIndex !== null && dashboardCollections.length > 0) {
+            const index = parseInt(dashboardIndex, 10);
+            if (!isNaN(index) && index >= 0 && index < dashboardCollections.length) {
+                const selected = dashboardCollections[index];
+                setSelectedDashboardId(selected.id);
+            }
+        }
+    }, [dashboardIndex, dashboardCollections]);
+
+
+    const visibleDashboards = dashboards.filter(
+        (d) => d.dashboard_id === selectedDashboardId
+    );
 
     const handleGoToGraph = (entry: DashboardEntry) => {
         try {
@@ -128,6 +183,7 @@ const SavedDashboards: React.FC = () => {
                 urlStr = entry.saved_url.url || "";
             }
             const url = new URL(urlStr);
+
             const panelLabel = url.searchParams.get("panelLabel");
             localStorage.setItem("lit03Panel", panelLabel || "");
         } catch (error) {
@@ -155,74 +211,128 @@ const SavedDashboards: React.FC = () => {
     };
 
     if (!isLoggedIn) return <h2>Unauthorized</h2>;
-    if (loading) return <p>Loading...</p>;
+
+    if (loading) {
+        return (
+            <div className="text-center my-4">
+                <Spinner animation="border" role="status" />
+                <span className="visually-hidden">Loading...</span>
+            </div>
+        );
+    }
+
+    if (dashboards.length === 0) {
+        return <p>You have no saved dashboards yet.</p>;
+    }
 
     return (
         <div className="container mt-4">
-            <h3>My Saved Dashboards</h3>
+            <h3>
+                My Saved Dashboards{" - "}
+                {selectedDashboardId &&
+                    dashboardCollections.find((c) => c.id === selectedDashboardId)?.name}
+            </h3>
+
+            <div className="d-flex align-items-center mb-3">
+                <Form.Select
+                    value={selectedDashboardId}
+                    onChange={(e) => setSelectedDashboardId(Number(e.target.value))}
+                    style={{ width: "300px" }}
+                >
+                    <option value="" disabled>
+                        -- Select Dashboard --
+                    </option>
+                    {dashboardCollections.map((collection) => (
+                        <option key={collection.id} value={collection.id}>
+                            {collection.name}
+                        </option>
+                    ))}
+
+                </Form.Select>
+            </div>
+
             <div className="row d-flex align-items-stretch">
-                {dashboards.map((d, index) => {
-                    let srcUrl = "";
-                    let filters: Record<string, string[]> = {};
 
-                    try {
-                        // Try to parse saved_url if it's a string and JSON parseable
-                        if (typeof d.saved_url === "string") {
-                            const maybeObj = JSON.parse(d.saved_url);
-                            if (maybeObj && typeof maybeObj === "object" && maybeObj.url) {
-                                // Now treat saved_url as object
-                                srcUrl = maybeObj.url || "";
-                                filters = extractFiltersFromParams(maybeObj.params || {});
-                                console.log("Filters: " + filters)
-                            } else {
-                                // Just normal string URL
-                                srcUrl = d.saved_url;
-                                filters = extractFiltersFromUrl(d.saved_url);
-                                console.log("Filters: " + filters)
+                {visibleDashboards.map((d, index) => {
+                    function parseSavedUrl(
+                        saved_url: string | { url: string; params?: Record<string, any> }
+                    ): { srcUrl: string; filters: Record<string, string[]> } {
+                        let srcUrl = "";
+                        let filters: Record<string, string[]> = {};
+
+                        try {
+                            if (typeof saved_url === "string") {
+                                // First, try to JSON.parse it (if it was stringified object)
+                                try {
+                                    const maybeObj = JSON.parse(saved_url);
+                                    if (maybeObj && typeof maybeObj === "object" && maybeObj.url) {
+                                        srcUrl = maybeObj.url || "";
+                                        filters = extractFiltersFromParams(maybeObj.params || {});
+                                        return { srcUrl, filters };
+                                    }
+                                } catch {
+                                    // Not JSON, fall through
+                                }
+
+                                // Base64 image case — skip if it's just an image
+                                if (saved_url.startsWith("data:image")) {
+                                    return { srcUrl: "", filters: {} };
+                                }
+
+                                // Else it's a normal URL string
+                                srcUrl = saved_url;
+                                filters = extractFiltersFromUrl(saved_url);
+                            } else if (typeof saved_url === "object" && saved_url !== null) {
+                                srcUrl = saved_url.url || "";
+                                filters = extractFiltersFromParams(saved_url.params || {});
                             }
-                        } else if (d.saved_url && typeof d.saved_url === "object") {
-                            // In case saved_url is already an object
-                            srcUrl = d.saved_url.url || "";
-                            filters = extractFiltersFromParams(d.saved_url.params || {});
-                            console.log("Filters: " + filters)
+                        } catch (err) {
+                            console.warn("Failed to parse saved_url", err);
                         }
-                    } catch (e) {
-                        // If JSON parse fails, fallback to treat saved_url as string
-                        srcUrl = typeof d.saved_url === "string" ? d.saved_url : "";
-                        filters = extractFiltersFromUrl(srcUrl);
+
+                        return { srcUrl, filters };
                     }
 
 
-                    // Attempt JSON parse fallback if needed (optional)
-                    try {
-                        const parsed = JSON.parse(srcUrl);
-                        if (parsed.url) {
-                            srcUrl = parsed.url;
-                        }
-                    } catch {
-                        // ignore
-                    }
+                    //const filters = extractFiltersFromParams(filterParams);
+                    const { srcUrl, filters } = parseSavedUrl(d.saved_url);
+
+
 
                     return (
                         <div className="col-12 col-md-6 col-lg-4 d-flex" key={d.id}>
                             <Card className="mb-4 p-2 flex-fill">
-                                <iframe
-                                    src={srcUrl}
-                                    style={{ width: "100%", height: "280px", border: "none", pointerEvents: "none" }}
-                                    title={`dashboard-${d.id}`}
-                                />
+                                {srcUrl ? (
+                                    <iframe
+                                        src={srcUrl}
+                                        style={{ width: "100%", height: "280px", border: "none", pointerEvents: "none" }}
+                                        title={`dashboard-${d.id}`}
+                                    />
+                                ) : (
+                                    <div className="bg-light text-center py-5 text-muted" style={{ height: "280px" }}>
+                                        No Preview
+                                    </div>
+                                )}
                                 <Card.Body className="d-flex flex-column py-1">
-                                    <Card.Text className="p-0 m-0">
+                                    <Card.Text className="m-0 p-0" >
                                         <strong>Page: </strong>
                                         {d.page_name
-                                            .split("-")
-                                            .map((word) => (word.toUpperCase() === "CRC" ? "CRC" : word.charAt(0).toUpperCase() + word.slice(1)))
-                                            .join(" ")}
+                                            ? d.page_name
+                                                .split("-")
+                                                .map((word) =>
+                                                    word.toUpperCase() === "CRC"
+                                                        ? "CRC"
+                                                        : word.charAt(0).toUpperCase() + word.slice(1)
+                                                )
+                                                .join(" ")
+                                            : "Unknown Page"}
+
                                     </Card.Text>
-                                    <Card.Text className="p-0 m-0">
-                                        <strong>Filters:</strong>
-                                    </Card.Text>
-                                    <div className="d-flex justify-content-center flex-wrap gap-2 mt-2">
+
+                                    {/* Render filters */}
+                                    <div><strong>Filters: </strong></div>
+                                    <div className="d-flex justify-content-center flex-wrap gap-2 mt-1">
+
                                         {Object.entries(filters).map(([filter, values]) => {
                                             const labelRaw = filter;
                                             let label = formatFilterLabel(labelRaw);
@@ -256,6 +366,7 @@ const SavedDashboards: React.FC = () => {
 
                                             // Special tooltip for Countries filter
                                             if (normalizedFilter === "country") {
+                                                console.log("Countries extracted:", values);
                                                 return (
                                                     <OverlayTrigger
                                                         key={filter}
@@ -269,29 +380,20 @@ const SavedDashboards: React.FC = () => {
                                                 );
                                             }
 
-                                            // Special tooltip for Regions filter
                                             if (normalizedFilter === "region") {
-                                                // split values if only one string with commas
-                                                const regionsArray = values.length === 1 && values[0].includes(",")
-                                                    ? values[0].split(",").map(v => v.trim())
-                                                    : values;
-
                                                 return (
                                                     <OverlayTrigger
                                                         key={filter}
                                                         placement="top"
-                                                        overlay={
-                                                            <Tooltip id={`tooltip-${filter}`}>
-                                                                {regionsArray.join(", ")}
-                                                            </Tooltip>
-                                                        }
+                                                        overlay={<Tooltip id={`tooltip-${filter}`}>{values.join(", ")}</Tooltip>}
                                                     >
                                                         <Badge pill bg="" style={{ cursor: "pointer", backgroundColor: "#dee5fa", color: "#206985" }}>
-                                                            Regions: {regionsArray.length}
+                                                            Regions: {values.length}
                                                         </Badge>
                                                     </OverlayTrigger>
                                                 );
                                             }
+
 
 
 
@@ -328,7 +430,7 @@ const SavedDashboards: React.FC = () => {
                                                     displaySet.add("Coverage of CRC screening (%)");
                                                 }
 
-                                                displayValues = Array.from(displaySet);
+                                                displayValues = Array.from(displaySet).toString();
                                             }
 
                                             const analysisValues = filters["analysis"] || [];
@@ -341,7 +443,7 @@ const SavedDashboards: React.FC = () => {
                                             // Special case for "risk factors"
                                             if (label.toLowerCase() === "selected risk factors" || label.toLowerCase() === "risk factors") {
                                                 const displayLabel = "Risk Factors";
-                                                const displayValues = values.length.toString();
+                                                displayValues = values.length.toString();
 
                                                 return (
                                                     <OverlayTrigger
@@ -372,9 +474,12 @@ const SavedDashboards: React.FC = () => {
                                         })}
                                     </div>
 
-                                    <Card.Text className="p-0 mt-0 mb-2">
+
+
+
+                                    <Card.Text className="mt-2">
                                         <strong>Graph: </strong>
-                                        {dashboards.length - index}/6 -
+                                        {index + 1} of {visibleDashboards.length}
                                         {(() => {
                                             const date = new Date(d.created_at);
                                             const day = String(date.getDate()).padStart(2, "0");
@@ -416,7 +521,7 @@ const SavedDashboards: React.FC = () => {
                     </Button>
                 </Modal.Footer>
             </Modal>
-        </div >
+        </div>
     );
 };
 

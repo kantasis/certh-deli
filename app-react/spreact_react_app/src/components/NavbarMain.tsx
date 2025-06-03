@@ -1,13 +1,28 @@
-import { NavLink } from "react-router-dom";
 import React, { useState, useEffect } from "react";
+import { NavLink, useNavigate } from "react-router-dom";
 import * as AuthService from "../services/auth.service";
-import { getUserRole } from '../services/auth.service';
+import { getUserRole } from "../services/auth.service";
+import { getUserDashboards } from "../services/dashboard.service";
 
 const NavbarMain: React.FC = () => {
    const [isLoggedIn, setIsLoggedIn] = useState(false);
+   const [dashboards, setDashboards] = useState<any[]>([]);
+   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
+   const [showDashboardsMenu, setShowDashboardsMenu] = useState(false);
+   const navigate = useNavigate();
 
    useEffect(() => {
-      setIsLoggedIn(AuthService.isLoggedIn());
+      const loggedIn = AuthService.isLoggedIn();
+      setIsLoggedIn(loggedIn);
+
+      if (loggedIn) {
+         const user = AuthService.getCurrentUser();
+         if (user?.id) {
+            getUserDashboards(user.id)
+               .then((data) => setDashboards(data))
+               .catch((err) => console.error("Failed to fetch dashboards:", err));
+         }
+      }
    }, []);
 
    const userRole = getUserRole();
@@ -97,19 +112,27 @@ const NavbarMain: React.FC = () => {
       );
    } else {
       rightButtons_tsx.push(
-         <li className="nav-item dropdown" key="profile">
+         <li
+            className={`nav-item dropdown ${showProfileDropdown ? "show" : ""}`}
+            key="profile"
+            onMouseEnter={() => setShowProfileDropdown(true)}
+            onMouseLeave={() => {
+               setShowProfileDropdown(false);
+               setShowDashboardsMenu(false);
+            }}
+         >
             <a
                className="nav-link dropdown-toggle"
                href="#"
                id="navbarDropdown"
                role="button"
-               data-bs-toggle="dropdown"
-               aria-expanded="false"
+               onClick={(e) => e.preventDefault()}
             >
                Profile
             </a>
             <ul
-               className="dropdown-menu dropdown-menu-end"
+               className={`dropdown-menu dropdown-menu-end ${showProfileDropdown ? "show" : ""
+                  }`}
                aria-labelledby="navbarDropdown"
             >
                <li>
@@ -122,19 +145,60 @@ const NavbarMain: React.FC = () => {
                      Change Password
                   </NavLink>
                </li>
-               <li>
-                  <NavLink className="dropdown-item" to="/my-dashboards">
-                     My Dashboards
-                  </NavLink>
-               </li>
+
+               {dashboards.length > 0 && (
+                  <>
+                     <li>
+                        <hr className="dropdown-divider" />
+                     </li>
+                     <li
+                        className="dropdown-submenu position-relative"
+                        onMouseEnter={() => setShowDashboardsMenu(true)}
+                        onMouseLeave={() => setShowDashboardsMenu(false)}
+                     >
+                        <a className="dropdown-item" href="#">
+                           My Dashboards &raquo;
+                        </a>
+                        <ul
+                           className={`dropdown-menu ${showDashboardsMenu ? "show" : ""
+                              }`}
+                           style={{
+                              top: 0,
+                              left: "100%",
+                              marginTop: "-0.3rem",
+                              position: "absolute"
+                           }}
+                        >
+                           {dashboards.map((dashboard, index) => (
+                              <li key={dashboard.id}>
+                                 <a
+                                    href="#"
+                                    className="dropdown-item"
+                                    onClick={(e) => {
+                                       e.preventDefault();
+                                       navigate(`/my-dashboards?index=${index}`);
+                                    }}
+                                 >
+                                    {dashboard.name}
+                                 </a>
+                              </li>
+                           ))}
+                        </ul>
+                     </li>
+                     <li>
+                        {/* <NavLink
+                           className="dropdown-item"
+                           to="/my-dashboards"
+                        >
+                           View All Dashboards
+                        </NavLink> */}
+                     </li>
+                  </>
+               )}
             </ul>
          </li>,
          <li className="nav-item" key="logout">
-            <NavLink
-               to="/login"
-               className="nav-link"
-               onClick={logout}
-            >
+            <NavLink to="/login" className="nav-link" onClick={logout}>
                Logout
             </NavLink>
          </li>
@@ -158,9 +222,6 @@ const NavbarMain: React.FC = () => {
                type="button"
                data-bs-toggle="collapse"
                data-bs-target="#navbarSupportedContent"
-               aria-controls="navbarSupportedContent"
-               aria-expanded="false"
-               aria-label="Toggle navigation"
             >
                <span className="navbar-toggler-icon"></span>
             </button>

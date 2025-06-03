@@ -1,111 +1,288 @@
 import React, { useEffect, useState } from "react";
-import { Button, Modal } from "react-bootstrap";
-import { useLocation, Link } from "react-router-dom";  // <-- import Link
+import { Button, Modal, Form, Dropdown, InputGroup, } from "react-bootstrap";
+import { useLocation, Link, useNavigate } from "react-router-dom";
 import * as AuthService from "../services/auth.service";
-import { saveDashboard, getSavedDashboards } from "../services/dashboard.service";
+
+import {
+    getUserDashboards,
+    createDashboard,
+    renameDashboard,
+    saveGraphToDashboard,
+} from "../services/dashboard.service";
 
 interface SaveGraphButtonProps {
     iframeUrl: {
         url: string;
-        params?: any; // or more specific type if you know it
+        params?: any;
     };
 }
 
+const MAX_DASHBOARDS = 3;
+const MAX_GRAPHS_PER_DASHBOARD = 6;
+
 const SaveGraphButton: React.FC<SaveGraphButtonProps> = ({ iframeUrl }) => {
-    const { url, params } = iframeUrl;
-    const [userId, setUserId] = useState<string | null>(null);
+
+    const navigate = useNavigate();
     const location = useLocation();
+    const [userId, setUserId] = useState<string | null>(null);
+    const [dashboards, setDashboards] = useState<any[]>([]);
+    const [selectedDashboardId, setSelectedDashboardId] = useState<number | null>(null);
+    const [newDashboardName, setNewDashboardName] = useState("");
 
-    const [modalShow, setModalShow] = useState(false);
+    const [showSelectionModal, setShowSelectionModal] = useState(false);
+    const [showInfoModal, setShowInfoModal] = useState(false);
     const [modalTitle, setModalTitle] = useState("");
-    const [modalMessage, setModalMessage] = useState<React.ReactNode>(""); // allow JSX
+    const [modalMessage, setModalMessage] = useState<React.ReactNode>("");
     const [modalVariant, setModalVariant] = useState<"success" | "danger">("success");
-
-    const [savedCount, setSavedCount] = useState(0);
-    const MAX_SAVES = 6;
+    const isInfoOnlyModal = ["Success", "Error", "Limit Reached", "Missing Data", "No Dashboard Selected"].includes(modalTitle);
 
     useEffect(() => {
         const user = AuthService.getCurrentUser?.();
         if (user && user.id) {
             setUserId(user.id);
-            getSavedDashboards(user.id)
-                .then((data) => setSavedCount(data.length))
-                .catch(() => setSavedCount(0));
+            loadDashboards(user.id);
+        }
+    }, []);
+    useEffect(() => {
+        const user = AuthService.getCurrentUser?.();
+        console.log("Current user:", user);
+        if (user && user.id) {
+            setUserId(user.id);
+            loadDashboards(user.id);
         }
     }, []);
 
-    const handleSave = async () => {
-        console.log("Saving URL:", iframeUrl);
-        // console.log("Saving IMG URL:", getImageUrl());
-        // const chartImageUrl = getImageUrl?.() || "";
-
-        const urlToSave =
-            iframeUrl;
-
-        if (!urlToSave) {
-            setModalTitle("Nothing to save");
-            setModalMessage("The graph hasn’t rendered yet. Please try again in a moment.");
-            setModalVariant("danger");
-            setModalShow(true);
-            return;
+    const loadDashboards = async (userId: string) => {
+        try {
+            const data = await getUserDashboards(userId);
+            setDashboards(data);
+        } catch (err) {
+            console.error("Failed to load dashboards");
         }
+    };
 
-
-        if (!userId) {
-            setModalTitle("Not logged in");
-            setModalMessage("You must be logged in to save graphs.");
-            setModalVariant("danger");
-            setModalShow(true);
-            return;
-        }
-
-        const pageName = location.pathname.replace("/", "") || "home";
+    const handleCreateDashboard = async () => {
+        if (!newDashboardName.trim() || !userId) return;
 
         try {
-            await saveDashboard(userId, urlToSave, pageName);
-
-            const dashboards = await getSavedDashboards(userId);
-            setSavedCount(dashboards.length);
-
-            setModalTitle("Dashboard Saved");
-            setModalMessage(`You have saved ${dashboards.length}/${MAX_SAVES} dashboards.`);
-            setModalVariant("success");
-            setModalShow(true);
+            const dashboard = await createDashboard(userId, newDashboardName.trim());
+            setDashboards((prev) => [...prev, { ...dashboard, graphs: [] }]);
+            setNewDashboardName("");
         } catch (err: any) {
-            const backendMessage = err?.response?.data?.error;
-            if (backendMessage === "You can only save up to 6 graphs.") {
-                setModalTitle("Save Failed");
-                setModalMessage(
-                    <>
-                        You’ve reached the maximum of {MAX_SAVES} saved dashboards.<br />
-                        Please <Link to="/my-dashboards" onClick={() => setModalShow(false)}>go to your saved dashboards</Link> and delete some to save a new view.
-                    </>
-                );
-            } else {
-                setModalTitle("Save Failed");
-                setModalMessage("Could not save graph.");
-            }
+            const errorMessage = err?.response?.data?.error || "Failed to create dashboard";
+
+            setModalTitle("Error");
+            setModalMessage(errorMessage);
             setModalVariant("danger");
-            setModalShow(true);
+            setShowSelectionModal(true);
+        }
+    };
+
+
+    const handleRenameDashboard = async (id: number, name: string) => {
+        try {
+            await renameDashboard(id, name);
+            setDashboards((prev) =>
+                prev.map((d) => (d.id === id ? { ...d, name } : d))
+            );
+        } catch (err) {
+            alert("Failed to rename dashboard");
+        }
+    };
+
+    const handleSave = async () => {
+        const user = AuthService.getCurrentUser?.();
+        const userId = user?.id;
+
+        console.log("iframeUrl prop:", iframeUrl);
+        console.log("iframeUrl.url:", iframeUrl?.url);
+
+        const urlToSave =
+            typeof iframeUrl === "string"
+                ? iframeUrl
+                : iframeUrl?.params
+                    ? { url: iframeUrl.url, params: iframeUrl.params }
+                    : iframeUrl.url;
+
+        if (!userId || !urlToSave) {
+            setModalTitle("Missing Data");
+            setModalMessage("You must be logged in and have a valid graph.");
+            setModalVariant("danger");
+            setShowSelectionModal(true);
+            return;
         }
 
+        if (!selectedDashboardId) {
+            setModalTitle("No Dashboard Selected");
+            setModalMessage("Please select a dashboard to save this graph.");
+            setModalVariant("danger");
+            setShowSelectionModal(true);
+            return;
+        }
+
+        const dashboard = dashboards.find((d) => d.id === selectedDashboardId);
+        if (dashboard?.graphs.length >= MAX_GRAPHS_PER_DASHBOARD) {
+            setModalTitle("Limit Reached");
+            setModalMessage(
+                <>
+                    You’ve reached the maximum of {MAX_GRAPHS_PER_DASHBOARD} saved graphs in this dashboard.<br />
+                    Please{" "}
+                    <span
+                        style={{ color: "blue", textDecoration: "underline", cursor: "pointer" }}
+                        onClick={() => {
+                            setShowSelectionModal(false);
+                            navigate(`/my-dashboards?index=${dashboards.findIndex(c => c.id === selectedDashboardId)}`);
+
+
+                        }}
+                    >
+                        go to your saved dashboards
+                    </span>{" "}
+                    and delete some graphs to save a new view.
+                </>
+            );
+            setModalVariant("danger");
+            setShowSelectionModal(true);
+            return;
+        }
+
+
+        try {
+            const pageName = location.pathname.replace("/", "") || "home";
+            // console.log("Saving graph with:");
+            // console.log("dashboardId:", selectedDashboardId);
+            // console.log("savedUrl:", urlToSave);
+            // console.log("pageName:", pageName);
+            // console.log("userId:", userId);
+
+            await saveGraphToDashboard(selectedDashboardId, urlToSave, pageName, userId);
+            await loadDashboards(userId); // refresh count
+
+            setModalTitle("Success");
+            setModalMessage("Graph saved to dashboard.");
+            setModalVariant("success");
+            setShowSelectionModal(true);
+        } catch (err: any) {
+            console.error("Save failed:", err?.response?.data);
+            setModalTitle("Error");
+            setModalMessage(err?.response?.data?.error || "Could not save graph.");
+            setModalVariant("danger");
+            setShowSelectionModal(true);
+        }
+    };
+    const resetModalState = () => {
+        setModalTitle("");
+        setModalMessage("");
+        setModalVariant("success");
+        setSelectedDashboardId(null);
+        setNewDashboardName("");
+    };
+    const closeModal = () => {
+        setShowSelectionModal(false);
+        resetModalState();
     };
 
     return (
         <>
-            <Button variant="primary" onClick={handleSave}>
-                Save This View
-            </Button>
+            <Button onClick={() => { resetModalState(); setShowSelectionModal(true); }}>Save This View</Button>
 
-            <Modal show={modalShow} onHide={() => setModalShow(false)} centered>
+            <Modal show={showSelectionModal} onHide={closeModal} centered>
                 <Modal.Header closeButton className={modalVariant === "danger" ? "bg-danger text-white" : "bg-success text-white"}>
                     <Modal.Title>{modalTitle}</Modal.Title>
                 </Modal.Header>
-                <Modal.Body>{modalMessage}</Modal.Body>
+                <Modal.Body>
+                    {isInfoOnlyModal ? (
+                        modalMessage
+                    ) : (
+                        <>
+                            <h5>Select a dashboard</h5>
+
+                            <Form.Group>
+                                <Form.Select
+                                    value={selectedDashboardId ?? ""}
+                                    onChange={(e) => {
+                                        const value = e.target.value;
+                                        setSelectedDashboardId(value === "" ? null : Number(value));
+                                    }}
+                                >
+                                    <option value="">-- Choose one --</option>
+                                    {dashboards.map((dashboard) => (
+                                        <option key={dashboard.id} value={dashboard.id}>
+                                            {dashboard.name} ({dashboard.graphs.length}/6)
+                                        </option>
+                                    ))}
+                                </Form.Select>
+
+                                {selectedDashboardId && (
+                                    <>
+                                        <h5 className="mt-4">Rename the selected Dashboard</h5>
+                                        <InputGroup className="mb-3">
+                                            <Form.Control
+                                                type="text"
+                                                value={
+                                                    dashboards.find(d => d.id === selectedDashboardId)?.name || ''
+                                                }
+                                                onChange={(e) => {
+                                                    const newName = e.target.value;
+                                                    setDashboards(prev =>
+                                                        prev.map(d =>
+                                                            d.id === selectedDashboardId ? { ...d, name: newName } : d
+                                                        )
+                                                    );
+                                                }}
+                                            />
+                                            <Button
+                                                variant="warning"
+                                                onClick={() => {
+                                                    const dashboard = dashboards.find(d => d.id === selectedDashboardId);
+                                                    if (dashboard) {
+                                                        handleRenameDashboard(dashboard.id, dashboard.name);
+                                                    }
+                                                }}
+                                            >
+                                                Click to Rename
+                                            </Button>
+                                        </InputGroup>
+                                    </>
+                                )}
+
+                            </Form.Group>
+
+
+                            {dashboards.length < MAX_DASHBOARDS && (
+                                <>
+                                    <h6>Create New Dashboard</h6>
+                                    <InputGroup className="mb-3">
+                                        <Form.Control
+                                            type="text"
+                                            placeholder="Dashboard name"
+                                            value={newDashboardName}
+                                            onChange={(e) => setNewDashboardName(e.target.value)}
+                                        />
+                                        <Button variant="outline-secondary" onClick={handleCreateDashboard}>
+                                            Create
+                                        </Button>
+                                    </InputGroup>
+                                </>
+                            )}
+                        </>
+                    )}
+                </Modal.Body>
                 <Modal.Footer>
-                    <Button variant={modalVariant === "danger" ? "danger" : "success"} onClick={() => setModalShow(false)}>
-                        Close
-                    </Button>
+                    {(modalTitle === "Success" || modalTitle === "Error") ? (
+                        <Button variant={modalVariant} onClick={closeModal}>
+                            Close
+                        </Button>
+                    ) : (
+                        <>
+                            <Button variant="secondary" onClick={() => setShowSelectionModal(false)}>
+                                Cancel
+                            </Button>
+                            <Button variant="primary" onClick={handleSave}>
+                                Save Graph
+                            </Button>
+                        </>
+                    )}
                 </Modal.Footer>
             </Modal>
         </>
