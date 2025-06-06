@@ -28,7 +28,6 @@ const LIT03: React.FC = () => {
             default:
                 return (
                     <div className="text-center my-5">
-<<<<<<< Updated upstream
 
                         <div className="container w-75 my-5">
                             <h5>This section of the dashboard presents data from the Autonomous
@@ -38,17 +37,6 @@ const LIT03: React.FC = () => {
                         </div>
                         <h5 className="">Please use the dropdown menu on the left to select
                             and view the data.</h5>
-=======
-                       
-                    <div className="container w-75 my-5">
-                                            <h5>This section of the dashboard presents data from the Autonomous 
-                            Communities of Spain related to mortality, risk factors and CRC screening. 
-                            Decision-making for CRC prevention is performed at the subnational level. 
-                            Therefore, Spain has been selected for this analysis.</h5>
-                            </div>
-                        <h5 className="">Please use the dropdown menu on the left to select
-                        and view the data.</h5>
->>>>>>> Stashed changes
                     </div>
                 );
         }

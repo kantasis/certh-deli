@@ -143,11 +143,7 @@ const NewDash: React.FC = () => {
                             <h5 className="my-5">The evolution of CRC mortality rates in the autonomous
                                 communities of Spain is presented so that the different patterns can be compared.</h5>
                             <div className=""><h5 className="mb-5" >Please use the filters to refine your selection.</h5>
-<<<<<<< Updated upstream
                                 <p> Make sure to select a <strong>region</strong>, <strong>year range</strong>, and <strong>sex filter.</strong></p></div>
-=======
-                            <p> Make sure to select a <strong>region</strong>, <strong>year range</strong>, and <strong>sex filter.</strong></p></div>
->>>>>>> Stashed changes
                         </div>
                     ) : (
                         <>

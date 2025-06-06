@@ -100,7 +100,7 @@ app.post('/api/save-dashboard', async (req, res) => {
 
     try {
         const { rows: countRows } = await pool.query(
-            'SELECT COUNT(*) FROM user_saved_dashboards WHERE user_id = $1',
+            'SELECT COUNT(*) FROM saved_graphs WHERE user_id = $1',
             [user_id]
         );
 
@@ -129,7 +129,7 @@ app.get('/api/user-dashboards/:user_id', async (req, res) => {
 
     try {
         const result = await pool.query(
-            'SELECT * FROM user_saved_dashboards WHERE user_id = $1 ORDER BY created_at DESC LIMIT 6',
+            'SELECT * FROM saved_graphs WHERE user_id = $1 ORDER BY created_at DESC LIMIT 6',
             [user_id]
         );
 
@@ -146,7 +146,7 @@ app.delete('/api/delete-dashboard/:id', async (req, res) => {
     const { id } = req.params;
 
     try {
-        await pool.query('DELETE FROM user_saved_dashboards WHERE id = $1', [id]);
+        await pool.query('DELETE FROM saved_graphs WHERE id = $1', [id]);
         res.status(204).send(); // 204 = No Content, which is OK
     } catch (error) {
         console.error('Error deleting graph:', error.message);

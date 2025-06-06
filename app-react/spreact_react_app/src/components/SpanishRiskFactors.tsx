@@ -135,17 +135,10 @@ const SpanishRiskFactorsDataPanel: React.FC = () => {
                     </div>
                 ) : (
                     <div>
-<<<<<<< Updated upstream
                         <div className=""><div><h5 className="mb-5">Data on risk factors for CRC are presented by autonomous communities. Comparison of these frequencies makes it possible
                             to identify the differences between autonomous communities.</h5></div>
                         </div>
                         <div className=""><h5>Please select a risk factor from the dropdown menu on the left to display the data.</h5></div>
-=======
-                    <div className=""><div><h5 className="mb-5">Data on risk factors for CRC are presented by autonomous communities. Comparison of these frequencies makes it possible
-                         to identify the differences between autonomous communities.</h5></div>
-                         </div>
-                <div className=""><h5>Please select a risk factor from the dropdown menu on the left to display the data.</h5></div>
->>>>>>> Stashed changes
                     </div>
                 )}
             </div>

@@ -19,7 +19,7 @@ const EuropeMap = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const chartRef = useRef<ReactECharts>(null);          // NEW
     const [chartIframeUrl, setChartIframeUrl] = useState("");
-
+    const [token, setToken] = useState(null);
 
     useEffect(() => {
         setIsLoggedIn(AuthService.isLoggedIn());
@@ -98,7 +98,7 @@ const EuropeMap = () => {
             const parsed = JSON.parse(savedIframeUrl);
             const params = parsed.params;
 
-            console.log("Restoring with params:", params);
+            //  console.log("Restoring with params:", params);
 
             if (!params) return;
 
@@ -304,7 +304,39 @@ const EuropeMap = () => {
     //         .then((json) => setAssociationData(json))
     //         .catch((err) => console.error("Failed to fetch association data:", err));
     // }, [analysisType]);
-    const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOnsidXNlcm5hbWUiOiJkZXBvIn0sImV4cCI6MTc0ODM0NTY0Nn0.oTnFEJPmmsusrPLkMV6G7_nX9jt57e4uki6nLBnabUk';
+    // const serviceName = import.meta.env.VITE_SERVICE_NAME;
+    // const servicePassword = import.meta.env.VITE_SERVICE_PASSWORD;
+
+    useEffect(() => {
+        const controller = new AbortController();
+
+        fetch("http://oncodir.catalink.eu:7565/v1/services/login/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                service_name: import.meta.env.VITE_SERVICE_NAME,
+                password: import.meta.env.VITE_SERVICE_PASSWORD
+            }),
+            signal: controller.signal
+        })
+            .then(res => {
+                if (!res.ok) throw new Error(`HTTP error: ${res.status}`);
+                return res.text();
+            })
+            .then(token => {
+                setToken(token);
+               // console.log("TOken: " + token)
+            })
+            .catch(err => {
+                if (err.name !== "AbortError") {
+                    console.error("Failed to fetch token:", err);
+                }
+            });
+
+        return () => controller.abort();
+    }, []);
 
     useEffect(() => {
         if (analysisType !== "Trend Analysis") return;
@@ -329,11 +361,11 @@ const EuropeMap = () => {
         })
             .then((res) => {
                 if (!res.ok) throw new Error(`HTTP error: ${res.status}`);
-                console.log(res)
+                // console.log(res)
                 return res.json();
             })
             .then((data) => {
-                console.log("Trend Analysis Data:", data.results);  // 👈 Logging here
+                // console.log("Trend Analysis Data:", data.results);  // 👈 Logging here
 
                 setRawData(data.results);
             })
@@ -379,8 +411,8 @@ const EuropeMap = () => {
                 return res.json();
             })
             .then((data) => {
-                console.log("Association Analysis Data:", data.results);  // 👈 Logging here
-                console.log("Full API URL:", `http://oncodir.catalink.eu:7565/v1/data-fusion/extra/association?${params.toString()}`);
+                //  console.log("Association Analysis Data:", data.results);  // 👈 Logging here
+                //  console.log("Full API URL:", `http://oncodir.catalink.eu:7565/v1/data-fusion/extra/association?${params.toString()}`);
                 setAssociationData(data.results)
             })
             .catch((err) => {
