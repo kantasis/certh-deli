@@ -25,6 +25,60 @@ const NavbarMain: React.FC = () => {
       }
    }, []);
 
+
+   useEffect(() => {
+      const handleDashboardCreated = async (e) => {
+         const user = AuthService.getCurrentUser();
+         if (user?.id) {
+            try {
+               const updatedDashboards = await getUserDashboards(user.id);
+               setDashboards(updatedDashboards);
+            } catch (err) {
+               console.error("Failed to refresh dashboards:", err);
+            }
+         }
+      };
+
+      window.addEventListener("dashboardCreated", handleDashboardCreated);
+
+      return () => {
+         window.removeEventListener("dashboardCreated", handleDashboardCreated);
+      };
+   }, []);
+
+   useEffect(() => {
+      const user = AuthService.getCurrentUser();
+
+      const refreshDashboards = async () => {
+         if (user?.id) {
+            try {
+               const updatedDashboards = await getUserDashboards(user.id);
+               setDashboards(updatedDashboards);
+            } catch (err) {
+               console.error("Failed to refresh dashboards:", err);
+            }
+         }
+      };
+
+      const handleDashboardCreated = () => {
+         refreshDashboards();
+      };
+
+      const handleDashboardDeleted = () => {
+         refreshDashboards();
+      };
+
+      window.addEventListener("dashboardCreated", handleDashboardCreated);
+      window.addEventListener("dashboardDeleted", handleDashboardDeleted);
+
+      return () => {
+         window.removeEventListener("dashboardCreated", handleDashboardCreated);
+         window.removeEventListener("dashboardDeleted", handleDashboardDeleted);
+      };
+   }, []);
+
+
+
    const userRole = getUserRole();
 
    const logout = () => {
@@ -146,57 +200,62 @@ const NavbarMain: React.FC = () => {
                   </NavLink>
                </li>
 
-               {dashboards.length > 0 && (
+               {dashboards.length >= 0 && (
                   <>
                      <li>
                         <hr className="dropdown-divider" />
                      </li>
                      <li
-                        className="dropdown-submenu position-relative"
+
                         onMouseEnter={() => setShowDashboardsMenu(true)}
                         onMouseLeave={() => setShowDashboardsMenu(false)}
                      >
-                        <a className="dropdown-item" href="#">
-                           My Dashboards &raquo;
-                        </a>
-                        <ul
-                           className={`dropdown-menu ${showDashboardsMenu ? "show" : ""
-                              }`}
-                           style={{
-                              top: 0,
-                              left: "100%",
-                              marginTop: "-0.3rem",
-                              position: "absolute"
+                        <div
+                           className="dropdown-item d-flex justify-content-between align-items-center"
+                           style={{ cursor: "pointer" }}
+                           onClick={() => {
+                              navigate(`/my-dashboards`);
+                              // setShowProfileDropdown(false);
+                              // setShowDashboardsMenu(false);
                            }}
                         >
-                           {dashboards.map((dashboard, index) => (
-                              <li key={dashboard.id}>
-                                 <a
-                                    href="#"
-                                    className="dropdown-item"
+                           My Dashboards
+                           <span style={{ fontSize: "0.75rem" }}>▼</span>
+                        </div>
+
+
+                        {showDashboardsMenu && dashboards.length > 0 && (
+                           <>
+                              {dashboards.map((dashboard, index) => (
+                                 <div
+                                    key={dashboard.id}
+                                    className="dropdown-item ps-4"
+                                    style={{ backgroundColor: "", cursor: "pointer" }}
                                     onClick={(e) => {
                                        e.preventDefault();
                                        navigate(`/my-dashboards?index=${index}`);
+                                       setShowProfileDropdown(false);
+                                       setShowDashboardsMenu(false);
                                     }}
                                  >
                                     {dashboard.name}
-                                 </a>
-                              </li>
-                           ))}
-                        </ul>
+                                 </div>
+                              ))}
+                           </>
+                        )}
                      </li>
-                     <li>
-                        {/* <NavLink
+
+                     {/* <NavLink
                            className="dropdown-item"
                            to="/my-dashboards"
                         >
                            View All Dashboards
                         </NavLink> */}
-                     </li>
+
                   </>
                )}
             </ul>
-         </li>,
+         </li >,
          <li className="nav-item" key="logout">
             <NavLink to="/login" className="nav-link" onClick={logout}>
                Logout

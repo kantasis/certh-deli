@@ -3,37 +3,12 @@ import axios from 'axios';
 const authentication_host = import.meta.env.VITE_AUTHENTICATION_HOST;
 const DASHBOARD_API_URL = `http://${authentication_host}:8435`;
 
-// // Create new dashboard
-// export const createDashboard = async (userId: string, name: string) => {
-//     const response = await axios.post(`${DASHBOARD_API_URL}/api/create-dashboard`, {
-//         user_id: userId,
-//         name,
-//     });
-//     return response.data;
-// };
 
-// // Save graph to a specific dashboard
-// export const saveGraphToDashboard = async (dashboardId: number, saved_url: string, page_name: string) => {
-//     const response = await axios.post(`${DASHBOARD_API_URL}/api/save-graph`, {
-//         dashboard_id: dashboardId,
-//         saved_url,
-//         page_name,
-//     });
-//     return response.data;
-// };
-
-// // Rename a dashboard
-// export const renameDashboard = async (dashboardId: number, name: string) => {
-//     const response = await axios.patch(`${DASHBOARD_API_URL}/api/rename-dashboard/${dashboardId}`, {
-//         name,
-//     });
-//     return response.data;
-// };
 
 export const getSavedDashboards = async (userId: string) => {
     try {
         const response = await axios.get(`${DASHBOARD_API_URL}/api/user-dashboards/${userId}`);
-        console.log(response.data)
+        // console.log(response.data)
         return response.data;
     } catch (error) {
         console.error("Error fetching graphs:", error.response?.data || error.message);
@@ -46,6 +21,11 @@ export const deleteDashboard = async (id: number) => {
     await axios.delete(`${DASHBOARD_API_URL}/api/delete-dashboard/${id}`);
 
 };
+
+export const deleteDashboardCollection = async (dashboardId: number) => {
+    await axios.delete(`${DASHBOARD_API_URL}/api/delete-dashboard-collection/${dashboardId}`);
+};
+
 
 export const getUserDashboards = async (userId: string) => {
     const res = await axios.get(`${DASHBOARD_API_URL}/api/user-dashboards/${userId}`);

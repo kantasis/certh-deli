@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { getSavedDashboards, deleteDashboard } from "../services/dashboard.service";
+import { getSavedDashboards, deleteDashboard, deleteDashboardCollection } from "../services/dashboard.service";
 import * as AuthService from "../services/auth.service";
 import { Button, Card, Modal, Badge, Form, Spinner, Tooltip, OverlayTrigger } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
@@ -76,7 +76,7 @@ const extractFiltersFromUrl = (url: string): Record<string, string[]> => {
 
 const formatFilterLabel = (raw: string): string => {
     const cleaned = raw.toLowerCase().replace(/ filter$/, "").replace(/_/g, " ");
-    console.log(cleaned)
+    // console.log(cleaned)
     const mappings: Record<string, string> = {
         country: "Countries",
         minyear: "Min Year",
@@ -98,6 +98,7 @@ const formatFilterLabel = (raw: string): string => {
 // Component
 const SavedDashboards: React.FC = () => {
     const [dashboards, setDashboards] = useState<DashboardEntry[]>([]);
+    const [dashboardCollections, setDashboardCollections] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [modalShow, setModalShow] = useState(false);
     const [modalMessage, setModalMessage] = useState("");
@@ -108,18 +109,24 @@ const SavedDashboards: React.FC = () => {
     const [searchParams] = useSearchParams();
     const dashboardIndex = searchParams.get("index");
 
-
+    const [dashboardToDeleteId, setDashboardToDeleteId] = useState<number | null>(null);
+    const [showDashboardDeleteModal, setShowDashboardDeleteModal] = useState(false);
 
     useEffect(() => {
         setIsLoggedIn(AuthService.isLoggedIn());
     }, []);
-
     useEffect(() => {
-        if (!isLoggedIn) return;
+        if (selectedDashboardId !== "") {
+            navigate(`/my-dashboards?dashboardId=${selectedDashboardId}`);
+        }
+    }, [selectedDashboardId, navigate]);
+    useEffect(() => {
         const load = async () => {
             try {
                 const user = AuthService.getCurrentUser();
                 const rawData = await getSavedDashboards(user.id);
+
+                setDashboardCollections(rawData); // full list (even empty ones)
 
                 const flattened: DashboardEntry[] = rawData.flatMap((collection: any) =>
                     (collection.graphs || []).map((g: any) => ({
@@ -139,18 +146,52 @@ const SavedDashboards: React.FC = () => {
                 setLoading(false);
             }
         };
-        load();
+
+        if (isLoggedIn) load();
     }, [isLoggedIn]);
 
-    const dashboardCollections = React.useMemo(() => {
-        const map = new Map<number, string>();
-        dashboards.forEach((d) => {
-            if (!map.has(d.dashboard_id)) {
-                map.set(d.dashboard_id, d.dashboard_name);
+    const confirmDeleteDashboard = (dashboardId: number) => {
+        setDashboardToDeleteId(dashboardId);
+        setModalMessage("Are you sure you want to delete this entire dashboard and all associated graphs?");
+        setShowDashboardDeleteModal(true);
+    };
+
+    const handleDashboardDeleteConfirmed = async () => {
+        if (!dashboardToDeleteId) return;
+
+        try {
+            await deleteDashboardCollection(dashboardToDeleteId);
+
+            setDashboardCollections(prev => prev.filter(d => d.id !== dashboardToDeleteId));
+            setDashboards(prev => prev.filter(d => d.dashboard_id !== dashboardToDeleteId));
+            const event = new CustomEvent("dashboardDeleted");
+            window.dispatchEvent(event);
+            if (selectedDashboardId === dashboardToDeleteId.toString()) {
+                const remaining = dashboardCollections.filter(d => d.id !== dashboardToDeleteId);
+                if (remaining.length > 0) {
+                    setSelectedDashboardId(remaining[0].id);
+                } else {
+                    setSelectedDashboardId("");
+                }
             }
-        });
-        return Array.from(map.entries()).map(([id, name]) => ({ id, name }));
-    }, [dashboards]);
+
+            setShowDashboardDeleteModal(false);
+        } catch (err) {
+            console.error("❌ Failed to delete dashboard collection:", err);
+            alert("Error deleting dashboard.");
+        }
+    };
+
+
+    // const dashboardCollections = React.useMemo(() => {
+    //     const map = new Map<number, string>();
+    //     dashboards.forEach((d) => {
+    //         if (!map.has(d.dashboard_id)) {
+    //             map.set(d.dashboard_id, d.dashboard_name);
+    //         }
+    //     });
+    //     return Array.from(map.entries()).map(([id, name]) => ({ id, name }));
+    // }, [dashboards]);
 
     useEffect(() => {
         if (dashboardCollections.length > 0 && !selectedDashboardId) {
@@ -166,6 +207,8 @@ const SavedDashboards: React.FC = () => {
                 const selected = dashboardCollections[index];
                 setSelectedDashboardId(selected.id);
             }
+        } else {
+            setSelectedDashboardId("");
         }
     }, [dashboardIndex, dashboardCollections]);
 
@@ -195,7 +238,7 @@ const SavedDashboards: React.FC = () => {
 
     const confirmDelete = (id: number) => {
         setDeleteId(id);
-        setModalMessage("Are you sure you want to delete this dashboard?");
+        setModalMessage("Are you sure you want to delete this view?");
         setModalShow(true);
     };
 
@@ -221,38 +264,64 @@ const SavedDashboards: React.FC = () => {
         );
     }
 
-    if (dashboards.length === 0) {
-        return <p>You have no saved dashboards yet.</p>;
-    }
+    // if (dashboardCollections.length === 0) {
+    //     return <div className="container w-50 alert alert-warning mt-5">You have no saved dashboards.</div>;
+    // }
 
     return (
         <div className="container mt-4">
-            <h3>
-                My Saved Dashboards{" - "}
-                {selectedDashboardId &&
-                    dashboardCollections.find((c) => c.id === selectedDashboardId)?.name}
+            <h3 className="mb-4">
+                My Saved Dashboards
+                {selectedDashboardId && dashboardCollections.length > 0 && (
+                    <>
+                        {" - "}
+                        {dashboardCollections.find((c) => c.id === selectedDashboardId)?.name}
+                    </>
+                )}
             </h3>
 
-            <div className="d-flex align-items-center mb-3">
-                <Form.Select
-                    value={selectedDashboardId}
-                    onChange={(e) => setSelectedDashboardId(Number(e.target.value))}
-                    style={{ width: "300px" }}
-                >
-                    <option value="" disabled>
-                        -- Select Dashboard --
-                    </option>
-                    {dashboardCollections.map((collection) => (
-                        <option key={collection.id} value={collection.id}>
-                            {collection.name}
-                        </option>
-                    ))}
+            {dashboardCollections.length === 0 ? (
+                <div className="d-flex justify-content-center mt-5">
+                    <div className="alert alert-warning w-50 text-center">
+                        You have no saved dashboards.
+                    </div>
+                </div>
+            ) : (
+                <>
+                    <div className="d-flex  align-items-center justify-content-between mb-3">
+                        <Form.Select
 
-                </Form.Select>
-            </div>
 
+                            value={selectedDashboardId ?? ""}
+                            onChange={(e) => setSelectedDashboardId(Number(e.target.value))}
+                            style={{ width: "300px" }}
+                        >
+                            <option value="" disabled>-- Select Dashboard --</option>
+                            {dashboardCollections.map((collection) => (
+                                <option key={collection.id} value={collection.id}>
+                                    {collection.name}
+                                </option>
+                            ))}
+
+                        </Form.Select>
+                        <Button
+                            variant="danger"
+                            className="ms-3"
+                            disabled={!selectedDashboardId}
+                            onClick={() => confirmDeleteDashboard(Number(selectedDashboardId))}
+                        >
+                            Delete Dashboard
+                        </Button>
+                    </div>
+                </>
+            )}
             <div className="row d-flex align-items-stretch">
 
+                {selectedDashboardId && visibleDashboards.length === 0 && (
+                    <div className="alert alert-warning mt-3">
+                        This dashboard has no saved views.
+                    </div>
+                )}
                 {visibleDashboards.map((d, index) => {
                     function parseSavedUrl(
                         saved_url: string | { url: string; params?: Record<string, any> }
@@ -301,7 +370,9 @@ const SavedDashboards: React.FC = () => {
 
                     return (
                         <div className="col-12 col-md-6 col-lg-4 d-flex" key={d.id}>
+
                             <Card className="mb-4 p-2 flex-fill">
+
                                 {srcUrl ? (
                                     <iframe
                                         src={srcUrl}
@@ -366,7 +437,7 @@ const SavedDashboards: React.FC = () => {
 
                                             // Special tooltip for Countries filter
                                             if (normalizedFilter === "country") {
-                                                console.log("Countries extracted:", values);
+                                                // console.log("Countries extracted:", values);
                                                 return (
                                                     <OverlayTrigger
                                                         key={filter}
@@ -521,6 +592,23 @@ const SavedDashboards: React.FC = () => {
                     </Button>
                 </Modal.Footer>
             </Modal>
+
+            <Modal show={showDashboardDeleteModal} onHide={() => setShowDashboardDeleteModal(false)} centered>
+                <Modal.Header className="bg-danger" closeButton>
+                    <Modal.Title className="text-white px-3 py-2 rounded">Delete Dashboard</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>{modalMessage}</Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={() => setShowDashboardDeleteModal(false)}>
+                        Cancel
+                    </Button>
+                    <Button variant="danger" onClick={handleDashboardDeleteConfirmed}>
+                        Delete
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+
+
         </div>
     );
 };

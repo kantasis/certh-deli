@@ -13,6 +13,15 @@ app.use(cors({
     methods: ['GET', 'POST', 'OPTIONS','DELETE','PATCH','INSERT'],
     allowedHeaders: ['Content-Type'],
 }));
+
+app.use((req, res, next) => {
+  console.log(`[${req.method}] ${req.url}`);
+  next();
+});
+app.all('/api/*', (req, res, next) => {
+  console.log(`🔥 Matched wildcard /api route: ${req.method} ${req.url}`);
+  next();
+});
 // Handle OPTIONS requests manually (important!)
 // app.options("*", (req, res) => {
 //     res.header("Access-Control-Allow-Origin", "http://localhost:5173");
@@ -149,13 +158,30 @@ app.get('/api/user-dashboards/:userId', async (req, res) => {
 
 
 
+// Delete a dashboard and all its associated graphs
+app.delete('/api/delete-dashboard-collection/:dashboardId', async (req, res) => {
+    console.log("🔥 DELETE DASHBOARD COLLECTION HIT", req.params.dashboardId);
+    const { dashboardId } = req.params;
 
+    try {
+        // Delete associated graphs first
+        await pool.query('DELETE FROM saved_graphs WHERE dashboard_id = $1', [dashboardId]);
+
+        // Then delete the dashboard itself
+        await pool.query('DELETE FROM dashboards WHERE id = $1', [dashboardId]);
+
+        res.status(200).json({ message: 'Dashboard and associated graphs deleted successfully.' });
+    } catch (err) {
+        console.error('Error deleting dashboard collection:', err.message);
+        res.status(500).json({ error: 'Error deleting dashboard and graphs' });
+    }
+});
 
 
 // Delete a saved dashboard by ID
 app.delete('/api/delete-dashboard/:id', async (req, res) => {
     const { id } = req.params;
-
+   console.log("🔥 DELETE DASHBOARD COLLECTION HIT", id );
     try {
         await pool.query('DELETE FROM saved_graphs WHERE id = $1', [id]);
         res.status(204).send(); // 204 = No Content, which is OK
@@ -249,6 +275,7 @@ app.post('/api/save-graph', async (req, res) => {
         return res.status(500).json({ error: 'Database error saving graph' });  // ✅ IMPORTANT
     }
 });
+
 
 
 

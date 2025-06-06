@@ -67,7 +67,9 @@ const SaveGraphButton: React.FC<SaveGraphButtonProps> = ({ iframeUrl }) => {
         try {
             const dashboard = await createDashboard(userId, newDashboardName.trim());
             setDashboards((prev) => [...prev, { ...dashboard, graphs: [] }]);
+            setSelectedDashboardId(dashboard.id); 
             setNewDashboardName("");
+              window.dispatchEvent(new CustomEvent("dashboardCreated", { detail: dashboard }));
         } catch (err: any) {
             const errorMessage = err?.response?.data?.error || "Failed to create dashboard";
 
@@ -94,8 +96,8 @@ const SaveGraphButton: React.FC<SaveGraphButtonProps> = ({ iframeUrl }) => {
         const user = AuthService.getCurrentUser?.();
         const userId = user?.id;
 
-        console.log("iframeUrl prop:", iframeUrl);
-        console.log("iframeUrl.url:", iframeUrl?.url);
+        // console.log("iframeUrl prop:", iframeUrl);
+        // console.log("iframeUrl.url:", iframeUrl?.url);
 
         const urlToSave =
             typeof iframeUrl === "string"
@@ -251,7 +253,7 @@ const SaveGraphButton: React.FC<SaveGraphButtonProps> = ({ iframeUrl }) => {
 
                             {dashboards.length < MAX_DASHBOARDS && (
                                 <>
-                                    <h6>Create New Dashboard</h6>
+                                    <h5 className="mt-3">Create new dashboard</h5>
                                     <InputGroup className="mb-3">
                                         <Form.Control
                                             type="text"
@@ -259,7 +261,7 @@ const SaveGraphButton: React.FC<SaveGraphButtonProps> = ({ iframeUrl }) => {
                                             value={newDashboardName}
                                             onChange={(e) => setNewDashboardName(e.target.value)}
                                         />
-                                        <Button variant="outline-secondary" onClick={handleCreateDashboard}>
+                                        <Button variant="success" onClick={handleCreateDashboard}>
                                             Create
                                         </Button>
                                     </InputGroup>
