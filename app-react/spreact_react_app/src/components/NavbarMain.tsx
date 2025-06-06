@@ -1,14 +1,83 @@
-import { NavLink } from "react-router-dom";
 import React, { useState, useEffect } from "react";
+import { NavLink, useNavigate } from "react-router-dom";
 import * as AuthService from "../services/auth.service";
-import { getUserRole } from '../services/auth.service';
+import { getUserRole } from "../services/auth.service";
+import { getUserDashboards } from "../services/dashboard.service";
 
 const NavbarMain: React.FC = () => {
    const [isLoggedIn, setIsLoggedIn] = useState(false);
+   const [dashboards, setDashboards] = useState<any[]>([]);
+   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
+   const [showDashboardsMenu, setShowDashboardsMenu] = useState(false);
+   const navigate = useNavigate();
 
    useEffect(() => {
-      setIsLoggedIn(AuthService.isLoggedIn());
+      const loggedIn = AuthService.isLoggedIn();
+      setIsLoggedIn(loggedIn);
+
+      if (loggedIn) {
+         const user = AuthService.getCurrentUser();
+         if (user?.id) {
+            getUserDashboards(user.id)
+               .then((data) => setDashboards(data))
+               .catch((err) => console.error("Failed to fetch dashboards:", err));
+         }
+      }
    }, []);
+
+
+   useEffect(() => {
+      const handleDashboardCreated = async (e) => {
+         const user = AuthService.getCurrentUser();
+         if (user?.id) {
+            try {
+               const updatedDashboards = await getUserDashboards(user.id);
+               setDashboards(updatedDashboards);
+            } catch (err) {
+               console.error("Failed to refresh dashboards:", err);
+            }
+         }
+      };
+
+      window.addEventListener("dashboardCreated", handleDashboardCreated);
+
+      return () => {
+         window.removeEventListener("dashboardCreated", handleDashboardCreated);
+      };
+   }, []);
+
+   useEffect(() => {
+      const user = AuthService.getCurrentUser();
+
+      const refreshDashboards = async () => {
+         if (user?.id) {
+            try {
+               const updatedDashboards = await getUserDashboards(user.id);
+               setDashboards(updatedDashboards);
+            } catch (err) {
+               console.error("Failed to refresh dashboards:", err);
+            }
+         }
+      };
+
+      const handleDashboardCreated = () => {
+         refreshDashboards();
+      };
+
+      const handleDashboardDeleted = () => {
+         refreshDashboards();
+      };
+
+      window.addEventListener("dashboardCreated", handleDashboardCreated);
+      window.addEventListener("dashboardDeleted", handleDashboardDeleted);
+
+      return () => {
+         window.removeEventListener("dashboardCreated", handleDashboardCreated);
+         window.removeEventListener("dashboardDeleted", handleDashboardDeleted);
+      };
+   }, []);
+
+
 
    const userRole = getUserRole();
 
@@ -97,19 +166,27 @@ const NavbarMain: React.FC = () => {
       );
    } else {
       rightButtons_tsx.push(
-         <li className="nav-item dropdown" key="profile">
+         <li
+            className={`nav-item dropdown ${showProfileDropdown ? "show" : ""}`}
+            key="profile"
+            onMouseEnter={() => setShowProfileDropdown(true)}
+            onMouseLeave={() => {
+               setShowProfileDropdown(false);
+               setShowDashboardsMenu(false);
+            }}
+         >
             <a
                className="nav-link dropdown-toggle"
                href="#"
                id="navbarDropdown"
                role="button"
-               data-bs-toggle="dropdown"
-               aria-expanded="false"
+               onClick={(e) => e.preventDefault()}
             >
                Profile
             </a>
             <ul
-               className="dropdown-menu dropdown-menu-end"
+               className={`dropdown-menu dropdown-menu-end ${showProfileDropdown ? "show" : ""
+                  }`}
                aria-labelledby="navbarDropdown"
             >
                <li>
@@ -122,19 +199,65 @@ const NavbarMain: React.FC = () => {
                      Change Password
                   </NavLink>
                </li>
-               <li>
-                  <NavLink className="dropdown-item" to="/my-dashboards">
-                     My Dashboards
-                  </NavLink>
-               </li>
+
+               {dashboards.length >= 0 && (
+                  <>
+                     <li>
+                        <hr className="dropdown-divider" />
+                     </li>
+                     <li
+
+                        onMouseEnter={() => setShowDashboardsMenu(true)}
+                        onMouseLeave={() => setShowDashboardsMenu(false)}
+                     >
+                        <div
+                           className="dropdown-item d-flex justify-content-between align-items-center"
+                           style={{ cursor: "pointer" }}
+                           onClick={() => {
+                              navigate(`/my-dashboards`);
+                              // setShowProfileDropdown(false);
+                              // setShowDashboardsMenu(false);
+                           }}
+                        >
+                           My Dashboards
+                           <span style={{ fontSize: "0.75rem" }}>▼</span>
+                        </div>
+
+
+                        {showDashboardsMenu && dashboards.length > 0 && (
+                           <>
+                              {dashboards.map((dashboard, index) => (
+                                 <div
+                                    key={dashboard.id}
+                                    className="dropdown-item ps-4"
+                                    style={{ backgroundColor: "", cursor: "pointer" }}
+                                    onClick={(e) => {
+                                       e.preventDefault();
+                                       navigate(`/my-dashboards?index=${index}`);
+                                       setShowProfileDropdown(false);
+                                       setShowDashboardsMenu(false);
+                                    }}
+                                 >
+                                    {dashboard.name}
+                                 </div>
+                              ))}
+                           </>
+                        )}
+                     </li>
+
+                     {/* <NavLink
+                           className="dropdown-item"
+                           to="/my-dashboards"
+                        >
+                           View All Dashboards
+                        </NavLink> */}
+
+                  </>
+               )}
             </ul>
-         </li>,
+         </li >,
          <li className="nav-item" key="logout">
-            <NavLink
-               to="/login"
-               className="nav-link"
-               onClick={logout}
-            >
+            <NavLink to="/login" className="nav-link" onClick={logout}>
                Logout
             </NavLink>
          </li>
@@ -158,9 +281,6 @@ const NavbarMain: React.FC = () => {
                type="button"
                data-bs-toggle="collapse"
                data-bs-target="#navbarSupportedContent"
-               aria-controls="navbarSupportedContent"
-               aria-expanded="false"
-               aria-label="Toggle navigation"
             >
                <span className="navbar-toggler-icon"></span>
             </button>
