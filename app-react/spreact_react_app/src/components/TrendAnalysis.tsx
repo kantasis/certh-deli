@@ -10,7 +10,8 @@ import SaveGraphButton from "./SaveGraphButton.tsx";
 import { useLocation } from "react-router-dom";
 import { useSearchParams } from "react-router-dom";
 import { height } from "@fortawesome/free-solid-svg-icons/fa0";
-
+import trendCorrelationData from './assets/trend_correlation.json';
+import trendCorrelationStaticData from '../assets/trend_correlation.json';
 echarts.registerMap("world", worldJson);
 
 const EuropeMap = () => {
@@ -40,6 +41,33 @@ const EuropeMap = () => {
     ];
 
 
+
+    const DEFAULT_RISK_FACTORS2 = [
+        "High alcohol use",
+        "Smoking",
+        "Low physical activity",
+        "Diet low in omega-6 polyunsaturated fatty acids",
+        "Diet high in processed meat",
+        "Diet high in red meat",
+        "Diet high in sodium",
+        "Diet high in sugar-sweetened beverages",
+        "Diet high in trans fatty acids",
+         "Diet low in calcium",
+        //  "Diet low in fiber",
+        //  "Diet low in fruits",
+        //  "Diet low in legumes",
+        //  "Diet low in milk",
+        //  "Diet low in nuts and seeds",
+        //  "Diet low in seafood omega-3 fatty acids",
+        //  "Diet low in vegetables",
+        //  "Diet low in whole grains",
+        //  "High body-mass index",
+        //  "High LDL cholesterol",
+        //  "High fasting plasma glucose",
+        //  "Socio-Development Index",
+    ];
+
+
     const [analysisType, setAnalysisType] = useState('');
     const [rawData, setRawData] = useState([]);
     const [chartData, setChartData] = useState([]);
@@ -48,9 +76,20 @@ const EuropeMap = () => {
     const [yearInterval, setYearInterval] = useState("5 years (2016-2021)");
     const [loading, setLoading] = useState(false);
     const [associationData, setAssociationData] = useState([]);
-    const [selectedRiskFactors, setSelectedRiskFactors] = useState(DEFAULT_RISK_FACTORS);
+    const [selectedRiskFactors, setSelectedRiskFactors] = useState([]);
+    const [filteredTrendCorrelationData, setFilteredTrendCorrelationData] = useState([]);
     const [isRestoring, setIsRestoring] = useState(false);
     const [chartImageUrl, setChartImageUrl] = useState("");
+
+
+
+    useEffect(() => {
+        if (analysisType === "Association Analysis") {
+            setSelectedRiskFactors(DEFAULT_RISK_FACTORS);
+        } else if (analysisType === "Trend Correlation") {
+            setSelectedRiskFactors(DEFAULT_RISK_FACTORS2);
+        }
+    }, [analysisType]);
 
     // const getUriParams = () => {
     //     const params = new URLSearchParams();
@@ -277,25 +316,51 @@ const EuropeMap = () => {
         });
     };
 
+    useEffect(() => {
+        if (analysisType !== "Trend Correlation") {
+            setFilteredTrendCorrelationData([]); // Reset when not in Trend Correlation mode
+            return;
+        }
+
+        if (!Array.isArray(selectedRiskFactors) || selectedRiskFactors.length === 0) {
+            setFilteredTrendCorrelationData([]);
+            return;
+        }
+
+        const filtered = trendCorrelationStaticData.filter((d) =>
+            selectedRiskFactors.includes(d.Risk_Factor) &&
+            d.sex === sexFilter &&
+            d.age === ageFilter
+        );
+
+        setFilteredTrendCorrelationData(filtered);
+    }, [analysisType, selectedRiskFactors, sexFilter, ageFilter, trendCorrelationStaticData]);
+
 
 
     // useEffect(() => {
+    //     if (analysisType !== "Trend Correlation") {
+    //         setFilteredTrendCorrelationData([]); // reset or keep as you like
+    //         return;
+    //     }
 
-    //     if (analysisType !== "Trend Analysis") return;
-    //     setLoading(true);
-    //     fetch("/DF_trends_results.json")
-    //         .then((res) => {
-    //             if (!res.ok) throw new Error(`HTTP error: ${res.status}`);
-    //             return res.json();
-    //         })
-    //         .then((data) => {
-    //             setRawData(data);
-    //         })
-    //         .catch((err) => {
-    //             console.error("Failed to load JSON:", err);
-    //         })
-    //         .finally(() => setLoading(false));
-    // }, [analysisType]);  // <- triggers when analysisType changes
+    //     // Filter logic, customize according to your data structure
+    //     const filtered = trendCorrelationStaticData.filter(item => {
+    //         // Example filters:
+    //         const sexMatch = sexFilter === "Both" || item.sex === sexFilter;
+    //         const ageMatch = ageFilter === "Age-standardized" || item.ageGroup === ageFilter;
+    //         const riskFactorMatch =
+    //             selectedRiskFactors.length === 0 ||
+    //             selectedRiskFactors.includes(item.riskFactor);
+
+    //         // Add any other filtering logic (yearInterval, etc.) if applicable
+
+    //         return sexMatch && ageMatch && riskFactorMatch;
+    //     });
+
+    //     setFilteredTrendCorrelationData(filtered);
+
+    // }, [analysisType, sexFilter, ageFilter, selectedRiskFactors, yearInterval]);
 
     // useEffect(() => {
     //     if (analysisType !== "Association Analysis") return;
@@ -327,7 +392,7 @@ const EuropeMap = () => {
             })
             .then(token => {
                 setToken(token);
-               // console.log("TOken: " + token)
+                // console.log("TOken: " + token)
             })
             .catch(err => {
                 if (err.name !== "AbortError") {
@@ -511,6 +576,154 @@ const EuropeMap = () => {
     const [eapcMin, setEapcMin] = useState(-3);
     const [eapcMax, setEapcMax] = useState(3);
 
+    // Dynamic Y-axis range calculation
+    const trendCoefValues = filteredTrendCorrelationData.map(item => item.Coef);
+    const trendCILowerValues = filteredTrendCorrelationData.map(item => Number(item.CI_Lower));
+    const trendCIUpperValues = filteredTrendCorrelationData.map(item => Number(item.CI_Upper));
+
+    const trendYMinRaw = Math.min(...trendCoefValues, ...trendCILowerValues);
+    const trendYMaxRaw = Math.max(...trendCoefValues, ...trendCIUpperValues);
+
+    let trendPadding = 0;
+    const trendRange = trendYMaxRaw - trendYMinRaw;
+
+    if (trendYMinRaw < 0.009) {
+        trendPadding = trendRange * 0.5;
+    }
+    if (trendYMaxRaw > 1) {
+        trendPadding = trendRange * 0.4;
+    }
+    if (trendYMaxRaw < 1) {
+        trendPadding = trendRange * 4;
+    }
+
+    let trendYMin = trendYMinRaw - trendPadding;
+    let trendYMax = trendYMaxRaw + trendPadding;
+
+    if (trendYMin > 1 || trendYMax > 1) {
+        trendYMin = Math.floor(trendYMin);
+        trendYMax = Math.ceil(trendYMax);
+    }
+
+    const trendCorrelationOption = {
+        // title: {
+        //     text: "Trend Correlation Coefficients by Risk Factor",
+        //     left: "center"
+        // },
+        tooltip: {
+            trigger: "axis",
+            axisPointer: { type: "shadow" },
+            formatter: function (params) {
+                const name = params[0]?.name || "";
+
+                const coefData = params.find(item => item.seriesName === "Correlation Coefficient");
+                const ciData = params.find(item => item.seriesName === "Confidence Intervals (95%)");
+
+                let result = `<div style="text-align:left;"><strong>Trend Correlation with ${name}</strong><br>`;
+
+                if (coefData) {
+                    result += `<span style="display:inline-block;margin-right:5px;border-radius:10px;width:10px;height:10px;background-color:${coefData.color};"></span>`;
+                    result += `Coefficient: <strong>${coefData.value.toFixed(3)}</strong><br>`;
+                }
+
+                if (ciData && Array.isArray(ciData.value)) {
+                    const low = ciData.value[2];
+                    const high = ciData.value[3];
+                    result += `<span style="display:inline-block;margin-right:5px;border-radius:10px;width:10px;height:10px;background-color:${ciData.color};"></span>`;
+                    result += `Confidence Interval (95%): <strong>[${low.toFixed(3)}, ${high.toFixed(3)}]</strong>`;
+                }
+
+                result += `</div>`;
+                return result;
+            }
+        },
+        legend: {
+            data: ["Correlation Coefficient", "Confidence Intervals (95%)"],
+            top: "10%"
+        },
+        grid: {
+            top: "20%",
+            bottom: "25%"
+        },
+        xAxis: {
+            type: "category",
+            data: filteredTrendCorrelationData.map((item) => item.Risk_Factor),
+            axisLabel: { rotate: 30, fontSize: 12 }
+        },
+        yAxis: {
+            type: "value",
+            name: "Correlation Coefficient",
+            nameRotate: 90,
+            nameLocation: "center",
+            nameGap: 55,
+            min: trendYMin,
+            max: trendYMax
+        },
+        series: [
+            {
+                name: "Correlation Coefficient",
+                type: "bar",
+                data: filteredTrendCorrelationData.map((item) => item.Coef),
+                itemStyle: {
+                    color: "#5b9bd5"  
+                },
+                barWidth: "50%",
+                z: 1
+            },
+            {
+                name: "Confidence Intervals (95%)",
+                type: "custom",
+                renderItem: (params, api) => {
+                    const xValue = api.value(0);
+                    const coef = api.value(1);
+                    const low = api.value(2);
+                    const high = api.value(3);
+                    const x = api.coord([xValue, 0])[0];
+                    const yLow = api.coord([0, low])[1];
+                    const yHigh = api.coord([0, high])[1];
+                    const barWidth = 10;
+
+                    return {
+                        type: "group",
+                        children: [
+                            {
+                                type: "line",
+                                shape: { x1: x, y1: yLow, x2: x, y2: yHigh },
+                                style: { stroke: "#5470c6", lineWidth: 2 },
+                                z: 2
+                            },
+                            {
+                                type: "line",
+                                shape: { x1: x - barWidth / 2, y1: yLow, x2: x + barWidth / 2, y2: yLow },
+                                style: { stroke: "#5470c6", lineWidth: 2 },
+                                z: 2
+                            },
+                            {
+                                type: "line",
+                                shape: { x1: x - barWidth / 2, y1: yHigh, x2: x + barWidth / 2, y2: yHigh },
+                                style: { stroke: "#5470c6", lineWidth: 2 },
+                                z: 2
+                            }
+                        ]
+                    };
+                },
+                encode: {
+                    x: 0,
+                    y: 1
+                },
+                data: filteredTrendCorrelationData.map((item, index) => [
+                    index,
+                    item.Coef,
+                    item.CI_Lower,
+                    item.CI_Upper
+                ]),
+                z: 2
+            }
+        ]
+    };
+
+
+
 
     const trendOption = {
         // title: {
@@ -669,7 +882,17 @@ const EuropeMap = () => {
             top: 0,
         },
     };
-    const uniqueRiskFactors = Array.from(new Set(associationData.map((d) => d.Risk_Factor)));
+
+    // const uniqueTrendCorrelationRiskFactors = Array.from(
+    //     new Set(rawData.map((d) => d.Risk_Factor))
+    // ).sort();
+
+    const uniqueRiskFactors =
+        analysisType === "Trend Correlation"
+            ? Array.from(new Set(trendCorrelationStaticData.map((d) => d.Risk_Factor))).sort()
+            : Array.from(new Set(associationData.map((d) => d.Risk_Factor))).sort();
+
+
     const filteredAssociationData = associationData.filter((d) =>
 
         selectedRiskFactors.includes(d.Risk_Factor) &&
@@ -885,9 +1108,10 @@ const EuropeMap = () => {
                             <option value="">-- Select --</option>
                             <option value="Trend Analysis">Trend Analysis</option>
                             <option value="Association Analysis">Association Analysis</option>
+                            <option value="Trend Correlation">Trend Correlation</option>
                         </select>
                     </div>
-                    {analysisType === "Association Analysis" && (
+                    {(analysisType === "Association Analysis" || analysisType === "Trend Correlation") && (
                         <Form className="mb-3" style={{ maxWidth: "400px" }}>
                             <Form.Label style={{ fontWeight: "bold" }}>
                                 Select Risk Factors (max 10):
@@ -916,7 +1140,7 @@ const EuropeMap = () => {
 
                     )}
                     {/* Show filters only for Trend Analysis */}
-                    {(analysisType === "Trend Analysis" || analysisType === "Association Analysis") && (
+                    {(analysisType === "Trend Analysis" || analysisType === "Association Analysis" || analysisType === "Trend Correlation") && (
                         <>
                             {/* Shared filters for both analysis types */}
                             <div className="form-group mb-3">
@@ -1083,6 +1307,19 @@ const EuropeMap = () => {
                         </>
 
                     )}
+                    {analysisType === "Trend Correlation" && (
+                        <>
+                            <h5><strong>Trend Correlation between Risk Factors and CRC incidence</strong></h5>
+                            {loading && <div className="loading-spinner">Loading...</div>}
+                            <ReactECharts
+                                ref={chartRef}
+                                option={trendCorrelationOption}
+                                style={{ height: "600px", width: "100%" }}
+                            />
+                            <SaveGraphButton iframeUrl={{ url: getChartImageUrl("Trend Correlation"), params: getUriParams() }} />
+                        </>
+                    )}
+
                 </div>
 
                 {/* Right Column (Optional) */}
