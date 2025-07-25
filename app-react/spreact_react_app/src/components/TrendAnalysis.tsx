@@ -491,6 +491,30 @@ const EuropeMap = () => {
 
     const accordionContentTrendCorrelation_dictLst = [
         {
+            title: 'Data Sources',
+            content: (<>
+                <div style={{ height: '340px', overflow: 'scroll' }}>
+                    <p>
+                        <li><strong>Source: </strong>Global Burden of Disease Study 2021</li><br />
+
+                        <li><strong>Years: </strong>1990-2021</li><br />
+
+                        <li><strong>Geographic Coverage: </strong>46 countries in Europe</li><br />
+
+                        <li><strong>Age Groups: </strong>Under 25 (0–24 years), 25–50 (25 to 49 years), Above 50 (50 and older), Age-Standardized (Adjusted rates that account for differences in age distributions across populations)</li><br />
+
+                        <li><strong>Sex Groups: </strong>Both Sexes (Aggregated data for males and females), Males (males only), and Females (females only)</li><br />
+
+                        <li><strong>CRC Incidence Rate: </strong>Number of new CRC cases diagnosed per 100,000 population in a year</li><br />
+
+                        <li><strong>Risk factors: </strong>22 risk factors, comprising 4 lifestyle factors, 15 nutrition factors, 2 comorbidities, and 1 socioeconomic factor</li><br />
+
+                        <li><strong>Summary Exposure Value (SEV) rates: </strong>This metric represents the relative risk-weighted prevalence of exposure, accounting for both the extent of exposure and its contribution to disease burden. SEV is the metric for 21 risk factors (excluding socioeconomic factor)</li><br />
+                    </p>
+                </div>
+            </>)
+        },
+        {
             title: 'Methodology',
             content: (<>
                 <div style={{ height: '340px', overflow: 'scroll' }}>
@@ -520,6 +544,30 @@ const EuropeMap = () => {
 
     ];
     const accordionContentForecastingCRC_dictLst = [
+        {
+            title: 'Data Sources',
+            content: (<>
+                <div style={{ height: '340px', overflow: 'scroll' }}>
+                    <p>
+                        <li><strong>Source: </strong>Global Burden of Disease Study 2021</li><br />
+
+                        <li><strong>Years: </strong>1990-2021</li><br />
+
+                        <li><strong>Geographic Coverage: </strong>46 countries in Europe</li><br />
+
+                        <li><strong>Age Groups: </strong>Under 25 (0–24 years), 25–50 (25 to 49 years), Above 50 (50 and older), Age-Standardized (Adjusted rates that account for differences in age distributions across populations)</li><br />
+
+                        <li><strong>Sex Groups: </strong>Both Sexes (Aggregated data for males and females), Males (males only), and Females (females only)</li><br />
+
+                        <li><strong>CRC Incidence Rate: </strong>Number of new CRC cases diagnosed per 100,000 population in a year</li><br />
+
+                        <li><strong>Risk factors: </strong>22 risk factors, comprising 4 lifestyle factors, 15 nutrition factors, 2 comorbidities, and 1 socioeconomic factor</li><br />
+
+                        <li><strong>Summary Exposure Value (SEV) rates: </strong>This metric represents the relative risk-weighted prevalence of exposure, accounting for both the extent of exposure and its contribution to disease burden. SEV is the metric for 21 risk factors (excluding socioeconomic factor)</li><br />
+                    </p>
+                </div>
+            </>)
+        },
         {
             title: 'Methodology',
             content: (<>
@@ -1466,199 +1514,199 @@ const EuropeMap = () => {
                                         <option value="Above 50">Above 50</option>
                                     </select>
                                 </div>
-                            
-                    
 
 
 
-                    {/* Show year interval only for Trend Analysis */}
-                    {analysisType === "Trend Analysis" && (
-                        <div className="form-group mb-3">
-                            <label htmlFor="year-select" style={{ fontWeight: "bold" }}>
-                                Select Year Interval:
-                            </label>
-                            <select
-                                className="form-control"
-                                id="year-select"
-                                value={yearInterval}
-                                onChange={(e) => setYearInterval(e.target.value)}
-                            >
-                                <option value="5 years (2016-2021)">5 years (2016-2021)</option>
-                                <option value="10 years (2011-2021)">10 years (2011-2021)</option>
-                                <option value="15 years (2006-2021)">15 years (2006-2021)</option>
-                                <option value="20 years (2001-2021)">20 years (2001-2021)</option>
-                                <option value="25 years (1996-2021)">25 years (1996-2021)</option>
-                                <option value="30 years (1991-2021)">30 years (1991-2021)</option>
-                            </select>
+
+
+                                {/* Show year interval only for Trend Analysis */}
+                                {analysisType === "Trend Analysis" && (
+                                    <div className="form-group mb-3">
+                                        <label htmlFor="year-select" style={{ fontWeight: "bold" }}>
+                                            Select Year Interval:
+                                        </label>
+                                        <select
+                                            className="form-control"
+                                            id="year-select"
+                                            value={yearInterval}
+                                            onChange={(e) => setYearInterval(e.target.value)}
+                                        >
+                                            <option value="5 years (2016-2021)">5 years (2016-2021)</option>
+                                            <option value="10 years (2011-2021)">10 years (2011-2021)</option>
+                                            <option value="15 years (2006-2021)">15 years (2006-2021)</option>
+                                            <option value="20 years (2001-2021)">20 years (2001-2021)</option>
+                                            <option value="25 years (1996-2021)">25 years (1996-2021)</option>
+                                            <option value="30 years (1991-2021)">30 years (1991-2021)</option>
+                                        </select>
+                                    </div>
+
+                                )}
+
+                            </>
+
+                        )}
+
+
+
+                </div>
+
+                {/* Center Column */}
+                <div className="col-8">
+                    {!analysisType && (
+                        <div>
+                            <p>In this page, you can explore insights through two types of analysis: <strong>Trend Analysis</strong> and <strong>Association Analysis</strong> on various age and sex groups.</p>
+
+                            <p>Please select the desired type of analysis results from the <strong>drop-down menu on the left.</strong></p>
+
+                            <p>In the menu on the<strong> right-hand side</strong>, you can find detailed information about the <strong>data sources</strong> and <strong>methodology</strong> of the analysis.</p>
                         </div>
-
                     )}
-
-                </>
-
-                    )}
-
-
-
-            </div>
-
-            {/* Center Column */}
-            <div className="col-8">
-                {!analysisType && (
-                    <div>
-                        <p>In this page, you can explore insights through two types of analysis: <strong>Trend Analysis</strong> and <strong>Association Analysis</strong> on various age and sex groups.</p>
-
-                        <p>Please select the desired type of analysis results from the <strong>drop-down menu on the left.</strong></p>
-
-                        <p>In the menu on the<strong> right-hand side</strong>, you can find detailed information about the <strong>data sources</strong> and <strong>methodology</strong> of the analysis.</p>
-                    </div>
-                )}
-                {analysisType === "Trend Analysis" && (
-                    <>
-                        <h5>
-                            <strong>EAPC in European Countries</strong>
-                        </h5>
-                        {loading && (
-                            <div
-                                style={{
-                                    position: "absolute",
-                                    top: 0,
-                                    left: 0,
-                                    width: "100%",
-                                    height: "100%",
-                                    backgroundColor: "rgba(255, 255, 255, 0.7)",
-                                    display: "flex",
-                                    flexDirection: "column",
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                    zIndex: 10,
-                                }}
-                            >
-                                <div
-                                    className="spinner-border text-primary"
-                                    role="status"
-                                    style={{ width: "3rem", height: "3rem" }}
-                                ></div>
+                    {analysisType === "Trend Analysis" && (
+                        <>
+                            <h5>
+                                <strong>EAPC in European Countries</strong>
+                            </h5>
+                            {loading && (
                                 <div
                                     style={{
-                                        marginTop: "1rem",
-                                        fontWeight: "bold",
-                                        fontSize: "1rem",
-                                        color: "#333",
+                                        position: "absolute",
+                                        top: 0,
+                                        left: 0,
+                                        width: "100%",
+                                        height: "100%",
+                                        backgroundColor: "rgba(255, 255, 255, 0.7)",
+                                        display: "flex",
+                                        flexDirection: "column",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        zIndex: 10,
                                     }}
                                 >
-                                    Loading...
+                                    <div
+                                        className="spinner-border text-primary"
+                                        role="status"
+                                        style={{ width: "3rem", height: "3rem" }}
+                                    ></div>
+                                    <div
+                                        style={{
+                                            marginTop: "1rem",
+                                            fontWeight: "bold",
+                                            fontSize: "1rem",
+                                            color: "#333",
+                                        }}
+                                    >
+                                        Loading...
+                                    </div>
                                 </div>
-                            </div>
-                        )}
-                        <ReactECharts ref={chartRef} key={JSON.stringify(chartData)} option={trendOption} style={{ height: "550px", width: "100%", margin: "15px 0px " }} />
-                        <SaveGraphButton iframeUrl={{ url: getChartImageUrl(chartIframeUrl), params: getUriParams() }} />
+                            )}
+                            <ReactECharts ref={chartRef} key={JSON.stringify(chartData)} option={trendOption} style={{ height: "550px", width: "100%", margin: "15px 0px " }} />
+                            <SaveGraphButton iframeUrl={{ url: getChartImageUrl(chartIframeUrl), params: getUriParams() }} />
 
-                    </>
-                )}
+                        </>
+                    )}
 
-                {analysisType === "Association Analysis" && (
-                    <>
+                    {analysisType === "Association Analysis" && (
+                        <>
 
-                        {/* <h5>
+                            {/* <h5>
                                 <strong>Association Analysis</strong>
                                
                             </h5> */}
-                        {loading && (
-                            <div
-                                style={{
-                                    position: "absolute",
-                                    top: 0,
-                                    left: 0,
-                                    width: "100%",
-                                    height: "100%",
-                                    backgroundColor: "rgba(255, 255, 255, 0.7)",
-                                    display: "flex",
-                                    flexDirection: "column",
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                    zIndex: 10,
-                                }}
-                            >
-                                <div
-                                    className="spinner-border text-primary"
-                                    role="status"
-                                    style={{ width: "3rem", height: "3rem" }}
-                                ></div>
+                            {loading && (
                                 <div
                                     style={{
-                                        marginTop: "1rem",
-                                        fontWeight: "bold",
-                                        fontSize: "1rem",
-                                        color: "#333",
+                                        position: "absolute",
+                                        top: 0,
+                                        left: 0,
+                                        width: "100%",
+                                        height: "100%",
+                                        backgroundColor: "rgba(255, 255, 255, 0.7)",
+                                        display: "flex",
+                                        flexDirection: "column",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        zIndex: 10,
                                     }}
                                 >
-                                    Loading...
+                                    <div
+                                        className="spinner-border text-primary"
+                                        role="status"
+                                        style={{ width: "3rem", height: "3rem" }}
+                                    ></div>
+                                    <div
+                                        style={{
+                                            marginTop: "1rem",
+                                            fontWeight: "bold",
+                                            fontSize: "1rem",
+                                            color: "#333",
+                                        }}
+                                    >
+                                        Loading...
+                                    </div>
                                 </div>
-                            </div>
-                        )}
-                        <ReactECharts
-                            ref={chartRef}
-                            option={associationOption}
-                            style={{ height: "600px", width: "100%" }}
-                        />
-                        <SaveGraphButton iframeUrl={{ url: getChartImageUrl(chartIframeUrl), params: getUriParams() }} />
+                            )}
+                            <ReactECharts
+                                ref={chartRef}
+                                option={associationOption}
+                                style={{ height: "600px", width: "100%" }}
+                            />
+                            <SaveGraphButton iframeUrl={{ url: getChartImageUrl(chartIframeUrl), params: getUriParams() }} />
 
-                    </>
+                        </>
 
-                )}
-                {analysisType === "Trend Correlation" && (
-                    <>
-                        <h5><strong>Trend Correlation between Risk Factors and CRC incidence</strong></h5>
-                        {loading && <div className="loading-spinner">Loading...</div>}
-                        <ReactECharts
-                            ref={chartRef}
-                            key={JSON.stringify(chartData)}
-                            option={trendCorrelationOption}
-                            style={{ height: "600px", width: "100%" }}
-                        />
-                        <SaveGraphButton iframeUrl={{ url: getChartImageUrl("Trend Correlation"), params: getUriParams() }} />
-                    </>
-                )}
-                {analysisType === "Forecasting CRC" && !forecastChartOption && (
-                    <>
-                        <h6>Please select a <strong>Country </strong> using the menu on the left side</h6>
+                    )}
+                    {analysisType === "Trend Correlation" && (
+                        <>
+                            <h5><strong>Trend Correlation between Risk Factors and CRC incidence</strong></h5>
+                            {loading && <div className="loading-spinner">Loading...</div>}
+                            <ReactECharts
+                                ref={chartRef}
+                                key={JSON.stringify(chartData)}
+                                option={trendCorrelationOption}
+                                style={{ height: "600px", width: "100%" }}
+                            />
+                            <SaveGraphButton iframeUrl={{ url: getChartImageUrl("Trend Correlation"), params: getUriParams() }} />
+                        </>
+                    )}
+                    {analysisType === "Forecasting CRC" && !forecastChartOption && (
+                        <>
+                            <h6>Please select a <strong>Country </strong> using the menu on the left side</h6>
 
-                    </>
-                )}
+                        </>
+                    )}
 
-                {analysisType === "Forecasting CRC" && forecastChartOption && (
-                    <>
-                        <h5><strong>Forecasting CRC</strong></h5>
-                        {loading && <div className="loading-spinner">Loading...</div>}
-                        <ReactECharts
-                            ref={chartRef}
-                            key={JSON.stringify(chartData)}
-                            option={forecastChartOption}
+                    {analysisType === "Forecasting CRC" && forecastChartOption && (
+                        <>
+                            <h5><strong>Forecasting CRC</strong></h5>
+                            {loading && <div className="loading-spinner">Loading...</div>}
+                            <ReactECharts
+                                ref={chartRef}
+                                key={JSON.stringify(chartData)}
+                                option={forecastChartOption}
 
-                            style={{ height: "600px", width: "100%" }}
-                        />
-                        <SaveGraphButton iframeUrl={{ url: getChartImageUrl("Forecasting CRC"), params: getUriParams() }} />
-                    </>
-                )}
+                                style={{ height: "600px", width: "100%" }}
+                            />
+                            <SaveGraphButton iframeUrl={{ url: getChartImageUrl("Forecasting CRC"), params: getUriParams() }} />
+                        </>
+                    )}
 
 
+                </div>
+
+                {/* Right Column (Optional) */}
+                <div className="col-2">{/* Reserved for future content */}
+
+                    <Accordion defaultActiveKey="-1">
+                        {accordionContent_dictLst.map(({ title, content }, index) => (
+                            <Accordion.Item eventKey={index.toString()} key={index}>
+                                <Accordion.Header className="text-left">{title}</Accordion.Header>
+                                <Accordion.Body className="text-start">{content}</Accordion.Body>
+                            </Accordion.Item>
+                        ))}
+                    </Accordion>
+
+                    <Comments /></div>
             </div>
-
-            {/* Right Column (Optional) */}
-            <div className="col-2">{/* Reserved for future content */}
-
-                <Accordion defaultActiveKey="-1">
-                    {accordionContent_dictLst.map(({ title, content }, index) => (
-                        <Accordion.Item eventKey={index.toString()} key={index}>
-                            <Accordion.Header className="text-left">{title}</Accordion.Header>
-                            <Accordion.Body className="text-start">{content}</Accordion.Body>
-                        </Accordion.Item>
-                    ))}
-                </Accordion>
-
-                <Comments /></div>
-        </div>
         </div >
 
     );
