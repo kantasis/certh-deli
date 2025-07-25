@@ -88,6 +88,9 @@ const formatFilterLabel = (raw: string): string => {
         crcfactor: "CRC Factor",
         yearlag: "Year Lag",
         analysis: "Analysis",
+        "selected country": "Country",
+        "max year int": "Max Year",
+        "min year int": "Min Year",
         "diet type": "Risk Factor",
         "screening data metric": "Screening Data Metric",
 
@@ -366,7 +369,7 @@ const SavedDashboards: React.FC = () => {
                     //const filters = extractFiltersFromParams(filterParams);
                     const { srcUrl, filters } = parseSavedUrl(d.saved_url);
 
-
+                    console.log(filters);
 
                     return (
                         <div className="col-12 col-md-6 col-lg-4 d-flex" key={d.id}>
@@ -486,7 +489,7 @@ const SavedDashboards: React.FC = () => {
                                                     .join(", ");
                                             }
 
-                                            // Screening Data Metric special mapping
+                                           
                                             // Screening Data Metric special mapping
                                             if (normalizedFilter === "screening data metric") {
                                                 displayLabel = "Screening Data Metric";
@@ -504,11 +507,36 @@ const SavedDashboards: React.FC = () => {
                                                 displayValues = Array.from(displaySet).toString();
                                             }
 
-                                            const analysisValues = filters["analysis"] || [];
+                                            const analysisValues = filters["Analysis"] || [];
+                                            console.log(filters["Analysis"])
+
                                             const isTrendAnalysis = analysisValues.includes("Trend Analysis");
 
                                             // If Analysis is Trend Analysis, skip rendering Risk Factors badge
-                                            if ((label.toLowerCase() === "risk factors" || label.toLowerCase() === "selected risk factors") && isTrendAnalysis) {
+                                            if ((label.toLowerCase() === "risk factors" || label.toLowerCase() === "selected risk factors"|| label.toLowerCase() === "country") && isTrendAnalysis) {
+
+                                                return null;
+                                            }
+
+                                            const isForecasting = analysisValues.includes("Forecasting CRC");
+
+
+                                            // If Analysis is Trend Analysis, skip rendering Risk Factors badge
+                                            if ((label.toLowerCase() === "risk factors" || label.toLowerCase() === "selected risk factors" || label.toLowerCase() === "year interval") && isForecasting) {
+                                                return null;
+                                            }
+                                            
+                                            
+                                            const associationAnalysis = analysisValues.includes("Association Analysis");
+
+
+                                            // If Analysis is Association Analysis, skip rendering Risk Factors badge
+                                            if ((label.toLowerCase() === "country") && associationAnalysis) {
+                                                return null;
+                                            }
+                               
+                                            const isTrendCorrelation = analysisValues.includes("Trend Correlation");
+                                            if ((label.toLowerCase() === "year interval") || (label.toLowerCase() === "country") && isTrendCorrelation) {
                                                 return null;
                                             }
                                             // Special case for "risk factors"
