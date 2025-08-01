@@ -10,7 +10,7 @@ import SaveGraphButton from "./SaveGraphButton.tsx";
 import { useLocation } from "react-router-dom";
 import CountryFilter from "./CountryFilter.tsx";
 import trendCorrelationStaticData from '../assets/trend_correlation.json';
-import trendForecastingCRCData from '../assets/forecasting_CRC.json';
+import trendForecastingCRCData from '../assets/forecasting_CRC_new.json';
 import YearFilter from "./YearFilter.tsx";
 
 echarts.registerMap("world", worldJson);
@@ -132,6 +132,7 @@ const EuropeMap = () => {
             d.sex === sexFilter &&
             d.age === ageFilter &&
             d.Country === selectedCountry
+
         );
 
         setFilteredForecastingData(filtered);
@@ -207,36 +208,38 @@ const EuropeMap = () => {
                     if (!params.length) return "";
 
                     const year = params[0].axisValue;
-
-                    // Get country from observed or forecasted data
                     const observed = observedMap[year];
                     const forecasted = forecastedMap[year];
                     const country = observed?.Country || forecasted?.Country || "Unknown";
 
                     let tooltip = `<strong>Country: ${country}</strong><br/>
-                 <strong>Year: ${year}</strong><br/>`;
+                   <strong>Year: ${year}</strong><br/>`;
 
-                    let forecastAdded = false; // track if forecast info added
+                    let forecastAdded = false;
 
                     for (const p of params) {
                         const seriesName = p.seriesName;
 
                         if (seriesName === "Observed" && observed) {
-                            tooltip += `🔵 Observed: ${observed["Colon and rectum cancer Incidence_value"]?.toFixed(2)}<br/>`;
+                            tooltip += `
+                CI Upper: ${observed["Colon and rectum cancer Incidence_upper"]?.toFixed(2)}<br/>
+                🔵 Observed: ${observed["Colon and rectum cancer Incidence_value"]?.toFixed(2)}<br/>
+                CI Lower: ${observed["Colon and rectum cancer Incidence_lower"]?.toFixed(2)}<br/>`;
                         }
 
                         if (seriesName === "Forecasted" && forecasted && !forecastAdded) {
                             tooltip += `
-                            🔴 CI Upper: ${forecasted["Colon and rectum cancer Incidence_upper"]?.toFixed(2)}<br/>
-                            🟢 Forecasted: ${forecasted["Colon and rectum cancer Incidence_value"]?.toFixed(2)}<br/>
-                            🟡 CI Lower: ${forecasted["Colon and rectum cancer Incidence_lower"]?.toFixed(2)}<br/>
-                        `;
-                            forecastAdded = true; // prevent duplicate addition
+                🔴 CI Upper: ${forecasted["Colon and rectum cancer Incidence_upper"]?.toFixed(2)}<br/>
+                🟢 Forecasted: ${forecasted["Colon and rectum cancer Incidence_value"]?.toFixed(2)}<br/>
+                🟡 CI Lower: ${forecasted["Colon and rectum cancer Incidence_lower"]?.toFixed(2)}<br/>
+                Arima (p, d, q): ${forecasted["Arima (p, d, q)"] || "N/A"}<br/>`;
+                            forecastAdded = true;
                         }
                     }
 
                     return tooltip;
                 }
+
 
 
             },
@@ -518,26 +521,26 @@ const EuropeMap = () => {
             title: 'Methodology',
             content: (<>
                 <div style={{ height: '340px', overflow: 'scroll' }}>
-                    <p>
-                        <strong>Trend Correlation</strong><br /><br />
 
-                        <p>Associations between long-term trends in modifiable risk factors and trends in CRC incidence were examined over a 30-year period (1990–2021) to determine whether changes in specific risk factors correspond to increases or decreases in CRC incidence over time.</p>
-                        <p>To evaluate these associations, a weighted linear regression analysis was conducted using Estimated Annual Percentage Changes (EAPCs) for both risk factors and CRC incidence.</p>
-                        <p>The <strong>EAPC</strong> describes the rate of change in Age-Standardized Rates (ASRs) over time by fitting a regression model to the natural logarithm of ASRs, using time as the explanatory variable. This approach applies a Generalized Linear Model with a Gaussian distribution and assumes a constant rate of change on the logarithmic scale.</p>
-                        <p>A <strong>Weighted Linear Regression</strong> model assessed the association between the EAPC of a risk factor (independent variable) and the EAPC of CRC incidence (dependent variable). Weights were derived from the inverse of the sum of squared standard errors of both variables, incorporating uncertainty in both axes. Outliers were identified using studentized residuals, with a threshold of ±2.5.</p>
+                    <strong>Trend Correlation</strong><br /><br />
 
-                        The analysis included<strong>22 risk factors</strong> and was performed across defined age and sex groups.
+                    <p>Associations between long-term trends in modifiable risk factors and trends in CRC incidence were examined over a 30-year period (1990–2021) to determine whether changes in specific risk factors correspond to increases or decreases in CRC incidence over time.</p>
+                    <p>To evaluate these associations, a weighted linear regression analysis was conducted using Estimated Annual Percentage Changes (EAPCs) for both risk factors and CRC incidence.</p>
+                    <p>The <strong>EAPC</strong> describes the rate of change in Age-Standardized Rates (ASRs) over time by fitting a regression model to the natural logarithm of ASRs, using time as the explanatory variable. This approach applies a Generalized Linear Model with a Gaussian distribution and assumes a constant rate of change on the logarithmic scale.</p>
+                    <p>A <strong>Weighted Linear Regression</strong> model assessed the association between the EAPC of a risk factor (independent variable) and the EAPC of CRC incidence (dependent variable). Weights were derived from the inverse of the sum of squared standard errors of both variables, incorporating uncertainty in both axes. Outliers were identified using studentized residuals, with a threshold of ±2.5.</p>
 
-                        <p><strong>Interpreting Associations:</strong></p>
+                    The analysis included<strong>22 risk factors</strong> and was performed across defined age and sex groups.
 
-                        <p><strong>Positive association:</strong> regression coefficients (β) &gt; 0 and p-value &lt; 0.05 (an increasing trend in the risk factor is associated with an increasing trend in CRC incidence)</p>
+                    <p><strong>Interpreting Associations:</strong></p>
 
-                        <p><strong>Negative association:</strong> β &gt; 0 and p-value  &lt; 0.05 (a decreasing trend in the risk factor is associated with a decreasing trend in CRC incidence)</p>
+                    <p><strong>Positive association:</strong> regression coefficients (β) &gt; 0 and p-value &lt; 0.05 (an increasing trend in the risk factor is associated with an increasing trend in CRC incidence)</p>
 
-                        <strong>No statistically significant association:</strong> p ≥ 0.05
+                    <p><strong>Negative association:</strong> β &gt; 0 and p-value  &lt; 0.05 (a decreasing trend in the risk factor is associated with a decreasing trend in CRC incidence)</p>
+
+                    <strong>No statistically significant association:</strong> p ≥ 0.05
 
 
-                    </p>
+
                 </div>
             </>)
         }

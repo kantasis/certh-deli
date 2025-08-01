@@ -9,6 +9,7 @@ const NavbarMain: React.FC = () => {
    const [dashboards, setDashboards] = useState<any[]>([]);
    const [showProfileDropdown, setShowProfileDropdown] = useState(false);
    const [showDashboardsMenu, setShowDashboardsMenu] = useState(false);
+   const [showLip2Menu, setShowLip2Menu] = useState(false);
    const navigate = useNavigate();
 
    useEffect(() => {
@@ -25,27 +26,6 @@ const NavbarMain: React.FC = () => {
       }
    }, []);
 
-
-   useEffect(() => {
-      const handleDashboardCreated = async (e) => {
-         const user = AuthService.getCurrentUser();
-         if (user?.id) {
-            try {
-               const updatedDashboards = await getUserDashboards(user.id);
-               setDashboards(updatedDashboards);
-            } catch (err) {
-               console.error("Failed to refresh dashboards:", err);
-            }
-         }
-      };
-
-      window.addEventListener("dashboardCreated", handleDashboardCreated);
-
-      return () => {
-         window.removeEventListener("dashboardCreated", handleDashboardCreated);
-      };
-   }, []);
-
    useEffect(() => {
       const user = AuthService.getCurrentUser();
 
@@ -60,13 +40,8 @@ const NavbarMain: React.FC = () => {
          }
       };
 
-      const handleDashboardCreated = () => {
-         refreshDashboards();
-      };
-
-      const handleDashboardDeleted = () => {
-         refreshDashboards();
-      };
+      const handleDashboardCreated = () => refreshDashboards();
+      const handleDashboardDeleted = () => refreshDashboards();
 
       window.addEventListener("dashboardCreated", handleDashboardCreated);
       window.addEventListener("dashboardDeleted", handleDashboardDeleted);
@@ -76,8 +51,6 @@ const NavbarMain: React.FC = () => {
          window.removeEventListener("dashboardDeleted", handleDashboardDeleted);
       };
    }, []);
-
-
 
    const userRole = getUserRole();
 
@@ -89,54 +62,79 @@ const NavbarMain: React.FC = () => {
    const leftButtons_tsx = [
       {
          href: "/crc-incidence",
-         label: "CRC Incidence",
-         condition: isLoggedIn
+         label: "CRC Incidence"
       },
       {
          href: "/crc-risk-factors",
-         label: "CRC Risk Factors",
-         condition: isLoggedIn
+         label: "CRC Risk Factors"
       },
       {
          href: "/crc-policy-data",
-         label: "CRC Policy Data",
-         condition: isLoggedIn
+         label: "CRC Policy Data"
       },
       {
          href: "/crc-predictive-analytics",
-         label: "CRC Predictive Analytics",
-         condition: isLoggedIn
+         label: "CRC Predictive Analytics"
       },
       {
          href: "/LIT03",
          label: "Spanish CRC Regional Data",
-         condition: isLoggedIn,
          onClick: () => localStorage.setItem("lit03Panel", "")
       },
       {
          href: "/crc-trend-and-association-analysis",
-         label: "CRC Trend & Association Analysis",
-         condition: isLoggedIn
-      },
-      {
-         href: "/comments",
-         label: "Comments",
-         condition: isLoggedIn && userRole === "ROLE_ADMIN"
+         label: "CRC Trend & Association Analysis"
       }
-   ].map((item, index) =>
-      item.condition ? (
-         <li className="nav-item" key={index}>
-            <NavLink
-               to={item.href}
-               className={({ isActive }) =>
-                  isActive ? "nav-link active" : "nav-link"
-               }
-               onClick={item.onClick}
-            >
-               {item.label}
-            </NavLink>
-         </li>
-      ) : null
+   ].map((item, index) => (
+      <li className="nav-item" key={index}>
+         <NavLink
+            to={item.href}
+            className={({ isActive }) =>
+               isActive ? "nav-link active" : "nav-link"
+            }
+            onClick={item.onClick}
+         >
+            {item.label}
+         </NavLink>
+      </li>
+   ));
+
+   // Insert LIP2 dropdown before Comments
+   const lip2Menu = (
+      <li
+         className="nav-item dropdown"
+         onMouseEnter={() => setShowLip2Menu(true)}
+         onMouseLeave={() => setShowLip2Menu(false)}
+      >
+         <a
+            className="nav-link dropdown-toggle"
+            href="#"
+            role="button"
+            onClick={(e) => e.preventDefault()}
+         >
+            LIP2
+         </a>
+         <ul className={`dropdown-menu ${showLip2Menu ? "show" : ""}`}>
+            <li>
+               <NavLink className="dropdown-item" to="/lip2-aggregation-analysis">
+                  Aggregation Analysis
+               </NavLink>
+            </li>
+         </ul>
+      </li>
+   );
+
+   const commentItem = userRole === "ROLE_ADMIN" && (
+      <li className="nav-item" key="comments">
+         <NavLink
+            to="/comments"
+            className={({ isActive }) =>
+               isActive ? "nav-link active" : "nav-link"
+            }
+         >
+            Comments
+         </NavLink>
+      </li>
    );
 
    const rightButtons_tsx = [];
@@ -185,8 +183,7 @@ const NavbarMain: React.FC = () => {
                Profile
             </a>
             <ul
-               className={`dropdown-menu dropdown-menu-end ${showProfileDropdown ? "show" : ""
-                  }`}
+               className={`dropdown-menu dropdown-menu-end ${showProfileDropdown ? "show" : ""}`}
                aria-labelledby="navbarDropdown"
             >
                <li>
@@ -199,38 +196,28 @@ const NavbarMain: React.FC = () => {
                      Change Password
                   </NavLink>
                </li>
-
                {dashboards.length >= 0 && (
                   <>
-                     <li>
-                        <hr className="dropdown-divider" />
-                     </li>
+                     <li><hr className="dropdown-divider" /></li>
                      <li
-
                         onMouseEnter={() => setShowDashboardsMenu(true)}
                         onMouseLeave={() => setShowDashboardsMenu(false)}
                      >
                         <div
                            className="dropdown-item d-flex justify-content-between align-items-center"
                            style={{ cursor: "pointer" }}
-                           onClick={() => {
-                              navigate(`/my-dashboards`);
-                              // setShowProfileDropdown(false);
-                              // setShowDashboardsMenu(false);
-                           }}
+                           onClick={() => navigate(`/my-dashboards`)}
                         >
                            My Dashboards
                            <span style={{ fontSize: "0.75rem" }}>▼</span>
                         </div>
-
-
                         {showDashboardsMenu && dashboards.length > 0 && (
                            <>
                               {dashboards.map((dashboard, index) => (
                                  <div
                                     key={dashboard.id}
                                     className="dropdown-item ps-4"
-                                    style={{ backgroundColor: "", cursor: "pointer" }}
+                                    style={{ cursor: "pointer" }}
                                     onClick={(e) => {
                                        e.preventDefault();
                                        navigate(`/my-dashboards?index=${index}`);
@@ -244,18 +231,10 @@ const NavbarMain: React.FC = () => {
                            </>
                         )}
                      </li>
-
-                     {/* <NavLink
-                           className="dropdown-item"
-                           to="/my-dashboards"
-                        >
-                           View All Dashboards
-                        </NavLink> */}
-
                   </>
                )}
             </ul>
-         </li >,
+         </li>,
          <li className="nav-item" key="logout">
             <NavLink to="/login" className="nav-link" onClick={logout}>
                Logout
@@ -286,7 +265,11 @@ const NavbarMain: React.FC = () => {
             </button>
 
             <div className="collapse navbar-collapse" id="navbarSupportedContent">
-               <ul className="navbar-nav me-auto mb-2 mb-lg-0">{leftButtons_tsx}</ul>
+               <ul className="navbar-nav me-auto mb-2 mb-lg-0">
+                  {leftButtons_tsx}
+                  {isLoggedIn && lip2Menu}
+                  {isLoggedIn && commentItem}
+               </ul>
                <ul className="navbar-nav my-2 my-lg-0">{rightButtons_tsx}</ul>
             </div>
          </div>
