@@ -33,15 +33,13 @@ services:
    #       - main_network
 
    grafana_label:
-      image: ${PROJECT_NAME}_grafana_image
+      image: grafana/grafana:11.5.2
       container_name: ${PROJECT_NAME}_grafana_container
+      user: "472:472"
       env_file:
          - ./services/grafana/.env
-      build:
-         context: ./services/grafana
-      # TODO: Check how to change the grafana server port
       ports:
-         - ${HOST_GRAFANA_PORT}:3000
+         - "${HOST_GRAFANA_PORT}:3000"
       restart: ${RESTART_POLICY}
       volumes:
          - ./shared/grafana:/var/lib/grafana
@@ -51,8 +49,9 @@ services:
       depends_on:
          - db_label
 
+
    db_label:
-      image: ${PROJECT_NAME}_db_image
+      image: postgres:17
       container_name: ${PROJECT_NAME}_db_container
       build:
          context: ./services/postgres
