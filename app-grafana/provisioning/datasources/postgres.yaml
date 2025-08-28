@@ -1,0 +1,14 @@
+apiVersion: 1
+datasources:
+  - name: deli_main_datasource
+    type: postgres
+    access: proxy
+    url: deli_db_container:5433
+    database: deli_db
+    user: postgres
+    jsonData:
+      sslmode: disable
+      postgresVersion: 1700
+    secureJsonData:
+      password: postgres
+    isDefault: true

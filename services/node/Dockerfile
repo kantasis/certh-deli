@@ -1,5 +1,5 @@
 # TODO: Don't use latest in production
-FROM node:latest
+FROM node:20
 
 # WORKDIR /app
 # RUN npm create vite@latest deli_react_app -- --template react-ts
