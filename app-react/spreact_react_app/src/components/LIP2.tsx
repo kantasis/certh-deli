@@ -16,15 +16,19 @@ const AggregationAnalysis = () => {
     const periodTypes = ["Week", "Month"];
 
     const timePeriods = useMemo(() => {
-        return data
-            .filter((d) =>
+        const periods = data
+            .filter(d =>
                 selectedPeriodType === "Week"
                     ? d["Time-Period"]?.includes("/")
-                    : !d["Time-Period"]?.includes("/")
+                    : d["Time-Period"] && !d["Time-Period"].includes("/")
             )
-            .map((d) => d["Time-Period"])
-            .filter((v, i, a) => a.indexOf(v) === i);
+            .map(d => d["Time-Period"])
+            .filter((v, i, a) => v != null && a.indexOf(v) === i); // <-- filter out nulls
+
+        return periods.sort((a, b) => a.toString().localeCompare(b.toString()));
     }, [selectedPeriodType]);
+
+
 
     const pieChartVarsDetailed = ["Age", "BMI"];
     const pieChartVarsSimple = [
@@ -68,26 +72,73 @@ const AggregationAnalysis = () => {
     }, [selectedVariable]);
 
     useEffect(() => {
-        setSelectedPeriodType("");
+        // Only set default if undefined, otherwise leave "" for All Time Periods
+        if (selectedTimePeriod === undefined && timePeriods.length > 0) {
+            setSelectedTimePeriod("");
+        }
+    }, [timePeriods]);
+
+
+    useEffect(() => {
+        // Reset Time Period whenever Period Type changes
         setSelectedTimePeriod("");
-    }, [chartType]);
+    }, [selectedPeriodType]);
+
+    useEffect(() => {
+        if (!barChartVarsTime.includes(selectedVariable)) {
+            setSelectedPeriodType("");
+            setSelectedTimePeriod("");
+        }
+    }, [selectedVariable]);
+
+    const formatTimePeriod = (tp) => {
+        if (!tp) return "";
+
+        // Handle weeks like "2024-10-07/2024-10-13" → "07-10-2024 - 13-10-2024"
+        if (tp.includes("/")) {
+            const [start, end] = tp.split("/");
+            const [startY, startM, startD] = start.split("-"); // YYYY-MM-DD
+            const [endY, endM, endD] = end.split("-");
+            return `${startD}-${startM}-${startY} - ${endD}-${endM}-${endY}`;
+        }
+
+        // Handle months like "2024-10" → "01-10-2024"
+        if (tp.includes("-")) {
+            const [year, month] = tp.split("-");
+            return `01-${month}-${year}`;
+        }
+
+        return tp;
+    };
+
+
+
 
     const filteredData = useMemo(() => {
         return data.filter((d) => {
-            const matchesVariable = selectedVariable ? d.Variable === selectedVariable : false;
+            // Variable must match
+            const matchesVariable = selectedVariable ? d.Variable === selectedVariable : true;
 
+            // Period type
             const matchesPeriodType =
-                !selectedPeriodType ||
+                !selectedPeriodType || selectedPeriodType === "" ||
                 (selectedPeriodType === "Week"
                     ? d["Time-Period"]?.includes("/")
                     : d["Time-Period"] && !d["Time-Period"].includes("/"));
 
+            // Time period
             const matchesTimePeriod =
-                !selectedTimePeriod || d["Time-Period"] === selectedTimePeriod;
+                !selectedTimePeriod || selectedTimePeriod === "" || d["Time-Period"] === selectedTimePeriod;
 
             return matchesVariable && matchesPeriodType && matchesTimePeriod;
         });
     }, [selectedVariable, selectedPeriodType, selectedTimePeriod]);
+
+
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [filteredData]);
+
 
     // --- CSV Download (pure JS, no file-saver needed) ---
     const handleDownloadCSV = () => {
@@ -107,7 +158,7 @@ const AggregationAnalysis = () => {
             row.Variable,
             row.Category,
             row.Frequency ?? "-",
-            row["Percentage of Total"]?.toFixed(2) ?? "-",
+            row["Percentage of Total"] != null ? row["Percentage of Total"].toFixed(2) : "-",
             row.Mean ?? "-",
             row.Median ?? "-",
             row["Std. Dev."] ?? "-",
@@ -173,9 +224,20 @@ const AggregationAnalysis = () => {
         ],
     });
 
+    const timePeriodLookup = {};
+    timePeriods.forEach(tp => {
+        timePeriodLookup[formatTimePeriod(tp)] = tp;
+    });
+
     const getBarOptions = () => {
         const categories = [...new Set(filteredData.map((d) => d.Category))];
         const timePeriods = [...new Set(filteredData.map((d) => d["Time-Period"]))];
+
+        // Lookup table: formatted time → original time
+        const timePeriodLookup = {};
+        timePeriods.forEach(tp => {
+            timePeriodLookup[formatTimePeriod(tp)] = tp;
+        });
 
         const series = categories.map((cat) => ({
             name: cat,
@@ -194,34 +256,39 @@ const AggregationAnalysis = () => {
             tooltip: {
                 trigger: "item",
                 formatter: (params) => {
+                    const originalTP = timePeriodLookup[params.name]; // map back
                     const row = filteredData.find(
-                        (d) => d.Category === params.seriesName && d["Time-Period"] === params.name
+                        (d) => d.Category === params.seriesName && d["Time-Period"] === originalTP
                     );
                     if (!row) return "";
 
                     let content = `<strong>${params.seriesName}</strong><br/>`;
-                    content += `Time Period: ${params.name}<br/>`;
+                    content += `Time Period: ${params.name}<br/>`; // show formatted
                     content += `Frequency: ${row.Frequency ?? "-"}<br/>`;
-                    content += `Percentage of Total: ${row["Percentage of Total"]?.toFixed(2) ?? "-"
-                        }%`;
+                    content += `Percentage of Total: ${row["Percentage of Total"]?.toFixed(2) ?? "-"}%`;
 
                     if (selectedVariable !== "CRC Risk Assessment Score (PYRAMID)") {
                         content += `
-              <br/>Mean: ${row.Mean ?? "-"}
-              <br/>Median: ${row.Median ?? "-"}
-              <br/>Std. Dev.: ${row["Std. Dev."] ?? "-"}
-              <br/>Min: ${row.Min ?? "-"}
-              <br/>Max: ${row.Max ?? "-"}`;
+                      <br/>Mean: ${row.Mean ?? "-"}
+                      <br/>Median: ${row.Median ?? "-"}
+                      <br/>Std. Dev.: ${row["Std. Dev."] ?? "-"}
+                      <br/>Min: ${row.Min ?? "-"}
+                      <br/>Max: ${row.Max ?? "-"}`;
                     }
                     return content;
                 },
             },
             legend: { top: 20 },
-            xAxis: { type: "category", data: timePeriods },
+            xAxis: {
+                type: "category",
+                data: timePeriods.map(tp => formatTimePeriod(tp)), // formatted
+            },
             yAxis: { type: "value" },
             series,
         };
     };
+
+
 
     return (
         <div className="container-fluid mt-3">
@@ -245,39 +312,34 @@ const AggregationAnalysis = () => {
 
                     {barChartVarsTime.includes(selectedVariable) && (
                         <>
-                            <label>Period Type</label>
+                            <label><strong>Period Type</strong></label>
                             <select
                                 className="form-control mb-3"
                                 value={selectedPeriodType}
                                 onChange={(e) => setSelectedPeriodType(e.target.value)}
                             >
-                                <option value="">-- Select Period Type --</option>
+                                <option value="">-- All Period Types --</option>
                                 {periodTypes.map((pt, i) => (
-                                    <option key={i} value={pt}>
-                                        {pt}
-                                    </option>
+                                    <option key={i} value={pt}>{pt}</option>
+                                ))}
+                            </select>
+
+                            <label><strong>Time Period</strong></label>
+                            <select
+                                className="form-control mb-3"
+                                value={selectedTimePeriod}
+                                onChange={(e) => setSelectedTimePeriod(e.target.value)}
+                                disabled={!selectedPeriodType}
+
+                            >
+                                <option value="">-- All Time Periods --</option>
+                                {timePeriods.map((tp, i) => (
+                                    <option key={i} value={tp}>{formatTimePeriod(tp)}</option>
                                 ))}
                             </select>
                         </>
                     )}
 
-                    {selectedPeriodType && (
-                        <>
-                            <label>Time Period</label>
-                            <select
-                                className="form-control mb-3"
-                                value={selectedTimePeriod}
-                                onChange={(e) => setSelectedTimePeriod(e.target.value)}
-                            >
-                                <option value="">-- Select Time Period --</option>
-                                {timePeriods.map((tp, i) => (
-                                    <option key={i} value={tp}>
-                                        {tp}
-                                    </option>
-                                ))}
-                            </select>
-                        </>
-                    )}
                 </div>
 
                 {/* Main Column */}
