@@ -9,14 +9,19 @@ import { Accordion } from 'react-bootstrap';
 import SaveGraphButton from "./SaveGraphButton.tsx";
 import { useLocation } from "react-router-dom";
 import CountryFilter from "./CountryFilter.tsx";
-import trendCorrelationStaticData from '../assets/trend_correlation.json';
-import trendForecastingCRCData from '../assets/forecasting_CRC_new.json';
+// import trendCorrelationStaticData from '../assets/trend_correlation.json';
+// import trendForecastingCRCData from '../assets/forecasting_CRC_new.json';
+//import { Spinner, Alert } from "react-bootstrap";
 import YearFilter from "./YearFilter.tsx";
 
 echarts.registerMap("world", worldJson);
 
 const EuropeMap = () => {
 
+
+    const [trendForecastingCRCData, setTrendForecastingCRCData] = useState([]);
+    // const [loadingData, setLoadingData] = useState(false);
+    // const [error, setError] = useState<string | null>(null);
 
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const chartRef = useRef<ReactECharts>(null);          // NEW
@@ -26,6 +31,24 @@ const EuropeMap = () => {
     useEffect(() => {
         setIsLoggedIn(AuthService.isLoggedIn());
     }, []);
+
+
+    const COUNTRY_OPTIONS = [
+        "Albania", "Andorra", "Armenia", "Austria", "Azerbaijan",
+        "Belarus", "Belgium", "Bosnia and Herzegovina", "Bulgaria",
+        "Croatia", "Cyprus", "Czechia", "Denmark", "Estonia",
+        "Finland", "France", "Georgia", "Germany", "Greece",
+        "Hungary", "Iceland", "Ireland", "Italy", "Latvia",
+        "Lithuania", "Luxembourg", "Malta", "Monaco", "Montenegro",
+        "Netherlands", "North Macedonia", "Norway", "Poland", "Portugal",
+        "Republic of Moldova", "Romania", "Russian Federation", "San Marino",
+        "Serbia", "Slovakia", "Slovenia", "Spain", "Sweden",
+        "Switzerland", "Ukraine", "United Kingdom"
+    ];
+
+
+
+
 
 
     const DEFAULT_RISK_FACTORS = [
@@ -83,6 +106,7 @@ const EuropeMap = () => {
     const [associationData, setAssociationData] = useState([]);
     const [selectedRiskFactors, setSelectedRiskFactors] = useState([]);
     const [filteredTrendCorrelationData, setFilteredTrendCorrelationData] = useState([]);
+    const [rawTrendCorrelationData, setRawTrendCorrelationData] = useState([]);
     const [filteredForecastingData, setFilteredForecastingData] = useState([]);
     const [forecastChartOption, setForecastChartOption] = useState(null);
     const [isRestoring, setIsRestoring] = useState(false);
@@ -98,17 +122,71 @@ const EuropeMap = () => {
 
     const [ceilYear_int, set_ceilYear_int] = useState(0);
 
+    useEffect(() => {
+        const filteredOrderedData = selectedRiskFactors
+            .map(factor => rawTrendCorrelationData.find(d => d.Risk_Factor === factor))
+            .filter(Boolean); // remove undefined if some factor isn't in data
+
+        setFilteredTrendCorrelationData(filteredOrderedData);
+    }, [selectedRiskFactors, rawTrendCorrelationData]);
+
 
     const [dataMinYear, setDataMinYear] = useState<number | undefined>(undefined);
     const [dataMaxYear, setDataMaxYear] = useState<number | undefined>(undefined);
 
+    const buildForecastingUrl = () => {
+        const baseUrl = "http://oncodir.catalink.eu:7565/v1/data-fusion/extra/forecasting-crc";
+        const params = new URLSearchParams();
+
+        if (selectedCountry) params.append("Country", selectedCountry);
+        if (sexFilter) params.append("sex", sexFilter);
+        if (ageFilter) params.append("age", ageFilter);
+        if (minYear_int) params.append("minYear", minYear_int.toString());
+        if (maxYear_int) params.append("maxYear", maxYear_int.toString());
+
+        return `${baseUrl}?${params.toString()}`;
+    };
+
+    // Fetch data
+    useEffect(() => {
+        const fetchForecastingData = async () => {
+            if (analysisType !== "Forecasting CRC") return;
+            setLoading(true);
+            // setLoadingData(true);
+            // setError(null);
+
+            try {
+                const url = buildForecastingUrl();
+                const response = await fetch(url);
+                if (!response.ok) throw new Error("Failed to fetch forecasting data");
+
+                const data = await response.json();
+                setTrendForecastingCRCData(data.results || []);
+            } catch (err: any) {
+                console.error("Error fetching forecasting CRC data:", err);
+                // setError(err.message || "Something went wrong while fetching data");
+                setTrendForecastingCRCData([]);
+            } finally {
+                // ✅ correct usage of finally
+                setTimeout(() => {
+                    setLoading(false);
+                }, 100);
+            }
+        };
+        // Fetch when any relevant filter changes
+        fetchForecastingData();
+    }, [analysisType, selectedCountry, sexFilter, ageFilter, minYear_int, maxYear_int]);
+
+
+
+
 
     useEffect(() => {
-        // When ceilYear_int changes, ensure maxYear_int is <= ceilYear_int
-        if (maxYear_int !== undefined && maxYear_int < ceilYear_int) {
-            set_maxYear(ceilYear_int);
+        if (minYear_int !== undefined && maxYear_int !== undefined && minYear_int > maxYear_int) {
+            set_maxYear(minYear_int);
         }
-    }, [ceilYear_int, maxYear_int, set_maxYear]);
+    }, [minYear_int, maxYear_int]);
+
 
 
     useEffect(() => {
@@ -128,12 +206,14 @@ const EuropeMap = () => {
             return;
         }
 
-        const filtered = trendForecastingCRCData.filter(d =>
-            d.sex === sexFilter &&
-            d.age === ageFilter &&
-            d.Country === selectedCountry
+        const filtered = Array.isArray(trendForecastingCRCData)
+            ? trendForecastingCRCData.filter(d =>
+                d.sex === sexFilter &&
+                d.age === ageFilter &&
+                d.Country === selectedCountry
+            )
+            : [];
 
-        );
 
         setFilteredForecastingData(filtered);
 
@@ -665,25 +745,45 @@ const EuropeMap = () => {
         });
     };
 
+    // Fetch Trend Correlation data from API
     useEffect(() => {
-        if (analysisType !== "Trend Correlation") {
-            setFilteredTrendCorrelationData([]); // Reset when not in Trend Correlation mode
-            return;
-        }
+        if (analysisType !== "Trend Correlation") return;
 
-        if (!Array.isArray(selectedRiskFactors) || selectedRiskFactors.length === 0) {
-            setFilteredTrendCorrelationData([]);
-            return;
-        }
+        const controller = new AbortController();
+        setLoading(true);
 
-        const filtered = trendCorrelationStaticData.filter((d) =>
-            selectedRiskFactors.includes(d.Risk_Factor) &&
-            d.sex === sexFilter &&
-            d.age === ageFilter
-        );
+        const params = new URLSearchParams({
+            sex: sexFilter,
+            age: ageFilter,
+            year_interval: yearInterval.split(" ")[0],
+        });
 
-        setFilteredTrendCorrelationData(filtered);
-    }, [analysisType, selectedRiskFactors, sexFilter, ageFilter, trendCorrelationStaticData]);
+        fetch(`http://oncodir.catalink.eu:7565/v1/data-fusion/extra/trend-correlation?${params.toString()}`, {
+            method: "GET",
+            signal: controller.signal,
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            }
+        })
+            .then(res => {
+                if (!res.ok) throw new Error(`HTTP error: ${res.status}`);
+                return res.json();
+            })
+            .then(data => {
+                setRawTrendCorrelationData(data.results); // store all fetched risk factors
+            })
+            .catch(err => {
+                if (err.name !== "AbortError") console.error(err);
+            })
+            .finally(() => setLoading(false));
+
+        return () => controller.abort();
+    }, [analysisType, sexFilter, ageFilter, yearInterval, token]);
+
+
+
+
 
     const observed = filteredForecastingData.filter(d => d.source === "Observed");
     const forecasted = filteredForecastingData.filter(d => d.source === "Forecasted");
@@ -787,6 +887,7 @@ const EuropeMap = () => {
             age: ageFilter,
             year_interval: yearInterval.split(" ")[0],
         });
+        console.log(selectedRiskFactors)
         // selectedRiskFactors.forEach((rf) => {
         //     params.append("Risk_Factor", rf);
         // });
@@ -907,6 +1008,7 @@ const EuropeMap = () => {
     }
 
     const trendCorrelationOption = {
+
         // title: {
         //     text: "Trend Correlation Coefficients by Risk Factor",
         //     left: "center"
@@ -974,6 +1076,12 @@ const EuropeMap = () => {
             {
                 name: "Confidence Intervals (95%)",
                 type: "custom",
+                data: filteredTrendCorrelationData.map((item, index) => [
+                    index,
+                    item.Coef,
+                    item.CI_Lower,
+                    item.CI_Upper
+                ]),
                 renderItem: (params, api) => {
                     const xValue = api.value(0);
                     const coef = api.value(1);
@@ -1172,11 +1280,22 @@ const EuropeMap = () => {
     // const uniqueTrendCorrelationRiskFactors = Array.from(
     //     new Set(rawData.map((d) => d.Risk_Factor))
     // ).sort();
+    const uniqueRiskFactors = React.useMemo(() => {
+        const sourceData =
+            analysisType === "Trend Correlation"
+                ? rawTrendCorrelationData  // always use full dataset here
+                : associationData;
 
-    const uniqueRiskFactors =
-        analysisType === "Trend Correlation"
-            ? Array.from(new Set(trendCorrelationStaticData.map((d) => d.Risk_Factor))).sort()
-            : Array.from(new Set(associationData.map((d) => d.Risk_Factor))).sort();
+        return Array.from(new Set(sourceData.map((d) => d.Risk_Factor))).sort();
+    }, [analysisType, rawTrendCorrelationData, associationData]);
+
+    useEffect(() => {
+        const filtered = rawTrendCorrelationData.filter(d =>
+            selectedRiskFactors.includes(d.Risk_Factor)
+        );
+        setFilteredTrendCorrelationData(filtered);
+    }, [selectedRiskFactors, rawTrendCorrelationData]);
+
 
 
     const filteredAssociationData = associationData.filter((d) =>
@@ -1454,7 +1573,7 @@ const EuropeMap = () => {
                                 onChange={(e) => setSelectedCountry(e.target.value)}
                             >
                                 <option value="">-- Select a country --</option>
-                                {countryList.map((country, index) => (
+                                {COUNTRY_OPTIONS.map((country, index) => (
                                     <option key={index} value={country}>
                                         {country}
                                     </option>
@@ -1661,7 +1780,39 @@ const EuropeMap = () => {
                     {analysisType === "Trend Correlation" && (
                         <>
                             <h5><strong>Trend Correlation between Risk Factors and CRC incidence</strong></h5>
-                            {loading && <div className="loading-spinner">Loading...</div>}
+                            {loading && (
+                                <div
+                                    style={{
+                                        position: "absolute",
+                                        top: 0,
+                                        left: 0,
+                                        width: "100%",
+                                        height: "100%",
+                                        backgroundColor: "rgba(255, 255, 255, 0.7)",
+                                        display: "flex",
+                                        flexDirection: "column",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        zIndex: 10,
+                                    }}
+                                >
+                                    <div
+                                        className="spinner-border text-primary"
+                                        role="status"
+                                        style={{ width: "3rem", height: "3rem" }}
+                                    ></div>
+                                    <div
+                                        style={{
+                                            marginTop: "1rem",
+                                            fontWeight: "bold",
+                                            fontSize: "1rem",
+                                            color: "#333",
+                                        }}
+                                    >
+                                        Loading...
+                                    </div>
+                                </div>
+                            )}
                             <ReactECharts
                                 ref={chartRef}
                                 key={JSON.stringify(chartData)}
@@ -1681,7 +1832,39 @@ const EuropeMap = () => {
                     {analysisType === "Forecasting CRC" && forecastChartOption && (
                         <>
                             <h5><strong>Forecasting CRC</strong></h5>
-                            {loading && <div className="loading-spinner">Loading...</div>}
+                            {loading && (
+                                <div
+                                    style={{
+                                        position: "absolute",
+                                        top: 0,
+                                        left: 0,
+                                        width: "100%",
+                                        height: "100%",
+                                        backgroundColor: "rgba(255, 255, 255, 0.7)",
+                                        display: "flex",
+                                        flexDirection: "column",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        zIndex: 10,
+                                    }}
+                                >
+                                    <div
+                                        className="spinner-border text-primary"
+                                        role="status"
+                                        style={{ width: "3rem", height: "3rem" }}
+                                    ></div>
+                                    <div
+                                        style={{
+                                            marginTop: "1rem",
+                                            fontWeight: "bold",
+                                            fontSize: "1rem",
+                                            color: "#333",
+                                        }}
+                                    >
+                                        Loading...
+                                    </div>
+                                </div>
+                            )}
                             <ReactECharts
                                 ref={chartRef}
                                 key={JSON.stringify(chartData)}
