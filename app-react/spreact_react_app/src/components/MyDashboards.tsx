@@ -118,11 +118,11 @@ const SavedDashboards: React.FC = () => {
     useEffect(() => {
         setIsLoggedIn(AuthService.isLoggedIn());
     }, []);
-    useEffect(() => {
-        if (selectedDashboardId !== "") {
-            navigate(`/my-dashboards?dashboardId=${selectedDashboardId}`);
-        }
-    }, [selectedDashboardId, navigate]);
+    // useEffect(() => {
+    //     if (selectedDashboardId !== "") {
+    //         navigate(`/my-dashboards?dashboardId=${selectedDashboardId}`);
+    //     }
+    // }, [selectedDashboardId, navigate]);
     useEffect(() => {
         const load = async () => {
             try {
@@ -165,18 +165,28 @@ const SavedDashboards: React.FC = () => {
         try {
             await deleteDashboardCollection(dashboardToDeleteId);
 
-            setDashboardCollections(prev => prev.filter(d => d.id !== dashboardToDeleteId));
-            setDashboards(prev => prev.filter(d => d.dashboard_id !== dashboardToDeleteId));
+            setDashboardCollections(prev => {
+                const updated = prev.filter(d => d.id !== dashboardToDeleteId);
+
+                // update dashboards too
+                setDashboards(prevDashboards =>
+                    prevDashboards.filter(d => d.dashboard_id !== dashboardToDeleteId)
+                );
+
+                // fix selectedDashboardId if needed
+                if (selectedDashboardId === dashboardToDeleteId) {
+                    if (updated.length > 0) {
+                        setSelectedDashboardId(updated[0].id);
+                    } else {
+                        setSelectedDashboardId("");
+                    }
+                }
+
+                return updated;
+            });
+
             const event = new CustomEvent("dashboardDeleted");
             window.dispatchEvent(event);
-            if (selectedDashboardId === dashboardToDeleteId.toString()) {
-                const remaining = dashboardCollections.filter(d => d.id !== dashboardToDeleteId);
-                if (remaining.length > 0) {
-                    setSelectedDashboardId(remaining[0].id);
-                } else {
-                    setSelectedDashboardId("");
-                }
-            }
 
             setShowDashboardDeleteModal(false);
         } catch (err) {
@@ -186,34 +196,30 @@ const SavedDashboards: React.FC = () => {
     };
 
 
-    // const dashboardCollections = React.useMemo(() => {
-    //     const map = new Map<number, string>();
-    //     dashboards.forEach((d) => {
-    //         if (!map.has(d.dashboard_id)) {
-    //             map.set(d.dashboard_id, d.dashboard_name);
-    //         }
-    //     });
-    //     return Array.from(map.entries()).map(([id, name]) => ({ id, name }));
-    // }, [dashboards]);
+    const dashboardIdParam = searchParams.get("dashboardId");
 
     useEffect(() => {
-        if (dashboardCollections.length > 0 && !selectedDashboardId) {
-            setSelectedDashboardId(dashboardCollections[0].id);
-        }
-    }, [dashboardCollections, selectedDashboardId]);
+        if (dashboardCollections.length === 0) return;
 
+        let selectedId: number | undefined;
 
-    useEffect(() => {
-        if (dashboardIndex !== null && dashboardCollections.length > 0) {
-            const index = parseInt(dashboardIndex, 10);
-            if (!isNaN(index) && index >= 0 && index < dashboardCollections.length) {
-                const selected = dashboardCollections[index];
-                setSelectedDashboardId(selected.id);
-            }
-        } else {
-            setSelectedDashboardId("");
+        // Prefer URL param if valid
+        if (dashboardIdParam) {
+            const paramId = parseInt(dashboardIdParam, 10);
+            const exists = dashboardCollections.find(d => d.id === paramId);
+            if (exists) selectedId = exists.id;
         }
-    }, [dashboardIndex, dashboardCollections]);
+
+        // Otherwise pick first dashboard
+        if (!selectedId && dashboardCollections.length > 0) {
+            selectedId = dashboardCollections[0].id;
+        }
+
+        if (selectedId !== undefined && selectedId !== selectedDashboardId) {
+            setSelectedDashboardId(selectedId);
+        }
+    }, [dashboardCollections, dashboardIdParam]);
+
 
 
     const visibleDashboards = dashboards.filter(
@@ -267,10 +273,6 @@ const SavedDashboards: React.FC = () => {
         );
     }
 
-    // if (dashboardCollections.length === 0) {
-    //     return <div className="container w-50 alert alert-warning mt-5">You have no saved dashboards.</div>;
-    // }
-
     return (
         <div className="container mt-4">
             <h3 className="mb-4">
@@ -292,21 +294,34 @@ const SavedDashboards: React.FC = () => {
             ) : (
                 <>
                     <div className="d-flex  align-items-center justify-content-between mb-3">
+
                         <Form.Select
-
-
                             value={selectedDashboardId ?? ""}
-                            onChange={(e) => setSelectedDashboardId(Number(e.target.value))}
-                            style={{ width: "300px" }}
+                            onChange={(e) => {
+                                const newId = Number(e.target.value);
+                                if (!isNaN(newId)) {
+                                    setSelectedDashboardId(newId);
+
+                                    // Sync URL param
+                                    const url = new URL(window.location.href);
+                                    url.searchParams.set("dashboardId", String(newId));
+                                    window.history.replaceState({}, "", url.toString());
+                                }
+                            }}
+                              style={{ width: "300px" }}
                         >
+                            
                             <option value="" disabled>-- Select Dashboard --</option>
                             {dashboardCollections.map((collection) => (
                                 <option key={collection.id} value={collection.id}>
                                     {collection.name}
                                 </option>
                             ))}
-
                         </Form.Select>
+
+
+
+
                         <Button
                             variant="danger"
                             className="ms-3"
@@ -489,7 +504,7 @@ const SavedDashboards: React.FC = () => {
                                                     .join(", ");
                                             }
 
-                                           
+
                                             // Screening Data Metric special mapping
                                             if (normalizedFilter === "screening data metric") {
                                                 displayLabel = "Screening Data Metric";
@@ -513,7 +528,7 @@ const SavedDashboards: React.FC = () => {
                                             const isTrendAnalysis = analysisValues.includes("Trend Analysis");
 
                                             // If Analysis is Trend Analysis, skip rendering Risk Factors badge
-                                            if ((label.toLowerCase() === "risk factors" || label.toLowerCase() === "selected risk factors"|| label.toLowerCase() === "country") && isTrendAnalysis) {
+                                            if ((label.toLowerCase() === "risk factors" || label.toLowerCase() === "selected risk factors" || label.toLowerCase() === "country") && isTrendAnalysis) {
 
                                                 return null;
                                             }
@@ -525,8 +540,8 @@ const SavedDashboards: React.FC = () => {
                                             if ((label.toLowerCase() === "risk factors" || label.toLowerCase() === "selected risk factors" || label.toLowerCase() === "year interval") && isForecasting) {
                                                 return null;
                                             }
-                                            
-                                            
+
+
                                             const associationAnalysis = analysisValues.includes("Association Analysis");
 
 
@@ -534,7 +549,7 @@ const SavedDashboards: React.FC = () => {
                                             if ((label.toLowerCase() === "country") && associationAnalysis) {
                                                 return null;
                                             }
-                               
+
                                             const isTrendCorrelation = analysisValues.includes("Trend Correlation");
                                             if ((label.toLowerCase() === "year interval") || (label.toLowerCase() === "country") && isTrendCorrelation) {
                                                 return null;
