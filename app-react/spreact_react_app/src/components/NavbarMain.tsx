@@ -213,21 +213,23 @@ const NavbarMain: React.FC = () => {
                         </div>
                         {showDashboardsMenu && dashboards.length > 0 && (
                            <>
-                              {dashboards.map((dashboard, index) => (
+                              {dashboards.map((dashboard) => (
                                  <div
                                     key={dashboard.id}
                                     className="dropdown-item ps-4"
                                     style={{ cursor: "pointer" }}
                                     onClick={(e) => {
                                        e.preventDefault();
-                                       navigate(`/my-dashboards?index=${index}`);
+                                       navigate(`/my-dashboards?dashboardId=${dashboard.id}`);
                                        setShowProfileDropdown(false);
                                        setShowDashboardsMenu(false);
                                     }}
                                  >
+                                    
                                     {dashboard.name}
                                  </div>
                               ))}
+
                            </>
                         )}
                      </li>
