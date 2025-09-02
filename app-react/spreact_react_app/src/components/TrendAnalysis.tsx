@@ -138,7 +138,7 @@ const EuropeMap = () => {
         const baseUrl = "http://oncodir.catalink.eu:7565/v1/data-fusion/extra/forecasting-crc";
         const params = new URLSearchParams();
 
-        if (selectedCountry) params.append("Country", selectedCountry);
+        if (selectedCountry) params.append("country", selectedCountry);
         if (sexFilter) params.append("sex", sexFilter);
         if (ageFilter) params.append("age", ageFilter);
         if (minYear_int) params.append("minYear", minYear_int.toString());
