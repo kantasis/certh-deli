@@ -235,7 +235,6 @@ const AggregationAnalysis = () => {
         "Wholegrains grams/day": { Missing: "gray", Low: "red", Standard: "green" },
     };
 
-
     const pieCategoryOrder = {
         "Activity level": ["Very active", "Active", "Somewhat active", "Not active at all/Sedentary"],
         Age: ["<40", "50-60", "70+", "Missing"],
@@ -269,30 +268,32 @@ const AggregationAnalysis = () => {
         "Smoking status": ["I have never smoked", "I am a former smoker", "I am currently a regular smoker"]
     };
 
+
     // --- Pie Chart Options ---
     const getPieOptions = (detailed = false) => {
         const order = pieCategoryOrder[selectedVariable];
 
+        // Sort data according to custom order
         let dataSorted;
         if (order) {
             dataSorted = order
                 .map(cat => filteredData.find(d => d.Category === cat))
-                .filter(Boolean); // remove categories not present in filteredData
+                .filter(Boolean); // remove missing categories
         } else {
-            dataSorted = [...filteredData]; // keep original order if no custom order
+            dataSorted = [...filteredData]; // original order if no custom order
         }
 
-        const seriesData = dataSorted.map(d => ({
+        const seriesData = dataSorted.map((d) => ({
             name: d.Category,
             value: d["Percentage of Total"] ?? 0,
-            itemStyle: { color: colorMapping[selectedVariable]?.[d.Category] || "#ccc" }
+            itemStyle: { color: colorMapping[selectedVariable]?.[d.Category] || "#ccc" },
         }));
 
         return {
             tooltip: {
                 trigger: "item",
                 formatter: (params) => {
-                    const row = filteredData.find(r => r.Category === params.name);
+                    const row = filteredData.find((r) => r.Category === params.name);
                     if (!row) return '';
                     const pct = row["Percentage of Total"] != null ? row["Percentage of Total"].toFixed(2) : "-";
                     const freq = row.Frequency != null ? row.Frequency : "-";
@@ -301,100 +302,91 @@ const AggregationAnalysis = () => {
                     <strong>${params.name}</strong><br/>
                     <strong>Percentage of Total:</strong> ${pct}%<br/>
                     <strong>Frequency:</strong> ${freq}<br/>
-                    ${row.Mean != null ? `<strong>Mean:</strong> ${row.Mean.toFixed(2)}<br/>` : ""}
-                    ${row.Median != null ? `<strong>Median:</strong> ${row.Median.toFixed(2)}<br/>` : ""}
-                    ${row["Std. Dev."] != null ? `<strong>Std. Dev.:</strong> ${row["Std. Dev."].toFixed(2)}<br/>` : ""}
-                    ${row.Min != null ? `<strong>Min:</strong> ${row.Min.toFixed(2)}<br/>` : ""}
-                    ${row.Max != null ? `<strong>Max:</strong> ${row.Max.toFixed(2)}` : ""}
+                    ${detailed
+                            ? `<strong>Mean:</strong> ${row.Mean?.toFixed(2) ?? "-"}<br/>
+                           <strong>Median:</strong> ${row.Median?.toFixed(2) ?? "-"}<br/>
+                           <strong>Std. Dev.:</strong> ${row["Std. Dev."]?.toFixed(2) ?? "-"}<br/>
+                           <strong>Min:</strong> ${row.Min?.toFixed(2) ?? "-"}<br/>
+                           <strong>Max:</strong> ${row.Max?.toFixed(2) ?? "-"}`
+                            : ""}
                 `;
-                }
+                },
             },
             legend: { top: 20 },
-            series: [{ type: "pie", radius: "60%", data: seriesData }]
+            series: [{ type: "pie", radius: "60%", data: seriesData }],
         };
     };
 
 
-
     // --- Bar Chart Options ---
     const getBarOptions = () => {
-        const categoryOrder = ["Missing", "Low", "Standard", "High"];
-        const categories = categoryOrder.filter(cat => filteredData.some(d => d.Category === cat));
+        const categoryOrder = ["Low", "Standard", "High", "Missing"]; // fixed order
         const timePeriods = [...new Set(filteredData.map((d) => d["Time-Period"]))];
 
-
-        const round2Str = (num) => {
-            if (num === null || num === undefined) return "-";
-            return (Math.round(Number(num) * 100) / 100).toFixed(2);
+        const safeNum = (val) => {
+            if (val === null || val === undefined || val === "-") return "-";
+            const num = Number(val);
+            return isNaN(num) ? val : num.toFixed(2);
         };
 
-        // Lookup table: formatted time → raw
-        const timePeriodLookup = {};
-        timePeriods.forEach(tp => {
-            timePeriodLookup[formatTimePeriod(tp)] = tp;
-        });
-
-        const series = categories.map((cat) => ({
-            name: cat,
-            type: "bar",
-            stack: "total",
-            emphasis: { focus: "series" },
-            itemStyle: { color: colorMapping[selectedVariable]?.[cat] || "#ccc" },
-            data: timePeriods.map((tp) => {
-                const entry = filteredData.find(d => d.Category === cat && d["Time-Period"] === tp);
-                return {
-                    value: entry?.Frequency ? Number(round2Str(entry.Frequency)) : 0, // keep value numeric for ECharts
-                    raw: entry
-                        ? {
-                            ...entry,
-                            Frequency: round2Str(entry.Frequency),
-                            "Percentage of Total": round2Str(entry["Percentage of Total"]),
-                            Mean: round2Str(entry.Mean),
-                            Median: round2Str(entry.Median),
-                            "Std. Dev.": round2Str(entry["Std. Dev."]),
-                            Min: round2Str(entry.Min),
-                            Max: round2Str(entry.Max),
-                        }
-                        : {
-                            Frequency: "0.00",
-                            "Percentage of Total": "0.00",
-                            Mean: "0.00",
-                            Median: "0.00",
-                            "Std. Dev.": "0.00",
-                            Min: "0.00",
-                            Max: "0.00",
-                        }
-                };
-            })
-
-
-
-        }));
+        const series = categoryOrder
+            .filter(cat => filteredData.some(d => d.Category === cat)) // only include categories present in data
+            .map((cat) => ({
+                name: cat,
+                type: "bar",
+                stack: "total",
+                emphasis: { focus: "series" },
+                itemStyle: { color: colorMapping[selectedVariable]?.[cat] || "#ccc" },
+                data: timePeriods.map((tp) => {
+                    const entry = filteredData.find(d => d.Category === cat && d["Time-Period"] === tp);
+                    return {
+                        value: entry?.Frequency ?? 0,
+                        raw: entry
+                            ? {
+                                ...entry,
+                                Frequency: entry.Frequency ?? 0,
+                                "Percentage of Total": safeNum(entry["Percentage of Total"]),
+                                Mean: safeNum(entry.Mean),
+                                Median: safeNum(entry.Median),
+                                "Std. Dev.": safeNum(entry["Std. Dev."]),
+                                Min: safeNum(entry.Min),
+                                Max: safeNum(entry.Max),
+                            }
+                            : {
+                                Frequency: 0,
+                                "Percentage of Total": "0.00",
+                                Mean: "-",
+                                Median: "-",
+                                "Std. Dev.": "-",
+                                Min: "-",
+                                Max: "-",
+                            }
+                    };
+                }),
+            }));
 
         return {
             tooltip: {
-                trigger: 'item',
+                trigger: "item",
                 formatter: (params) => {
                     const entry = params.data?.raw;
-                    if (!entry) return '';
-                    return `
-      <strong>${params.seriesName}</strong><br/>
-      <strong>Time Period: </strong>${params.name}<br/>
-      <strong>Frequency: </strong>${Number(entry.Frequency).toFixed(2)}<br/>
-      <strong>Percentage of Total: </strong>${Number(entry['Percentage of Total']).toFixed(2)}%<br/>
-      <strong>Mean: </strong>${Number(entry.Mean).toFixed(2)}<br/>
-      <strong>Median: </strong>${Number(entry.Median).toFixed(2)}<br/>
-      <strong>Std. Dev.: </strong>${Number(entry['Std. Dev.']).toFixed(2)}<br/>
-      <strong>Min: </strong>${Number(entry.Min).toFixed(2)}<br/>
-      <strong>Max: </strong>${Number(entry.Max).toFixed(2)}
-    `;
-                }
+                    if (!entry) return "";
+                    let content = `<strong>${params.seriesName}</strong><br/>`;
+                    content += `<strong>Time Period: </strong>${params.name}<br/>`;
+                    content += `<strong>Frequency: </strong>${entry.Frequency}<br/>`;
+                    content += `<strong>Percentage of Total: </strong>${entry["Percentage of Total"]}%`;
 
-
-
+                    if (selectedVariable !== "CRC Risk Assessment Score (PYRAMID)") {
+                        content += `
+        <br/><strong>Mean: </strong>${entry.Mean}
+        <br/><strong>Median: </strong>${entry.Median}
+        <br/><strong>Std. Dev.: </strong>${entry["Std. Dev."]}
+        <br/><strong>Min: </strong>${entry.Min}
+        <br/><strong>Max: </strong>${entry.Max}`;
+                    }
+                    return content;
+                },
             },
-
-
 
             legend: { top: 20 },
             xAxis: { type: "category", data: timePeriods.map(tp => formatTimePeriod(tp)) },
@@ -402,19 +394,20 @@ const AggregationAnalysis = () => {
                 type: "value",
                 name: "Frequency",
                 nameLocation: "middle",
-                nameGap: 50, // distance from axis
-
+                nameGap: 50,
             },
-            series, // ✅ keep raw data inside series
+            series,
             notMerge: true
         };
     };
 
 
 
+
     return (
         <div className="container-fluid mt-3">
             <h3>Aggregation Analysis</h3>
+            <h5 className="mt-3">{selectedVariable}</h5>
             <div className="row mt-4">
                 {/* Left Column */}
                 <div className="col-2">
