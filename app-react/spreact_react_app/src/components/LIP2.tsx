@@ -320,94 +320,67 @@ const AggregationAnalysis = () => {
 
     // --- Bar Chart Options ---
     const getBarOptions = () => {
-        const categoryOrder = ["Low", "Standard", "High", "Missing"]; // fixed order
-        const timePeriods = [...new Set(filteredData.map((d) => d["Time-Period"]))];
+        const categoryOrder =
+            selectedVariable === "CRC Risk Assessment Score (PYRAMID)"
+                ? ["2", "3", "4", "Missing"]
+                : ["Low", "Standard", "High", "Missing"];
 
-        const safeNum = (val) => {
-            if (val === null || val === undefined || val === "-") return "-";
-            const num = Number(val);
-            return isNaN(num) ? val : num.toFixed(2);
-        };
+        // All time periods from filteredData
+        const timePeriods = [...new Set(filteredData.map(d => d["Time-Period"]))];
 
-        const series = categoryOrder
-            .filter(cat => filteredData.some(d => d.Category === cat)) // only include categories present in data
-            .map((cat) => ({
-                name: cat,
-                type: "bar",
-                stack: "total",
-                emphasis: { focus: "series" },
-                itemStyle: { color: colorMapping[selectedVariable]?.[cat] || "#ccc" },
-                data: timePeriods.map((tp) => {
-                    const entry = filteredData.find(d => d.Category === cat && d["Time-Period"] === tp);
-                    return {
-                        value: entry?.Frequency ?? 0,
-                        raw: entry
-                            ? {
-                                ...entry,
-                                Frequency: entry.Frequency ?? 0,
-                                "Percentage of Total": safeNum(entry["Percentage of Total"]),
-                                Mean: safeNum(entry.Mean),
-                                Median: safeNum(entry.Median),
-                                "Std. Dev.": safeNum(entry["Std. Dev."]),
-                                Min: safeNum(entry.Min),
-                                Max: safeNum(entry.Max),
-                            }
-                            : {
-                                Frequency: 0,
-                                "Percentage of Total": "0.00",
-                                Mean: "-",
-                                Median: "-",
-                                "Std. Dev.": "-",
-                                Min: "-",
-                                Max: "-",
-                            }
-                    };
-                }),
-            }));
+        // Build a lookup table for Frequency per Category+TimePeriod
+        const dataMap = {};
+        filteredData.forEach(d => {
+            const key = `${d.Category}||${d["Time-Period"]}`;
+            dataMap[key] = d;
+        });
+
+        const series = categoryOrder.map(cat => ({
+            name: cat,
+            type: "bar",
+            stack: "total",
+            emphasis: { focus: "series" },
+            itemStyle: { color: colorMapping[selectedVariable]?.[cat] || "#ccc" },
+            data: timePeriods.map(tp => {
+                const entry = dataMap[`${cat}||${tp}`];
+                return {
+                    value: entry?.Frequency ?? 0,
+                    raw: entry || { Frequency: 0 }
+                };
+            })
+        }));
+
+        const safeNum = (val) => (typeof val === "number" && !isNaN(val) ? val.toFixed(2) : "-");
 
         return {
             tooltip: {
                 trigger: "item",
                 formatter: (params) => {
-                    const entry = params.data?.raw;
-                    if (!entry) return "";
-                    let content = `<strong>${params.seriesName}</strong><br/>`;
-                    content += `<strong>Time Period: </strong>${params.name}<br/>`;
-                    content += `<strong>Frequency: </strong>${entry.Frequency}<br/>`;
-                    content += `<strong>Percentage of Total: </strong>${entry["Percentage of Total"]}%`;
+                    const entry = params.data?.raw || {};
+                    return `
+                        <strong>${params.seriesName}</strong><br/>
+                        <strong>Time Period: </strong>${params.name}<br/>
+                        <strong>Frequency: </strong>${params.value}
+                        ${typeof entry.Mean === "number" ? `<br/><strong>Mean: </strong>${entry.Mean.toFixed(2)}` : ""}
+                        ${typeof entry.Median === "number" ? `<br/><strong>Median: </strong>${entry.Median.toFixed(2)}` : ""}
+                        ${typeof entry["Std. Dev."] === "number" ? `<br/><strong>Std. Dev.: </strong>${entry["Std. Dev."].toFixed(2)}` : ""}
+                        ${typeof entry.Min === "number" ? `<br/><strong>Min: </strong>${entry.Min.toFixed(2)}` : ""}
+                        ${typeof entry.Max === "number" ? `<br/><strong>Max: </strong>${entry.Max.toFixed(2)}` : ""}
+                    `;
 
-                    if (selectedVariable !== "CRC Risk Assessment Score (PYRAMID)") {
-                        content += `
-        <br/><strong>Mean: </strong>${entry.Mean}
-        <br/><strong>Median: </strong>${entry.Median}
-        <br/><strong>Std. Dev.: </strong>${entry["Std. Dev."]}
-        <br/><strong>Min: </strong>${entry.Min}
-        <br/><strong>Max: </strong>${entry.Max}`;
-                    }
-                    return content;
-                },
+                }
             },
-
             legend: { top: 20 },
             xAxis: { type: "category", data: timePeriods.map(tp => formatTimePeriod(tp)) },
-            yAxis: {
-                type: "value",
-                name: "Frequency",
-                nameLocation: "middle",
-                nameGap: 50,
-            },
-            series,
-            notMerge: true
+            yAxis: { type: "value", name: "Frequency" },
+            series
         };
     };
-
-
-
 
     return (
         <div className="container-fluid mt-3">
             <h3>Aggregation Analysis</h3>
-            <h5 className="mt-3">{selectedVariable}</h5>
+            <h5 className="mt-5">{selectedVariable}</h5>
             <div className="row mt-4">
                 {/* Left Column */}
                 <div className="col-2">
