@@ -15,19 +15,6 @@ const AggregationAnalysis = () => {
     const variables = [...new Set(data.map((d) => d.Variable))];
     const periodTypes = ["Week", "Month"];
 
-    const timePeriods = useMemo(() => {
-        const periods = data
-            .filter(d =>
-                selectedPeriodType === "Week"
-                    ? d["Time-Period"]?.includes("/")
-                    : d["Time-Period"] && !d["Time-Period"].includes("/")
-            )
-            .map(d => d["Time-Period"])
-            .filter((v, i, a) => v != null && a.indexOf(v) === i); // <-- filter out nulls
-
-        return periods.sort((a, b) => a.toString().localeCompare(b.toString()));
-    }, [selectedPeriodType]);
-
 
 
     const pieChartVarsDetailed = ["Age", "BMI"];
@@ -64,6 +51,40 @@ const AggregationAnalysis = () => {
         "CRC Risk Assessment Score (PYRAMID)",
     ];
 
+
+    // Time periods, only relevant for bar variables
+    const timePeriods = useMemo(() => {
+        if (!barChartVarsTime.includes(selectedVariable)) return [];
+        const periods = data
+            .filter((d) => d.Variable === selectedVariable)
+            .filter((d) =>
+                selectedPeriodType === "Week"
+                    ? d["Time-Period"]?.includes("/")
+                    : selectedPeriodType === "Month"
+                        ? d["Time-Period"] && !d["Time-Period"].includes("/")
+                        : true
+            )
+            .map((d) => d["Time-Period"])
+            .filter((v, i, a) => v != null && a.indexOf(v) === i);
+
+        return periods.sort((a, b) => a.toString().localeCompare(b.toString()));
+    }, [selectedVariable, selectedPeriodType, data]);
+
+    // Ensure selectedTimePeriod is valid
+    useEffect(() => {
+        if (barChartVarsTime.includes(selectedVariable)) {
+            if (!selectedPeriodType && periodTypes.length > 0) {
+                setSelectedPeriodType(periodTypes[0]); // default to Week
+            }
+            if (selectedTimePeriod && !timePeriods.includes(selectedTimePeriod)) {
+                setSelectedTimePeriod(""); // reset only if invalid
+            }
+        } else {
+            setSelectedPeriodType("");
+            setSelectedTimePeriod("");
+        }
+    }, [selectedVariable, timePeriods, selectedPeriodType, selectedTimePeriod]);
+
     const chartType = useMemo(() => {
         if (pieChartVarsDetailed.includes(selectedVariable)) return "pie-detailed";
         if (pieChartVarsSimple.includes(selectedVariable)) return "pie-simple";
@@ -72,75 +93,74 @@ const AggregationAnalysis = () => {
     }, [selectedVariable]);
 
     useEffect(() => {
-        // Only set default if undefined, otherwise leave "" for All Time Periods
         if (selectedTimePeriod === undefined && timePeriods.length > 0) {
             setSelectedTimePeriod("");
         }
     }, [timePeriods]);
 
-
     useEffect(() => {
-        // Reset Time Period whenever Period Type changes
         setSelectedTimePeriod("");
     }, [selectedPeriodType]);
 
+    // Reset or set defaults when selectedVariable changes
     useEffect(() => {
-        if (!barChartVarsTime.includes(selectedVariable)) {
+        if (barChartVarsTime.includes(selectedVariable)) {
+            if (!selectedPeriodType) {
+                setSelectedPeriodType(periodTypes[0]); // default to "Week"
+            }
+            if (!timePeriods.includes(selectedTimePeriod)) {
+                setSelectedTimePeriod(""); // reset only if invalid
+            }
+        } else {
             setSelectedPeriodType("");
             setSelectedTimePeriod("");
         }
-    }, [selectedVariable]);
+    }, [selectedVariable, timePeriods]);
 
     const formatTimePeriod = (tp) => {
         if (!tp) return "";
-
-        // Handle weeks like "2024-10-07/2024-10-13" → "07-10-2024 - 13-10-2024"
         if (tp.includes("/")) {
             const [start, end] = tp.split("/");
-            const [startY, startM, startD] = start.split("-"); // YYYY-MM-DD
+            const [startY, startM, startD] = start.split("-");
             const [endY, endM, endD] = end.split("-");
             return `${startD}-${startM}-${startY} - ${endD}-${endM}-${endY}`;
         }
-
-        // Handle months like "2024-10" → "01-10-2024"
         if (tp.includes("-")) {
             const [year, month] = tp.split("-");
-            return `01-${month}-${year}`;
+            return `${month}-${year}`;
         }
-
         return tp;
     };
 
-
-
-
     const filteredData = useMemo(() => {
         return data.filter((d) => {
-            // Variable must match
+            // Always filter by variable
             const matchesVariable = selectedVariable ? d.Variable === selectedVariable : true;
 
-            // Period type
-            const matchesPeriodType =
-                !selectedPeriodType || selectedPeriodType === "" ||
-                (selectedPeriodType === "Week"
+            // Period type filter (only for bar variables, and only if explicitly chosen)
+            let matchesPeriodType = true;
+            if (barChartVarsTime.includes(selectedVariable) && selectedPeriodType) {
+                matchesPeriodType = selectedPeriodType === "Week"
                     ? d["Time-Period"]?.includes("/")
-                    : d["Time-Period"] && !d["Time-Period"].includes("/"));
+                    : d["Time-Period"] && !d["Time-Period"].includes("/");
+            }
 
-            // Time period
-            const matchesTimePeriod =
-                !selectedTimePeriod || selectedTimePeriod === "" || d["Time-Period"] === selectedTimePeriod;
+            // Time period filter (only if chosen and exists in valid list)
+            let matchesTimePeriod = true;
+            if (barChartVarsTime.includes(selectedVariable) && selectedTimePeriod) {
+                matchesTimePeriod = d["Time-Period"] === selectedTimePeriod;
+            }
 
             return matchesVariable && matchesPeriodType && matchesTimePeriod;
         });
     }, [selectedVariable, selectedPeriodType, selectedTimePeriod]);
 
 
+
     useEffect(() => {
         setCurrentPage(1);
     }, [filteredData]);
 
-
-    // --- CSV Download (pure JS, no file-saver needed) ---
     const handleDownloadCSV = () => {
         const header = [
             "Variable",
@@ -153,7 +173,6 @@ const AggregationAnalysis = () => {
             "Min",
             "Max",
         ];
-
         const rows = filteredData.map((row) => [
             row.Variable,
             row.Category,
@@ -165,15 +184,8 @@ const AggregationAnalysis = () => {
             row.Min ?? "-",
             row.Max ?? "-",
         ]);
-
-        // Join rows with comma and line breaks
-        const csvArray = [header, ...rows].map((r) =>
-            r.map((cell) => `"${cell}"`).join(";") // <-- semicolon separator
-        );
-
-        // Add UTF-8 BOM for Excel
+        const csvArray = [header, ...rows].map((r) => r.map((cell) => `"${cell}"`).join(";"));
         const csvContent = "\uFEFF" + csvArray.join("\n");
-
         const encodedUri = "data:text/csv;charset=utf-8," + encodeURIComponent(csvContent);
         const link = document.createElement("a");
         link.setAttribute("href", encodedUri);
@@ -183,57 +195,140 @@ const AggregationAnalysis = () => {
         document.body.removeChild(link);
     };
 
-
-    // --- Pagination ---
     const totalPages = Math.ceil(filteredData.length / rowsPerPage);
     const currentData = filteredData.slice(
         (currentPage - 1) * rowsPerPage,
         currentPage * rowsPerPage
     );
 
-    // --- Chart Options ---
-    const getPieOptions = (detailed = false) => ({
-        tooltip: {
-            trigger: "item",
-            formatter: (params) => {
-                const row = filteredData.find((r) => r.Category === params.name);
-                return `
-          <strong>${params.name}</strong><br/>
-          Percentage of Total: ${params.value.toFixed(2)}%<br/>
-          Frequency: ${row.Frequency ?? "-"}<br/>
-          ${detailed
-                        ? `Mean: ${row.Mean ?? "-"}<br/>
-                 Median: ${row.Median ?? "-"}<br/>
-                 Std. Dev.: ${row["Std. Dev."] ?? "-"}<br/>
-                 Min: ${row.Min ?? "-"}<br/>
-                 Max: ${row.Max ?? "-"}`
-                        : ""
-                    }
-        `;
-            },
-        },
-        series: [
-            {
-                type: "pie",
-                radius: "60%",
-                data: filteredData.map((d) => ({
-                    name: d.Category,
-                    value: d["Percentage of Total"] ?? 0,
-                })),
-            },
+    // --- Color Mapping ---
+    const colorMapping = {
+        "Activity level": { "Very active": "green", Active: "blue", "Somewhat active": "yellow", "Not active at all/Sedentary": "red" },
+        Age: { "<40": "green", "50-60": "yellow", "70+": "red", Missing: "gray" },
+        BMI: { Normal: "green", Underweight: "yellow", Overweight: "blue", Obese: "red", Missing: "gray" },
+        "Biological Sex": { Male: "blue", Female: "yellow", Missing: "gray" },
+        "CRC Family history": { No: "green", Yes: "red" },
+        "Region": { Urban: "#fac858", Rural: "#5470c6", Suburban: "#91cc75" },
+        Diabetes: { No: "green" },
+        Education: { "Elementary education (Basic reading and writing)": "yellow", "Secondary education or vocational training": "orange", "University education (Bachelor’s degree)": "blue", "Postgraduate education (Master’s degree, PhD)": "lightblue" },
+        Employment: { "Still studying": "yellow", "Part-time / Seasonal employment": "orange", "Full-time / Self-employed": "lightblue", Retired: "blue" },
+        Ethnicity: { Caucasian: "yellow", Other: "orange" },
+        Housing: { Apartment: "yellow", Duplex: "green", "Single-family house": "orange", "Studio Apartment": "blue", Townhouse: "purple" },
+        IBD: { No: "green", Yes: "red" },
+        "Metabolic syndrome": { No: "green", Yes: "red" },
+        Occupation: { "Elementary occupation": "lightblue", Manager: "yellow", Professional: "orange", "Service and sales worker": "green", "Skilled agricultural, forestry and fishery worker": "purple", "Technician and associate professional": "darkgreen", "Don't know / No answer": "lightgray", Missing: "gray" },
+        "Relationship status": { "Living with a partner": "blue", "Living without a partner": "yellow" },
+        "Smoking status": { "I have never smoked": "green", "I am a former smoker": "orange", "I am currently a regular smoker": "red" },
+        "Alcohol grams/day": { Missing: "gray", Standard: "green", High: "red" },
+        "CRC Risk Assessment Score (PYRAMID)": { Missing: "gray", 2: "green", 3: "yellow", 4: "red" },
+        "Cheese grams/day": { Missing: "gray", Low: "red", Standard: "green" },
+        "Cooked vegetables grams/day": { Missing: "gray", Low: "red", Standard: "green" },
+        "Diary-plant based products mL/day": { Missing: "gray", Low: "red", Standard: "green" },
+        "Fruits grams/day": { Missing: "gray", Low: "red", Standard: "green" },
+        "Large fatty fish grams/day": { Missing: "gray", Low: "red", Standard: "green" },
+        "Legumes grams/day": { Missing: "gray", Low: "red", Standard: "green" },
+        "Nuts seeds grams/day": { Missing: "gray", Standard: "green", High: "red" },
+        "Processed meat grams/day": { Missing: "gray", Standard: "green", High: "red" },
+        "Raw vegetables grams/day": { Missing: "gray", Low: "red", Standard: "green" },
+        "Red meat grams/day": { Missing: "gray", Standard: "green", High: "red" },
+        "Small fatty fish grams/day": { Missing: "gray", Low: "red", Standard: "green" },
+        "Wholegrains grams/day": { Missing: "gray", Low: "red", Standard: "green" },
+    };
+
+
+    const pieCategoryOrder = {
+        "Activity level": ["Very active", "Active", "Somewhat active", "Not active at all/Sedentary"],
+        Age: ["<40", "50-60", "70+", "Missing"],
+        BMI: ["Normal", "Underweight", "Overweight", "Obese", "Missing"],
+        "Biological Sex": ["Male", "Female", "Missing"],
+        "CRC Family history": ["No", "Yes"],
+        Diabetes: ["No"],
+        Education: [
+            "Elementary education (Basic reading and writing)",
+            "Secondary education or vocational training",
+            "University education (Bachelor’s degree)",
+            "Postgraduate education (Master’s degree, PhD)"
         ],
-    });
+        Employment: ["Still studying", "Part-time / Seasonal employment", "Full-time / Self-employed", "Retired"],
+        Ethnicity: ["Caucasian", "Other"],
+        Housing: ["Apartment", "Duplex", "Single-family house", "Studio Apartment", "Townhouse"],
+        IBD: ["No", "Yes"],
+        "Metabolic syndrome": ["No", "Yes"],
+        Occupation: [
+            "Elementary occupation",
+            "Manager",
+            "Professional",
+            "Service and sales worker",
+            "Skilled agricultural, forestry and fishery worker",
+            "Technician and associate professional",
+            "Don't know / No answer",
+            "Missing"
+        ],
+        Region: null, // keep original order
+        "Relationship status": ["Living with a partner", "Living without a partner"],
+        "Smoking status": ["I have never smoked", "I am a former smoker", "I am currently a regular smoker"]
+    };
 
-    const timePeriodLookup = {};
-    timePeriods.forEach(tp => {
-        timePeriodLookup[formatTimePeriod(tp)] = tp;
-    });
+    // --- Pie Chart Options ---
+    const getPieOptions = (detailed = false) => {
+        const order = pieCategoryOrder[selectedVariable];
 
+        let dataSorted;
+        if (order) {
+            dataSorted = order
+                .map(cat => filteredData.find(d => d.Category === cat))
+                .filter(Boolean); // remove categories not present in filteredData
+        } else {
+            dataSorted = [...filteredData]; // keep original order if no custom order
+        }
+
+        const seriesData = dataSorted.map(d => ({
+            name: d.Category,
+            value: d["Percentage of Total"] ?? 0,
+            itemStyle: { color: colorMapping[selectedVariable]?.[d.Category] || "#ccc" }
+        }));
+
+        return {
+            tooltip: {
+                trigger: "item",
+                formatter: (params) => {
+                    const row = filteredData.find(r => r.Category === params.name);
+                    if (!row) return '';
+                    const pct = row["Percentage of Total"] != null ? row["Percentage of Total"].toFixed(2) : "-";
+                    const freq = row.Frequency != null ? row.Frequency : "-";
+
+                    return `
+                    <strong>${params.name}</strong><br/>
+                    <strong>Percentage of Total:</strong> ${pct}%<br/>
+                    <strong>Frequency:</strong> ${freq}<br/>
+                    ${row.Mean != null ? `<strong>Mean:</strong> ${row.Mean.toFixed(2)}<br/>` : ""}
+                    ${row.Median != null ? `<strong>Median:</strong> ${row.Median.toFixed(2)}<br/>` : ""}
+                    ${row["Std. Dev."] != null ? `<strong>Std. Dev.:</strong> ${row["Std. Dev."].toFixed(2)}<br/>` : ""}
+                    ${row.Min != null ? `<strong>Min:</strong> ${row.Min.toFixed(2)}<br/>` : ""}
+                    ${row.Max != null ? `<strong>Max:</strong> ${row.Max.toFixed(2)}` : ""}
+                `;
+                }
+            },
+            legend: { top: 20 },
+            series: [{ type: "pie", radius: "60%", data: seriesData }]
+        };
+    };
+
+
+
+    // --- Bar Chart Options ---
     const getBarOptions = () => {
-        const categories = [...new Set(filteredData.map((d) => d.Category))];
+        const categoryOrder = ["Missing", "Low", "Standard", "High"];
+        const categories = categoryOrder.filter(cat => filteredData.some(d => d.Category === cat));
         const timePeriods = [...new Set(filteredData.map((d) => d["Time-Period"]))];
 
-        // Lookup table: formatted time → original time
+
+        const round2Str = (num) => {
+            if (num === null || num === undefined) return "-";
+            return (Math.round(Number(num) * 100) / 100).toFixed(2);
+        };
+
+        // Lookup table: formatted time → raw
         const timePeriodLookup = {};
         timePeriods.forEach(tp => {
             timePeriodLookup[formatTimePeriod(tp)] = tp;
@@ -244,47 +339,74 @@ const AggregationAnalysis = () => {
             type: "bar",
             stack: "total",
             emphasis: { focus: "series" },
+            itemStyle: { color: colorMapping[selectedVariable]?.[cat] || "#ccc" },
             data: timePeriods.map((tp) => {
-                const entry = filteredData.find(
-                    (d) => d.Category === cat && d["Time-Period"] === tp
-                );
-                return entry?.Frequency ?? 0;
-            }),
+                const entry = filteredData.find(d => d.Category === cat && d["Time-Period"] === tp);
+                return {
+                    value: entry?.Frequency ? Number(round2Str(entry.Frequency)) : 0, // keep value numeric for ECharts
+                    raw: entry
+                        ? {
+                            ...entry,
+                            Frequency: round2Str(entry.Frequency),
+                            "Percentage of Total": round2Str(entry["Percentage of Total"]),
+                            Mean: round2Str(entry.Mean),
+                            Median: round2Str(entry.Median),
+                            "Std. Dev.": round2Str(entry["Std. Dev."]),
+                            Min: round2Str(entry.Min),
+                            Max: round2Str(entry.Max),
+                        }
+                        : {
+                            Frequency: "0.00",
+                            "Percentage of Total": "0.00",
+                            Mean: "0.00",
+                            Median: "0.00",
+                            "Std. Dev.": "0.00",
+                            Min: "0.00",
+                            Max: "0.00",
+                        }
+                };
+            })
+
+
+
         }));
 
         return {
             tooltip: {
-                trigger: "item",
+                trigger: 'item',
                 formatter: (params) => {
-                    const originalTP = timePeriodLookup[params.name]; // map back
-                    const row = filteredData.find(
-                        (d) => d.Category === params.seriesName && d["Time-Period"] === originalTP
-                    );
-                    if (!row) return "";
+                    const entry = params.data?.raw;
+                    if (!entry) return '';
+                    return `
+      <strong>${params.seriesName}</strong><br/>
+      <strong>Time Period: </strong>${params.name}<br/>
+      <strong>Frequency: </strong>${Number(entry.Frequency).toFixed(2)}<br/>
+      <strong>Percentage of Total: </strong>${Number(entry['Percentage of Total']).toFixed(2)}%<br/>
+      <strong>Mean: </strong>${Number(entry.Mean).toFixed(2)}<br/>
+      <strong>Median: </strong>${Number(entry.Median).toFixed(2)}<br/>
+      <strong>Std. Dev.: </strong>${Number(entry['Std. Dev.']).toFixed(2)}<br/>
+      <strong>Min: </strong>${Number(entry.Min).toFixed(2)}<br/>
+      <strong>Max: </strong>${Number(entry.Max).toFixed(2)}
+    `;
+                }
 
-                    let content = `<strong>${params.seriesName}</strong><br/>`;
-                    content += `Time Period: ${params.name}<br/>`; // show formatted
-                    content += `Frequency: ${row.Frequency ?? "-"}<br/>`;
-                    content += `Percentage of Total: ${row["Percentage of Total"]?.toFixed(2) ?? "-"}%`;
 
-                    if (selectedVariable !== "CRC Risk Assessment Score (PYRAMID)") {
-                        content += `
-                      <br/>Mean: ${row.Mean ?? "-"}
-                      <br/>Median: ${row.Median ?? "-"}
-                      <br/>Std. Dev.: ${row["Std. Dev."] ?? "-"}
-                      <br/>Min: ${row.Min ?? "-"}
-                      <br/>Max: ${row.Max ?? "-"}`;
-                    }
-                    return content;
-                },
+
             },
+
+
+
             legend: { top: 20 },
-            xAxis: {
-                type: "category",
-                data: timePeriods.map(tp => formatTimePeriod(tp)), // formatted
+            xAxis: { type: "category", data: timePeriods.map(tp => formatTimePeriod(tp)) },
+            yAxis: {
+                type: "value",
+                name: "Frequency",
+                nameLocation: "middle",
+                nameGap: 50, // distance from axis
+
             },
-            yAxis: { type: "value" },
-            series,
+            series, // ✅ keep raw data inside series
+            notMerge: true
         };
     };
 
@@ -304,9 +426,7 @@ const AggregationAnalysis = () => {
                     >
                         <option value="">-- Select Variable --</option>
                         {variables.map((v, i) => (
-                            <option key={i} value={v}>
-                                {v}
-                            </option>
+                            <option key={i} value={v}>{v}</option>
                         ))}
                     </select>
 
@@ -330,7 +450,6 @@ const AggregationAnalysis = () => {
                                 value={selectedTimePeriod}
                                 onChange={(e) => setSelectedTimePeriod(e.target.value)}
                                 disabled={!selectedPeriodType}
-
                             >
                                 <option value="">-- All Time Periods --</option>
                                 {timePeriods.map((tp, i) => (
@@ -339,61 +458,31 @@ const AggregationAnalysis = () => {
                             </select>
                         </>
                     )}
-
                 </div>
 
                 {/* Main Column */}
                 <div className="col-8">
-                    {!selectedVariable && (
-                        <p>Please select a variable from the dropdown menu on the left.</p>
-                    )}
+                    {!selectedVariable && <p>Please select a variable from the dropdown menu on the left.</p>}
 
                     {selectedVariable && filteredData.length > 0 && (
                         <>
-                            {chartType === "pie-detailed" && (
-                                <ReactECharts option={getPieOptions(true)} style={{ height: 400 }} />
-                            )}
-                            {chartType === "pie-simple" && (
-                                <ReactECharts option={getPieOptions(false)} style={{ height: 400 }} />
-                            )}
-                            {chartType === "bar" && (
-                                <ReactECharts option={getBarOptions()} style={{ height: 400 }} />
-                            )}
+                            {chartType === "pie-detailed" && <ReactECharts key={selectedVariable} option={getPieOptions(true)} style={{ height: 400 }} />}
+                            {chartType === "pie-simple" && <ReactECharts key={selectedVariable} option={getPieOptions(false)} style={{ height: 400 }} />}
+                            {chartType === "bar" && <ReactECharts key={selectedVariable} option={getBarOptions()} style={{ height: 400 }} />}
 
-                            <Button className="mt-3" onClick={() => setShowModal(true)}>
-                                View Table
-                            </Button>
+                            <Button className="mt-3" onClick={() => setShowModal(true)}>View Table</Button>
 
-                            {/* Modal */}
-                            <Modal
-                                show={showModal}
-                                onHide={() => setShowModal(false)}
-                                size="xl"
-                                centered
-                            >
+                            <Modal show={showModal} onHide={() => setShowModal(false)} size="xl" centered>
                                 <Modal.Header closeButton>
                                     <Modal.Title>{selectedVariable}</Modal.Title>
-                                    <Button
-                                        variant="success"
-                                        className="ms-auto"
-                                        onClick={handleDownloadCSV}
-                                    >
-                                        Download CSV
-                                    </Button>
+                                    <Button variant="success" className="ms-auto" onClick={handleDownloadCSV}>Download CSV</Button>
                                 </Modal.Header>
                                 <Modal.Body style={{ maxHeight: "70vh", overflowY: "auto" }}>
                                     <table className="table table-bordered table-striped">
                                         <thead>
                                             <tr>
-                                                <th>Variable</th>
-                                                <th>Category</th>
-                                                <th>Frequency</th>
-                                                <th>% of Total</th>
-                                                <th>Mean</th>
-                                                <th>Median</th>
-                                                <th>Std. Dev.</th>
-                                                <th>Min</th>
-                                                <th>Max</th>
+                                                <th>Variable</th><th>Category</th><th>Frequency</th><th>% of Total</th>
+                                                <th>Mean</th><th>Median</th><th>Std. Dev.</th><th>Min</th><th>Max</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -414,21 +503,9 @@ const AggregationAnalysis = () => {
                                     </table>
                                 </Modal.Body>
                                 <Modal.Footer>
-                                    <Button
-                                        disabled={currentPage === 1}
-                                        onClick={() => setCurrentPage((p) => p - 1)}
-                                    >
-                                        Previous
-                                    </Button>
-                                    <span className="mx-2">
-                                        Page {currentPage} of {totalPages}
-                                    </span>
-                                    <Button
-                                        disabled={currentPage === totalPages}
-                                        onClick={() => setCurrentPage((p) => p + 1)}
-                                    >
-                                        Next
-                                    </Button>
+                                    <Button disabled={currentPage === 1} onClick={() => setCurrentPage((p) => p - 1)}>Previous</Button>
+                                    <span className="mx-2">Page {currentPage} of {totalPages}</span>
+                                    <Button disabled={currentPage === totalPages} onClick={() => setCurrentPage((p) => p + 1)}>Next</Button>
                                 </Modal.Footer>
                             </Modal>
                         </>
