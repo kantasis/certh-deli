@@ -73,17 +73,27 @@ const AggregationAnalysis = () => {
     // Ensure selectedTimePeriod is valid
     useEffect(() => {
         if (barChartVarsTime.includes(selectedVariable)) {
-            if (!selectedPeriodType && periodTypes.length > 0) {
-                setSelectedPeriodType(periodTypes[0]); // default to Week
+            // ✅ Only reset if it's not one of Week, Month, or "" (All)
+            if (
+                selectedPeriodType !== "" &&
+                !periodTypes.includes(selectedPeriodType)
+            ) {
+                setSelectedPeriodType("");
             }
+
+            // reset time period if invalid
             if (selectedTimePeriod && !timePeriods.includes(selectedTimePeriod)) {
-                setSelectedTimePeriod(""); // reset only if invalid
+                setSelectedTimePeriod("");
             }
         } else {
             setSelectedPeriodType("");
             setSelectedTimePeriod("");
         }
     }, [selectedVariable, timePeriods, selectedPeriodType, selectedTimePeriod]);
+
+
+
+
 
     const chartType = useMemo(() => {
         if (pieChartVarsDetailed.includes(selectedVariable)) return "pie-detailed";
@@ -105,17 +115,21 @@ const AggregationAnalysis = () => {
     // Reset or set defaults when selectedVariable changes
     useEffect(() => {
         if (barChartVarsTime.includes(selectedVariable)) {
-            if (!selectedPeriodType) {
-                setSelectedPeriodType(periodTypes[0]); // default to "Week"
+            // ✅ only set default if user hasn’t chosen anything
+            if (selectedPeriodType === undefined) {
+                setSelectedPeriodType(""); // default to All
             }
-            if (!timePeriods.includes(selectedTimePeriod)) {
-                setSelectedTimePeriod(""); // reset only if invalid
+
+            // reset time period if invalid
+            if (selectedTimePeriod && !timePeriods.includes(selectedTimePeriod)) {
+                setSelectedTimePeriod("");
             }
         } else {
             setSelectedPeriodType("");
             setSelectedTimePeriod("");
         }
     }, [selectedVariable, timePeriods]);
+
 
     const formatTimePeriod = (tp) => {
         if (!tp) return "";
@@ -320,22 +334,25 @@ const AggregationAnalysis = () => {
 
     // --- Bar Chart Options ---
     const getBarOptions = () => {
-        const categoryOrder =
+        let allCategories =
             selectedVariable === "CRC Risk Assessment Score (PYRAMID)"
-                ? ["2", "3", "4", "Missing"]
+                ? [2, 3, 4, "Missing"]
                 : ["Low", "Standard", "High", "Missing"];
 
-        // All time periods from filteredData
+        // Keep only categories present in the filtered data
+        const existingCategories = allCategories.filter(cat =>
+            filteredData.some(d => d.Category === cat)
+        );
+
         const timePeriods = [...new Set(filteredData.map(d => d["Time-Period"]))];
 
-        // Build a lookup table for Frequency per Category+TimePeriod
         const dataMap = {};
         filteredData.forEach(d => {
             const key = `${d.Category}||${d["Time-Period"]}`;
             dataMap[key] = d;
         });
 
-        const series = categoryOrder.map(cat => ({
+        const series = existingCategories.map(cat => ({
             name: cat,
             type: "bar",
             stack: "total",

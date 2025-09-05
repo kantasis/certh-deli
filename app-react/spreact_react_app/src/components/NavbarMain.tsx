@@ -84,6 +84,10 @@ const NavbarMain: React.FC = () => {
       {
          href: "/crc-trend-and-association-analysis",
          label: "CRC Trend & Association Analysis"
+      },
+        {
+         href: "/deli-predictions",
+         label: "Deli Predictions"
       }
    ].map((item, index) => (
       <li className="nav-item" key={index}>
