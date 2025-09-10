@@ -819,7 +819,7 @@ const EuropeMap = () => {
             })
             .then(token => {
                 setToken(token);
-                // console.log("TOken: " + token)
+                console.log("TOken: " + token)
             })
             .catch(err => {
                 if (err.name !== "AbortError") {
@@ -846,9 +846,10 @@ const EuropeMap = () => {
             method: "GET",
             signal: controller.signal,
             headers: {
+                "Authorization": `Bearer ${token}`,
                 "Content-Type": "application/json",
                 // Add auth if needed:
-                "Authorization": `Bearer ${token}`
+
             }
         })
             .then((res) => {

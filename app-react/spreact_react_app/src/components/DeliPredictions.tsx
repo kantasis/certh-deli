@@ -1,16 +1,21 @@
-import React, { useEffect, useState } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import ReactECharts from "echarts-for-react";
 import axios from "axios";
+import * as AuthService from "../services/auth.service.tsx";
+import { Form } from 'react-bootstrap';
+import Comments from "./Comments.tsx";
+import { Accordion } from 'react-bootstrap';
+import SaveGraphButton from "./SaveGraphButton.tsx";
+import { useLocation } from "react-router-dom";
 
 const countries_strLst = [
-    "Greece", "Romania", "Lithuania", "Belgium", "Italy", "Spain", "Andorra",
-    "Cyprus", "Turkey", "Switzerland", "Hungary", "Luxembourg", "Sweden", "Norway",
-    "Belarus", "United Kingdom", "Russian Federation", "Netherlands", "Montenegro",
-    "Austria", "Ireland", "Germany", "Serbia", "Portugal", "Finland", "Malta",
-    "Albania", "Ukraine", "Bulgaria", "Croatia", "Latvia", "England", "Slovenia",
-    "North Macedonia", "France", "Estonia", "Slovakia", "Monaco", "Israel",
-    "Poland", "Iceland", "Republic of Moldova", "Denmark",
-    "Bosnia and Herzegovina", "Czechia"
+    "Greece", "Romania", "Lithuania", "Belgium", "Italy", "Spain",
+    "Cyprus", "Hungary", "Luxembourg", "Sweden", "Netherlands",
+    "Austria", "Ireland", "Germany", "Portugal", "Finland", "Malta",
+    "Bulgaria", "Croatia", "Latvia", "Slovenia",
+    "France", "Estonia", "Slovakia",
+    "Poland", "Denmark",
+    "Czechia"
 ];
 
 const riskFactorsLst = [
@@ -41,9 +46,50 @@ const DeliPredictions = () => {
     const [chartOptions, setChartOptions] = useState({});
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [cleanToken, setToken] = useState(null);
 
     useEffect(() => {
-        if (!type || !horizon) return;
+        setIsLoggedIn(AuthService.isLoggedIn());
+    }, []);
+
+    useEffect(() => {
+        const controller = new AbortController();
+
+        fetch("http://oncodir.catalink.eu:7565/v1/services/login/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                service_name: import.meta.env.VITE_SERVICE_NAME,
+                password: import.meta.env.VITE_SERVICE_PASSWORD
+            }),
+            signal: controller.signal
+        })
+            .then(res => {
+                if (!res.ok) throw new Error(`HTTP error: ${res.status}`);
+                return res.text();
+            })
+            .then(token => {
+                const cleanToken = token.replace(/^"|"$/g, ""); // remove quotes
+                setToken(cleanToken);
+                // console.log("Token:", cleanToken);
+            })
+            .catch(err => {
+                if (err.name !== "AbortError") {
+                    console.error("Failed to fetch token:", err);
+                }
+            });
+
+        return () => controller.abort();
+    }, []);
+
+    useEffect(() => {
+
+
+
+        if (!type || !horizon || !cleanToken) return;
 
         const fetchData = async () => {
             setLoading(true);
@@ -55,12 +101,19 @@ const DeliPredictions = () => {
                 if (["sf_intervention", "sf_target", "exposure_weighted"].includes(type) && country) {
                     url += `&country=${encodeURIComponent(country)}`;
                 }
-
+                // console.log("PAOK:" + cleanToken)
                 if (riskFactor && ["sf_intervention", "sf_target", "effect_sev_unit"].includes(type)) {
                     url += `&risk_factor=${riskFactor}`;
                 }
 
-                const res = await axios.get(url);
+                const res = await axios.get(url, {
+                    headers: {
+                        "Authorization": `Bearer ${cleanToken}`,  // if you need authentication
+                        "Content-Type": "application/json",
+
+                    }
+                });
+                // console.log(res.data)
                 const options = buildChartOptions(res.data);
                 setChartOptions(options);
             } catch (err) {
@@ -71,12 +124,12 @@ const DeliPredictions = () => {
         };
 
         fetchData();
-    }, [type, horizon, country, riskFactor]);
+    }, [type, horizon, country, riskFactor, cleanToken]);
 
     const buildChartOptions = (apiResponse) => {
         const { type, data } = apiResponse;
         if (!data) return {};
-
+        // console.log(data)
         // 1. Line chart for sf_intervention / sf_target
         if (["sf_intervention", "sf_target"].includes(type)) {
             const rfData = riskFactor ? data[riskFactor] : Object.values(data)[0];
@@ -91,13 +144,20 @@ const DeliPredictions = () => {
             const baselineDataset = [dataset[0]];
 
             return {
-                title: { text: rfData.title, left: "center" },
+                title: { text: apiResponse.title || '', left: 'center' },
                 dataset: [
                     { source: dataset },
                     { source: baselineDataset }
                 ],
-                xAxis: { type: 'category', encode: { x: 'x' }, name: 'SEV Reduction (%)' },
-                yAxis: { type: 'value', name: 'Predicted CRC per 100,000' },
+                xAxis: {
+                    type: 'category',
+                    encode: { x: 'x' },
+                    name: 'SEV Reduction (%)',
+                    nameLocation: 'center',   // center horizontally
+                    nameGap: 30,              // distance from axis labels
+
+                },
+                yAxis: { name: apiResponse.y_label || '', nameRotate: 90, nameLocation: 'center', nameGap: 55 },
                 series: [
                     { name: 'CI Lower', type: 'line', encode: { y: 'ciLow' }, stack: 'ci', symbol: 'none', lineStyle: { opacity: 0 } },
                     { name: 'CI Upper', type: 'line', encode: { y: 'ciDiff' }, stack: 'ci', symbol: 'none', areaStyle: { color: 'rgba(128,200,128,0.3)' }, lineStyle: { opacity: 0 } },
@@ -115,13 +175,14 @@ const DeliPredictions = () => {
                         const ciHigh = ciLow + predictedSeries.data.ciDiff;
                         const x = predictedSeries.data.x;
                         return `${x}<br/>
-                        CI Lower: ${ciLow.toFixed(2)}<br/>
-                        CI Upper: ${ciHigh.toFixed(2)}<br/>
-                        Predicted: ${predicted.toFixed(2)}`;
+                       <strong> CI Lower: </strong>${ciLow.toFixed(2)}<br/>
+                       <strong> CI Upper: </strong>${ciHigh.toFixed(2)}<br/>
+                       <strong> Predicted: </strong>${predicted.toFixed(2)}`;
                     }
                 }
             };
         }
+
 
         // 2. Quick Wins bar chart
         if (type === "quick_wins") {
@@ -134,10 +195,10 @@ const DeliPredictions = () => {
             }));
 
             return {
-                title: { text: barsData.length ? barsData[0].title : "Quick Wins", left: "center" },
+                title: { text: apiResponse.title || '', left: 'center' },
                 dataset: [{ source: dataset }],
-                xAxis: { type: 'category', encode: { x: 'x' }, name: 'Risk Factor' },
-                yAxis: { type: 'value', name: 'New CRC Cases per 100,000' },
+                xAxis: { type: 'category', encode: { x: 'x' }, name: 'Risk Factor', axisLabel: { rotate: 30, fontSize: 12 }, nameLocation: 'center', nameGap: 55 },
+                yAxis: { name: apiResponse.y_label || '', nameRotate: 90, nameLocation: 'center', nameGap: 55 },
                 series: [
                     { type: 'bar', encode: { y: 'value' }, itemStyle: { color: 'orange' } },
                     {
@@ -149,6 +210,7 @@ const DeliPredictions = () => {
                             const low = api.coord([xValue, api.value(1)]);
                             const halfWidth = api.size([1, 0])[0] * 0.2;
                             const style = api.style({ stroke: 'black', lineWidth: 1.5 });
+
                             return {
                                 type: 'group',
                                 children: [
@@ -164,10 +226,11 @@ const DeliPredictions = () => {
                     }
                 ],
                 tooltip: {
-                    trigger: 'axis',
-                    formatter: (params) => {
-                        const p = params.find(p => p.seriesType === 'bar').data;
-                        return `${p[0]}<br/>Value: ${p[1].toFixed(2)}<br/>CI: [${p[2].toFixed(2)}, ${p[3].toFixed(2)}]`;
+                    formatter: (param) => {
+                        const d = param.data;
+                        return `<strong>${d.x}</strong><br/>
+            <strong>Value:</strong> ${d.value.toFixed(2)}<br/>
+            <strong>CI:</strong> [${d.ciLow.toFixed(2)}, ${d.ciHigh.toFixed(2)}]`;
                     }
                 }
             };
@@ -186,10 +249,11 @@ const DeliPredictions = () => {
         }));
 
         return {
-            title: { text: typeOptions.find(t => t.value === type)?.label || '', left: "center" },
+            title: { text: apiResponse.title || '', left: 'center' },
             dataset: [{ source: dataset }],
-            xAxis: { type: 'category', encode: { x: 'x' }, name: 'Risk Factor' },
-            yAxis: { type: 'value', name: 'Risk Factor–Associated CRC Burden (per 100,000)' },
+            xAxis: { type: 'category', encode: { x: 'x' }, name: 'Risk Factor', axisLabel: { rotate: 30, fontSize: 12 }, },
+            yAxis: { name: apiResponse.y_label || '', nameRotate: 90, nameLocation: 'center', nameGap: 55 },
+
             series: [
                 { type: 'bar', encode: { y: 'value' }, itemStyle: { color: 'steelblue' } },
                 {
@@ -201,6 +265,7 @@ const DeliPredictions = () => {
                         const low = api.coord([xValue, api.value(1)]);
                         const halfWidth = api.size([1, 0])[0] * 0.2;
                         const style = api.style({ stroke: 'black', lineWidth: 1.5 });
+                        //  console.log("API" + JSON.stringify(dataset))
                         return {
                             type: 'group',
                             children: [
@@ -220,7 +285,7 @@ const DeliPredictions = () => {
                 formatter: (params) => {
                     const barData = params.find(p => p.seriesType === 'bar').data;
                     const ci = dataset.find(d => d.x === barData.x);
-                    return `${ci.x}<br/>Value: ${ci.value.toFixed(2)}<br/>CI: [${ci.ciLow.toFixed(2)}, ${ci.ciHigh.toFixed(2)}]`;
+                    return `<strong>${ci.x}</strong><br/><strong>Value: </strong>${ci.value.toFixed(2)}<br/><strong>CI: </strong>[${ci.ciLow.toFixed(2)}, ${ci.ciHigh.toFixed(2)}]`;
                 }
             }
         };
@@ -228,61 +293,77 @@ const DeliPredictions = () => {
 
 
 
-
+    if (!isLoggedIn) return <h2>Unauthorized</h2>;
     return (
-        <div>
-            <div style={{ display: "flex", gap: "1rem", marginBottom: "1rem" }}>
-                {/* Type */}
-                <div>
-                    <label>Type: </label>
-                    <select value={type} onChange={(e) => setType(e.target.value)}>
-                        <option value="">Select type</option>
-                        {typeOptions.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
-                    </select>
+        <div className="container-fluid mt-5">
+            <div className="row">
+                {/* Left Column */}
+                <div className="col-2">
+                    <div className="form-group mb-4">
+                        <div>
+                            {/* Type */}
+                            <div>
+                                <label style={{ fontWeight: "bold", margin: "0px 0px 5px 0px" }}>Type: </label>
+
+                                <select className="form-control" value={type} onChange={(e) => setType(e.target.value)}>
+                                    <option value="">Select type</option>
+                                    {typeOptions.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
+                                </select>
+
+                            </div>
+                        </div>
+                    </div>
+                    {/* Horizon */}
+                    {["sf_intervention", "sf_target", "exposure_weighted","quick_wins","effect_sev_unit"].includes(type) && (
+                        <div className="form-group mb-4">
+                            <label style={{ fontWeight: "bold", margin: "0px 0px 5px 0px" }}>Horizon: </label>
+                            <select className="form-control" value={horizon} onChange={(e) => setHorizon(e.target.value)}>
+                                <option value="">Select horizon</option>
+                                <option value="1">1 Year</option>
+                                <option value="3">3 Years</option>
+                                <option value="5">5 Years</option>
+                                <option value="10">10 Years</option>
+                            </select>
+                        </div>
+                    )}
+
+                    {/* Country */}
+                    {["sf_intervention", "sf_target", "exposure_weighted"].includes(type) && (
+                        <div className="form-group mb-4">
+                            <label style={{ fontWeight: "bold", margin: "0px 0px 5px 0px" }}>Country: </label>
+                            <select className="form-control" value={country} onChange={(e) => setCountry(e.target.value)}>
+                                <option value="">Select country</option>
+                                {countries_strLst.map((c) => <option key={c} value={c}>{c}</option>)}
+                            </select>
+                        </div>
+                    )}
+
+                    {/* Risk Factor */}
+                    {["sf_target"].includes(type) && (
+                        <div className="form-group mb-4">
+                            <label style={{ fontWeight: "bold", margin: "0px 0px 5px 0px" }}>Risk Factor: </label>
+                            <select className="form-control" value={riskFactor} onChange={(e) => setRiskFactor(e.target.value)}>
+                                <option value="">Select risk factor</option>
+                                {riskFactorsLst.map((rf) => <option key={rf.value} value={rf.value}>{rf.label}</option>)}
+                            </select>
+                        </div>
+                    )}
                 </div>
 
-                {/* Horizon */}
-                <div>
-                    <label>Horizon: </label>
-                    <select value={horizon} onChange={(e) => setHorizon(e.target.value)}>
-                        <option value="">Select horizon</option>
-                        <option value={1}>1 Year</option>
-                        <option value={3}>3 Years</option>
-                        <option value={5}>5 Years</option>
-                        <option value={10}>10 Years</option>
-                    </select>
-                </div>
-
-                {/* Country */}
-                {["sf_intervention", "sf_target", "exposure_weighted"].includes(type) && (
-                    <div>
-                        <label>Country: </label>
-                        <select value={country} onChange={(e) => setCountry(e.target.value)}>
-                            <option value="">Select country</option>
-                            {countries_strLst.map((c) => <option key={c} value={c}>{c}</option>)}
-                        </select>
-                    </div>
-                )}
-
-                {/* Risk Factor */}
-                {["sf_target", "effect_sev_unit"].includes(type) && (
-                    <div>
-                        <label>Risk Factor: </label>
-                        <select value={riskFactor} onChange={(e) => setRiskFactor(e.target.value)}>
-                            <option value="">Select risk factor</option>
-                            {riskFactorsLst.map((rf) => <option key={rf.value} value={rf.value}>{rf.label}</option>)}
-                        </select>
-                    </div>
-                )}
+                <div className="col-8">
+                    {loading && <p>Loading predictions...</p>}
+                    {error && <p style={{ color: "red" }}>Error: {error}</p>}
+                    {
+                        !loading && !error && chartOptions.series && (
+                            <ReactECharts option={chartOptions} style={{ height: "570px", width: "100%" }} />
+                        )
+                    }
+                </div >
             </div>
-
-            {loading && <p>Loading predictions...</p>}
-            {error && <p style={{ color: "red" }}>Error: {error}</p>}
-            {!loading && !error && chartOptions.series && (
-                <ReactECharts option={chartOptions} style={{ height: "500px", width: "100%" }} />
-            )}
         </div>
+
     );
+
 };
 
 export default DeliPredictions;
