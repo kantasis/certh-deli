@@ -15,6 +15,18 @@ interface DashboardEntry {
     created_at: string;
 }
 const ignoreFilters = new Set(["theme", "orgid", "panelid", "refresh", "fullscreen", "kiosk", "edit", "crcfactor"]);
+
+
+const analysisValueMap: Record<string, string> = {
+    exposure_weighted: "Overview: Exposure Weighted",
+    quick_wins: "Quick Wins",
+    effect_sev_unit: "Overview: Effect per SEV Unit",
+    sf_intervention: "Single-Factor Intervention",
+    sf_target: "Single-Factor Target",
+};
+
+
+
 function extractFiltersFromParams(params: Record<string, any>): Record<string, string[]> {
     const filters: Record<string, string[]> = {};
 
@@ -40,12 +52,12 @@ function extractFiltersFromParams(params: Record<string, any>): Record<string, s
     return filters;
 }
 
-
 // Extract filters from a URL string (fallback)
 const extractFiltersFromUrl = (url: string): Record<string, string[]> => {
     const filters: Record<string, string[]> = {};
     try {
         const parsedUrl = new URL(url);
+      
         const seen = new Set<string>();
 
         for (const [key] of parsedUrl.searchParams.entries()) {
@@ -93,6 +105,8 @@ const formatFilterLabel = (raw: string): string => {
         "min year int": "Min Year",
         "diet type": "Risk Factor",
         "screening data metric": "Screening Data Metric",
+
+
 
     };
     return mappings[cleaned] || cleaned.charAt(0).toUpperCase() + cleaned.slice(1);
@@ -308,9 +322,9 @@ const SavedDashboards: React.FC = () => {
                                     window.history.replaceState({}, "", url.toString());
                                 }
                             }}
-                              style={{ width: "300px" }}
+                            style={{ width: "300px" }}
                         >
-                            
+
                             <option value="" disabled>-- Select Dashboard --</option>
                             {dashboardCollections.map((collection) => (
                                 <option key={collection.id} value={collection.id}>
@@ -435,6 +449,33 @@ const SavedDashboards: React.FC = () => {
                                                 displayValues = values.map(v => v.replace(/^Rate_/, "").replace(/_val$/, "")).join(", ");
                                             }
 
+
+                                            if (label.toLowerCase() === "horizon") {
+                                                displayLabel = "Horizon";
+
+                                                // Map numeric horizon to friendly string
+                                                displayValues = values
+                                                    .map(v => {
+                                                        const n = Number(v);
+                                                        if (isNaN(n)) return v;
+                                                        return n === 1 ? "1 Year" : `${n} Years`;
+                                                    })
+                                                    .join(", ");
+
+                                                return (
+                                                    <Badge
+                                                        pill
+                                                        bg=""
+                                                        key={filter}
+                                                        style={{ backgroundColor: "#dee5fa", color: "#206985" }}
+                                                    >
+                                                        {displayLabel}: {displayValues}
+                                                    </Badge>
+                                                );
+                                            }
+
+
+                                            // }
                                             // Analysis special handling
                                             if (label.toLowerCase() === "analysis") {
                                                 if (values.includes("1")) {
@@ -443,13 +484,30 @@ const SavedDashboards: React.FC = () => {
                                                 } else if (values.includes("2")) {
                                                     displayLabel = "Presentation";
                                                     displayValues = "Per Risk Factor";
+                                                } else {
+                                                    displayLabel = "Analysis";
+                                                    displayValues = values
+                                                        .map(v => analysisValueMap[v] || v)  // map to friendly names if available
+                                                        .join(", ");
                                                 }
+
+                                                return (
+                                                    <Badge
+                                                        pill
+                                                        bg=""
+                                                        key={filter}
+                                                        style={{ backgroundColor: "#dee5fa", color: "#206985" }}
+                                                    >
+                                                        {displayLabel}: {displayValues}
+                                                    </Badge>
+                                                );
                                             }
 
                                             // Year Lag label fix
                                             if (label.toLowerCase() === "year lag") {
                                                 displayLabel = "Year Lag";
                                             }
+
 
                                             const normalizedFilter = filter.replace(/ filter$/, '').toLowerCase();
 
@@ -482,7 +540,6 @@ const SavedDashboards: React.FC = () => {
                                                     </OverlayTrigger>
                                                 );
                                             }
-
 
 
 
@@ -554,6 +611,12 @@ const SavedDashboards: React.FC = () => {
                                             if ((label.toLowerCase() === "year interval") || (label.toLowerCase() === "country") && isTrendCorrelation) {
                                                 return null;
                                             }
+
+                                            // console.log(analysisValues)
+                                            // const isSfIntervention = analysisValues.includes("sf_intervention");
+                                            // if ((label.toLowerCase() === "sf_intervention") && isSfIntervention) {
+                                            //     return "paok";
+                                            // }
                                             // Special case for "risk factors"
                                             if (label.toLowerCase() === "selected risk factors" || label.toLowerCase() === "risk factors") {
                                                 const displayLabel = "Risk Factors";
