@@ -571,12 +571,17 @@ const DeliPredictions = () => {
 
         if (type) params.analysis = type;
         if (horizon) params.horizon = horizon;
-        if (country) params.country = country;
-        if (riskFactor) {
+
+        // Only include country if the current type uses it
+        if (["sf_intervention", "sf_target", "exposure_weighted"].includes(type) && country) {
+            params.country = country;
+        }
+
+        // Only include riskFactor if current type uses it
+        if (["sf_intervention", "sf_target", "effect_sev_unit"].includes(type) && riskFactor) {
             const rfLabel = riskFactorsLst.find(rf => rf.value === riskFactor)?.label || riskFactor;
             params.riskFactor = rfLabel; // store friendly label
         }
-
 
         return params;
     };
