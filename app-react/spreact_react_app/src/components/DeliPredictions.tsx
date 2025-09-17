@@ -2,9 +2,8 @@ import React, { useRef, useEffect, useState } from "react";
 import ReactECharts from "echarts-for-react";
 import axios from "axios";
 import * as AuthService from "../services/auth.service.tsx";
-import { Form } from 'react-bootstrap';
 import Comments from "./Comments.tsx";
-import { Accordion } from 'react-bootstrap';
+import { Accordion, Modal, Button } from 'react-bootstrap';
 import SaveGraphButton from "./SaveGraphButton.tsx";
 import { useLocation } from "react-router-dom";
 
@@ -48,10 +47,32 @@ const DeliPredictions = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [cleanToken, setToken] = useState(null);
     const [riskFactorsLst, setRiskFactorsLst] = useState([]);
-    const [isRestoring, setIsRestoring] = useState(false);
     const chartRef = useRef<ReactECharts>(null);
+    const [showModal, setShowModal] = useState(false);
+    const [modalContent, setModalContent] = useState<React.ReactNode>(null);
+    const [modalTitle, setModalTitle] = useState<string>('');
+    const [biasContent, setBiasContent] = useState<string[]>([]);
+    const [isBiasModal, setIsBiasModal] = useState(false);
+    const [currentPage, setCurrentPage] = useState(0);
+    const itemsPerPage = 5;
+
 
     const [chartImageUrl, setChartImageUrl] = useState<string>("");
+
+
+    useEffect(() => {
+        fetch("/src/assets/bias_assessment.json")
+            .then((res) => res.json())
+            .then((data) => {
+                const alerts = data?.["Alerts Consolidation"]?.["Bias Analysis Alerts"];
+                if (Array.isArray(alerts)) {
+                    setBiasContent(alerts);
+                }
+            })
+            .catch((err) => console.error("Failed to load Bias Analysis Alerts:", err));
+    }, []);
+
+
 
     useEffect(() => {
         setIsLoggedIn(AuthService.isLoggedIn());
@@ -240,6 +261,12 @@ const DeliPredictions = () => {
 
             return {
                 title: { text: `${rfData.factor_label || ''} — ${rfData.title || ''}`, left: 'center' },
+                legend: {
+                    top: 30,
+                    left: 'center',
+                    itemWidth: 20,
+                    itemHeight: 12
+                },
                 dataset: [
                     { source: dataset },
                     { source: baselineDataset }
@@ -257,8 +284,8 @@ const DeliPredictions = () => {
                     nameGap: 55
                 },
                 series: [
-                    { name: 'CI Lower', type: 'line', encode: { y: 'ciLow' }, stack: 'ci', symbol: 'none', lineStyle: { opacity: 0 } },
-                    { name: 'CI Upper', type: 'line', encode: { y: 'ciDiff' }, stack: 'ci', symbol: 'none', areaStyle: { color: 'rgba(128,200,128,0.3)' }, lineStyle: { opacity: 0 } },
+                    { name: '', type: 'line', encode: { y: 'ciLow' }, stack: 'ci', symbol: 'none', lineStyle: { opacity: 0 }, showInLegend: false },
+                    { name: 'Confidence Intervals', type: 'line', encode: { y: 'ciDiff' }, stack: 'ci', symbol: 'none', areaStyle: { color: 'rgba(128,200,128,0.3)' }, lineStyle: { opacity: 0 } },
                     { name: 'Predicted CRC', type: 'line', encode: { y: 'predicted' }, smooth: true, lineStyle: { color: 'green', width: 2 }, symbol: 'circle', symbolSize: 6 },
                     { name: 'Baseline', type: 'scatter', datasetIndex: 1, encode: { x: 'x', y: 'predicted' }, itemStyle: { color: 'red' }, symbolSize: 10 }
                 ],
@@ -266,24 +293,56 @@ const DeliPredictions = () => {
                     trigger: 'axis',
                     formatter: (params) => {
                         const pred = params.find(p => p.seriesName === 'Predicted CRC');
+                        const baseline = params.find(p => p.seriesName === 'Baseline');
+                        const ci = params.find(p => p.seriesName === 'Confidence Intervals');
+
                         if (!pred) return '';
 
-                        const ciLow = pred?.data?.ciLow;
-                        const ciDiff = pred?.data?.ciDiff;
+                        const x = pred.data.x;
+                        const predicted = pred.data.predicted;
+                        const ciLow = pred.data.ciLow;
+                        const ciDiff = pred.data.ciDiff;
                         const ciHigh = ciLow !== undefined && ciDiff !== undefined ? ciLow + ciDiff : null;
 
-                        let tooltip = `
-                        <strong>SEV Reduction:</strong> ${pred?.data?.x}%<br/>
-                        <strong>Predicted CRC:</strong> ${pred?.data?.predicted.toFixed(2)}
-                    `;
+                        // colors
+                        const predColor = pred.color || 'green';
+                        const baselineColor = baseline?.color || 'red';
+                        const ciColor = ci?.itemStyle?.color || '#93cd78';
 
-                        if (ciLow !== undefined && ciHigh !== null) {
-                            tooltip += `<br/><strong>CI:</strong> [${ciLow.toFixed(2)}, ${ciHigh.toFixed(2)}]`;
+                        let tooltipHtml = `<div style="text-align:left;">`;
+                        tooltipHtml += `<div><strong>${rfData.factor_label} - ${rfData.title || ''}</strong></div>`;
+                        tooltipHtml += `<div>SEV Reduction: <strong>${x}</strong>%</div>`;
+                        // Predicted CRC
+                        tooltipHtml += `<div style="display:flex; align-items:center; margin-bottom:4px;">
+            <span style="display:inline-block;width:10px;height:10px;background-color:${predColor};border-radius:50%;margin-right:5px;"></span>
+            Predicted CRC:&nbsp; <strong> ${predicted.toFixed(2)}</strong>
+        </div>`;
+
+                        // Baseline
+                        if (baseline) {
+                            tooltipHtml += `<div style="display:flex; align-items:center; margin-bottom:4px;">
+                <span style="display:inline-block;width:10px;height:10px;background-color:${baselineColor};border-radius:50%;margin-right:5px;"></span>
+                Baseline: &nbsp;<strong>${baseline.data.predicted.toFixed(2)}</strong>
+            </div>`;
                         }
 
-                        return tooltip;
+                        // SEV Reduction
+
+
+                        // Confidence Interval
+                        if (ciLow !== undefined && ciHigh !== null) {
+                            tooltipHtml += `<div style="display:flex; align-items:center; margin-top:4px;">
+                <span style="display:inline-block;width:10px;height:10px;background-color:${ciColor};border-radius:50%;margin-right:5px;"></span>
+                Confidence Interval: <strong>[${ciLow.toFixed(2)}, ${ciHigh.toFixed(2)}]</strong>
+            </div>`;
+                        }
+
+                        tooltipHtml += `</div>`;
+                        return tooltipHtml;
                     }
                 }
+
+
             };
         }
 
@@ -298,21 +357,47 @@ const DeliPredictions = () => {
             }));
 
             return {
-                title: { text: apiResponse.title || '', left: 'center' },
+                title: { text: apiResponse.title || '', left: 'center', top: -5 },
+
+                legend: {   // 👈 legend must be at the root
+                    top: 40,
+                    left: 'center'
+                },
+
                 dataset: [{ source: dataset }],
-                xAxis: { type: 'category', encode: { x: 'x' }, axisLabel: { rotate: 30, fontSize: 12 }, nameLocation: 'center', nameGap: 55 },
-                yAxis: { name: apiResponse.y_axis_label || '', nameRotate: 90, nameLocation: 'center', nameGap: 55 },
+
+                xAxis: {
+                    type: 'category',
+                    encode: { x: 'x' },
+                    axisLabel: { rotate: 30, fontSize: 12 },
+                    nameLocation: 'center',
+                    nameGap: 55
+                },
+
+                yAxis: {
+                    name: apiResponse.y_axis_label || '',
+                    nameRotate: 90,
+                    nameLocation: 'center',
+                    nameGap: 55
+                },
+
                 series: [
-                    { type: 'bar', encode: { y: 'value' }, itemStyle: { color: 'orange' } },
+                    {
+                        type: 'bar',
+                        name: "Coefficient",   // 👈 this shows in legend
+                        encode: { y: 'value' },
+                        itemStyle: { color: '#77bef7' }
+                    },
                     {
                         type: 'custom',
-                        name: 'Confidence Intervals (95%)',
+                        name: 'Confidence Intervals (95%)', // 👈 also shows in legend
+                        itemStyle: { color: '#5470c6' },
                         renderItem: (params, api) => {
                             const xValue = api.value(0);
                             const high = api.coord([xValue, api.value(2)]);
                             const low = api.coord([xValue, api.value(1)]);
                             const halfWidth = api.size([1, 0])[0] * 0.2;
-                            const style = api.style({ stroke: 'black', lineWidth: 1.5 });
+                            const style = api.style({ stroke: '#5470c6', lineWidth: 2 });
 
                             return {
                                 type: 'group',
@@ -328,16 +413,48 @@ const DeliPredictions = () => {
                         z: 100
                     }
                 ],
+
                 tooltip: {
-                    formatter: (param) => {
-                        const d = param.data;
-                        return `<strong>${d.x}</strong><br/>
-                        <strong>Value:</strong> ${d.value.toFixed(2)}<br/>
-                        <strong>CI:</strong> [${d.ciLow.toFixed(2)}, ${d.ciHigh.toFixed(2)}]`;
+                    trigger: 'axis',
+                    formatter: (params) => {
+                        if (!params || params.length === 0) return "";
+
+                        const category = params[0].axisValue;
+
+                        const lines = params.map(p => {
+                            const color = p.color;
+                            const name = p.seriesName;
+                            let valueText = '';
+
+                            if (name === 'Confidence Intervals (95%)') {
+                                // For custom CI series, p.data is [x, ciLow, ciHigh]
+                                const [, ciLow, ciHigh] = p.data;
+                                valueText = `[${ciLow.toFixed(2)}, ${ciHigh.toFixed(2)}]`;
+                            } else {
+                                // For normal bar series
+                                valueText = p.data.value?.toFixed(2) ?? p.data;
+                            }
+
+                            return `
+                <div style="display:flex; align-items:center; margin:2px 0;">
+                    <span style="display:inline-block;width:10px;height:10px;background-color:${color};border-radius:50%;margin-right:5px;"></span>
+                   ${name}:&nbsp; <strong>${valueText}</strong>
+                </div>
+            `;
+                        }).join("");
+
+                        return `
+            <div style="text-align:left;">
+                <div style="font-weight:bold; margin-bottom:4px;">${category}</div>
+                ${lines}
+            </div>
+        `;
                     }
                 }
+
             };
         }
+
 
         // 3. Exposure-weighted / effect_sev_unit bars
         const barsData = data.exclude_negative && data.exclude_negative.length > 0
@@ -350,23 +467,48 @@ const DeliPredictions = () => {
             ciLow: d.ci_lower,
             ciHigh: d.ci_upper
         }));
-
         return {
             title: { text: apiResponse.title || '', left: 'center' },
+
+            legend: {   // 👈 must be at root level
+                top: 30,
+                left: 'center'
+            },
+
             dataset: [{ source: dataset }],
-            xAxis: { type: 'category', encode: { x: 'x' }, axisLabel: { rotate: 30, fontSize: 12 }, nameLocation: 'center', nameGap: 55 },
-            yAxis: { name: apiResponse.y_label || '', nameRotate: 90, nameLocation: 'center', nameGap: 55 },
+
+            xAxis: {
+                type: 'category',
+                encode: { x: 'x' },
+                axisLabel: { rotate: 30, fontSize: 12 },
+                nameLocation: 'center',
+                nameGap: 55
+            },
+
+            yAxis: {
+                name: apiResponse.y_label || '',
+                nameRotate: 90,
+                nameLocation: 'center',
+                nameGap: 55
+            },
+
             series: [
-                { type: 'bar', encode: { y: 'value' }, itemStyle: { color: 'steelblue' } },
+                {
+                    type: 'bar',
+                    name: "Coefficient",   // 👈 shows up in legend
+                    encode: { y: 'value' },
+                    itemStyle: { color: '#77bef7' },
+
+                },
                 {
                     type: 'custom',
-                    name: 'Confidence Intervals (95%)',
+                    name: 'Confidence Intervals (95%)',   // 👈 shows up in legend
                     renderItem: (params, api) => {
                         const xValue = api.value(0);
                         const high = api.coord([xValue, api.value(2)]);
                         const low = api.coord([xValue, api.value(1)]);
                         const halfWidth = api.size([1, 0])[0] * 0.2;
-                        const style = api.style({ stroke: 'black', lineWidth: 1.5 });
+                        const style = api.style({ stroke: '#5470c6', lineWidth: 2 });
 
                         return {
                             type: 'group',
@@ -382,16 +524,45 @@ const DeliPredictions = () => {
                     z: 100
                 }
             ],
+
             tooltip: {
                 trigger: 'axis',
                 formatter: (params) => {
-                    const barData = params.find(p => p.seriesType === 'bar').data;
-                    const ci = dataset.find(d => d.x === barData.x);
-                    return `<strong>${ci.x}</strong><br/>
-                        <strong>Value:</strong> ${ci.value.toFixed(2)}<br/>
-                        <strong>CI:</strong> [${ci.ciLow.toFixed(2)}, ${ci.ciHigh.toFixed(2)}]`;
+                    // Use the first param to get the x value (category)
+                    const category = params[0].axisValue;
+
+                    // Map each series to a line with colored circle and value
+                    const lines = params.map(p => {
+                        const color = p.color;
+                        const name = p.seriesName;
+                        let valueText = '';
+
+                        if (name === 'Confidence Intervals (95%)') {
+                            // For custom CI series, p.data is [x, ciLow, ciHigh]
+                            const [, ciLow, ciHigh] = p.data;
+                            valueText = `[${ciLow.toFixed(2)}, ${ciHigh.toFixed(2)}]`;
+                        } else {
+                            // For normal bar/line series
+                            valueText = p.data.value?.toFixed(2) ?? p.data.predicted?.toFixed(2) ?? p.data;
+                        }
+                        return `
+                <div style="text-align:left; display:flex; align-items:center; margin:2px 0;">
+                    <span style="display:inline-block;width:10px;height:10px;background-color:${color};border-radius:50%;margin-right:5px;"></span>
+                    ${name}:&nbsp;<strong>${valueText}</strong>
+                </div>
+            `;
+                    }).join("");
+
+                    return `
+            <div style="text-align:left;">
+                <div style="font-weight:bold; margin-bottom:4px;">${category}</div>
+                ${lines}
+            </div>
+        `;
                 }
             }
+
+
         };
     };
 
@@ -425,13 +596,59 @@ const DeliPredictions = () => {
     };
 
 
-    const iframeUrl = {
-        url: window.location.pathname,  // page route (for restore)
-        params: getUriParams(),         // filters (for restore)
-        preview: getChartImageUrl(),    // snapshot (for preview in SavedDashboards)
+    // const iframeUrl = {
+    //     url: window.location.pathname,  // page route (for restore)
+    //     params: getUriParams(),         // filters (for restore)
+    //     preview: getChartImageUrl(),    // snapshot (for preview in SavedDashboards)
+    // };
+
+    // console.log(getChartImageUrl());
+    const handleAccordionModal = (title: string, isBias: boolean) => {
+        setModalTitle(title);
+        setIsBiasModal(isBias);
+        setShowModal(true);
     };
 
-    console.log(getChartImageUrl());
+    const paginatedBiasContent = () => {
+        const totalPages = Math.ceil(biasContent.length / itemsPerPage);
+        const start = currentPage * itemsPerPage;
+        const end = start + itemsPerPage;
+        const currentItems = biasContent.slice(start, end);
+
+        return (
+            <>
+                <ul>
+                    {currentItems.map((item, idx) => (
+                        <li key={idx}>{item}</li>
+                    ))}
+                </ul>
+                <div className="d-flex justify-content-between align-items-center mt-3">
+                    <Button
+                        variant="primary"
+                        onClick={() => setCurrentPage(p => p - 1)}
+                        disabled={currentPage === 0}
+                    >
+                        Previous
+                    </Button>
+
+                    <span className="mx-3">
+                        Page {currentPage + 1} of {totalPages}
+                    </span>
+
+                    <Button
+                        variant="primary"
+                        onClick={() => setCurrentPage(p => p + 1)}
+                        disabled={end >= biasContent.length}
+                    >
+                        Next
+                    </Button>
+
+                </div>
+                <div className="mt-3 text-center">Click <a href="/src/assets/Bias_Analysis_Report.pdf" target="_blank">here</a> to download the Bias Analysis Report</div>
+            </>
+        );
+    };
+
     const location = useLocation();
     const savedIframeUrl = location.state?.iframeUrl;
 
@@ -472,7 +689,64 @@ const DeliPredictions = () => {
     }, [pendingRiskFactor, riskFactorsLst]);
 
 
+    const accordionContent_dictLst = [
+        {
+            title: 'Source',
+            content: (<>
+                <div style={{ height: '340px', overflow: 'scroll' }}>
+                    <p>
+                        <li><strong>Source: </strong> Global Burden of Disease 2021.</li><br />
+                        <li><strong>Years: </strong>Data from 1990 to 2021.</li><br />
+                        <li><strong>Geographic Coverage: </strong> 27 European countries</li><br />
+                        <li><strong>CRC Incidence Rate: </strong>Number of new CRC cases diagnosed per 100,000 population in a year</li><br />
+                        <li><strong>Sex Groups: </strong>Both Sexes (Aggregated data for males and females), Males (males only), and Females (females only)</li><br />
 
+                    </p>
+                </div>
+
+            </>)
+        },
+        {
+            title: 'Summary Exposure Value (SEV)',
+            content: (<>
+                <p>
+                    Measure of a population's exposure to a risk factor that takes into account the extent of exposure by risk level and the severity of that risk's contribution to disease burden.
+                </p>
+            </>)
+        },
+        {
+            title: 'Year Lags',
+            content: (<>
+                <p>
+                    Year lags refer to the time interval between risk factor exposure and CRC incidence. Based on: Cai et al. 2024 (Public Health).
+                </p>
+            </>)
+        },
+        {
+            title: 'Methodology',
+            content: (<>
+                <p>
+                    Generalized Additive Models (GAMs) trained across all countries, incorporating country as a categorical covariate to account for country-specific variations in SEV effects.<br /><br />
+                    Final number of risk factors used in the model was 13. <br /><br />
+                    Time-lag analyses of 1, 3, 5 and 10 years between CRC Incidence and Risk Factors investigated potential downstream effects.<br /><br />
+                    For example, SEV for 1990 was correlated with CRC incidence for 1991, 1993, 1995 and 2000. <br /><br />
+                    SEV for 1991 was correlated with CRC incidence for 1992, 1994, 1996 and 2001 and so on.<br /><br />
+                    Negative coefficients may be related to a number of factors, e.g. the presence of confounding variables.
+                </p>
+            </>)
+
+        },
+        ...(biasContent.length > 0 ? [{
+            title: 'Bias Assessment',
+            content: (
+                <ul>
+                    {biasContent.map((item, idx) => (
+                        <li key={idx}>{item}</li>
+                    ))}
+                </ul>
+            )
+        }] : [])
+    ];
 
 
     if (!isLoggedIn) return <h2>Unauthorized</h2>;
@@ -593,7 +867,54 @@ const DeliPredictions = () => {
                 </div >
                 {/* //url: getChartImageUrl(chartIframeUrl), */}
 
-                <div className="col-2"> <Comments /></div>
+                {/* Right column */}
+                <div className="col-sm-2">
+                    {/* <h5>Glossary</h5> */}
+                    <Accordion defaultActiveKey="-1">
+                        {accordionContent_dictLst.map((accordionContent_dict, itemIndex_int) => {
+                            const isBiasAssessment = accordionContent_dict.title === "Bias Assessment";
+
+                            return (
+                                <Accordion.Item
+                                    eventKey={itemIndex_int.toString()}
+                                    key={itemIndex_int}
+                                >
+                                    <Accordion.Header
+                                        onClick={(e) => {
+                                            if (isBiasAssessment) {
+                                                e.preventDefault(); // prevent default expand behavior
+                                                handleAccordionModal(
+                                                    accordionContent_dict.title = "The following biases were detected in the data used for the CRC Predictive Analytics:",
+                                                    true
+                                                );
+                                            }
+                                        }}
+                                    >
+                                        {accordionContent_dict.title}
+                                    </Accordion.Header>
+
+                                    {/* Only render body for non-Bias Assessment */}
+                                    {!isBiasAssessment && (
+                                        <Accordion.Body className="text-start">
+                                            {accordionContent_dict.content}
+                                        </Accordion.Body>
+                                    )}
+                                </Accordion.Item>
+                            );
+                        })}
+                    </Accordion>
+
+                    <Comments />
+                    {/* Modal */}
+                    <Modal show={showModal} onHide={() => setShowModal(false)} centered size="lg">
+                        <Modal.Header closeButton>
+                            <Modal.Title>{modalTitle}</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body style={{ maxHeight: '60vh', overflowY: 'auto' }}>
+                            {isBiasModal ? paginatedBiasContent() : modalContent}
+                        </Modal.Body>
+                    </Modal>
+                </div>
             </div>
 
 

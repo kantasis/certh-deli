@@ -29,20 +29,32 @@ const Glossary: React.FC = () => {
       {
          title: 'Data Sources',
          content: (<>
-            <p>
-               Global Burden of Disease 2019.<br/><br/>
-               Data from 1990 to 2019.<br/><br/>
-               Data from 34 European countries<br/><br/>
-               CRC Incidence Age-Standardised Rate (ASR)<br/><br/>
-               Data aggregated for Both sexes<br/><br/>
-            </p>
+            <div style={{ height: '340px', overflow: 'scroll' }}>
+               <p>
+                  <li><strong>Source: </strong>Global Burden of Disease Study 2021</li><br />
+
+                  <li><strong>Years: </strong>1990-2021</li><br />
+
+                  <li><strong>Geographic Coverage: </strong>46 countries in Europe</li><br />
+
+                  <li><strong>Age Groups: </strong>Under 25 (0–24 years), 25–50 (25 to 49 years), Above 50 (50 and older), Age-Standardized (Adjusted rates that account for differences in age distributions across populations)</li><br />
+
+                  <li><strong>Sex Groups: </strong>Both Sexes (Aggregated data for males and females), Males (males only), and Females (females only)</li><br />
+
+                  <li><strong>CRC Incidence Rate: </strong>Number of new CRC cases diagnosed per 100,000 population in a year</li><br />
+
+                  <li><strong>Risk factors: </strong>22 risk factors, comprising 4 lifestyle factors, 15 nutrition factors, 2 comorbidities, and 1 socioeconomic factor</li><br />
+
+                  <li><strong>Summary Exposure Value (SEV) rates: </strong>This metric represents the relative risk-weighted prevalence of exposure, accounting for both the extent of exposure and its contribution to disease burden. SEV is the metric for 21 risk factors (excluding socioeconomic factor)</li><br />
+               </p>
+            </div>
          </>)
       },
       {
          title: 'Summary Exposure Value (SEV)',
          content: (<>
             <p>
-            Measure of a population's exposure to a risk factor that takes into account the extent of exposure by risk level and the severity of that risk's contribution to disease burden. 
+               Measure of a population's exposure to a risk factor that takes into account the extent of exposure by risk level and the severity of that risk's contribution to disease burden.
             </p>
          </>)
       },
@@ -50,7 +62,7 @@ const Glossary: React.FC = () => {
          title: 'Deaths',
          content: (<>
             <p>
-            Number of deaths in the population per 100,000.
+               Number of deaths in the population per 100,000.
             </p>
          </>)
       },
@@ -58,7 +70,7 @@ const Glossary: React.FC = () => {
          title: 'Disability adjusted life years (DALYs)',
          content: (<>
             <p>
-            Number of DALYs in the population per 100,000.
+               Number of DALYs in the population per 100,000.
             </p>
          </>)
       },
@@ -66,7 +78,7 @@ const Glossary: React.FC = () => {
          title: 'Years of life lost (YLLs)',
          content: (<>
             <p>
-            Number of YLLs in the population per 100,000
+               Number of YLLs in the population per 100,000
             </p>
          </>)
       },
@@ -74,7 +86,7 @@ const Glossary: React.FC = () => {
          title: 'Years lived with disability (YLDs)',
          content: (<>
             <p>
-            Number of YLDs in the population per 100,000
+               Number of YLDs in the population per 100,000
             </p>
          </>)
       },
@@ -84,17 +96,17 @@ const Glossary: React.FC = () => {
 
       {/* <h5>Glossary</h5> */}
       <div className="mt-5">
-      <Accordion defaultActiveKey="-1">
-         {accordionContent_dictLst.map((accordionContent_dict, itemIndex_int) => (
-            <Accordion.Item 
-               eventKey={itemIndex_int.toString()} 
-               key={itemIndex_int}
-            >
-               <Accordion.Header>{accordionContent_dict['title']}</Accordion.Header>
-               <Accordion.Body className="text-start" >{accordionContent_dict['content']}</Accordion.Body>
-            </Accordion.Item>
-         ))}
-      </Accordion>
+         <Accordion defaultActiveKey="-1">
+            {accordionContent_dictLst.map((accordionContent_dict, itemIndex_int) => (
+               <Accordion.Item
+                  eventKey={itemIndex_int.toString()}
+                  key={itemIndex_int}
+               >
+                  <Accordion.Header>{accordionContent_dict['title']}</Accordion.Header>
+                  <Accordion.Body className="text-start" >{accordionContent_dict['content']}</Accordion.Body>
+               </Accordion.Item>
+            ))}
+         </Accordion>
       </div>
    </>);
 };
