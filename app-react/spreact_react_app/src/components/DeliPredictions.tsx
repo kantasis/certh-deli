@@ -766,9 +766,18 @@ const DeliPredictions = () => {
                             <div>
                                 <label style={{ fontWeight: "bold", margin: "0px 0px 5px 0px" }}>Type: </label>
 
-                                <select className="form-control" value={type} onChange={(e) => setType(e.target.value)}>
+                                <select
+                                    className="form-control"
+                                    value={type || ""}  // ensures controlled component even if type is undefined
+                                    onChange={(e) => setType(e.target.value)}
+                                >
+
                                     <option value="">Select type</option>
-                                    {typeOptions.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
+                                    {typeOptions.map((t) => (
+                                        <option key={t.value} value={t.value}>
+                                            {t.label}
+                                        </option>
+                                    ))}
                                 </select>
 
                             </div>
@@ -824,7 +833,7 @@ const DeliPredictions = () => {
                         <p><strong>Quick Wins: </strong> <br></br>Highlight the highest-return intervention points most associated with CRC incidence at the European level for further policy exploration.</p>
                     )}
                     {type == "sf_intervention" && (
-                        <p><strong> Intervention-Driven Exploration:</strong>  Quantify 'what-if' scenarios by estimating how reductions in a single risk factor’s exposure are statistically associated with changes in future CRC cases in the selected country.</p>
+                        <p><strong> Single-Factor Intervention:</strong>  Quantify 'what-if' scenarios by estimating how reductions in a single risk factor’s exposure are statistically associated with changes in future CRC cases in the selected country.</p>
                     )}
                 </div>
 
@@ -836,7 +845,7 @@ const DeliPredictions = () => {
                             <p>Through this tab, users can explore different aspects of the relationship between risk factor exposure and CRC incidence, at both the European and country level.</p>
 
 
-                            <p><strong>Note: </strong>All functionalities provide policy insights on associations between risk factors and CRC incidence, considering time lags of 1, 3, 5, and 10 years between exposure and disease.</p>
+                            <p><strong>Note: </strong>All functionalities provide policy insights based on associations between risk factors and CRC incidence and consider time lags of 1, 3, 5, and 10 years between exposure and disease.</p>
 
                             <p> <strong>Disclaimer: </strong>These functionalities are based on observational GBD data and statistical models. Results reflect associations, not proven causal effects, and should be used to inform priority setting and expert-led planning.</p>
                         </div>
