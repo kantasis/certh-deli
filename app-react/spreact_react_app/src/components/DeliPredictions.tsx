@@ -216,7 +216,7 @@ const DeliPredictions = () => {
                 return {
                     title: { text: '', left: 'center' },
                     series: [],
-                    skipMessage: 'Please select a risk factor'
+                    skipMessage: '<div  class="d-flex justify-content-center mt-3 alert alert-info text-center"> Please select a risk factor </div>'
                 };
             }
 
@@ -236,7 +236,7 @@ const DeliPredictions = () => {
                 return {
                     title: { text: `${rfData.factor_label || ''} — ${rfData.title || ''}`, left: 'center' },
                     series: [],
-                    skipMessage: rfData.skip_reason
+                    skipMessage: '<div  class="d-flex justify-content-center mt-3 alert alert-warning text-center">'+ rfData.skip_reason +'</div>'
                 };
             }
 
@@ -445,7 +445,7 @@ const DeliPredictions = () => {
 
                         return `
             <div style="text-align:left;">
-                <div style="font-weight:bold; margin-bottom:4px;">${category}</div>
+                <div style="font-weight:bold; margin-bottom:4px;">${apiResponse.title} <br> ${category} </div>
                 ${lines}
             </div>
         `;
@@ -555,7 +555,7 @@ const DeliPredictions = () => {
 
                     return `
             <div style="text-align:left;">
-                <div style="font-weight:bold; margin-bottom:4px;">${category}</div>
+                <div style="font-weight:bold; margin-bottom:4px;">${apiResponse.title} <br> ${category}</div>
                 ${lines}
             </div>
         `;
@@ -732,9 +732,9 @@ const DeliPredictions = () => {
             content: (<>
                 <p>
                     Generalized Additive Models (GAMs) trained across all countries, incorporating country as a categorical covariate to account for country-specific variations in SEV effects.<br /><br />
-                    Final number of risk factors used in the model was 13. <br /><br />
+                    {/* Final number of risk factors used in the model was 13. <br /><br /> */}
                     Time-lag analyses of 1, 3, 5 and 10 years between CRC Incidence and Risk Factors investigated potential downstream effects.<br /><br />
-                    For example, SEV for 1990 was correlated with CRC incidence for 1991, 1993, 1995 and 2000. <br /><br />
+                    {/* For example, SEV for 1990 was correlated with CRC incidence for 1991, 1993, 1995 and 2000. <br /><br /> */}
                     SEV for 1991 was correlated with CRC incidence for 1992, 1994, 1996 and 2001 and so on.<br /><br />
                     Negative coefficients may be related to a number of factors, e.g. the presence of confounding variables.
                 </p>
@@ -855,18 +855,23 @@ const DeliPredictions = () => {
 
                     )}
                     {chartOptions.skipMessage && (
-                        <p style={{ color: 'red', fontWeight: 'bold' }}>{chartOptions.skipMessage}</p>
+                         <div className="m-auto" style={{ width: "100%", maxWidth: "600px" }} dangerouslySetInnerHTML={{ __html: chartOptions.skipMessage }} />
 
                     )}
-                    {!chartOptions.skipMessage && type && (!["sf_intervention"].includes(type) || (type === "sf_intervention" && riskFactor)) && (
-                        <SaveGraphButton
-                            iframeUrl={{
-                                url: getChartImageUrl(),   // page route for restoration
-                                params: getUriParams(),    // current filters
-                                preview: chartImageUrl     // snapshot of the chart
-                            }}
-                        />
-                    )}
+                    {!chartOptions.skipMessage &&
+                        type &&
+                        (!["sf_intervention"].includes(type) || (type === "sf_intervention" && riskFactor)) &&
+                        !loading && (   // 👈 wait until loading finishes
+                            <div className="mt-3">
+                                <SaveGraphButton
+                                    iframeUrl={{
+                                        url: getChartImageUrl(),   // page route for restoration
+                                        params: getUriParams(),    // current filters
+                                        preview: chartImageUrl     // snapshot of the chart
+                                    }}
+                                />
+                            </div>
+                        )}
 
 
                 </div >
