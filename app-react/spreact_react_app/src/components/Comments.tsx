@@ -57,6 +57,7 @@ const Comments: React.FC = () => {
             currentPage = `LIT03-${lit03Panel}`;
         }
 
+
         console.log("Submitting comment with:", { text, username, currentPage });
 
         try {

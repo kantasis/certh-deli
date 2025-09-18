@@ -25,6 +25,7 @@ import LIT03 from "./components/Lit03.tsx"
 import LIP2 from "./components/LIP2.tsx"
 import TrendAnalysis from "./components/TrendAnalysis.tsx"
 import MyDashboards from "./components/MyDashboards.tsx"
+import DeliPredictions from "./components/DeliPredictions.tsx"
 
 const App: React.FC = () => {
    return (<>
@@ -54,7 +55,8 @@ const App: React.FC = () => {
                {/* <Route path="/nutritionPanel" element={<NutritionPanel />} />
                <Route path="/lifestylePanel" element={<LifestylePanel />} /> */}
                <Route path="/crc-policy-data" element={<PolicyPanel />} />
-               <Route path="/crc-predictive-analytics" element={<Analytics />} />
+               <Route path="/crc-predictive-analytics" element={<DeliPredictions />} />
+                {/* <Route path="/deli-predictions" element={<DeliPredictions />} /> */}
                <Route path="/my-dashboards" element={<MyDashboards />} />
             </Routes>
          </div>

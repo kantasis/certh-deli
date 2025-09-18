@@ -73,17 +73,27 @@ const AggregationAnalysis = () => {
     // Ensure selectedTimePeriod is valid
     useEffect(() => {
         if (barChartVarsTime.includes(selectedVariable)) {
-            if (!selectedPeriodType && periodTypes.length > 0) {
-                setSelectedPeriodType(periodTypes[0]); // default to Week
+            // ✅ Only reset if it's not one of Week, Month, or "" (All)
+            if (
+                selectedPeriodType !== "" &&
+                !periodTypes.includes(selectedPeriodType)
+            ) {
+                setSelectedPeriodType("");
             }
+
+            // reset time period if invalid
             if (selectedTimePeriod && !timePeriods.includes(selectedTimePeriod)) {
-                setSelectedTimePeriod(""); // reset only if invalid
+                setSelectedTimePeriod("");
             }
         } else {
             setSelectedPeriodType("");
             setSelectedTimePeriod("");
         }
     }, [selectedVariable, timePeriods, selectedPeriodType, selectedTimePeriod]);
+
+
+
+
 
     const chartType = useMemo(() => {
         if (pieChartVarsDetailed.includes(selectedVariable)) return "pie-detailed";
@@ -105,17 +115,21 @@ const AggregationAnalysis = () => {
     // Reset or set defaults when selectedVariable changes
     useEffect(() => {
         if (barChartVarsTime.includes(selectedVariable)) {
-            if (!selectedPeriodType) {
-                setSelectedPeriodType(periodTypes[0]); // default to "Week"
+            // ✅ only set default if user hasn’t chosen anything
+            if (selectedPeriodType === undefined) {
+                setSelectedPeriodType(""); // default to All
             }
-            if (!timePeriods.includes(selectedTimePeriod)) {
-                setSelectedTimePeriod(""); // reset only if invalid
+
+            // reset time period if invalid
+            if (selectedTimePeriod && !timePeriods.includes(selectedTimePeriod)) {
+                setSelectedTimePeriod("");
             }
         } else {
             setSelectedPeriodType("");
             setSelectedTimePeriod("");
         }
     }, [selectedVariable, timePeriods]);
+
 
     const formatTimePeriod = (tp) => {
         if (!tp) return "";
@@ -176,14 +190,16 @@ const AggregationAnalysis = () => {
         const rows = filteredData.map((row) => [
             row.Variable,
             row.Category,
-            row.Frequency ?? "-",
-            row["Percentage of Total"] != null ? row["Percentage of Total"].toFixed(2) : "-",
-            row.Mean ?? "-",
-            row.Median ?? "-",
-            row["Std. Dev."] ?? "-",
-            row.Min ?? "-",
-            row.Max ?? "-",
+            row.Frequency != null ? row.Frequency.toString() : "-",
+            row["Percentage of Total"] != null ? row["Percentage of Total"].toFixed(2).replace(".", ",") : "-",
+            row.Mean != null ? row.Mean.toFixed(2).replace(".", ",") : "-",
+            row.Median != null ? (typeof row.Median === "number" ? row.Median.toFixed(2).replace(".", ",") : row.Median) : "-",
+            row["Std. Dev."] != null ? row["Std. Dev."].toFixed(2).replace(".", ",") : "-",
+            row.Min != null ? row.Min.toString().replace(".", ",") : "-",
+            row.Max != null ? row.Max.toString().replace(".", ",") : "-",
         ]);
+
+
         const csvArray = [header, ...rows].map((r) => r.map((cell) => `"${cell}"`).join(";"));
         const csvContent = "\uFEFF" + csvArray.join("\n");
         const encodedUri = "data:text/csv;charset=utf-8," + encodeURIComponent(csvContent);
@@ -316,26 +332,56 @@ const AggregationAnalysis = () => {
             series: [{ type: "pie", radius: "60%", data: seriesData }],
         };
     };
+    // helper function to map your custom colors to bootstrap table classes
+    const getBootstrapRowClass = (variable: string, category: string) => {
+        const color = colorMapping[variable]?.[category];
+
+        switch (color) {
+            case "green":
+            case "#91cc75":
+            case "lightgreen":
+                return "table-success";
+            case "red":
+                return "table-danger";
+            case "yellow":
+            case "orange":
+            case "#fac858":
+                return "table-warning";
+            case "blue":
+            case "lightblue":
+            case "#5470c6":
+                return "table-info";
+            case "gray":
+            case "lightgray":
+                return "table-secondary";
+            default:
+                return "";
+        }
+    };
+
 
 
     // --- Bar Chart Options ---
     const getBarOptions = () => {
-        const categoryOrder =
+        let allCategories =
             selectedVariable === "CRC Risk Assessment Score (PYRAMID)"
-                ? ["2", "3", "4", "Missing"]
+                ? [2, 3, 4, "Missing"]
                 : ["Low", "Standard", "High", "Missing"];
 
-        // All time periods from filteredData
+        // Keep only categories present in the filtered data
+        const existingCategories = allCategories.filter(cat =>
+            filteredData.some(d => d.Category === cat)
+        );
+
         const timePeriods = [...new Set(filteredData.map(d => d["Time-Period"]))];
 
-        // Build a lookup table for Frequency per Category+TimePeriod
         const dataMap = {};
         filteredData.forEach(d => {
             const key = `${d.Category}||${d["Time-Period"]}`;
             dataMap[key] = d;
         });
 
-        const series = categoryOrder.map(cat => ({
+        const series = existingCategories.map(cat => ({
             name: cat,
             type: "bar",
             stack: "total",
@@ -378,10 +424,11 @@ const AggregationAnalysis = () => {
     };
 
     return (
+
         <div className="container-fluid mt-3">
-            <h3>Aggregation Analysis</h3>
-            <h5 className="mt-5">{selectedVariable}</h5>
-            <div className="row mt-4">
+
+            <div className="row">
+                <h3>Aggregation Analysis</h3>
                 {/* Left Column */}
                 <div className="col-2">
                     <label className="fw-bold">Select Variable</label>
@@ -427,7 +474,9 @@ const AggregationAnalysis = () => {
                 </div>
 
                 {/* Main Column */}
-                <div className="col-8">
+                <div className="col-8 mt-5">
+
+                    <h5 className="">{selectedVariable}</h5>
                     {!selectedVariable && <p>Please select a variable from the dropdown menu on the left.</p>}
 
                     {selectedVariable && filteredData.length > 0 && (
@@ -444,30 +493,66 @@ const AggregationAnalysis = () => {
                                     <Button variant="success" className="ms-auto" onClick={handleDownloadCSV}>Download CSV</Button>
                                 </Modal.Header>
                                 <Modal.Body style={{ maxHeight: "70vh", overflowY: "auto" }}>
-                                    <table className="table table-bordered table-striped">
-                                        <thead>
-                                            <tr>
-                                                <th>Variable</th><th>Category</th><th>Frequency</th><th>% of Total</th>
-                                                <th>Mean</th><th>Median</th><th>Std. Dev.</th><th>Min</th><th>Max</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {currentData.map((row, idx) => (
-                                                <tr key={idx}>
-                                                    <td>{row.Variable}</td>
-                                                    <td>{row.Category}</td>
-                                                    <td>{row.Frequency ?? "-"}</td>
-                                                    <td>{row["Percentage of Total"]?.toFixed(2)}</td>
-                                                    <td>{row.Mean?.toFixed(2) ?? "-"}</td>
-                                                    <td>{row.Median ?? "-"}</td>
-                                                    <td>{row["Std. Dev."]?.toFixed(2) ?? "-"}</td>
-                                                    <td>{row.Min ?? "-"}</td>
-                                                    <td>{row.Max ?? "-"}</td>
+                                    <div className="overflow-x-auto">
+                                        <table className="min-w-full border border-gray-200 rounded-lg shadow-md">
+                                            <thead className="bg-gray-100">
+                                                <tr>
+                                                    <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700 uppercase tracking-wide">Color</th>
+                                                    {[
+                                                        "Variable",
+                                                        "Category",
+                                                        "Frequency",
+                                                        "% of Total",
+                                                        "Mean",
+                                                        "Median",
+                                                        "Std. Dev.",
+                                                        "Min",
+                                                        "Max",
+                                                    ].map((header, i) => (
+                                                        <th
+                                                            key={i}
+                                                            className="px-4 py-2 text-left text-sm font-semibold text-gray-700 uppercase tracking-wide"
+                                                        >
+                                                            {header}
+                                                        </th>
+                                                    ))}
                                                 </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
+                                            </thead>
+                                            <tbody>
+                                                {currentData.map((row, idx) => {
+                                                    const color = colorMapping[row.Variable]?.[row.Category] || "#ccc";
+
+                                                    return (
+                                                        <tr key={idx} style={{ height: "50px" }}>
+                                                            <td className="px-4 py-2 text-center">
+                                                                <div
+                                                                    style={{
+                                                                        width: "16px",
+                                                                        height: "16px",
+                                                                        borderRadius: "50%",
+                                                                        backgroundColor: colorMapping[row.Variable]?.[row.Category] || "#ccc",
+                                                                        display: "inline-block",
+                                                                    }}
+                                                                />
+                                                            </td>
+                                                            <td className="px-4 py-2">{row.Variable}</td>
+                                                            <td className="px-4 py-2">{row.Category}</td>
+                                                            <td className="px-4 py-2">{row.Frequency ?? "-"}</td>
+                                                            <td className="px-4 py-2">{row["Percentage of Total"]?.toFixed(2) ?? "-"}</td>
+                                                            <td className="px-4 py-2">{row.Mean?.toFixed(2) ?? "-"}</td>
+                                                            <td className="px-4 py-2">{row.Median ?? "-"}</td>
+                                                            <td className="px-4 py-2">{row["Std. Dev."]?.toFixed(2) ?? "-"}</td>
+                                                            <td className="px-4 py-2">{row.Min ?? "-"}</td>
+                                                            <td className="px-4 py-2">{row.Max ?? "-"}</td>
+                                                        </tr>
+                                                    );
+                                                })}
+                                            </tbody>
+                                        </table>
+
+                                    </div>
                                 </Modal.Body>
+
                                 <Modal.Footer>
                                     <Button disabled={currentPage === 1} onClick={() => setCurrentPage((p) => p - 1)}>Previous</Button>
                                     <span className="mx-2">Page {currentPage} of {totalPages}</span>
