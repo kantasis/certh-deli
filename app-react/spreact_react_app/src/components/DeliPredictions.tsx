@@ -236,7 +236,7 @@ const DeliPredictions = () => {
                 return {
                     title: { text: `${rfData.factor_label || ''} — ${rfData.title || ''}`, left: 'center' },
                     series: [],
-                    skipMessage: '<div  class="d-flex justify-content-center mt-3 alert alert-warning text-center">'+ rfData.skip_reason +'</div>'
+                    skipMessage: '<div  class="d-flex justify-content-center mt-3 alert alert-warning text-center">' + rfData.skip_reason + '</div>'
                 };
             }
 
@@ -772,6 +772,8 @@ const DeliPredictions = () => {
                                 </select>
 
                             </div>
+
+
                         </div>
                     </div>
                     {/* Horizon */}
@@ -811,10 +813,34 @@ const DeliPredictions = () => {
                             </select>
                         </div>
                     )}
+                    {type == "effect_sev_unit" && (
+                        <p><strong>Overview(Effect per SEV Unit):</strong>  <br></br>Compare which risk factors are most strongly associated with CRC at the European level, reflecting their potency per unit of exposure.</p>
 
+                    )}
+                    {type == "exposure_weighted" && (
+                        <p> <strong> Overview (Exposure-Weighted):</strong>  <br></br>Identify which risk factors are most associated with the selected country’s CRC burden, combining both potency and population exposure levels.</p>
+                    )}
+                    {type == "quick_wins" && (
+                        <p><strong>Quick Wins: </strong> <br></br>Highlight the highest-return intervention points most associated with CRC incidence at the European level for further policy exploration.</p>
+                    )}
+                    {type == "sf_intervention" && (
+                        <p><strong> Intervention-Driven Exploration:</strong>  Quantify 'what-if' scenarios by estimating how reductions in a single risk factor’s exposure are statistically associated with changes in future CRC cases in the selected country.</p>
+                    )}
                 </div>
 
                 <div className="col-8">
+                    {!type && (
+                        <div>
+
+
+                            <p>Through this tab, users can explore different aspects of the relationship between risk factor exposure and CRC incidence, at both the European and country level.</p>
+
+
+                            <p><strong>Note: </strong>All functionalities provide policy insights on associations between risk factors and CRC incidence, considering time lags of 1, 3, 5, and 10 years between exposure and disease.</p>
+
+                            <p> <strong>Disclaimer: </strong>These functionalities are based on observational GBD data and statistical models. Results reflect associations, not proven causal effects, and should be used to inform priority setting and expert-led planning.</p>
+                        </div>
+                    )}
                     {loading && (
                         <div
                             style={{
@@ -855,7 +881,7 @@ const DeliPredictions = () => {
 
                     )}
                     {chartOptions.skipMessage && (
-                         <div className="m-auto" style={{ width: "100%", maxWidth: "600px" }} dangerouslySetInnerHTML={{ __html: chartOptions.skipMessage }} />
+                        <div className="m-auto" style={{ width: "100%", maxWidth: "600px" }} dangerouslySetInnerHTML={{ __html: chartOptions.skipMessage }} />
 
                     )}
                     {!chartOptions.skipMessage &&
