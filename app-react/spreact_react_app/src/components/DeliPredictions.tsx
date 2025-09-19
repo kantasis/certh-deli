@@ -654,6 +654,17 @@ const DeliPredictions = () => {
         );
     };
 
+    useEffect(() => {
+        if (!type) {
+            // reset chart options when type becomes empty
+            setChartOptions({
+                title: { text: "", left: "center" },
+                series: [],
+                skipMessage: ""
+            });
+        }
+    }, [type]);
+
     const location = useLocation();
     const savedIframeUrl = location.state?.iframeUrl;
 
@@ -839,6 +850,7 @@ const DeliPredictions = () => {
 
                 <div className="col-8">
                     {!type && (
+
                         <div>
 
 
