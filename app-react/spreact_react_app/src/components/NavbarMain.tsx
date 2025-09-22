@@ -90,7 +90,9 @@ const NavbarMain: React.FC = () => {
       //    label: "Deli Predictions"
       // }
    ].map((item, index) => (
+      
       <li className="nav-item" key={index}>
+         
          <NavLink
             to={item.href}
             className={({ isActive }) =>
@@ -272,7 +274,7 @@ const NavbarMain: React.FC = () => {
 
             <div className="collapse navbar-collapse" id="navbarSupportedContent">
                <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-                  {leftButtons_tsx}
+                  {isLoggedIn && leftButtons_tsx}
                   {isLoggedIn && lip2Menu}
                   {isLoggedIn && commentItem}
                </ul>
