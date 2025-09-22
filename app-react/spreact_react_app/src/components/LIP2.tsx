@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect } from "react";
 import data from "../assets/aggregation_final_greece.json";
 import ReactECharts from "echarts-for-react";
 import { Modal, Button } from "react-bootstrap";
+import Comments from "./Comments.tsx";
 
 const AggregationAnalysis = () => {
     const [selectedVariable, setSelectedVariable] = useState("");
@@ -431,7 +432,7 @@ const AggregationAnalysis = () => {
                 <h3>Aggregation Analysis</h3>
                 {/* Left Column */}
                 <div className="col-2">
-                    <label className="fw-bold">Select Variable</label>
+                    <label className="fw-bold mb-1">Select Variable</label>
                     <select
                         className="form-control mb-3"
                         value={selectedVariable}
@@ -562,6 +563,8 @@ const AggregationAnalysis = () => {
                         </>
                     )}
                 </div>
+                <div className="col-2"><Comments /></div>
+
             </div>
         </div>
     );
