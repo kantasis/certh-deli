@@ -55,7 +55,8 @@ const DeliPredictions = () => {
     const [isBiasModal, setIsBiasModal] = useState(false);
     const [currentPage, setCurrentPage] = useState(0);
     const itemsPerPage = 5;
-
+    const [baselineShift, setBaselineShift] = useState(0);
+    const [apiResponse, setApiResponse] = useState(null);
 
     const [chartImageUrl, setChartImageUrl] = useState<string>("");
 
@@ -189,7 +190,7 @@ const DeliPredictions = () => {
                     }));
                     setRiskFactorsLst(rfList);
                 }
-
+                setApiResponse(res.data);   // 👈 save the whole API response
                 const options = buildChartOptions(res.data);
                 setChartOptions(options);
 
@@ -205,10 +206,22 @@ const DeliPredictions = () => {
     }, [type, horizon, country, riskFactor, cleanToken]);
 
 
-
-    const buildChartOptions = (apiResponse) => {
+    const buildChartOptions = (apiResponse, baselineShift, riskFactor) => {
         const { type, data } = apiResponse;
         if (!data) return {};
+
+        // if (type === "sf_intervention") {
+        //     const rawSeries = apiResponse?.data?.[riskFactor] || [];
+
+        //     // shift baseline forward
+        //     const shiftedSeries = rawSeries.slice(baselineShift);
+
+        //     // if you also build xAxis labels:
+        //     const shiftedXAxis = shiftedSeries.map((_, idx) => {
+        //         return `Reduction ${idx + baselineShift}`;
+        //     });
+        // };
+
 
         // 1. Line chart for sf_intervention / sf_target
         if (["sf_intervention", "sf_target"].includes(type)) {
@@ -257,7 +270,17 @@ const DeliPredictions = () => {
                 predicted: d.predicted_crc_incidence
             }));
 
-            const baselineDataset = [dataset[0]];
+            // let dataset = rfData.results.map(d => ({
+            //     x: d.percent_reduction,
+            //     ciLow: d.ci_lower,
+            //     ciDiff: d.ci_upper - d.ci_lower,
+            //     predicted: d.predicted_crc_incidence
+            // }));
+            // dataset = dataset.slice(baselineShift);
+
+            //const baselineDataset = [dataset[0]];
+            const baselineDataset =
+                baselineShift < dataset.length ? [dataset[baselineShift]] : [];
 
             return {
                 title: { text: `${rfData.factor_label || ''} — ${rfData.title || ''}`, left: 'center' },
@@ -287,13 +310,13 @@ const DeliPredictions = () => {
                     { name: '', type: 'line', encode: { y: 'ciLow' }, stack: 'ci', symbol: 'none', lineStyle: { opacity: 0 }, showInLegend: false },
                     { name: 'Confidence Intervals', type: 'line', encode: { y: 'ciDiff' }, stack: 'ci', symbol: 'none', areaStyle: { color: 'rgba(128,200,128,0.3)' }, lineStyle: { opacity: 0 } },
                     { name: 'Predicted CRC', type: 'line', encode: { y: 'predicted' }, smooth: true, lineStyle: { color: 'green', width: 2 }, symbol: 'circle', symbolSize: 6 },
-                    { name: 'Baseline', type: 'scatter', datasetIndex: 1, encode: { x: 'x', y: 'predicted' }, itemStyle: { color: 'red' }, symbolSize: 10 }
+                    { name: 'Prediction at % SEV Reduction', type: 'scatter', datasetIndex: 1, encode: { x: 'x', y: 'predicted' }, z: 200, symbol: 'circle', itemStyle: { color: 'red' }, symbolSize: 10 }
                 ],
                 tooltip: {
                     trigger: 'axis',
                     formatter: (params) => {
                         const pred = params.find(p => p.seriesName === 'Predicted CRC');
-                        const baseline = params.find(p => p.seriesName === 'Baseline');
+                        const baseline = params.find(p => p.seriesName === 'Prediction at % SEV Reduction');
                         const ci = params.find(p => p.seriesName === 'Confidence Intervals');
 
                         if (!pred) return '';
@@ -322,7 +345,7 @@ const DeliPredictions = () => {
                         if (baseline) {
                             tooltipHtml += `<div style="display:flex; align-items:center; margin-bottom:4px;">
                 <span style="display:inline-block;width:10px;height:10px;background-color:${baselineColor};border-radius:50%;margin-right:5px;"></span>
-                Baseline: &nbsp;<strong>${baseline.data.predicted.toFixed(2)}</strong>
+                Prediction at ${apiResponse.data[riskFactor].results[baselineShift]?.percent_reduction}% SEV reduction: &nbsp;<strong>${baseline.data.predicted.toFixed(2)}</strong>
             </div>`;
                         }
 
@@ -333,7 +356,7 @@ const DeliPredictions = () => {
                         if (ciLow !== undefined && ciHigh !== null) {
                             tooltipHtml += `<div style="display:flex; align-items:center; margin-top:4px;">
                 <span style="display:inline-block;width:10px;height:10px;background-color:${ciColor};border-radius:50%;margin-right:5px;"></span>
-                Confidence Interval: <strong>[${ciLow.toFixed(2)}, ${ciHigh.toFixed(2)}]</strong>
+                Confidence Interval:<strong>&nbsp [${ciLow.toFixed(2)}, ${ciHigh.toFixed(2)}] </strong>
             </div>`;
                         }
 
@@ -566,6 +589,9 @@ const DeliPredictions = () => {
         };
     };
 
+
+
+
     const getUriParams = () => {
         const params: Record<string, string> = {};
 
@@ -653,6 +679,20 @@ const DeliPredictions = () => {
             </>
         );
     };
+    // useEffect(() => {
+    //     if (!apiResponse) return;
+    //     const options = buildChartOptions(apiResponse, baselineShift);
+    //     setChartOptions(options);
+    // }, [apiResponse, baselineShift]);
+
+    useEffect(() => {
+        if (!apiResponse) return;
+        const options = buildChartOptions(apiResponse, baselineShift, riskFactor);
+        setChartOptions(options);
+    }, [apiResponse, baselineShift, riskFactor]);
+    useEffect(() => {
+        setBaselineShift(0);
+    }, [type, riskFactor,country]);
 
     useEffect(() => {
         if (!type) {
@@ -797,6 +837,9 @@ const DeliPredictions = () => {
                         </div>
                     </div>
                     {/* Horizon */}
+
+
+
                     {["sf_intervention", "sf_target", "exposure_weighted", "quick_wins", "effect_sev_unit"].includes(type) && (
                         <div className="form-group mb-4">
                             <label style={{ fontWeight: "bold", margin: "0px 0px 5px 0px" }}>Horizon: </label>
@@ -831,6 +874,23 @@ const DeliPredictions = () => {
                                     <option key={rf.value} value={rf.value}>{rf.label}</option>
                                 ))}
                             </select>
+                        </div>
+                    )}
+
+                    {type === "sf_intervention" && riskFactor && apiResponse?.data?.[riskFactor]?.results && (
+                        <div style={{ margin: "20px 0" }}>
+                            <label>
+                                Prediction at: {
+                                    apiResponse.data[riskFactor].results[baselineShift]?.percent_reduction ?? 0
+                                }% SEV reduction
+                            </label>
+                            <input
+                                type="range"
+                                min={0}
+                                max={apiResponse.data[riskFactor].results.length - 1}
+                                value={baselineShift}
+                                onChange={(e) => setBaselineShift(Number(e.target.value))}
+                            />
                         </div>
                     )}
                     {type == "effect_sev_unit" && (
@@ -921,6 +981,7 @@ const DeliPredictions = () => {
                         )}
 
 
+
                 </div >
                 {/* //url: getChartImageUrl(chartIframeUrl), */}
 
@@ -939,9 +1000,11 @@ const DeliPredictions = () => {
                                     <Accordion.Header
                                         onClick={(e) => {
                                             if (isBiasAssessment) {
-                                                e.preventDefault(); // prevent default expand behavior
+                                                // prevent accordion toggle and open custom modal instead
+                                                e.stopPropagation();
+                                                e.preventDefault();
                                                 handleAccordionModal(
-                                                    accordionContent_dict.title = "The following biases were detected in the data used for the CRC Predictive Analytics:",
+                                                    "The following biases were detected in the data used for the CRC Predictive Analytics:",
                                                     true
                                                 );
                                             }
