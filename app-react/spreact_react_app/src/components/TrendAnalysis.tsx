@@ -135,7 +135,7 @@ const EuropeMap = () => {
     const [dataMaxYear, setDataMaxYear] = useState<number | undefined>(undefined);
 
     const buildForecastingUrl = () => {
-        const baseUrl = "http://oncodir.catalink.eu:7565/v1/data-fusion/extra/forecasting-crc";
+        const baseUrl = "https://oncodir-datapi.catalink.eu/v1/data-fusion/extra/forecasting-crc";
         const params = new URLSearchParams();
 
         if (selectedCountry) params.append("country", selectedCountry);
@@ -758,7 +758,7 @@ const EuropeMap = () => {
             year_interval: yearInterval.split(" ")[0],
         });
 
-        fetch(`http://oncodir.catalink.eu:7565/v1/data-fusion/extra/trend-correlation?${params.toString()}`, {
+        fetch(`https://oncodir-datapi.catalink.eu/v1/data-fusion/extra/trend-correlation?${params.toString()}`, {
             method: "GET",
             signal: controller.signal,
             headers: {
@@ -802,7 +802,7 @@ const EuropeMap = () => {
     useEffect(() => {
         const controller = new AbortController();
 
-        fetch("http://oncodir.catalink.eu:7565/v1/services/login/", {
+        fetch("https://oncodir-datapi.catalink.eu/v1/services/login/", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -842,7 +842,7 @@ const EuropeMap = () => {
 
         });
 
-        fetch(`http://oncodir.catalink.eu:7565/v1/data-fusion/extra/trends?${params.toString()}`, {
+        fetch(`https://oncodir-datapi.catalink.eu/v1/data-fusion/extra/trends?${params.toString()}`, {
             method: "GET",
             signal: controller.signal,
             headers: {
@@ -892,12 +892,12 @@ const EuropeMap = () => {
         // selectedRiskFactors.forEach((rf) => {
         //     params.append("Risk_Factor", rf);
         // });
-        fetch(`http://oncodir.catalink.eu:7565/v1/data-fusion/extra/association/?${params.toString()}`, {
+        fetch(`https://oncodir-datapi.catalink.eu/v1/data-fusion/extra/association?${params.toString()}`, {
             method: "GET",
             signal: controller.signal,
             headers: {
                 "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}`
+                "Authorization": `Bearer ${token}`,
             }
         })
             .then((res) => {

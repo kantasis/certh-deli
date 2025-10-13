@@ -1,58 +1,70 @@
 import React, { useState, useEffect } from "react";
 import * as AuthService from "../services/auth.service";
+import {
+  Container,
+  Typography,
+  Paper,
+  Table,
+  TableBody,
+  TableRow,
+  TableCell,
+  TableContainer,
+} from "@mui/material";
+
+interface User {
+  id: number;
+  name: string;
+  surName: string;
+  username: string;
+  email: string;
+  roles: string[];
+}
 
 const Profile: React.FC = () => {
+  const [user, setUser] = useState<User | null>(null);
 
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [user_dict, setUserDict] = useState();
+  useEffect(() => {
+    if (AuthService.isLoggedIn()) {
+      setUser(AuthService.getCurrentUser());
+    }
+  }, []);
 
-  useEffect(
-    () => {
-      setUserDict(AuthService.getCurrentUser());
-      setIsLoggedIn(AuthService.isLoggedIn());
-      console.log("Profile: " + isLoggedIn);
-    },
-    []
-  );
-
-
-  if (!isLoggedIn)
-    return <h2>Unauthorized</h2>;
-
+  if (!user) return <Typography variant="h5">Unauthorized</Typography>;
 
   return (
-    <div className="container mt-5">
-      <header className="jumbotron">
-        <h3>Profile</h3>
-      </header>
-      <table className="table table-bordered mt-5">
-        <tbody>
-          <tr>
-            <th>Name</th>
-            <td>{user_dict.name}</td>
-          </tr>
-          <tr>
-            <th>Surname</th>
-            <td>{user_dict.surName}</td>
-          </tr>
-          <tr>
-            <th>Username</th>
-            <td>{user_dict.username}</td>
-          </tr>
-          <tr>
-            <th>Id</th>
-            <td>{user_dict.id}</td>
-          </tr>
-          <tr>
-            <th>Email</th>
-            <td>{user_dict.email}</td>
-          </tr>
-          <tr>
-            <th>Authorities</th>
-            <td>
-              {user_dict.roles &&
-                user_dict.roles
-                  .map((role: string) =>
+    <Container maxWidth="md" sx={{ mt: 5 }}>
+      <Typography variant="h4" gutterBottom>
+        Profile
+      </Typography>
+
+      <TableContainer component={Paper} sx={{ mt: 3 }}>
+        <Table>
+          <TableBody>
+            <TableRow>
+              <TableCell>Name</TableCell>
+              <TableCell>{user.name}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>Surname</TableCell>
+              <TableCell>{user.surName}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>Username</TableCell>
+              <TableCell>{user.username}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>Id</TableCell>
+              <TableCell>{user.id}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>Email</TableCell>
+              <TableCell>{user.email}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>Authorities</TableCell>
+              <TableCell>
+                {user.roles
+                  .map((role) =>
                     role === "ROLE_USER"
                       ? "User"
                       : role === "ROLE_ADMIN"
@@ -60,12 +72,12 @@ const Profile: React.FC = () => {
                         : role
                   )
                   .join(", ")}
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
+              </TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </Container>
   );
 };
 

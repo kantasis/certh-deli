@@ -32,7 +32,7 @@ const typeOptions = [
     { value: "quick_wins", label: "Quick Wins" },
     { value: "effect_sev_unit", label: "Overview: Effect per SEV Unit" },
     { value: "sf_intervention", label: "Single-Factor Intervention" },
-    // { value: "sf_target", label: "Single-Factor Target" },
+    { value: "sf_target", label: "Single-Factor Target" },
 ];
 
 const DeliPredictions = () => {
@@ -86,7 +86,7 @@ const DeliPredictions = () => {
     useEffect(() => {
         const controller = new AbortController();
 
-        fetch("http://oncodir.catalink.eu:7565/v1/services/login/", {
+        fetch("https://oncodir-datapi.catalink.eu/v1/services/login/", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -153,7 +153,7 @@ const DeliPredictions = () => {
             setError(null);
 
             try {
-                let url = `http://oncodir.catalink.eu:7565/v1/deli/predictions?type=${type}&prediction_horizon=${horizon}`;
+                let url = `https://oncodir-datapi.catalink.eu/v1/deli/predictions?type=${type}&prediction_horizon=${horizon}`;
 
                 if (["sf_intervention", "sf_target", "exposure_weighted"].includes(type) && country) {
                     url += `&country=${encodeURIComponent(country)}`;
@@ -224,7 +224,7 @@ const DeliPredictions = () => {
 
 
         // 1. Line chart for sf_intervention / sf_target
-        if (["sf_intervention", "sf_target"].includes(type)) {
+        if (["sf_intervention"].includes(type)) {
             if (!riskFactor) {
                 return {
                     title: { text: '', left: 'center' },
@@ -358,6 +358,99 @@ const DeliPredictions = () => {
                 <span style="display:inline-block;width:10px;height:10px;background-color:${ciColor};border-radius:50%;margin-right:5px;"></span>
                 Confidence Interval:<strong>&nbsp [${ciLow.toFixed(2)}, ${ciHigh.toFixed(2)}] </strong>
             </div>`;
+                        }
+
+                        tooltipHtml += `</div>`;
+                        return tooltipHtml;
+                    }
+                }
+
+
+            };
+        }
+        if (type === "sf_target") {
+            const targetData = data[riskFactor];
+
+            // Ensure that the results array exists and is not empty
+            if (!targetData || !targetData.results || !targetData.results.length) {
+                return {
+                    title: { text: '', left: 'center' },
+                    series: [],
+                    skipMessage: 'No results available for the selected target.'
+                };
+            }
+
+            // Map the results to the dataset (adjust to match the chart needs)
+            const dataset = targetData.results.map(d => ({
+                x: d.target_crc_reduction,         // x-axis: Target CRC Incidence Reduction
+                y: d.required_sev_reduction,       // y-axis: Required SEV Reduction
+                predicted: d.predicted_crc_incidence, // Predicted CRC Incidence for tooltip (optional)
+            }));
+
+            return {
+                title: { text: targetData.title || 'Required SEV Reduction', left: 'center' },
+                legend: {
+                    top: 30,
+                    left: 'center',
+                    itemWidth: 20,
+                    itemHeight: 12
+                },
+                xAxis: {
+                    type: 'category',
+                    name: targetData.x_axis_label || 'Target CRC Incidence Reduction (%)',
+                    nameLocation: 'center',
+                    nameGap: 30,
+                    data: dataset.map(d => d.x),  // Mapping the target_crc_reduction for x-axis
+                },
+                yAxis: {
+                    name: targetData.y_axis_label || 'Required SEV Reduction (%)',
+                    nameRotate: 90,
+                    nameLocation: 'center',
+                    nameGap: 55,
+                },
+                series: [
+                    {
+                        name: 'Required SEV Reduction',
+                        type: 'line',
+                        data: dataset.map(d => d.y),  // Mapping the required_sev_reduction for y-axis
+                        smooth: true,
+                        lineStyle: { color: 'blue', width: 2 },
+                        symbol: 'circle',
+                        symbolSize: 6
+                    },
+                    {
+                        name: 'Predicted CRC Incidence',
+                        type: 'line',
+                        data: dataset.map(d => d.predicted),  // Optional, to show predicted CRC Incidence
+                        smooth: true,
+                        lineStyle: { color: 'green', width: 2 },
+                        symbol: 'circle',
+                        symbolSize: 6
+                    }
+                ],
+                tooltip: {
+                    trigger: 'axis',
+                    formatter: (params) => {
+                        // Ensure params has the necessary series
+                        const sev = params.find(p => p.seriesName === 'Required SEV Reduction');
+                        const pred = params.find(p => p.seriesName === 'Predicted CRC Incidence');
+
+                        // If the Required SEV Reduction series is not available, don't show the tooltip
+                        if (!sev || sev.value === undefined) {
+                            return '';
+                        }
+
+                        const targetReduction = sev.axisValueLabel; // Using axisLabel for target reduction value
+                        const requiredSevReduction = sev.value; // This is the y-value in the "Required SEV Reduction" series
+                        const predicted = pred ? pred.value : null; // Predicted CRC Incidence
+
+                        let tooltipHtml = `<div style="text-align:left;">`;
+                        tooltipHtml += `<div><strong>${targetData.factor_label || 'Factor'} — ${targetData.title}</strong></div>`;
+                        tooltipHtml += `<div>Target CRC Incidence Reduction: <strong>${targetReduction}</strong>%</div>`;
+                        tooltipHtml += `<div>Required SEV Reduction: <strong>${requiredSevReduction.toFixed(2)}</strong>%</div>`;
+
+                        if (predicted !== null) {
+                            tooltipHtml += `<div>Predicted CRC Incidence: <strong>${predicted.toFixed(2)}</strong></div>`;
                         }
 
                         tooltipHtml += `</div>`;
@@ -692,7 +785,7 @@ const DeliPredictions = () => {
     }, [apiResponse, baselineShift, riskFactor]);
     useEffect(() => {
         setBaselineShift(0);
-    }, [type, riskFactor,country]);
+    }, [type, riskFactor, country]);
 
     useEffect(() => {
         if (!type) {
@@ -865,7 +958,7 @@ const DeliPredictions = () => {
                     )}
 
                     {/* Risk Factor */}
-                    {["sf_intervention"].includes(type) && (
+                    {["sf_intervention", "sf_target"].includes(type) && (
                         <div className="form-group mb-4">
                             <label style={{ fontWeight: "bold", margin: "0px 0px 5px 0px" }}>Risk Factor: </label>
                             <select className="form-control" value={riskFactor} onChange={(e) => setRiskFactor(e.target.value)}>
