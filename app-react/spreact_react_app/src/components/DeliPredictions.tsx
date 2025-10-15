@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect, useState, useCallback, useMemo } from "react";
 import ReactECharts from "echarts-for-react";
 import axios from "axios";
 import * as AuthService from "../services/auth.service.tsx";
@@ -6,6 +6,7 @@ import Comments from "./Comments.tsx";
 import { Accordion, Modal, Button } from 'react-bootstrap';
 import SaveGraphButton from "./SaveGraphButton.tsx";
 import { useLocation } from "react-router-dom";
+
 
 const countries_strLst = [
     "Austria", "Belgium", "Bulgaria", "Croatia", "Cyprus", "Czechia",
@@ -57,6 +58,8 @@ const DeliPredictions = () => {
     const itemsPerPage = 5;
     const [baselineShift, setBaselineShift] = useState(0);
     const [apiResponse, setApiResponse] = useState(null);
+    const [selectedTarget, setSelectedTarget] = useState(0);
+
 
     const [chartImageUrl, setChartImageUrl] = useState<string>("");
 
@@ -203,8 +206,26 @@ const DeliPredictions = () => {
 
 
         fetchData();
-    }, [type, horizon, country, riskFactor, cleanToken]);
+    }, [type, horizon, country, riskFactor, cleanToken, selectedTarget]);
+    useEffect(() => {
+        if (!chartRef.current) return;
+        const chart = chartRef.current.getEchartsInstance();
 
+        chart.on('click', handleChartClick);
+        return () => {
+            chart.off('click', handleChartClick);
+        };
+    }, [chartOptions]);
+
+    const handleChartClick = useCallback((params) => {
+        if (type !== "sf_target") return;
+
+        const { data } = params;
+        if (!data || data.length < 2) return;
+
+        const [xValue] = data;
+        setSelectedTarget(Math.round(xValue)); // update range and re-render chart
+    }, [type]);
 
     const buildChartOptions = (apiResponse, baselineShift, riskFactor) => {
         const { type, data } = apiResponse;
@@ -223,7 +244,7 @@ const DeliPredictions = () => {
         // };
 
 
-        // 1. Line chart for sf_intervention / sf_target
+        // 1. Line chart for sf_intervention 
         if (["sf_intervention"].includes(type)) {
             if (!riskFactor) {
                 return {
@@ -368,99 +389,102 @@ const DeliPredictions = () => {
 
             };
         }
+        //sf_target
+
         if (type === "sf_target") {
             const targetData = data[riskFactor];
 
-            // Ensure that the results array exists and is not empty
-            if (!targetData || !targetData.results || !targetData.results.length) {
+            if (!riskFactor) {
                 return {
                     title: { text: '', left: 'center' },
                     series: [],
-                    skipMessage: 'No results available for the selected target.'
+                    skipMessage: '<div  class="d-flex justify-content-center mt-3 alert alert-info text-center"> Please select a risk factor </div>'
+                };
+            }
+            if (!targetData) return { title: { text: '' }, series: [] };
+
+            if (targetData.skip_reason) {
+                return {
+                    title: { text: targetData.title, left: 'center' },
+                    skipMessage: `<div class="alert alert-warning mt-3 text-center">${targetData.skip_reason}</div>`
                 };
             }
 
-            // Map the results to the dataset (adjust to match the chart needs)
-            const dataset = targetData.results.map(d => ({
-                x: d.target_crc_reduction,         // x-axis: Target CRC Incidence Reduction
-                y: d.required_sev_reduction,       // y-axis: Required SEV Reduction
-                predicted: d.predicted_crc_incidence, // Predicted CRC Incidence for tooltip (optional)
-            }));
+            const dataset = targetData.results
+                .filter(d => d.required_sev_reduction !== null)
+                .map(d => ({
+                    x: d.target_crc_reduction,
+                    y: d.required_sev_reduction,
+                    feasible: d.feasible
+                }));
+
+            const selected = dataset.find(d => Math.round(d.x) === Math.round(Number(selectedTarget)));
 
             return {
-                title: { text: targetData.title || 'Required SEV Reduction', left: 'center' },
-                legend: {
-                    top: 30,
-                    left: 'center',
-                    itemWidth: 20,
-                    itemHeight: 12
-                },
+                title: { text: targetData.title, left: 'center' },
                 xAxis: {
-                    type: 'category',
+                    type: 'value',
                     name: targetData.x_axis_label || 'Target CRC Incidence Reduction (%)',
                     nameLocation: 'center',
-                    nameGap: 30,
-                    data: dataset.map(d => d.x),  // Mapping the target_crc_reduction for x-axis
+                    nameGap: 30
                 },
                 yAxis: {
+                    type: 'value',
                     name: targetData.y_axis_label || 'Required SEV Reduction (%)',
-                    nameRotate: 90,
                     nameLocation: 'center',
-                    nameGap: 55,
+                    nameGap: 45
                 },
-                series: [
-                    {
-                        name: 'Required SEV Reduction',
-                        type: 'line',
-                        data: dataset.map(d => d.y),  // Mapping the required_sev_reduction for y-axis
-                        smooth: true,
-                        lineStyle: { color: 'blue', width: 2 },
-                        symbol: 'circle',
-                        symbolSize: 6
-                    },
-                    {
-                        name: 'Predicted CRC Incidence',
-                        type: 'line',
-                        data: dataset.map(d => d.predicted),  // Optional, to show predicted CRC Incidence
-                        smooth: true,
-                        lineStyle: { color: 'green', width: 2 },
-                        symbol: 'circle',
-                        symbolSize: 6
-                    }
-                ],
                 tooltip: {
                     trigger: 'axis',
                     formatter: (params) => {
-                        // Ensure params has the necessary series
-                        const sev = params.find(p => p.seriesName === 'Required SEV Reduction');
-                        const pred = params.find(p => p.seriesName === 'Predicted CRC Incidence');
-
-                        // If the Required SEV Reduction series is not available, don't show the tooltip
-                        if (!sev || sev.value === undefined) {
-                            return '';
-                        }
-
-                        const targetReduction = sev.axisValueLabel; // Using axisLabel for target reduction value
-                        const requiredSevReduction = sev.value; // This is the y-value in the "Required SEV Reduction" series
-                        const predicted = pred ? pred.value : null; // Predicted CRC Incidence
-
-                        let tooltipHtml = `<div style="text-align:left;">`;
-                        tooltipHtml += `<div><strong>${targetData.factor_label || 'Factor'} — ${targetData.title}</strong></div>`;
-                        tooltipHtml += `<div>Target CRC Incidence Reduction: <strong>${targetReduction}</strong>%</div>`;
-                        tooltipHtml += `<div>Required SEV Reduction: <strong>${requiredSevReduction.toFixed(2)}</strong>%</div>`;
-
-                        if (predicted !== null) {
-                            tooltipHtml += `<div>Predicted CRC Incidence: <strong>${predicted.toFixed(2)}</strong></div>`;
-                        }
-
-                        tooltipHtml += `</div>`;
-                        return tooltipHtml;
+                        const [x, y] = params[0]?.data || [];
+                        if (x == null || y == null) return '';
+                        return `
+          <div style="text-align:left;">
+            <strong>${targetData.factor_label}</strong><br/>
+            Target CRC Incidence Reduction: <strong>${x}%</strong><br/>
+            Required SEV Reduction: <strong>${y.toFixed(2)}%</strong>
+          </div>`;
                     }
-                }
-
-
+                },
+                series: [
+                    {
+                        name: 'CRC ↓ vs SEV ↓',
+                        type: 'line',
+                        smooth: true,
+                        data: dataset.map(d => [d.x, d.y]),
+                        lineStyle: { color: '#5470c6', width: 2 },
+                        symbol: 'circle',
+                        symbolSize: 6,
+                        itemStyle: { color: '#5470c6' }
+                    },
+                    {
+                        name: 'Required SEV ↓',
+                        type: 'scatter',
+                        data: selected ? [[selected.x, selected.y]] : [],
+                        symbolSize: 12,
+                        itemStyle: { color: 'red', borderColor: '#fff', borderWidth: 1 },
+                        z: 10,
+                        label: selected
+                            ? {
+                                show: true,
+                                position: 'top',
+                                formatter: `${selected.y.toFixed(2)}% SEV ↓`
+                            }
+                            : {}
+                    },
+                    {
+                        type: 'line',
+                        markLine: {
+                            symbol: 'none',
+                            data: selected ? [{ xAxis: selected.x, label: { formatter: 'Target', position: 'end' } }] : [],
+                            lineStyle: { type: 'dashed', color: '#333' }
+                        }
+                    }
+                ]
             };
         }
+
 
         // 2. Quick Wins bar chart
         if (type === "quick_wins") {
@@ -897,7 +921,8 @@ const DeliPredictions = () => {
         }] : [])
     ];
 
-
+    const targetData = selectedTarget; // ✅ define it here at component level
+    const maxTarget = Math.floor(targetData?.max_crc_reduction ?? 100);
     if (!isLoggedIn) return <h2>Unauthorized</h2>;
     return (
         <div className="container-fluid mt-5">
@@ -960,15 +985,44 @@ const DeliPredictions = () => {
                     {/* Risk Factor */}
                     {["sf_intervention", "sf_target"].includes(type) && (
                         <div className="form-group mb-4">
-                            <label style={{ fontWeight: "bold", margin: "0px 0px 5px 0px" }}>Risk Factor: </label>
-                            <select className="form-control" value={riskFactor} onChange={(e) => setRiskFactor(e.target.value)}>
+                            <label style={{ fontWeight: "bold", margin: "0px 0px 5px 0px" }}>
+                                Risk Factor:
+                            </label>
+                            <select
+                                className="form-control"
+                                value={riskFactor}
+                                onChange={(e) => setRiskFactor(e.target.value)}
+                            >
                                 <option value="">Select risk factor</option>
                                 {riskFactorsLst.map((rf) => (
-                                    <option key={rf.value} value={rf.value}>{rf.label}</option>
+                                    <option key={rf.value} value={rf.value}>
+                                        {rf.label}
+                                    </option>
                                 ))}
                             </select>
+
+                            {/* ✅ Only show range for sf_target */}
+                            {type === "sf_target" && riskFactor && apiResponse?.data?.[riskFactor] && (
+                                <div style={{ marginTop: "1rem" }}>
+                                    <label htmlFor="targetRange">
+                                        % CRC ↓ Target: <strong>{selectedTarget}%</strong>
+                                    </label>
+                                    <input
+                                        id="targetRange"
+                                        type="range"
+                                        min={0}
+                                        max={Math.floor(apiResponse.data[riskFactor].max_crc_reduction ?? 100)}
+                                        step={1}
+                                        value={selectedTarget}
+                                        onChange={(e) => setSelectedTarget(Number(e.target.value))}
+                                        style={{ width: "100%", cursor: "pointer" }}
+                                    />
+                                </div>
+                            )}
                         </div>
                     )}
+
+
 
                     {type === "sf_intervention" && riskFactor && apiResponse?.data?.[riskFactor]?.results && (
                         <div style={{ margin: "20px 0" }}>
@@ -978,11 +1032,12 @@ const DeliPredictions = () => {
                                 }% SEV reduction
                             </label>
                             <input
-                                type="range"
-                                min={0}
-                                max={apiResponse.data[riskFactor].results.length - 1}
-                                value={baselineShift}
-                                onChange={(e) => setBaselineShift(Number(e.target.value))}
+                                type="number"
+                                min={minTarget}
+                                max={maxTarget}
+                                step="1"
+                                value={selectedTarget}
+                                onChange={(e) => setSelectedTarget(Number(e.target.value))}
                             />
                         </div>
                     )}
