@@ -398,9 +398,10 @@ const DeliPredictions = () => {
                 return {
                     title: { text: '', left: 'center' },
                     series: [],
-                    skipMessage: '<div  class="d-flex justify-content-center mt-3 alert alert-info text-center"> Please select a risk factor </div>'
+                    skipMessage: '<div class="d-flex justify-content-center mt-3 alert alert-info text-center">Please select a risk factor</div>'
                 };
             }
+
             if (!targetData) return { title: { text: '' }, series: [] };
 
             if (targetData.skip_reason) {
@@ -416,12 +417,41 @@ const DeliPredictions = () => {
                     x: d.target_crc_reduction,
                     y: d.required_sev_reduction,
                     feasible: d.feasible
-                }));
 
+                }));
+            console.log(targetData)
             const selected = dataset.find(d => Math.round(d.x) === Math.round(Number(selectedTarget)));
+            const lastFeasible = dataset[dataset.length - 1];
+            const titleMatch = targetData.title.match(/—\s*(.*)/);
+            let countryAndYears = titleMatch ? titleMatch[1] : targetData.country || '';
+            // 🧠 Pick selected if available, otherwise fall back to last feasible
+            const activePoint = selected || lastFeasible;
+            const subtext = activePoint
+                ? `To reduce CRC Incidence by ${activePoint.x.toFixed(0)}% in ${countryAndYears}, SEV must be reduced by ${activePoint.y.toFixed(2)}%.`
+                : '';
 
             return {
-                title: { text: targetData.title, left: 'center' },
+                title: {
+                    text: targetData.title,
+                    subtext,
+                    left: 'center',
+                    top: 10,
+                    textStyle: {
+                        fontSize: 16,
+                        fontWeight: 'bold'
+                    },
+                    subtextStyle: {
+                        fontSize: 13,
+                        color: '#555',
+                        fontStyle: 'italic',
+                        lineHeight: 18
+                    }
+                },
+                grid: {
+                    top: 80, // 🔥 increases space between subtext and chart
+
+                },
+
                 xAxis: {
                     type: 'value',
                     name: targetData.x_axis_label || 'Target CRC Incidence Reduction (%)',
@@ -440,11 +470,11 @@ const DeliPredictions = () => {
                         const [x, y] = params[0]?.data || [];
                         if (x == null || y == null) return '';
                         return `
-          <div style="text-align:left;">
-            <strong>${targetData.factor_label}</strong><br/>
-            Target CRC Incidence Reduction: <strong>${x}%</strong><br/>
-            Required SEV Reduction: <strong>${y.toFixed(2)}%</strong>
-          </div>`;
+                    <div style="text-align:left;">
+                        <strong>${targetData.factor_label}</strong><br/>
+                        Target CRC Incidence Reduction: <strong>${x}%</strong><br/>
+                        Required SEV Reduction: <strong>${y.toFixed(2)}%</strong>
+                    </div>`;
                     }
                 },
                 series: [
@@ -459,17 +489,17 @@ const DeliPredictions = () => {
                         itemStyle: { color: '#5470c6' }
                     },
                     {
-                        name: 'Required SEV ↓',
+                        name: 'Selected Point',
                         type: 'scatter',
-                        data: selected ? [[selected.x, selected.y]] : [],
+                        data: activePoint ? [[activePoint.x, activePoint.y]] : [],
                         symbolSize: 12,
                         itemStyle: { color: 'red', borderColor: '#fff', borderWidth: 1 },
                         z: 10,
-                        label: selected
+                        label: activePoint
                             ? {
                                 show: true,
                                 position: 'top',
-                                formatter: `${selected.y.toFixed(2)}% SEV ↓`
+                                formatter: `${activePoint.y.toFixed(2)}% SEV ↓`
                             }
                             : {}
                     },
@@ -477,13 +507,14 @@ const DeliPredictions = () => {
                         type: 'line',
                         markLine: {
                             symbol: 'none',
-                            data: selected ? [{ xAxis: selected.x, label: { formatter: 'Target', position: 'end' } }] : [],
+                            data: activePoint ? [{ xAxis: activePoint.x, label: { formatter: 'Target', position: 'end' } }] : [],
                             lineStyle: { type: 'dashed', color: '#333' }
                         }
                     }
                 ]
             };
         }
+
 
 
         // 2. Quick Wins bar chart
