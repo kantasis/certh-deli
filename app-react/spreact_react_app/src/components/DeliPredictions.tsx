@@ -60,8 +60,9 @@ const DeliPredictions = () => {
     const [apiResponse, setApiResponse] = useState(null);
     const [selectedTarget, setSelectedTarget] = useState(0);
 
-
     const [chartImageUrl, setChartImageUrl] = useState<string>("");
+
+
 
 
     useEffect(() => {
@@ -206,7 +207,7 @@ const DeliPredictions = () => {
 
 
         fetchData();
-    }, [type, horizon, country, riskFactor, cleanToken, selectedTarget]);
+    }, [type, horizon, country, riskFactor, cleanToken]);
     useEffect(() => {
         if (!chartRef.current) return;
         const chart = chartRef.current.getEchartsInstance();
@@ -835,9 +836,9 @@ const DeliPredictions = () => {
 
     useEffect(() => {
         if (!apiResponse) return;
-        const options = buildChartOptions(apiResponse, baselineShift, riskFactor);
+        const options = buildChartOptions(apiResponse, baselineShift, riskFactor, selectedTarget);
         setChartOptions(options);
-    }, [apiResponse, baselineShift, riskFactor]);
+    }, [apiResponse, baselineShift, riskFactor, selectedTarget]);
     useEffect(() => {
         setBaselineShift(0);
     }, [type, riskFactor, country]);
