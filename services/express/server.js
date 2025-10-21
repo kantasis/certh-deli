@@ -80,7 +80,7 @@ app.delete('/clear-comments', async (req, res) => {
     }
 });
 // Fetch all comments
-app.get('/comments', async (req, res) => {
+app.get('/all-comments', async (req, res) => {
     try {
         const result = await pool.query('SELECT * FROM comments_tbl ORDER BY created_at DESC');
         res.status(200).json(result.rows);
@@ -108,10 +108,8 @@ app.post('/api/save-dashboard', async (req, res) => {
 
     try {
         const { rows: countRows } = await pool.query(
-
             'SELECT COUNT(*) FROM saved_graphs WHERE user_id = $1 AND dashboard_id = $2',
             [user_id, dashboard_id]
-
         );
 
         const count = parseInt(countRows[0].count);
@@ -166,10 +164,8 @@ app.delete('/api/delete-dashboard-collection/:dashboardId', async (req, res) => 
     const { dashboardId } = req.params;
 
     try {
-
         // Delete associated graphs first
         await pool.query('DELETE FROM saved_graphs WHERE dashboard_id = $1', [dashboardId]);
-
 
         // Then delete the dashboard itself
         await pool.query('DELETE FROM dashboards WHERE id = $1', [dashboardId]);

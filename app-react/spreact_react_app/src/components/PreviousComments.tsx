@@ -4,7 +4,7 @@ import { getCurrentUser } from '../services/auth.service'; // Import your authen
 import { getUserRole } from '../services/auth.service';
 
 const authentication_host = import.meta.env.VITE_AUTHENTICATION_HOST;
-const API_URL = `http://${authentication_host}:8435`;
+const API_URL = `http://${authentication_host}`;
 interface Comment {
     id: number;
     content: string;

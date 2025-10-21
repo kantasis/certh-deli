@@ -5,7 +5,7 @@ import { submitComment } from '../services/comments-submit';
 
 
 const authentication_host = import.meta.env.VITE_AUTHENTICATION_HOST;
-const API_URL = `http://${authentication_host}:8435`;
+const API_URL = `http://${authentication_host}`;
 
 interface Comment {
     id: number;

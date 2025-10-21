@@ -2,11 +2,11 @@ import axios from "axios";
 import { NavigateFunction, useNavigate } from 'react-router-dom';
 import authHeader from "./auth-header";
 // const authentication_host = "localhost";
- const authentication_host = "160.40.53.35";
+ const authentication_host = "deli.oncodir.eu";
 //const authentication_host = import.meta.env.VITE_AUTHENTICATION_HOST;
 const authentication_port = import.meta.env.VITE_AUTHENTICATION_PORT;
 
-const api_url = `http://${authentication_host}:${authentication_port}/api/v1/auth/`;
+const api_url = `https://${authentication_host}/api/v1/auth/`;
 
 // Register function
 // Register function with name and surname

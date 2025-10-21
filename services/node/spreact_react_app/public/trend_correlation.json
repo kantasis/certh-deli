@@ -1,0 +1,1667 @@
+[
+  {
+    "Risk_Factor": "High alcohol use",
+    "age": "25 to 50",
+    "sex": "Both",
+    "Coef": 0.002,
+    "CI_Lower": -0.412,
+    "CI_Upper": 0.415,
+    "P_Value": 0.994
+  },
+  {
+    "Risk_Factor": "Smoking",
+    "age": "25 to 50",
+    "sex": "Both",
+    "Coef": 0.165,
+    "CI_Lower": -0.123,
+    "CI_Upper": 0.454,
+    "P_Value": 0.254
+  },
+  {
+    "Risk_Factor": "Low physical activity",
+    "age": "25 to 50",
+    "sex": "Both",
+    "Coef": 0.185,
+    "CI_Lower": -0.462,
+    "CI_Upper": 0.833,
+    "P_Value": 0.567
+  },
+  {
+    "Risk_Factor": "Diet low in omega-6 polyunsaturated fatty acids",
+    "age": "25 to 50",
+    "sex": "Both",
+    "Coef": 0.023,
+    "CI_Lower": -0.721,
+    "CI_Upper": 0.766,
+    "P_Value": 0.951
+  },
+  {
+    "Risk_Factor": "Diet high in processed meat",
+    "age": "25 to 50",
+    "sex": "Both",
+    "Coef": 0.012,
+    "CI_Lower": -0.333,
+    "CI_Upper": 0.358,
+    "P_Value": 0.943
+  },
+  {
+    "Risk_Factor": "Diet high in red meat",
+    "age": "25 to 50",
+    "sex": "Both",
+    "Coef": 0.444,
+    "CI_Lower": 0.041,
+    "CI_Upper": 0.846,
+    "P_Value": 0.032
+  },
+  {
+    "Risk_Factor": "Diet high in sodium",
+    "age": "25 to 50",
+    "sex": "Both",
+    "Coef": 0.214,
+    "CI_Lower": -0.285,
+    "CI_Upper": 0.712,
+    "P_Value": 0.392
+  },
+  {
+    "Risk_Factor": "Diet high in sugar-sweetened beverages",
+    "age": "25 to 50",
+    "sex": "Both",
+    "Coef": 0.037,
+    "CI_Lower": -0.209,
+    "CI_Upper": 0.284,
+    "P_Value": 0.761
+  },
+  {
+    "Risk_Factor": "Diet high in trans fatty acids",
+    "age": "25 to 50",
+    "sex": "Both",
+    "Coef": -0.0817,
+    "CI_Lower": -0.175,
+    "CI_Upper": 0.012,
+    "P_Value": 0.085
+  },
+  {
+    "Risk_Factor": "Diet low in calcium",
+    "age": "25 to 50",
+    "sex": "Both",
+    "Coef": -0.0425,
+    "CI_Lower": -0.326,
+    "CI_Upper": 0.241,
+    "P_Value": 0.764
+  },
+  {
+    "Risk_Factor": "Diet low in fiber",
+    "age": "25 to 50",
+    "sex": "Both",
+    "Coef": 0.06,
+    "CI_Lower": -0.139,
+    "CI_Upper": 0.26,
+    "P_Value": 0.544
+  },
+  {
+    "Risk_Factor": "Diet low in fruits",
+    "age": "25 to 50",
+    "sex": "Both",
+    "Coef": -0.198,
+    "CI_Lower": -0.61,
+    "CI_Upper": 0.215,
+    "P_Value": 0.339
+  },
+  {
+    "Risk_Factor": "Diet low in legumes",
+    "age": "25 to 50",
+    "sex": "Both",
+    "Coef": 0.089,
+    "CI_Lower": -0.308,
+    "CI_Upper": 0.486,
+    "P_Value": 0.653
+  },
+  {
+    "Risk_Factor": "Diet low in milk",
+    "age": "25 to 50",
+    "sex": "Both",
+    "Coef": -0.224,
+    "CI_Lower": -0.471,
+    "CI_Upper": 0.023,
+    "P_Value": 0.075
+  },
+  {
+    "Risk_Factor": "Diet low in nuts and seeds",
+    "age": "25 to 50",
+    "sex": "Both",
+    "Coef": -0.129,
+    "CI_Lower": -0.456,
+    "CI_Upper": 0.197,
+    "P_Value": 0.428
+  },
+  {
+    "Risk_Factor": "Diet low in seafood omega-3 fatty acids",
+    "age": "25 to 50",
+    "sex": "Both",
+    "Coef": 0.011,
+    "CI_Lower": -0.274,
+    "CI_Upper": 0.296,
+    "P_Value": 0.939
+  },
+  {
+    "Risk_Factor": "Diet low in vegetables",
+    "age": "25 to 50",
+    "sex": "Both",
+    "Coef": -0.0138,
+    "CI_Lower": -0.136,
+    "CI_Upper": 0.108,
+    "P_Value": 0.821
+  },
+  {
+    "Risk_Factor": "Diet low in whole grains",
+    "age": "25 to 50",
+    "sex": "Both",
+    "Coef": 0.104,
+    "CI_Lower": -0.422,
+    "CI_Upper": 0.63,
+    "P_Value": 0.693
+  },
+  {
+    "Risk_Factor": "High body-mass index",
+    "age": "25 to 50",
+    "sex": "Both",
+    "Coef": 0.729,
+    "CI_Lower": -0.073,
+    "CI_Upper": 1.53,
+    "P_Value": 0.074
+  },
+  {
+    "Risk_Factor": "High LDL cholesterol",
+    "age": "25 to 50",
+    "sex": "Both",
+    "Coef": 1.536,
+    "CI_Lower": 0.14,
+    "CI_Upper": 2.932,
+    "P_Value": 0.032
+  },
+  {
+    "Risk_Factor": "High fasting plasma glucose",
+    "age": "25 to 50",
+    "sex": "Both",
+    "Coef": 0.195,
+    "CI_Lower": -0.527,
+    "CI_Upper": 0.916,
+    "P_Value": 0.589
+  },
+  {
+    "Risk_Factor": "Socio-Development Index",
+    "age": "25 to 50",
+    "sex": "Both",
+    "Coef": 0.522,
+    "CI_Lower": -0.745,
+    "CI_Upper": 1.788,
+    "P_Value": 0.411
+  },
+  {
+    "Risk_Factor": "High alcohol use",
+    "age": "25 to 50",
+    "sex": "Male",
+    "Coef": 0.237,
+    "CI_Lower": -0.308,
+    "CI_Upper": 0.783,
+    "P_Value": 0.385
+  },
+  {
+    "Risk_Factor": "Smoking",
+    "age": "25 to 50",
+    "sex": "Male",
+    "Coef": 0.12,
+    "CI_Lower": -0.239,
+    "CI_Upper": 0.48,
+    "P_Value": 0.504
+  },
+  {
+    "Risk_Factor": "Low physical activity",
+    "age": "25 to 50",
+    "sex": "Male",
+    "Coef": -0.0625,
+    "CI_Lower": -0.563,
+    "CI_Upper": 0.439,
+    "P_Value": 0.803
+  },
+  {
+    "Risk_Factor": "Diet low in omega-6 polyunsaturated fatty acids",
+    "age": "25 to 50",
+    "sex": "Male",
+    "Coef": 0.087,
+    "CI_Lower": -0.655,
+    "CI_Upper": 0.828,
+    "P_Value": 0.815
+  },
+  {
+    "Risk_Factor": "Diet high in processed meat",
+    "age": "25 to 50",
+    "sex": "Male",
+    "Coef": -0.0511,
+    "CI_Lower": -0.423,
+    "CI_Upper": 0.321,
+    "P_Value": 0.783
+  },
+  {
+    "Risk_Factor": "Diet high in red meat",
+    "age": "25 to 50",
+    "sex": "Male",
+    "Coef": 0.408,
+    "CI_Lower": -0.036,
+    "CI_Upper": 0.852,
+    "P_Value": 0.071
+  },
+  {
+    "Risk_Factor": "Diet high in sodium",
+    "age": "25 to 50",
+    "sex": "Male",
+    "Coef": 0.375,
+    "CI_Lower": -0.19,
+    "CI_Upper": 0.941,
+    "P_Value": 0.188
+  },
+  {
+    "Risk_Factor": "Diet high in sugar-sweetened beverages",
+    "age": "25 to 50",
+    "sex": "Male",
+    "Coef": 0.000437,
+    "CI_Lower": -0.267,
+    "CI_Upper": 0.268,
+    "P_Value": 0.997
+  },
+  {
+    "Risk_Factor": "Diet high in trans fatty acids",
+    "age": "25 to 50",
+    "sex": "Male",
+    "Coef": -0.0747,
+    "CI_Lower": -0.18,
+    "CI_Upper": 0.03,
+    "P_Value": 0.159
+  },
+  {
+    "Risk_Factor": "Diet low in calcium",
+    "age": "25 to 50",
+    "sex": "Male",
+    "Coef": 0.038,
+    "CI_Lower": -0.135,
+    "CI_Upper": 0.211,
+    "P_Value": 0.66
+  },
+  {
+    "Risk_Factor": "Diet low in fiber",
+    "age": "25 to 50",
+    "sex": "Male",
+    "Coef": 0.052,
+    "CI_Lower": -0.165,
+    "CI_Upper": 0.268,
+    "P_Value": 0.634
+  },
+  {
+    "Risk_Factor": "Diet low in fruits",
+    "age": "25 to 50",
+    "sex": "Male",
+    "Coef": -0.177,
+    "CI_Lower": -0.621,
+    "CI_Upper": 0.267,
+    "P_Value": 0.425
+  },
+  {
+    "Risk_Factor": "Diet low in legumes",
+    "age": "25 to 50",
+    "sex": "Male",
+    "Coef": 0.091,
+    "CI_Lower": -0.369,
+    "CI_Upper": 0.552,
+    "P_Value": 0.691
+  },
+  {
+    "Risk_Factor": "Diet low in milk",
+    "age": "25 to 50",
+    "sex": "Male",
+    "Coef": -0.103,
+    "CI_Lower": -0.257,
+    "CI_Upper": 0.051,
+    "P_Value": 0.183
+  },
+  {
+    "Risk_Factor": "Diet low in nuts and seeds",
+    "age": "25 to 50",
+    "sex": "Male",
+    "Coef": -0.168,
+    "CI_Lower": -0.529,
+    "CI_Upper": 0.193,
+    "P_Value": 0.354
+  },
+  {
+    "Risk_Factor": "Diet low in seafood omega-3 fatty acids",
+    "age": "25 to 50",
+    "sex": "Male",
+    "Coef": -0.017,
+    "CI_Lower": -0.321,
+    "CI_Upper": 0.287,
+    "P_Value": 0.911
+  },
+  {
+    "Risk_Factor": "Diet low in vegetables",
+    "age": "25 to 50",
+    "sex": "Male",
+    "Coef": -0.0117,
+    "CI_Lower": -0.15,
+    "CI_Upper": 0.127,
+    "P_Value": 0.866
+  },
+  {
+    "Risk_Factor": "Diet low in whole grains",
+    "age": "25 to 50",
+    "sex": "Male",
+    "Coef": -0.0814,
+    "CI_Lower": -0.683,
+    "CI_Upper": 0.52,
+    "P_Value": 0.786
+  },
+  {
+    "Risk_Factor": "High body-mass index",
+    "age": "25 to 50",
+    "sex": "Male",
+    "Coef": 0.319,
+    "CI_Lower": -0.558,
+    "CI_Upper": 1.197,
+    "P_Value": 0.467
+  },
+  {
+    "Risk_Factor": "High LDL cholesterol",
+    "age": "25 to 50",
+    "sex": "Male",
+    "Coef": 1.524,
+    "CI_Lower": 0.117,
+    "CI_Upper": 2.931,
+    "P_Value": 0.034
+  },
+  {
+    "Risk_Factor": "High fasting plasma glucose",
+    "age": "25 to 50",
+    "sex": "Male",
+    "Coef": 0.145,
+    "CI_Lower": -0.647,
+    "CI_Upper": 0.936,
+    "P_Value": 0.715
+  },
+  {
+    "Risk_Factor": "Socio-Development Index",
+    "age": "25 to 50",
+    "sex": "Male",
+    "Coef": 0.664,
+    "CI_Lower": -0.716,
+    "CI_Upper": 2.045,
+    "P_Value": 0.338
+  },
+  {
+    "Risk_Factor": "High alcohol use",
+    "age": "25 to 50",
+    "sex": "Female",
+    "Coef": -0.232,
+    "CI_Lower": -0.571,
+    "CI_Upper": 0.108,
+    "P_Value": 0.176
+  },
+  {
+    "Risk_Factor": "Smoking",
+    "age": "25 to 50",
+    "sex": "Female",
+    "Coef": 0.175,
+    "CI_Lower": -0.009,
+    "CI_Upper": 0.358,
+    "P_Value": 0.061
+  },
+  {
+    "Risk_Factor": "Low physical activity",
+    "age": "25 to 50",
+    "sex": "Female",
+    "Coef": 0.25,
+    "CI_Lower": -0.452,
+    "CI_Upper": 0.953,
+    "P_Value": 0.477
+  },
+  {
+    "Risk_Factor": "Diet low in omega-6 polyunsaturated fatty acids",
+    "age": "25 to 50",
+    "sex": "Female",
+    "Coef": -0.0962,
+    "CI_Lower": -0.857,
+    "CI_Upper": 0.665,
+    "P_Value": 0.8
+  },
+  {
+    "Risk_Factor": "Diet high in processed meat",
+    "age": "25 to 50",
+    "sex": "Female",
+    "Coef": 0.065,
+    "CI_Lower": -0.275,
+    "CI_Upper": 0.404,
+    "P_Value": 0.703
+  },
+  {
+    "Risk_Factor": "Diet high in red meat",
+    "age": "25 to 50",
+    "sex": "Female",
+    "Coef": 0.479,
+    "CI_Lower": 0.086,
+    "CI_Upper": 0.871,
+    "P_Value": 0.018
+  },
+  {
+    "Risk_Factor": "Diet high in sodium",
+    "age": "25 to 50",
+    "sex": "Female",
+    "Coef": 0.049,
+    "CI_Lower": -0.36,
+    "CI_Upper": 0.457,
+    "P_Value": 0.812
+  },
+  {
+    "Risk_Factor": "Diet high in sugar-sweetened beverages",
+    "age": "25 to 50",
+    "sex": "Female",
+    "Coef": 0.061,
+    "CI_Lower": -0.179,
+    "CI_Upper": 0.301,
+    "P_Value": 0.613
+  },
+  {
+    "Risk_Factor": "Diet high in trans fatty acids",
+    "age": "25 to 50",
+    "sex": "Female",
+    "Coef": -0.089,
+    "CI_Lower": -0.176,
+    "CI_Upper": -0.002,
+    "P_Value": 0.046
+  },
+  {
+    "Risk_Factor": "Diet low in calcium",
+    "age": "25 to 50",
+    "sex": "Female",
+    "Coef": -0.159,
+    "CI_Lower": -0.491,
+    "CI_Upper": 0.174,
+    "P_Value": 0.342
+  },
+  {
+    "Risk_Factor": "Diet low in fiber",
+    "age": "25 to 50",
+    "sex": "Female",
+    "Coef": 0.067,
+    "CI_Lower": -0.135,
+    "CI_Upper": 0.269,
+    "P_Value": 0.508
+  },
+  {
+    "Risk_Factor": "Diet low in fruits",
+    "age": "25 to 50",
+    "sex": "Female",
+    "Coef": -0.234,
+    "CI_Lower": -0.638,
+    "CI_Upper": 0.171,
+    "P_Value": 0.25
+  },
+  {
+    "Risk_Factor": "Diet low in legumes",
+    "age": "25 to 50",
+    "sex": "Female",
+    "Coef": 0.076,
+    "CI_Lower": -0.275,
+    "CI_Upper": 0.427,
+    "P_Value": 0.665
+  },
+  {
+    "Risk_Factor": "Diet low in milk",
+    "age": "25 to 50",
+    "sex": "Female",
+    "Coef": -0.351,
+    "CI_Lower": -0.655,
+    "CI_Upper": -0.046,
+    "P_Value": 0.025
+  },
+  {
+    "Risk_Factor": "Diet low in nuts and seeds",
+    "age": "25 to 50",
+    "sex": "Female",
+    "Coef": -0.0974,
+    "CI_Lower": -0.407,
+    "CI_Upper": 0.213,
+    "P_Value": 0.53
+  },
+  {
+    "Risk_Factor": "Diet low in seafood omega-3 fatty acids",
+    "age": "25 to 50",
+    "sex": "Female",
+    "Coef": 0.033,
+    "CI_Lower": -0.234,
+    "CI_Upper": 0.299,
+    "P_Value": 0.806
+  },
+  {
+    "Risk_Factor": "Diet low in vegetables",
+    "age": "25 to 50",
+    "sex": "Female",
+    "Coef": -0.0179,
+    "CI_Lower": -0.136,
+    "CI_Upper": 0.101,
+    "P_Value": 0.762
+  },
+  {
+    "Risk_Factor": "Diet low in whole grains",
+    "age": "25 to 50",
+    "sex": "Female",
+    "Coef": 0.281,
+    "CI_Lower": -0.174,
+    "CI_Upper": 0.735,
+    "P_Value": 0.22
+  },
+  {
+    "Risk_Factor": "High body-mass index",
+    "age": "25 to 50",
+    "sex": "Female",
+    "Coef": 0.777,
+    "CI_Lower": 0.171,
+    "CI_Upper": 1.383,
+    "P_Value": 0.013
+  },
+  {
+    "Risk_Factor": "High LDL cholesterol",
+    "age": "25 to 50",
+    "sex": "Female",
+    "Coef": 1.415,
+    "CI_Lower": 0.017,
+    "CI_Upper": 2.813,
+    "P_Value": 0.047
+  },
+  {
+    "Risk_Factor": "High fasting plasma glucose",
+    "age": "25 to 50",
+    "sex": "Female",
+    "Coef": 0.254,
+    "CI_Lower": -0.326,
+    "CI_Upper": 0.835,
+    "P_Value": 0.382
+  },
+  {
+    "Risk_Factor": "Socio-Development Index",
+    "age": "25 to 50",
+    "sex": "Female",
+    "Coef": 0.319,
+    "CI_Lower": -0.931,
+    "CI_Upper": 1.569,
+    "P_Value": 0.61
+  },
+  {
+    "Risk_Factor": "High alcohol use",
+    "age": "Above 50",
+    "sex": "Both",
+    "Coef": 0.403,
+    "CI_Lower": -0.12,
+    "CI_Upper": 0.927,
+    "P_Value": 0.127
+  },
+  {
+    "Risk_Factor": "Smoking",
+    "age": "Above 50",
+    "sex": "Both",
+    "Coef": 0.558,
+    "CI_Lower": 0.137,
+    "CI_Upper": 0.979,
+    "P_Value": 0.011
+  },
+  {
+    "Risk_Factor": "Low physical activity",
+    "age": "Above 50",
+    "sex": "Both",
+    "Coef": 1.027,
+    "CI_Lower": 0.267,
+    "CI_Upper": 1.788,
+    "P_Value": 0.009
+  },
+  {
+    "Risk_Factor": "Diet low in omega-6 polyunsaturated fatty acids",
+    "age": "Above 50",
+    "sex": "Both",
+    "Coef": -0.44,
+    "CI_Lower": -1.173,
+    "CI_Upper": 0.294,
+    "P_Value": 0.233
+  },
+  {
+    "Risk_Factor": "Diet high in processed meat",
+    "age": "Above 50",
+    "sex": "Both",
+    "Coef": 0.159,
+    "CI_Lower": -0.314,
+    "CI_Upper": 0.631,
+    "P_Value": 0.502
+  },
+  {
+    "Risk_Factor": "Diet high in red meat",
+    "age": "Above 50",
+    "sex": "Both",
+    "Coef": 0.671,
+    "CI_Lower": 0.247,
+    "CI_Upper": 1.095,
+    "P_Value": 0.003
+  },
+  {
+    "Risk_Factor": "Diet high in sodium",
+    "age": "Above 50",
+    "sex": "Both",
+    "Coef": -0.877,
+    "CI_Lower": -1.591,
+    "CI_Upper": -0.162,
+    "P_Value": 0.017
+  },
+  {
+    "Risk_Factor": "Diet high in sugar-sweetened beverages",
+    "age": "Above 50",
+    "sex": "Both",
+    "Coef": 0.601,
+    "CI_Lower": 0.232,
+    "CI_Upper": 0.97,
+    "P_Value": 0.002
+  },
+  {
+    "Risk_Factor": "Diet high in trans fatty acids",
+    "age": "Above 50",
+    "sex": "Both",
+    "Coef": -0.0384,
+    "CI_Lower": -0.161,
+    "CI_Upper": 0.084,
+    "P_Value": 0.531
+  },
+  {
+    "Risk_Factor": "Diet low in calcium",
+    "age": "Above 50",
+    "sex": "Both",
+    "Coef": -0.271,
+    "CI_Lower": -0.629,
+    "CI_Upper": 0.088,
+    "P_Value": 0.135
+  },
+  {
+    "Risk_Factor": "Diet low in fiber",
+    "age": "Above 50",
+    "sex": "Both",
+    "Coef": 0.034,
+    "CI_Lower": -0.179,
+    "CI_Upper": 0.247,
+    "P_Value": 0.749
+  },
+  {
+    "Risk_Factor": "Diet low in fruits",
+    "age": "Above 50",
+    "sex": "Both",
+    "Coef": -0.11,
+    "CI_Lower": -0.465,
+    "CI_Upper": 0.245,
+    "P_Value": 0.536
+  },
+  {
+    "Risk_Factor": "Diet low in legumes",
+    "age": "Above 50",
+    "sex": "Both",
+    "Coef": -0.000731,
+    "CI_Lower": -0.567,
+    "CI_Upper": 0.566,
+    "P_Value": 0.998
+  },
+  {
+    "Risk_Factor": "Diet low in milk",
+    "age": "Above 50",
+    "sex": "Both",
+    "Coef": -0.102,
+    "CI_Lower": -0.403,
+    "CI_Upper": 0.198,
+    "P_Value": 0.496
+  },
+  {
+    "Risk_Factor": "Diet low in nuts and seeds",
+    "age": "Above 50",
+    "sex": "Both",
+    "Coef": -0.119,
+    "CI_Lower": -0.466,
+    "CI_Upper": 0.228,
+    "P_Value": 0.493
+  },
+  {
+    "Risk_Factor": "Diet low in seafood omega-3 fatty acids",
+    "age": "Above 50",
+    "sex": "Both",
+    "Coef": 0.296,
+    "CI_Lower": -0.097,
+    "CI_Upper": 0.689,
+    "P_Value": 0.136
+  },
+  {
+    "Risk_Factor": "Diet low in vegetables",
+    "age": "Above 50",
+    "sex": "Both",
+    "Coef": -0.0642,
+    "CI_Lower": -0.216,
+    "CI_Upper": 0.088,
+    "P_Value": 0.4
+  },
+  {
+    "Risk_Factor": "Diet low in whole grains",
+    "age": "Above 50",
+    "sex": "Both",
+    "Coef": -0.805,
+    "CI_Lower": -1.538,
+    "CI_Upper": -0.072,
+    "P_Value": 0.032
+  },
+  {
+    "Risk_Factor": "High body-mass index",
+    "age": "Above 50",
+    "sex": "Both",
+    "Coef": 0.168,
+    "CI_Lower": -1.018,
+    "CI_Upper": 1.354,
+    "P_Value": 0.777
+  },
+  {
+    "Risk_Factor": "High LDL cholesterol",
+    "age": "Above 50",
+    "sex": "Both",
+    "Coef": 2.655,
+    "CI_Lower": 1.405,
+    "CI_Upper": 3.905,
+    "P_Value": 9.92e-05
+  },
+  {
+    "Risk_Factor": "High fasting plasma glucose",
+    "age": "Above 50",
+    "sex": "Both",
+    "Coef": 0.148,
+    "CI_Lower": -0.387,
+    "CI_Upper": 0.683,
+    "P_Value": 0.58
+  },
+  {
+    "Risk_Factor": "Socio-Development Index",
+    "age": "Above 50",
+    "sex": "Both",
+    "Coef": 3.027,
+    "CI_Lower": 1.812,
+    "CI_Upper": 4.241,
+    "P_Value": 8.92e-06
+  },
+  {
+    "Risk_Factor": "High alcohol use",
+    "age": "Above 50",
+    "sex": "Male",
+    "Coef": 0.635,
+    "CI_Lower": -0.043,
+    "CI_Upper": 1.313,
+    "P_Value": 0.066
+  },
+  {
+    "Risk_Factor": "Smoking",
+    "age": "Above 50",
+    "sex": "Male",
+    "Coef": 0.651,
+    "CI_Lower": 0.228,
+    "CI_Upper": 1.074,
+    "P_Value": 0.003
+  },
+  {
+    "Risk_Factor": "Low physical activity",
+    "age": "Above 50",
+    "sex": "Male",
+    "Coef": 0.63,
+    "CI_Lower": -0.089,
+    "CI_Upper": 1.349,
+    "P_Value": 0.084
+  },
+  {
+    "Risk_Factor": "Diet low in omega-6 polyunsaturated fatty acids",
+    "age": "Above 50",
+    "sex": "Male",
+    "Coef": -0.463,
+    "CI_Lower": -1.211,
+    "CI_Upper": 0.286,
+    "P_Value": 0.22
+  },
+  {
+    "Risk_Factor": "Diet high in processed meat",
+    "age": "Above 50",
+    "sex": "Male",
+    "Coef": 0.162,
+    "CI_Lower": -0.33,
+    "CI_Upper": 0.653,
+    "P_Value": 0.511
+  },
+  {
+    "Risk_Factor": "Diet high in red meat",
+    "age": "Above 50",
+    "sex": "Male",
+    "Coef": 0.693,
+    "CI_Lower": 0.244,
+    "CI_Upper": 1.142,
+    "P_Value": 0.003
+  },
+  {
+    "Risk_Factor": "Diet high in sodium",
+    "age": "Above 50",
+    "sex": "Male",
+    "Coef": -0.754,
+    "CI_Lower": -1.684,
+    "CI_Upper": 0.176,
+    "P_Value": 0.11
+  },
+  {
+    "Risk_Factor": "Diet high in sugar-sweetened beverages",
+    "age": "Above 50",
+    "sex": "Male",
+    "Coef": 0.602,
+    "CI_Lower": 0.216,
+    "CI_Upper": 0.988,
+    "P_Value": 0.003
+  },
+  {
+    "Risk_Factor": "Diet high in trans fatty acids",
+    "age": "Above 50",
+    "sex": "Male",
+    "Coef": -0.0428,
+    "CI_Lower": -0.174,
+    "CI_Upper": 0.089,
+    "P_Value": 0.515
+  },
+  {
+    "Risk_Factor": "Diet low in calcium",
+    "age": "Above 50",
+    "sex": "Male",
+    "Coef": -0.0856,
+    "CI_Lower": -0.292,
+    "CI_Upper": 0.12,
+    "P_Value": 0.407
+  },
+  {
+    "Risk_Factor": "Diet low in fiber",
+    "age": "Above 50",
+    "sex": "Male",
+    "Coef": 0.066,
+    "CI_Lower": -0.155,
+    "CI_Upper": 0.288,
+    "P_Value": 0.55
+  },
+  {
+    "Risk_Factor": "Diet low in fruits",
+    "age": "Above 50",
+    "sex": "Male",
+    "Coef": -0.0799,
+    "CI_Lower": -0.456,
+    "CI_Upper": 0.296,
+    "P_Value": 0.67
+  },
+  {
+    "Risk_Factor": "Diet low in legumes",
+    "age": "Above 50",
+    "sex": "Male",
+    "Coef": 0.002,
+    "CI_Lower": -0.625,
+    "CI_Upper": 0.628,
+    "P_Value": 0.995
+  },
+  {
+    "Risk_Factor": "Diet low in milk",
+    "age": "Above 50",
+    "sex": "Male",
+    "Coef": -0.0554,
+    "CI_Lower": -0.234,
+    "CI_Upper": 0.123,
+    "P_Value": 0.534
+  },
+  {
+    "Risk_Factor": "Diet low in nuts and seeds",
+    "age": "Above 50",
+    "sex": "Male",
+    "Coef": -0.0955,
+    "CI_Lower": -0.492,
+    "CI_Upper": 0.301,
+    "P_Value": 0.629
+  },
+  {
+    "Risk_Factor": "Diet low in seafood omega-3 fatty acids",
+    "age": "Above 50",
+    "sex": "Male",
+    "Coef": 0.318,
+    "CI_Lower": -0.072,
+    "CI_Upper": 0.708,
+    "P_Value": 0.108
+  },
+  {
+    "Risk_Factor": "Diet low in vegetables",
+    "age": "Above 50",
+    "sex": "Male",
+    "Coef": -0.0761,
+    "CI_Lower": -0.244,
+    "CI_Upper": 0.092,
+    "P_Value": 0.367
+  },
+  {
+    "Risk_Factor": "Diet low in whole grains",
+    "age": "Above 50",
+    "sex": "Male",
+    "Coef": -0.925,
+    "CI_Lower": -1.692,
+    "CI_Upper": -0.158,
+    "P_Value": 0.019
+  },
+  {
+    "Risk_Factor": "High body-mass index",
+    "age": "Above 50",
+    "sex": "Male",
+    "Coef": 0.37,
+    "CI_Lower": -0.649,
+    "CI_Upper": 1.388,
+    "P_Value": 0.468
+  },
+  {
+    "Risk_Factor": "High LDL cholesterol",
+    "age": "Above 50",
+    "sex": "Male",
+    "Coef": 2.552,
+    "CI_Lower": 1.341,
+    "CI_Upper": 3.762,
+    "P_Value": 0.00011
+  },
+  {
+    "Risk_Factor": "High fasting plasma glucose",
+    "age": "Above 50",
+    "sex": "Male",
+    "Coef": 0.182,
+    "CI_Lower": -0.414,
+    "CI_Upper": 0.778,
+    "P_Value": 0.541
+  },
+  {
+    "Risk_Factor": "Socio-Development Index",
+    "age": "Above 50",
+    "sex": "Male",
+    "Coef": 3.297,
+    "CI_Lower": 1.989,
+    "CI_Upper": 4.606,
+    "P_Value": 7.47e-06
+  },
+  {
+    "Risk_Factor": "High alcohol use",
+    "age": "Above 50",
+    "sex": "Female",
+    "Coef": 0.238,
+    "CI_Lower": -0.204,
+    "CI_Upper": 0.679,
+    "P_Value": 0.284
+  },
+  {
+    "Risk_Factor": "Smoking",
+    "age": "Above 50",
+    "sex": "Female",
+    "Coef": 0.217,
+    "CI_Lower": -0.08,
+    "CI_Upper": 0.513,
+    "P_Value": 0.148
+  },
+  {
+    "Risk_Factor": "Low physical activity",
+    "age": "Above 50",
+    "sex": "Female",
+    "Coef": 1.089,
+    "CI_Lower": 0.284,
+    "CI_Upper": 1.895,
+    "P_Value": 0.009
+  },
+  {
+    "Risk_Factor": "Diet low in omega-6 polyunsaturated fatty acids",
+    "age": "Above 50",
+    "sex": "Female",
+    "Coef": -0.405,
+    "CI_Lower": -1.138,
+    "CI_Upper": 0.328,
+    "P_Value": 0.271
+  },
+  {
+    "Risk_Factor": "Diet high in processed meat",
+    "age": "Above 50",
+    "sex": "Female",
+    "Coef": 0.111,
+    "CI_Lower": -0.358,
+    "CI_Upper": 0.58,
+    "P_Value": 0.637
+  },
+  {
+    "Risk_Factor": "Diet high in red meat",
+    "age": "Above 50",
+    "sex": "Female",
+    "Coef": 0.648,
+    "CI_Lower": 0.23,
+    "CI_Upper": 1.066,
+    "P_Value": 0.003
+  },
+  {
+    "Risk_Factor": "Diet high in sodium",
+    "age": "Above 50",
+    "sex": "Female",
+    "Coef": -0.736,
+    "CI_Lower": -1.329,
+    "CI_Upper": -0.143,
+    "P_Value": 0.016
+  },
+  {
+    "Risk_Factor": "Diet high in sugar-sweetened beverages",
+    "age": "Above 50",
+    "sex": "Female",
+    "Coef": 0.551,
+    "CI_Lower": 0.181,
+    "CI_Upper": 0.921,
+    "P_Value": 0.004
+  },
+  {
+    "Risk_Factor": "Diet high in trans fatty acids",
+    "age": "Above 50",
+    "sex": "Female",
+    "Coef": -0.0328,
+    "CI_Lower": -0.153,
+    "CI_Upper": 0.088,
+    "P_Value": 0.587
+  },
+  {
+    "Risk_Factor": "Diet low in calcium",
+    "age": "Above 50",
+    "sex": "Female",
+    "Coef": -0.447,
+    "CI_Lower": -0.82,
+    "CI_Upper": -0.075,
+    "P_Value": 0.02
+  },
+  {
+    "Risk_Factor": "Diet low in fiber",
+    "age": "Above 50",
+    "sex": "Female",
+    "Coef": -0.0179,
+    "CI_Lower": -0.229,
+    "CI_Upper": 0.193,
+    "P_Value": 0.865
+  },
+  {
+    "Risk_Factor": "Diet low in fruits",
+    "age": "Above 50",
+    "sex": "Female",
+    "Coef": -0.159,
+    "CI_Lower": -0.501,
+    "CI_Upper": 0.183,
+    "P_Value": 0.354
+  },
+  {
+    "Risk_Factor": "Diet low in legumes",
+    "age": "Above 50",
+    "sex": "Female",
+    "Coef": -0.000626,
+    "CI_Lower": -0.531,
+    "CI_Upper": 0.53,
+    "P_Value": 0.998
+  },
+  {
+    "Risk_Factor": "Diet low in milk",
+    "age": "Above 50",
+    "sex": "Female",
+    "Coef": -0.198,
+    "CI_Lower": -0.548,
+    "CI_Upper": 0.152,
+    "P_Value": 0.261
+  },
+  {
+    "Risk_Factor": "Diet low in nuts and seeds",
+    "age": "Above 50",
+    "sex": "Female",
+    "Coef": -0.147,
+    "CI_Lower": -0.456,
+    "CI_Upper": 0.162,
+    "P_Value": 0.344
+  },
+  {
+    "Risk_Factor": "Diet low in seafood omega-3 fatty acids",
+    "age": "Above 50",
+    "sex": "Female",
+    "Coef": 0.21,
+    "CI_Lower": -0.186,
+    "CI_Upper": 0.606,
+    "P_Value": 0.291
+  },
+  {
+    "Risk_Factor": "Diet low in vegetables",
+    "age": "Above 50",
+    "sex": "Female",
+    "Coef": -0.0608,
+    "CI_Lower": -0.204,
+    "CI_Upper": 0.082,
+    "P_Value": 0.396
+  },
+  {
+    "Risk_Factor": "Diet low in whole grains",
+    "age": "Above 50",
+    "sex": "Female",
+    "Coef": -0.681,
+    "CI_Lower": -1.392,
+    "CI_Upper": 0.031,
+    "P_Value": 0.06
+  },
+  {
+    "Risk_Factor": "High body-mass index",
+    "age": "Above 50",
+    "sex": "Female",
+    "Coef": 0.095,
+    "CI_Lower": -1.052,
+    "CI_Upper": 1.241,
+    "P_Value": 0.869
+  },
+  {
+    "Risk_Factor": "High LDL cholesterol",
+    "age": "Above 50",
+    "sex": "Female",
+    "Coef": 2.311,
+    "CI_Lower": 0.992,
+    "CI_Upper": 3.631,
+    "P_Value": 0.000988
+  },
+  {
+    "Risk_Factor": "High fasting plasma glucose",
+    "age": "Above 50",
+    "sex": "Female",
+    "Coef": 0.153,
+    "CI_Lower": -0.322,
+    "CI_Upper": 0.629,
+    "P_Value": 0.519
+  },
+  {
+    "Risk_Factor": "Socio-Development Index",
+    "age": "Above 50",
+    "sex": "Female",
+    "Coef": 2.779,
+    "CI_Lower": 1.589,
+    "CI_Upper": 3.969,
+    "P_Value": 2.53e-05
+  },
+  {
+    "Risk_Factor": "High alcohol use",
+    "age": "Age-standardized",
+    "sex": "Male",
+    "Coef": 0.721,
+    "CI_Lower": 0.17,
+    "CI_Upper": 1.271,
+    "P_Value": 0.012
+  },
+  {
+    "Risk_Factor": "Smoking",
+    "age": "Age-standardized",
+    "sex": "Male",
+    "Coef": 0.582,
+    "CI_Lower": 0.209,
+    "CI_Upper": 0.955,
+    "P_Value": 0.003
+  },
+  {
+    "Risk_Factor": "Low physical activity",
+    "age": "Age-standardized",
+    "sex": "Male",
+    "Coef": 0.454,
+    "CI_Lower": -0.332,
+    "CI_Upper": 1.24,
+    "P_Value": 0.251
+  },
+  {
+    "Risk_Factor": "Diet low in omega-6 polyunsaturated fatty acids",
+    "age": "Age-standardized",
+    "sex": "Male",
+    "Coef": -0.444,
+    "CI_Lower": -1.181,
+    "CI_Upper": 0.293,
+    "P_Value": 0.231
+  },
+  {
+    "Risk_Factor": "Diet high in processed meat",
+    "age": "Age-standardized",
+    "sex": "Male",
+    "Coef": -0.0053,
+    "CI_Lower": -0.431,
+    "CI_Upper": 0.42,
+    "P_Value": 0.98
+  },
+  {
+    "Risk_Factor": "Diet high in red meat",
+    "age": "Age-standardized",
+    "sex": "Male",
+    "Coef": 0.676,
+    "CI_Lower": 0.236,
+    "CI_Upper": 1.116,
+    "P_Value": 0.003
+  },
+  {
+    "Risk_Factor": "Diet high in sodium",
+    "age": "Age-standardized",
+    "sex": "Male",
+    "Coef": -0.706,
+    "CI_Lower": -1.423,
+    "CI_Upper": 0.011,
+    "P_Value": 0.053
+  },
+  {
+    "Risk_Factor": "Diet high in sugar-sweetened beverages",
+    "age": "Age-standardized",
+    "sex": "Male",
+    "Coef": 0.467,
+    "CI_Lower": 0.148,
+    "CI_Upper": 0.786,
+    "P_Value": 0.005
+  },
+  {
+    "Risk_Factor": "Diet high in trans fatty acids",
+    "age": "Age-standardized",
+    "sex": "Male",
+    "Coef": -0.0472,
+    "CI_Lower": -0.153,
+    "CI_Upper": 0.059,
+    "P_Value": 0.373
+  },
+  {
+    "Risk_Factor": "Diet low in calcium",
+    "age": "Age-standardized",
+    "sex": "Male",
+    "Coef": -0.0904,
+    "CI_Lower": -0.271,
+    "CI_Upper": 0.09,
+    "P_Value": 0.319
+  },
+  {
+    "Risk_Factor": "Diet low in fiber",
+    "age": "Age-standardized",
+    "sex": "Male",
+    "Coef": 0.041,
+    "CI_Lower": -0.175,
+    "CI_Upper": 0.258,
+    "P_Value": 0.704
+  },
+  {
+    "Risk_Factor": "Diet low in fruits",
+    "age": "Age-standardized",
+    "sex": "Male",
+    "Coef": -0.113,
+    "CI_Lower": -0.541,
+    "CI_Upper": 0.315,
+    "P_Value": 0.597
+  },
+  {
+    "Risk_Factor": "Diet low in legumes",
+    "age": "Age-standardized",
+    "sex": "Male",
+    "Coef": -0.0656,
+    "CI_Lower": -0.609,
+    "CI_Upper": 0.478,
+    "P_Value": 0.809
+  },
+  {
+    "Risk_Factor": "Diet low in milk",
+    "age": "Age-standardized",
+    "sex": "Male",
+    "Coef": -0.0362,
+    "CI_Lower": -0.214,
+    "CI_Upper": 0.142,
+    "P_Value": 0.685
+  },
+  {
+    "Risk_Factor": "Diet low in nuts and seeds",
+    "age": "Age-standardized",
+    "sex": "Male",
+    "Coef": -0.0727,
+    "CI_Lower": -0.452,
+    "CI_Upper": 0.307,
+    "P_Value": 0.701
+  },
+  {
+    "Risk_Factor": "Diet low in seafood omega-3 fatty acids",
+    "age": "Age-standardized",
+    "sex": "Male",
+    "Coef": 0.244,
+    "CI_Lower": -0.098,
+    "CI_Upper": 0.586,
+    "P_Value": 0.158
+  },
+  {
+    "Risk_Factor": "Diet low in vegetables",
+    "age": "Age-standardized",
+    "sex": "Male",
+    "Coef": -0.0873,
+    "CI_Lower": -0.243,
+    "CI_Upper": 0.068,
+    "P_Value": 0.264
+  },
+  {
+    "Risk_Factor": "Diet low in whole grains",
+    "age": "Age-standardized",
+    "sex": "Male",
+    "Coef": -0.981,
+    "CI_Lower": -1.592,
+    "CI_Upper": -0.371,
+    "P_Value": 0.002
+  },
+  {
+    "Risk_Factor": "High body-mass index",
+    "age": "Age-standardized",
+    "sex": "Male",
+    "Coef": 0.514,
+    "CI_Lower": -0.324,
+    "CI_Upper": 1.351,
+    "P_Value": 0.223
+  },
+  {
+    "Risk_Factor": "High LDL cholesterol",
+    "age": "Age-standardized",
+    "sex": "Male",
+    "Coef": 2.713,
+    "CI_Lower": 1.503,
+    "CI_Upper": 3.923,
+    "P_Value": 4.64e-05
+  },
+  {
+    "Risk_Factor": "High fasting plasma glucose",
+    "age": "Age-standardized",
+    "sex": "Male",
+    "Coef": 0.395,
+    "CI_Lower": -0.317,
+    "CI_Upper": 1.108,
+    "P_Value": 0.27
+  },
+  {
+    "Risk_Factor": "Socio-Development Index",
+    "age": "Age-standardized",
+    "sex": "Male",
+    "Coef": 2.955,
+    "CI_Lower": 1.746,
+    "CI_Upper": 4.164,
+    "P_Value": 1.23e-05
+  },
+  {
+    "Risk_Factor": "High alcohol use",
+    "age": "Age-standardized",
+    "sex": "Female",
+    "Coef": 0.333,
+    "CI_Lower": -0.023,
+    "CI_Upper": 0.688,
+    "P_Value": 0.066
+  },
+  {
+    "Risk_Factor": "Smoking",
+    "age": "Age-standardized",
+    "sex": "Female",
+    "Coef": 0.256,
+    "CI_Lower": 0.034,
+    "CI_Upper": 0.477,
+    "P_Value": 0.025
+  },
+  {
+    "Risk_Factor": "Low physical activity",
+    "age": "Age-standardized",
+    "sex": "Female",
+    "Coef": 0.776,
+    "CI_Lower": -0.087,
+    "CI_Upper": 1.64,
+    "P_Value": 0.077
+  },
+  {
+    "Risk_Factor": "Diet low in omega-6 polyunsaturated fatty acids",
+    "age": "Age-standardized",
+    "sex": "Female",
+    "Coef": -0.209,
+    "CI_Lower": -0.895,
+    "CI_Upper": 0.476,
+    "P_Value": 0.541
+  },
+  {
+    "Risk_Factor": "Diet high in processed meat",
+    "age": "Age-standardized",
+    "sex": "Female",
+    "Coef": -0.0631,
+    "CI_Lower": -0.418,
+    "CI_Upper": 0.292,
+    "P_Value": 0.722
+  },
+  {
+    "Risk_Factor": "Diet high in red meat",
+    "age": "Age-standardized",
+    "sex": "Female",
+    "Coef": 0.56,
+    "CI_Lower": 0.193,
+    "CI_Upper": 0.927,
+    "P_Value": 0.004
+  },
+  {
+    "Risk_Factor": "Diet high in sodium",
+    "age": "Age-standardized",
+    "sex": "Female",
+    "Coef": -0.534,
+    "CI_Lower": -0.952,
+    "CI_Upper": -0.116,
+    "P_Value": 0.014
+  },
+  {
+    "Risk_Factor": "Diet high in sugar-sweetened beverages",
+    "age": "Age-standardized",
+    "sex": "Female",
+    "Coef": 0.374,
+    "CI_Lower": 0.096,
+    "CI_Upper": 0.652,
+    "P_Value": 0.009
+  },
+  {
+    "Risk_Factor": "Diet high in trans fatty acids",
+    "age": "Age-standardized",
+    "sex": "Female",
+    "Coef": -0.036,
+    "CI_Lower": -0.121,
+    "CI_Upper": 0.049,
+    "P_Value": 0.398
+  },
+  {
+    "Risk_Factor": "Diet low in calcium",
+    "age": "Age-standardized",
+    "sex": "Female",
+    "Coef": -0.38,
+    "CI_Lower": -0.687,
+    "CI_Upper": -0.074,
+    "P_Value": 0.016
+  },
+  {
+    "Risk_Factor": "Diet low in fiber",
+    "age": "Age-standardized",
+    "sex": "Female",
+    "Coef": -0.0811,
+    "CI_Lower": -0.265,
+    "CI_Upper": 0.103,
+    "P_Value": 0.379
+  },
+  {
+    "Risk_Factor": "Diet low in fruits",
+    "age": "Age-standardized",
+    "sex": "Female",
+    "Coef": -0.292,
+    "CI_Lower": -0.633,
+    "CI_Upper": 0.05,
+    "P_Value": 0.093
+  },
+  {
+    "Risk_Factor": "Diet low in legumes",
+    "age": "Age-standardized",
+    "sex": "Female",
+    "Coef": -0.0237,
+    "CI_Lower": -0.419,
+    "CI_Upper": 0.371,
+    "P_Value": 0.904
+  },
+  {
+    "Risk_Factor": "Diet low in milk",
+    "age": "Age-standardized",
+    "sex": "Female",
+    "Coef": -0.174,
+    "CI_Lower": -0.478,
+    "CI_Upper": 0.129,
+    "P_Value": 0.252
+  },
+  {
+    "Risk_Factor": "Diet low in nuts and seeds",
+    "age": "Age-standardized",
+    "sex": "Female",
+    "Coef": -0.107,
+    "CI_Lower": -0.371,
+    "CI_Upper": 0.157,
+    "P_Value": 0.418
+  },
+  {
+    "Risk_Factor": "Diet low in seafood omega-3 fatty acids",
+    "age": "Age-standardized",
+    "sex": "Female",
+    "Coef": 0.121,
+    "CI_Lower": -0.171,
+    "CI_Upper": 0.413,
+    "P_Value": 0.409
+  },
+  {
+    "Risk_Factor": "Diet low in vegetables",
+    "age": "Age-standardized",
+    "sex": "Female",
+    "Coef": -0.0742,
+    "CI_Lower": -0.189,
+    "CI_Upper": 0.04,
+    "P_Value": 0.198
+  },
+  {
+    "Risk_Factor": "Diet low in whole grains",
+    "age": "Age-standardized",
+    "sex": "Female",
+    "Coef": -0.429,
+    "CI_Lower": -0.907,
+    "CI_Upper": 0.049,
+    "P_Value": 0.077
+  },
+  {
+    "Risk_Factor": "High body-mass index",
+    "age": "Age-standardized",
+    "sex": "Female",
+    "Coef": 0.14,
+    "CI_Lower": -0.597,
+    "CI_Upper": 0.877,
+    "P_Value": 0.703
+  },
+  {
+    "Risk_Factor": "High LDL cholesterol",
+    "age": "Age-standardized",
+    "sex": "Female",
+    "Coef": 1.977,
+    "CI_Lower": 0.714,
+    "CI_Upper": 3.24,
+    "P_Value": 0.003
+  },
+  {
+    "Risk_Factor": "High fasting plasma glucose",
+    "age": "Age-standardized",
+    "sex": "Female",
+    "Coef": 0.246,
+    "CI_Lower": -0.285,
+    "CI_Upper": 0.778,
+    "P_Value": 0.356
+  },
+  {
+    "Risk_Factor": "Socio-Development Index",
+    "age": "Age-standardized",
+    "sex": "Female",
+    "Coef": 1.949,
+    "CI_Lower": 0.884,
+    "CI_Upper": 3.015,
+    "P_Value": 0.000618
+  },
+  {
+    "Risk_Factor": "High alcohol use",
+    "age": "Under 25",
+    "sex": "Both",
+    "Coef": 0.102,
+    "CI_Lower": -0.389,
+    "CI_Upper": 0.593,
+    "P_Value": 0.678
+  },
+  {
+    "Risk_Factor": "High body-mass index",
+    "age": "Under 25",
+    "sex": "Both",
+    "Coef": -0.323,
+    "CI_Lower": -1.025,
+    "CI_Upper": 0.379,
+    "P_Value": 0.359
+  },
+  {
+    "Risk_Factor": "Socio-Development Index",
+    "age": "Under 25",
+    "sex": "Both",
+    "Coef": 1.49,
+    "CI_Lower": -0.015,
+    "CI_Upper": 2.996,
+    "P_Value": 0.052
+  },
+  {
+    "Risk_Factor": "High alcohol use",
+    "age": "Under 25",
+    "sex": "Male",
+    "Coef": 0.005,
+    "CI_Lower": -0.579,
+    "CI_Upper": 0.589,
+    "P_Value": 0.986
+  },
+  {
+    "Risk_Factor": "High body-mass index",
+    "age": "Under 25",
+    "sex": "Male",
+    "Coef": -0.294,
+    "CI_Lower": -1.03,
+    "CI_Upper": 0.442,
+    "P_Value": 0.425
+  },
+  {
+    "Risk_Factor": "Socio-Development Index",
+    "age": "Under 25",
+    "sex": "Male",
+    "Coef": 1.438,
+    "CI_Lower": -0.299,
+    "CI_Upper": 3.174,
+    "P_Value": 0.102
+  },
+  {
+    "Risk_Factor": "High alcohol use",
+    "age": "Under 25",
+    "sex": "Female",
+    "Coef": 0.196,
+    "CI_Lower": -0.227,
+    "CI_Upper": 0.618,
+    "P_Value": 0.355
+  },
+  {
+    "Risk_Factor": "High body-mass index",
+    "age": "Under 25",
+    "sex": "Female",
+    "Coef": -0.416,
+    "CI_Lower": -1.042,
+    "CI_Upper": 0.209,
+    "P_Value": 0.186
+  },
+  {
+    "Risk_Factor": "Socio-Development Index",
+    "age": "Under 25",
+    "sex": "Female",
+    "Coef": 1.541,
+    "CI_Lower": 0.202,
+    "CI_Upper": 2.881,
+    "P_Value": 0.025
+  }
+]

@@ -1,22 +1,31 @@
 #!/bin/bash
 
-# . .env
-docker compose stop
-EXIT_CODE="$?"
-if (( ${EXIT_CODE} != 0 )); then
-   exit 1
+set -euo pipefail
+
+MODE=${1:-dev}  # default to dev if nothing is passed
+
+# Compose files
+if [ "$MODE" == "prod" ]; then
+    COMPOSE_FILES="-f docker-compose.yaml -f docker-compose.prod.yml"
+else
+    COMPOSE_FILES="-f docker-compose.yaml"
 fi
 
-# I know the container should be responsible for the compilation
-# But this completes it much faster
+echo "--- GK> Stopping containers if needed"
+docker compose $COMPOSE_FILES stop || true
+
+# Compile Spring application if it exists
 if [ -d "./app-spring" ]; then
-   echo "--- GK> Compiling spring application"
-   pushd ./app-spring
-   ./mvnw clean package
-   popd
+    echo "--- GK> Compiling Spring application"
+    pushd ./app-spring
+    ./mvnw clean package
+    popd
 fi
 
-docker compose up \
-   --build \
-   --remove-orphans \
-   -d 
+echo "--- GK> Building images"
+docker compose $COMPOSE_FILES build --no-cache
+
+echo "--- GK> Bringing up containers without recreating existing ones"
+docker compose $COMPOSE_FILES up -d 
+
+echo "--- GK> Deployment finished"
