@@ -66,7 +66,7 @@ const DeliPredictions = () => {
 
 
     useEffect(() => {
-        fetch("/bias_assessment.json")
+        fetch("/src/assets/bias_assessment.json")
             .then((res) => res.json())
             .then((data) => {
                 const alerts = data?.["Alerts Consolidation"]?.["Bias Analysis Alerts"];
@@ -151,6 +151,10 @@ const DeliPredictions = () => {
 
 
         if (!type || !horizon || !cleanToken) return;
+        // Only fetch if type requires a country and a country is selected
+        if (["sf_intervention", "sf_target", "exposure_weighted"].includes(type) && !country) {
+            return; // skip fetch if country not selected
+        }
 
         const fetchData = async () => {
             setLoading(true);
@@ -954,6 +958,7 @@ const DeliPredictions = () => {
     ];
 
     const targetData = selectedTarget; // ✅ define it here at component level
+    const minTarget = Math.floor(targetData?.min_crc_reduction ?? 100);
     const maxTarget = Math.floor(targetData?.max_crc_reduction ?? 100);
     if (!isLoggedIn) return <h2>Unauthorized</h2>;
     return (
@@ -1064,12 +1069,16 @@ const DeliPredictions = () => {
                                 }% SEV reduction
                             </label>
                             <input
-                                type="number"
-                                min={minTarget}
-                                max={maxTarget}
-                                step="1"
-                                value={selectedTarget}
-                                onChange={(e) => setSelectedTarget(Number(e.target.value))}
+                                type="range"
+                                min={0}
+                                max={apiResponse.data[riskFactor].results.length - 1}
+                                step={1}
+                                value={baselineShift}
+                                onChange={(e) => {
+                                    setBaselineShift(Number(e.target.value));  // ✅ moves the red dot
+                                    // console.log("Baseline shift changed:", e.target.value);
+                                }}
+                                style={{ width: "100%", cursor: "pointer" }}
                             />
                         </div>
                     )}

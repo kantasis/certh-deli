@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect } from "react";
-import data from "../assets/aggregation_final_greece.json";
+import axios from "axios";
 import ReactECharts from "echarts-for-react";
-import { Modal, Button } from "react-bootstrap";
+import { Modal, Button, Spinner, Alert } from "react-bootstrap";
 import Comments from "./Comments.tsx";
 
 const AggregationAnalysis = () => {
@@ -10,13 +10,13 @@ const AggregationAnalysis = () => {
     const [selectedTimePeriod, setSelectedTimePeriod] = useState("");
     const [showModal, setShowModal] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
-
+    const [data, setData] = useState([]); // State to hold fetched data
+    const [loading, setLoading] = useState(true); // Loading state
+    const [error, setError] = useState(null); // Error state
     const rowsPerPage = 10;
 
-    const variables = [...new Set(data.map((d) => d.Variable))];
+    const variables = useMemo(() => [...new Set(data.map((d) => d.Variable))], [data]);
     const periodTypes = ["Week", "Month"];
-
-
 
     const pieChartVarsDetailed = ["Age", "BMI"];
     const pieChartVarsSimple = [
@@ -52,6 +52,31 @@ const AggregationAnalysis = () => {
         "CRC Risk Assessment Score (PYRAMID)",
     ];
 
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                setLoading(true); // Set loading to true when fetching starts
+                const response = await axios.get(
+                    "https://oncodir-datapi.catalink.eu/v1/data-fusion/extra/aggregation?country=Greece"
+                );
+                console.log(response.data); // Inspect the response to confirm its structure
+
+                // Access the results array and set it to data
+                if (Array.isArray(response.data.results)) {
+                    setData(response.data.results);
+                } else {
+                    setData([]);  // In case the results aren't an array, set it to an empty array
+                }
+                setLoading(false); // Set loading to false after data is fetched
+            } catch (error) {
+                setError("Error fetching data. Please try again later.");
+                setLoading(false); // Set loading to false even if there's an error
+                console.error("Error fetching data:", error);
+            }
+        };
+
+        fetchData();
+    }, [selectedVariable]); // Empty array ensures this effect runs only once when the component mounts
 
     // Time periods, only relevant for bar variables
     const timePeriods = useMemo(() => {
@@ -479,8 +504,40 @@ const AggregationAnalysis = () => {
 
                     <h5 className="">{selectedVariable}</h5>
                     {!selectedVariable && <p>Please select a variable from the dropdown menu on the left.</p>}
-
-                    {selectedVariable && filteredData.length > 0 && (
+                    {loading && (
+                        <div
+                            style={{
+                                position: "absolute",
+                                top: 0,
+                                left: 0,
+                                width: "100%",
+                                height: "100%",
+                                backgroundColor: "rgba(255, 255, 255, 0.7)",
+                                display: "flex",
+                                flexDirection: "column",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                zIndex: 10,
+                            }}
+                        >
+                            <div
+                                className="spinner-border text-primary"
+                                role="status"
+                                style={{ width: "3rem", height: "3rem" }}
+                            ></div>
+                            <div
+                                style={{
+                                    marginTop: "1rem",
+                                    fontWeight: "bold",
+                                    fontSize: "1rem",
+                                    color: "#333",
+                                }}
+                            >
+                                Loading...
+                            </div>
+                        </div>
+                    )}
+                    {selectedVariable && !loading && filteredData.length > 0 && (
                         <>
                             {chartType === "pie-detailed" && <ReactECharts key={selectedVariable} option={getPieOptions(true)} style={{ height: 400 }} />}
                             {chartType === "pie-simple" && <ReactECharts key={selectedVariable} option={getPieOptions(false)} style={{ height: 400 }} />}
