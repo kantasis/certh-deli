@@ -216,7 +216,7 @@ const NavbarMain: React.FC = () => {
 
                            {/* My Dashboards submenu */}
                            <li className="dropdown-submenu">
-                              <a className="dropdown-item" href="#">My Dashboards</a>
+                              <a className="dropdown-item" href="/my-dashboards">My Dashboards</a>
                               {dashboards.length > 0 && (
                                  <ul className="dropdown-menu">
                                     {dashboards.map((db) => (

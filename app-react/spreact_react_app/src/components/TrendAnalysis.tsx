@@ -1522,26 +1522,31 @@ const EuropeMap = () => {
         setAnalysisType(mappedType);
     }, [location.search]);
 
-
+    useEffect(() => {
+        if (analysisType === "Association Analysis") {
+            setSelectedRiskFactors([...DEFAULT_RISK_FACTORS]);
+        } else if (analysisType === "Trend Correlation") {
+            setSelectedRiskFactors([...DEFAULT_RISK_FACTORS2]);
+        } else {
+            setSelectedRiskFactors([]); // optional fallback
+        }
+    }, [analysisType]);
 
     const handleAnalysisTypeChange = (value: string) => {
-    setAnalysisType(value);
+        setAnalysisType(value);
 
-    const urlParam = analysisTypeToUrl[value] || "";
-    const params = new URLSearchParams(location.search);
 
-    if (urlParam) params.set("tab", urlParam); // <-- use "tab"
-    else params.delete("tab");
 
-    navigate(`${location.pathname}?${params.toString()}`, { replace: true });
+        // ✅ URL sync
+        const urlParam = analysisTypeToUrl[value] || "";
+        const params = new URLSearchParams(location.search);
 
-    // Reset dependent state
-    if (value === "Association Analysis") {
-        setSelectedRiskFactors([...DEFAULT_RISK_FACTORS]);
-    } else if (value === "Trend Correlation") {
-        setSelectedRiskFactors([...DEFAULT_RISK_FACTORS2]);
-    }
-};
+        if (urlParam) params.set("tab", urlParam);
+        else params.delete("tab");
+
+        navigate(`${location.pathname}?${params.toString()}`, { replace: true });
+    };
+
 
 
 
