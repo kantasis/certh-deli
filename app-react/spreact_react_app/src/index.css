@@ -23,14 +23,14 @@
    /* background-color: #ff0000; */
 }
 
-a {
+/* a {
    font-weight: 500;
    color: #646cff;
    text-decoration: inherit;
 }
 a:hover {
    color: #535bf2;
-}
+} */
 
 body {
    margin: 0;
@@ -45,7 +45,7 @@ h1 {
    line-height: 1.1;
 }
 
-button {
+/* button {
    border-radius: 8px;
    border: 1px solid transparent;
    padding: 0.6em 1.2em;
@@ -75,4 +75,146 @@ button:focus-visible {
    button {
       background-color: #f9f9f9;
    }
+} */
+
+    :root {
+  --bg: #ffffff; --muted: #f5f7fb; --text: #0f172a; --text-muted: #475569;
+  --brand: #0ea5a8; --brand-dark: #0b7f82; --ring: rgba(14,165,168,0.15); --border: #e5e7eb;
+}
+
+/* General nav styles */
+.navbar { background: var(--bg); border-bottom: 1px solid var(--border); }
+.navbar-brand { font-weight: 800; color: var(--brand-dark); display:flex; align-items:center; gap:10px; }
+.nav-link { color: var(--text); font-weight: 600; padding: 10px 14px; border-radius: 10px; }
+.nav-link:hover, .nav-link.active { background: var(--muted); box-shadow: 0 0 0 2px var(--ring) inset; cursor: pointer; }
+
+/* Base dropdown styles */
+.dropdown-menu {
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: 0 12px 32px rgba(2,6,23,0.08);
+  padding: 8px 0;
+  min-width: 310px;
+  display: none;
+  z-index: 1000;
+  
+}
+/* Profile / right-aligned dropdown */
+.dropdown-menu-end {
+  min-width: auto;  /* remove 310px min-width */
+  width: 150px;     /* or whatever width you want */
+}
+/* Show dropdown on hover */
+.nav-item.dropdown:hover > .dropdown-menu,
+.nav-item.dropdown.show > .dropdown-menu {
+  display: block;
+}
+
+/*
+|--------------------------------------------------------------------------
+| SUBMENU BASE (Default: flyout to the right)
+|--------------------------------------------------------------------------
+*/
+.dropdown-submenu {
+  position: relative;
+}
+
+.dropdown-submenu > .dropdown-menu {
+  top: 0;
+  left: 100%;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(8px);
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.dropdown-submenu:hover > .dropdown-menu {
+  opacity: 1;
+  transform: translateX(0);
+  pointer-events: auto;
+  display: block;
+}
+
+/*
+|--------------------------------------------------------------------------
+| SPECIAL CASE: Profile menu (dropdown-menu-end)
+| In Profile -> "My Dashboards" should drop DOWN instead of fly out
+|--------------------------------------------------------------------------
+*/
+.dropdown-menu-end .dropdown-submenu > .dropdown-menu {
+  top: 100%;      /* drop below parent */
+  left: 0;        /* aligned with parent */
+  transform: none;
+}
+
+/*
+|--------------------------------------------------------------------------
+| Dropdown item layout
+|--------------------------------------------------------------------------
+*/
+.dropdown-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 16px;
+  border-radius: 10px;
+  white-space: normal;
+}
+.dropdown-item:hover { background: var(--muted); }
+
+.dropdown-item .dot {
+  width: 8px;
+  height: 8px;
+  background: var(--brand);
+  border-radius: 50%;
+  margin-top: 6px;
+}
+
+.dropdown-item .label { font-weight: 600; }
+.dropdown-item .hint {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 2px;
+  line-height: 1.2;
+}
+
+/* Active states */
+.dropdown-item.active,
+.dropdown-item.active:hover {
+  background-color: #dee5f8 !important;
+  color: #186480 !important;
+}
+.navbar-nav > .nav-item > .nav-link .dot {
+  display: none !important;
+}
+
+/* Highlight active submenu item properly */
+.dropdown-item.active {
+  background-color: #186480;
+  color: white;
+}
+
+.dropdown-item.active:hover {
+  background-color: #186480;
+  color: white;
+}
+
+.user-info {
+  font-size: 14px;
+  color: var(--text);
+}
+
+.user-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--brand-dark);
+}
+.user-text {
+  white-space: nowrap;
 }

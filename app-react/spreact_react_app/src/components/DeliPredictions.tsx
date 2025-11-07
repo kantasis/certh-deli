@@ -5,7 +5,7 @@ import * as AuthService from "../services/auth.service.tsx";
 import Comments from "./Comments.tsx";
 import { Accordion, Modal, Button } from 'react-bootstrap';
 import SaveGraphButton from "./SaveGraphButton.tsx";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 
 const countries_strLst = [
@@ -37,6 +37,7 @@ const typeOptions = [
 ];
 
 const DeliPredictions = () => {
+    // Inside your component
 
     const [country, setCountry] = useState("Austria");
     const [horizon, setHorizon] = useState("5");
@@ -62,7 +63,14 @@ const DeliPredictions = () => {
 
     const [chartImageUrl, setChartImageUrl] = useState<string>("");
 
+    const location = useLocation();
+    const navigate = useNavigate();
 
+    useEffect(() => {
+        const params = new URLSearchParams(location.search);
+        const tab = params.get("tab") || "";
+        setType(tab);
+    }, [location.search]);
 
 
     useEffect(() => {
@@ -151,6 +159,10 @@ const DeliPredictions = () => {
 
 
         if (!type || !horizon || !cleanToken) return;
+        // Only fetch if type requires a country and a country is selected
+        if (["sf_intervention", "sf_target", "exposure_weighted"].includes(type) && !country) {
+            return; // skip fetch if country not selected
+        }
 
         const fetchData = async () => {
             setLoading(true);
@@ -854,7 +866,7 @@ const DeliPredictions = () => {
         }
     }, [type]);
 
-    const location = useLocation();
+    // const location = useLocation();
     const savedIframeUrl = location.state?.iframeUrl;
 
     const [pendingRiskFactor, setPendingRiskFactor] = useState<string | null>(null);
@@ -954,6 +966,7 @@ const DeliPredictions = () => {
     ];
 
     const targetData = selectedTarget; // ✅ define it here at component level
+    const minTarget = Math.floor(targetData?.min_crc_reduction ?? 100);
     const maxTarget = Math.floor(targetData?.max_crc_reduction ?? 100);
     if (!isLoggedIn) return <h2>Unauthorized</h2>;
     return (
@@ -969,10 +982,21 @@ const DeliPredictions = () => {
 
                                 <select
                                     className="form-control"
-                                    value={type || ""}  // ensures controlled component even if type is undefined
-                                    onChange={(e) => setType(e.target.value)}
-                                >
+                                    value={type || ""}  // controlled component
+                                    onChange={(e) => {
+                                        const value = e.target.value;
+                                        setType(value);  // update state
 
+                                        // Update URL query param without reloading
+                                        const params = new URLSearchParams(location.search);
+                                        if (value) {
+                                            params.set("tab", value);
+                                        } else {
+                                            params.delete("tab");
+                                        }
+                                        navigate(`${location.pathname}?${params.toString()}`, { replace: true });
+                                    }}
+                                >
                                     <option value="">Select type</option>
                                     {typeOptions.map((t) => (
                                         <option key={t.value} value={t.value}>
@@ -980,6 +1004,7 @@ const DeliPredictions = () => {
                                         </option>
                                     ))}
                                 </select>
+
 
                             </div>
 
@@ -1064,12 +1089,16 @@ const DeliPredictions = () => {
                                 }% SEV reduction
                             </label>
                             <input
-                                type="number"
-                                min={minTarget}
-                                max={maxTarget}
-                                step="1"
-                                value={selectedTarget}
-                                onChange={(e) => setSelectedTarget(Number(e.target.value))}
+                                type="range"
+                                min={0}
+                                max={apiResponse.data[riskFactor].results.length - 1}
+                                step={1}
+                                value={baselineShift}
+                                onChange={(e) => {
+                                    setBaselineShift(Number(e.target.value));  // ✅ moves the red dot
+                                    // console.log("Baseline shift changed:", e.target.value);
+                                }}
+                                style={{ width: "100%", cursor: "pointer" }}
                             />
                         </div>
                     )}
