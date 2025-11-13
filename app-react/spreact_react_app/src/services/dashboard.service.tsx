@@ -50,6 +50,7 @@ export const renameDashboard = async (dashboardId: number, name: string) => {
     await axios.patch(`${DASHBOARD_API_URL}/api/rename-dashboard/${dashboardId}`, {
         name,
     });
+    window.dispatchEvent(new Event("dashboardRenamed"));
 };
 
 export const saveGraphToDashboard = async (
@@ -58,7 +59,7 @@ export const saveGraphToDashboard = async (
     pageName: string,
     userId: string,
 ) => {
-  
+
     if (!userId) throw new Error("User not authenticated");
 
     const res = await axios.post(`${DASHBOARD_API_URL}/api/save-graph`, {

@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect } from "react";
 import axios from "axios";
 import ReactECharts from "echarts-for-react";
 import { Accordion, Modal, Button } from 'react-bootstrap';
+import { useSearchParams } from "react-router-dom";
 import Comments from "./Comments.tsx";
 
 const AggregationAnalysis = () => {
@@ -115,34 +116,45 @@ const AggregationAnalysis = () => {
 
 
     ];
-
-
-
+    // ✅ Get query params using React Router's hook
+    const [searchParams] = useSearchParams();
+    const country = searchParams.get("country");
+    console.log(country)
     useEffect(() => {
         const fetchData = async () => {
             try {
-                setLoading(true); // Set loading to true when fetching starts
-                const response = await axios.get(
-                    "https://oncodir-datapi.catalink.eu/v1/data-fusion/extra/aggregation?country=Greece"
-                );
-                console.log(response.data); // Inspect the response to confirm its structure
+                setLoading(true);
 
-                // Access the results array and set it to data
+                const response = await axios.get(
+                    `https://oncodir-datapi.catalink.eu/v1/data-fusion/extra/aggregation?country=${encodeURIComponent(country)}`
+                );
+
+                console.log(response.data);
+
                 if (Array.isArray(response.data.results)) {
                     setData(response.data.results);
                 } else {
-                    setData([]);  // In case the results aren't an array, set it to an empty array
+                    setData([]);
                 }
-                setLoading(false); // Set loading to false after data is fetched
             } catch (error) {
                 setError("Error fetching data. Please try again later.");
-                setLoading(false); // Set loading to false even if there's an error
                 console.error("Error fetching data:", error);
+            } finally {
+                setLoading(false);
             }
         };
 
         fetchData();
-    }, [selectedVariable]); // Empty array ensures this effect runs only once when the component mounts
+    }, [country]); // ✅ Re-run when variable or query param changes
+
+
+    useEffect(() => {
+        setSelectedVariable("");
+        setSelectedPeriodType("");
+        setSelectedTimePeriod("");
+        setCurrentPage(1);
+    }, [country]);
+    // Empty array ensures this effect runs only once when the component mounts
 
     // Time periods, only relevant for bar variables
     const timePeriods = useMemo(() => {
@@ -259,7 +271,7 @@ const AggregationAnalysis = () => {
 
             return matchesVariable && matchesPeriodType && matchesTimePeriod;
         });
-    }, [selectedVariable, selectedPeriodType, selectedTimePeriod]);
+    }, [selectedVariable, selectedPeriodType, selectedTimePeriod, country]);
 
 
 
@@ -655,7 +667,7 @@ const AggregationAnalysis = () => {
         <div className="container-fluid mt-3">
 
             <div className="row">
-                <h3>Aggregation Analysis</h3>
+                <h3>Aggregation Analysis - {country}</h3>
                 {/* Left Column */}
                 <div className="col-2">
                     <label className="fw-bold mb-1">Select Variable</label>
@@ -713,8 +725,11 @@ const AggregationAnalysis = () => {
                 <div className="col-8 mt-5">
 
                     <h5 className="">{selectedVariable}</h5>
-                    {!selectedVariable && <p>Through this tab, users can explore insights from <strong>LIP2</strong> (Greece).<br></br><br></br>
+                    {!selectedVariable && country == 'Greece' && <p>Through this tab, users can explore insights from <strong>LIT2</strong> (Greece).<br></br><br></br>
                         The <strong>Aggregation Analysis </strong>summarizes data from the NELI mobile app (T4.2),<br></br> providing population-level insights across <strong>Greece.</strong> <br></br><br></br>Please select a variable from the dropdown menu on the left.
+                    </p>}
+                    {!selectedVariable && country == 'Romania' && <p>Through this tab, users can explore insights from <strong>LIP1</strong> (Romania).<br></br><br></br>
+                        The <strong>Aggregation Analysis </strong>summarizes data from the NELI mobile app (T4.2),<br></br> providing population-level insights across <strong>Romania.</strong> <br></br><br></br>Please select a variable from the dropdown menu on the left.
                     </p>}
                     {loading && (
                         <div

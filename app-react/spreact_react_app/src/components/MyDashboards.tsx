@@ -57,7 +57,7 @@ const extractFiltersFromUrl = (url: string): Record<string, string[]> => {
     const filters: Record<string, string[]> = {};
     try {
         const parsedUrl = new URL(url);
-      
+
         const seen = new Set<string>();
 
         for (const [key] of parsedUrl.searchParams.entries()) {
@@ -257,6 +257,7 @@ const SavedDashboards: React.FC = () => {
         }
 
         navigate(`/${entry.page_name}`, { state: { iframeUrl: entry.saved_url } });
+
     };
 
     const confirmDelete = (id: number) => {
@@ -406,16 +407,65 @@ const SavedDashboards: React.FC = () => {
                             <Card className="mb-4 p-2 flex-fill">
 
                                 {srcUrl ? (
-                                    <iframe
-                                        src={srcUrl}
-                                        style={{ width: "100%", height: "280px", border: "none", pointerEvents: "none" }}
-                                        title={`dashboard-${d.id}`}
-                                    />
+                                    srcUrl.startsWith("data:image") ? (
+                                        // 🖼️ Base64 image preview
+                                        <div
+                                            style={{
+                                                width: "100%",
+                                                height: "280px",
+                                                display: "flex",
+                                                alignItems: "center",
+                                                justifyContent: "center",
+                                                backgroundColor: "#f8f9fa",
+                                                borderRadius: "8px",
+                                                overflow: "hidden",
+                                            }}
+                                        >
+                                            <img
+                                                src={srcUrl}
+                                                alt={`dashboard-${d.id}`}
+                                                style={{
+                                                    maxWidth: "100%",
+                                                    maxHeight: "100%",
+                                                    objectFit: "contain",
+                                                    borderRadius: "8px",
+                                                }}
+                                            />
+                                        </div>
+                                    ) : (
+                                        // 🌐 Iframe preview
+                                        <iframe
+                                            scrolling="no"
+                                            src={srcUrl}
+                                            style={{
+                                                width: "100%",
+                                                height: "280px",
+                                                border: "none",
+                                                borderRadius: "8px",
+                                                overflow: "hidden",
+                                                backgroundColor: "#f8f9fa",
+                                                pointerEvents: "none",
+                                            }}
+                                            title={`dashboard-${d.id}`}
+                                        />
+                                    )
                                 ) : (
-                                    <div className="bg-light text-center py-5 text-muted" style={{ height: "280px" }}>
+                                    // ❌ No preview placeholder
+                                    <div
+                                        className="bg-light text-center py-5 text-muted"
+                                        style={{
+                                            height: "280px",
+                                            borderRadius: "8px",
+                                            backgroundColor: "#f8f9fa",
+                                            display: "flex",
+                                            alignItems: "center",
+                                            justifyContent: "center",
+                                        }}
+                                    >
                                         No Preview
                                     </div>
                                 )}
+
                                 <Card.Body className="d-flex flex-column py-1">
                                     <Card.Text className="m-0 p-0" >
                                         <strong>Page: </strong>
@@ -685,7 +735,7 @@ const SavedDashboards: React.FC = () => {
             </div>
 
             <Modal show={modalShow} onHide={() => setModalShow(false)} centered>
-                <Modal.Header closeButton>
+                <Modal.Header className="bg-danger text-white" closeButton>
                     <Modal.Title>Confirm Delete</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>{modalMessage}</Modal.Body>

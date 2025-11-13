@@ -43,6 +43,37 @@ const NavbarMain: React.FC = () => {
       }
    }, []);
 
+
+   useEffect(() => {
+      const refreshDashboards = async () => {
+         const freshUser = AuthService.getCurrentUser();
+         if (!freshUser?.id) return;
+
+         try {
+            const updatedDashboards = await getUserDashboards(freshUser.id);
+            setDashboards(
+               updatedDashboards.map((d: any) => ({
+                  label: d.name,
+                  href: `/my-dashboards?dashboardId=${d.id}`,
+               }))
+            );
+         } catch (err) {
+            console.error("Failed to refresh dashboards:", err);
+         }
+      };
+
+      window.addEventListener("dashboardCreated", refreshDashboards);
+      window.addEventListener("dashboardDeleted", refreshDashboards);
+      window.addEventListener("dashboardRenamed", refreshDashboards);
+
+      return () => {
+         window.removeEventListener("dashboardCreated", refreshDashboards);
+         window.removeEventListener("dashboardDeleted", refreshDashboards);
+         window.addEventListener("dashboardRenamed", refreshDashboards);
+      };
+   }, []);
+
+
    const logout = () => {
       AuthService.logout();
       window.location.reload();
@@ -84,13 +115,29 @@ const NavbarMain: React.FC = () => {
          label: "Pilot Studies",
          subMenu: [
             {
-               label: "LIP2 (Greece) ▸",
+               // this submenu (flyout)
+               label: "LIP2 ▸",
+               hint: "Pilot-specific analyses and integrated summaries.",
                subMenu: [
-                  { label: "Aggregation Analysis", href: "/lip2-aggregation-analysis", hint: "Pilot-specific aggregation results." },
+                  { label: "LIT2 (Greece)", isSection: true },  // <-- visible inside submenu
+                  {
+                     label: "Aggregation Analysis (GR)",
+                     href: "/lip2-aggregation-analysis?country=Greece",
+                     hint: "Pilot-specific aggregation results (integrated analytics & policy relevance).",
+                  },
+                  { label: "LIP1 (Romania)", isSection: true },  // <-- visible inside submenu
+                  {
+                     label: "Aggregation Analysis (RO)",
+                     href: "/lip2-aggregation-analysis?country=Romania",
+                     hint: "Pilot-specific aggregation results (integrated analytics & policy relevance).",
+                  },
                ],
+
             },
          ],
       },
+
+
    ];
 
    const renderMenu = (menu: MenuItem, depth = 0) => {
@@ -250,12 +297,20 @@ const NavbarMain: React.FC = () => {
 
                )}
             </div>
+            {!isLoggedIn && (
+               <ul className="navbar-nav ms-auto">
+                  {/* ✅ LOGIN + REGISTER WHEN LOGGED OUT */}
+                  <li>
+                     <NavLink className="nav-link" to="/login">Login</NavLink>
+                  </li>
+                  <li>
+                     <NavLink className="nav-link" to="/register">Register</NavLink>
+                  </li>
+               </ul>
+            )}
          </div>
 
-         {/* Styles */}
-         <style>{`
-    
-      `}</style>
+
       </nav>
    );
 };

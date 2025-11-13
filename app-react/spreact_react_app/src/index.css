@@ -217,3 +217,16 @@ button:focus-visible {
 .user-text {
   white-space: nowrap;
 }
+
+.adaptive-tooltip {
+  max-width: 90vw !important;   /* grow horizontally but not off-screen */
+  min-width: 200px;
+  width: auto !important;
+
+  max-height: 50vh !important;  /* limit vertical height to half viewport */
+  overflow-y: auto;             /* scroll only if needed */
+
+  white-space: normal !important;
+  word-break: break-word;
+}
+
