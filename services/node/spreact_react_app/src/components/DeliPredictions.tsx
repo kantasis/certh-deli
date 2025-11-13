@@ -5,7 +5,7 @@ import * as AuthService from "../services/auth.service.tsx";
 import Comments from "./Comments.tsx";
 import { Accordion, Modal, Button } from 'react-bootstrap';
 import SaveGraphButton from "./SaveGraphButton.tsx";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 
 const countries_strLst = [
@@ -37,6 +37,7 @@ const typeOptions = [
 ];
 
 const DeliPredictions = () => {
+    // Inside your component
 
     const [country, setCountry] = useState("Austria");
     const [horizon, setHorizon] = useState("5");
@@ -62,7 +63,14 @@ const DeliPredictions = () => {
 
     const [chartImageUrl, setChartImageUrl] = useState<string>("");
 
+    const location = useLocation();
+    const navigate = useNavigate();
 
+    useEffect(() => {
+        const params = new URLSearchParams(location.search);
+        const tab = params.get("tab") || "";
+        setType(tab);
+    }, [location.search]);
 
 
     useEffect(() => {
@@ -858,7 +866,7 @@ const DeliPredictions = () => {
         }
     }, [type]);
 
-    const location = useLocation();
+    // const location = useLocation();
     const savedIframeUrl = location.state?.iframeUrl;
 
     const [pendingRiskFactor, setPendingRiskFactor] = useState<string | null>(null);
@@ -974,10 +982,21 @@ const DeliPredictions = () => {
 
                                 <select
                                     className="form-control"
-                                    value={type || ""}  // ensures controlled component even if type is undefined
-                                    onChange={(e) => setType(e.target.value)}
-                                >
+                                    value={type || ""}  // controlled component
+                                    onChange={(e) => {
+                                        const value = e.target.value;
+                                        setType(value);  // update state
 
+                                        // Update URL query param without reloading
+                                        const params = new URLSearchParams(location.search);
+                                        if (value) {
+                                            params.set("tab", value);
+                                        } else {
+                                            params.delete("tab");
+                                        }
+                                        navigate(`${location.pathname}?${params.toString()}`, { replace: true });
+                                    }}
+                                >
                                     <option value="">Select type</option>
                                     {typeOptions.map((t) => (
                                         <option key={t.value} value={t.value}>
@@ -985,6 +1004,7 @@ const DeliPredictions = () => {
                                         </option>
                                     ))}
                                 </select>
+
 
                             </div>
 

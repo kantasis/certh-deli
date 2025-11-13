@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect } from "react";
 import axios from "axios";
 import ReactECharts from "echarts-for-react";
 import { Accordion, Modal, Button } from 'react-bootstrap';
+import { useSearchParams } from "react-router-dom";
 import Comments from "./Comments.tsx";
 
 const AggregationAnalysis = () => {
@@ -88,9 +89,8 @@ const AggregationAnalysis = () => {
                     Daily intake was calculated as: quantity per day = daily frequency × portion size (quantity).<br></br><br></br>
 
                     <strong>Categorization of Daily Nutritional Intake</strong><br></br><br></br>
-                    To improve interpretability for non-clinical users, daily nutritional intake (quantity per day) was categorized into meaningful intake groups: Low, Standard, High consumption. Thresholds were defined with input from ONCODIR’s nutritional specialist partner, FoodOxys, guided by public dietary recommendations. Specifically, guidance from the World Health Organization (WHO)1, the Food and Agriculture Organization of the United Nations (FAO)2, the U.S. Department of Health and Human Services (HHS) and U.S. Department of Agriculture (USDA)3, the EAT–Lancet Commission4, the National Health Service (NHS)5, and Mediterranean dietary models such as the Global Mediterranean Health (GMH)6 index was used to establish quantitative cut-offs for each food group.<br></br>
+                    To improve interpretability for non-clinical users, daily nutritional intake (quantity per day) was categorized into meaningful intake groups: Low, Standard, High consumption. Thresholds were defined with input from ONCODIR’s nutritional specialist partner, FoodOxys, guided by public dietary recommendations. Specifically, guidance from the World Health Organization (WHO) [1], the Food and Agriculture Organization of the United Nations (FAO) [2], the U.S. Department of Health and Human Services (HHS) and U.S. Department of Agriculture (USDA) [3], the EAT–Lancet Commission [4], the National Health Service (NHS) [5], and Mediterranean dietary models such as the Global Mediterranean Health (GMH) [6] index was used to establish quantitative cut-offs for each food group.<br></br><br></br>
                     These references provide evidence-based intake ranges for major dietary components (e.g., fruits, vegetables, legumes, wholegrains, dairy, and animal products), ensuring that the categorization reflects both public health targets and current scientific consensus on diet quality and chronic disease prevention.<br></br><br></br>
-
                     <strong>Transformation of the monthly aggregation of non-static variables</strong><br></br><br></br>
                     Non-static variables collected bi-weekly were aggregated into monthly measurements to ensure a more comparable temporal scale. For each participant, the median value of each non-static variable within a given month was computed, as all non-static variables are categorical.
                     <br></br><br></br>
@@ -116,34 +116,45 @@ const AggregationAnalysis = () => {
 
 
     ];
-
-
-
+    // ✅ Get query params using React Router's hook
+    const [searchParams] = useSearchParams();
+    const country = searchParams.get("country");
+    console.log(country)
     useEffect(() => {
         const fetchData = async () => {
             try {
-                setLoading(true); // Set loading to true when fetching starts
-                const response = await axios.get(
-                    "https://oncodir-datapi.catalink.eu/v1/data-fusion/extra/aggregation?country=Greece"
-                );
-                console.log(response.data); // Inspect the response to confirm its structure
+                setLoading(true);
 
-                // Access the results array and set it to data
+                const response = await axios.get(
+                    `https://oncodir-datapi.catalink.eu/v1/data-fusion/extra/aggregation?country=${encodeURIComponent(country)}`
+                );
+
+                console.log(response.data);
+
                 if (Array.isArray(response.data.results)) {
                     setData(response.data.results);
                 } else {
-                    setData([]);  // In case the results aren't an array, set it to an empty array
+                    setData([]);
                 }
-                setLoading(false); // Set loading to false after data is fetched
             } catch (error) {
                 setError("Error fetching data. Please try again later.");
-                setLoading(false); // Set loading to false even if there's an error
                 console.error("Error fetching data:", error);
+            } finally {
+                setLoading(false);
             }
         };
 
         fetchData();
-    }, [selectedVariable]); // Empty array ensures this effect runs only once when the component mounts
+    }, [country]); // ✅ Re-run when variable or query param changes
+
+
+    useEffect(() => {
+        setSelectedVariable("");
+        setSelectedPeriodType("");
+        setSelectedTimePeriod("");
+        setCurrentPage(1);
+    }, [country]);
+    // Empty array ensures this effect runs only once when the component mounts
 
     // Time periods, only relevant for bar variables
     const timePeriods = useMemo(() => {
@@ -260,7 +271,7 @@ const AggregationAnalysis = () => {
 
             return matchesVariable && matchesPeriodType && matchesTimePeriod;
         });
-    }, [selectedVariable, selectedPeriodType, selectedTimePeriod]);
+    }, [selectedVariable, selectedPeriodType, selectedTimePeriod, country]);
 
 
 
@@ -376,96 +387,140 @@ const AggregationAnalysis = () => {
         "Relationship status": ["Living with a partner", "Living without a partner"],
         "Smoking status": ["I have never smoked", "I am a former smoker", "I am currently a regular smoker"]
     };
+
+
     const variableDescription: Record<string, string> = {
-        "Activity level":
-            "Participant’s self-reported activity level from the Health and Lifestyle questionnaire (NELI app). (Static variable – does not change over time.)",
+        "Activity level": "Participant’s self-reported activity level from the Health and Lifestyle questionnaire (NELI app).<br /><br />" +
+            "Options: Very active, Active, Somewhat active, Somewhat active, Not active at all/Sedentary.<br /><br />" +
+            "(Static variable – does not change over time.)",
 
-        Age:
-            "Age is calculated from the participant’s year of birth reported in the Health and Lifestyle questionnaire (NELI app) and the year the data was recorded. The resulting age is then categorized as: <40, 50–60, 70+. (Static variable – does not change over time.)",
+        "Age": "Age is calculated from the participant’s year of birth reported in the Health and Lifestyle questionnaire (NELI app) and the year the data was recorded.<br /><br />" +
+            "The resulting age is then categorized as: <40, 50-60, 70+.<br /><br />" +
+            "(Static variable – does not change over time.)",
 
-        BMI:
-            "Body Mass Index (BMI) is calculated from weight (kg) and height (cm) using the formula BMI = weight / (height/100)^2. Categorized as: Underweight (<18.5), Normal (18.5–24.9), Overweight (25–29.9), Obese (≥30). (Static variable – does not change over time.)",
+        "BMI": "Body Mass Index (BMI) is calculated from the participant’s weight (kg) and height (cm) reported in the Health and Lifestyle questionnaire (NELI app), using the formula: BMI = weight / (height/100)^2.<br /><br />" +
+            "The results are then categorized as follows: Underweight (<18.5), Normal (18.5–24.9), Overweight (25–29.9), Obese (≥30).<br /><br />" +
+            "(Static variable – does not change over time.)",
 
-        "Biological Sex":
-            "Participant’s biological sex from the Health and Lifestyle questionnaire (NELI app). (Static variable – does not change over time.)",
+        "Biological Sex": "Participant’s biological sex from the Health and Lifestyle questionnaire (NELI app).<br /><br />" +
+            "Options: Male, Female.<br /><br />" +
+            "(Static variable – does not change over time.)",
 
-        "CRC Family history":
-            "Participant’s self-reported CRC family history from the Health and Lifestyle questionnaire (NELI app). (Static variable – does not change over time.)",
+        "CRC Family history": "Participant’s self-reported CRC family history from the Health and Lifestyle questionnaire (NELI app).<br /><br />" +
+            "Options: Yes, No.<br /><br />" +
+            "(Static variable – does not change over time.)",
 
-        Diabetes:
-            "Participant’s self-reported diabetes from the Health and Lifestyle questionnaire (NELI app). (Static variable – does not change over time.)",
+        "Diabetes": "Participant’s self-reported diabetes from the Health and Lifestyle questionnaire (NELI app).<br /><br />" +
+            "Options: Yes, No.<br /><br />" +
+            "(Static variable – does not change over time.)",
 
-        Education:
-            "Participant’s self-reported education from the Health and Lifestyle questionnaire (NELI app). (Static variable – does not change over time.)",
+        "Education": "Participant’s self-reported education from the Health and Lifestyle questionnaire (NELI app).<br /><br />" +
+            "Options: Elementary education (Basic reading and writing), Secondary education or vocational training, University education (Bachelor’s degree), Postgraduate education (Master’s degree, PhD).<br /><br />" +
+            "(Static variable – does not change over time.)",
 
-        Employment:
-            "Participant’s self-reported employment status from the Socioeconomic factors questionnaire (NELI app). (Static variable – does not change over time.)",
+        "Employment": "Participant’s self-reported employment status from the Socioeconomic factors questionnaire (NELI app).<br /><br />" +
+            "Options: Still studying, Part-time/Seasonal employment, Full-time/Self-employed, Retired.<br /><br />" +
+            "(Static variable – does not change over time.)",
 
-        Ethnicity:
-            "Participant’s self-reported ethnicity from the Health and Lifestyle questionnaire (NELI app). (Static variable – does not change over time.)",
+        "Ethnicity": "Participant’s self-reported ethnicity from the Health and Lifestyle questionnaire (NELI app).<br /><br />" +
+            "Options: Caucasian, Asian, African, Hispanic/Latino, Jewish, Romani, Other.<br /><br />" +
+            "(Static variable – does not change over time.)",
 
-        Housing:
-            "Participant’s self-reported housing status from the Socioeconomic factors questionnaire (NELI app). (Static variable – does not change over time.)",
+        "Housing": "Participant’s self-reported housing status from the Socioeconomic factors questionnaire (NELI app).<br /><br />" +
+            "Options: Apartment, Duplex, Single-family house, Studio Apartment, Townhouse.<br /><br />" +
+            "(Static variable – does not change over time.)",
 
-        IBD:
-            "Participant’s self-reported Inflammatory Bowel Disease (IBD) from the Health and Lifestyle questionnaire (NELI app). (Static variable – does not change over time.)",
+        "IBD": "Participant’s self-reported Inflammatory Bowel Disease (IBD) from the Health and Lifestyle questionnaire (NELI app).<br /><br />" +
+            "Options: Yes, No.<br /><br />" +
+            "(Static variable – does not change over time.)",
 
-        "Metabolic syndrome":
-            "Participant’s self-reported metabolic syndrome from the Health and Lifestyle questionnaire (NELI app). (Static variable – does not change over time.)",
+        "Metabolic syndrome": "Participant’s self-reported metabolic syndrome from the Health and Lifestyle questionnaire (NELI app).<br /><br />" +
+            "Options: Yes, No.<br /><br />" +
+            "(Static variable – does not change over time.)",
 
-        Occupation:
-            "Participant’s self-reported occupational status from the Socioeconomic factors questionnaire (NELI app). (Static variable – does not change over time.)",
+        "Occupation": "Participant’s self-reported occupational status from the Socioeconomic factors questionnaire (NELI app).<br /><br />" +
+            "Options: Elementary occupation, Manager, Professional, Service and sales worker, Skilled agricultural, forestry and fishery worker, Technician and associate professional, Don't know / No answer.<br /><br />" +
+            "(Static variable – does not change over time.)",
 
-        Region:
-            "Participant’s self-reported region status from the Socioeconomic factors questionnaire (NELI app). (Static variable – does not change over time.)",
+        "Region": "Participant’s self-reported region status from the Socioeconomic factors questionnaire (NELI app).<br /><br />" +
+            "Options: Rural, Suburban, Urban.<br /><br />" +
+            "(Static variable – does not change over time.)",
 
-        "Relationship status":
-            "Participant’s self-reported relationship status from the Socioeconomic factors questionnaire (NELI app). (Static variable – does not change over time.)",
+        "Relationship status": "Participant’s self-reported relationship status from the Socioeconomic factors questionnaire (NELI app).<br /><br />" +
+            "Options: Living with a partner, Living without a partner.<br /><br />" +
+            "(Static variable – does not change over time.)",
 
-        "Smoking status":
-            "Participant’s self-reported smoking status from the Health and Lifestyle questionnaire (NELI app). (Static variable – does not change over time.)",
+        "Smoking status": "Participant’s self-reported smoking status from the Health and Lifestyle questionnaire (NELI app).<br /><br />" +
+            "Options: I have never smoked, I am a former smoker, I am currently a regular smoker.<br /><br />" +
+            "(Static variable – does not change over time.)",
 
-        "Alcohol grams/day":
-            "Alcohol consumption is calculated from self-reported wine, beer, and distilled drink intake. Quantity/day (grams) is based on frequency and portion size. Categorized by sex. (Non-static variable – measured biweekly.)",
+        "Alcohol grams/day": "Alcohol consumption is defined based on the self-reported wine, beer, and distilled frequency and portion size provided in the Food Consumption questionnaire (NELI app).<br /><br />" +
+            "Alcohol quantity/day (in grams) was calculated using the reported frequency and portion size, following the methodology described in the dictionary.<br /><br />" +
+            "Alcohol grams/day was then categorized according to sex: for Men, Standard (≤30 g/day) and High (>30 g/day); for Women, Standard (≤15 g/day) and High (>15 g/day).<br /><br />" +
+            "(Non-Static variable – measured biweekly.)",
 
-        "CRC Risk Assessment Score (PYRAMID)":
-            "CRC risk assessment score calculated using the PYRAMID risk assessment tool (ONCODIR project). (Non-static variable – measured biweekly.)",
+        "CRC Risk Assessment Score (PYRAMID)": "CRC risk assessment score is evaluated using PYRAMID, a risk assessment tool developed within the ONCODIR project, which takes multiple factors from NELI data as input to stratify participants into five risk levels (1–5) for CRC.<br /><br />" +
+            "(Non-Static variable – measured biweekly.)",
 
-        "Cheese grams/day":
-            "Cheese consumption calculated from frequency and portion size. Categorized into Low or Standard based on grams/day. (Non-static variable – measured biweekly.)",
+        "Cheese grams/day": "Cheese consumption is defined based on the self-reported cheese consumption frequency and portion size provided in the Food Consumption questionnaire (NELI app).<br /><br />" +
+            "Cheese quantity/day (in grams) was calculated using the reported frequency and portion size, following the methodology described in the dictionary.<br /><br />" +
+            "The resulting intake (grams/day) was then categorized as follows: Low (<60 g/day) and Standard (>= 60 g/day).<br /><br />" +
+            "(Non-Static variable – measured biweekly.)",
 
-        "Cooked vegetables grams/day":
-            "Cooked vegetable consumption calculated from frequency and portion size. Categorized into Low or Standard based on grams/day. (Non-static variable – measured biweekly.)",
+        "Cooked vegetables grams/day": "Cooked vegetable consumption is defined based on the self-reported cooked vegetable consumption frequency and portion size provided in the Food Consumption questionnaire (NELI app).<br /><br />" +
+            "Cooked vegetable quantity/day (in grams) was calculated using the reported frequency and portion size, following the methodology described in the dictionary.<br /><br />" +
+            "The resulting intake (grams/day) was then categorized as follows: Low (<150 g/day) and Standard (>= 150 g/day).<br /><br />" +
+            "(Non-Static variable – measured biweekly.)",
 
-        "Diary-plant based products mL/day":
-            "Milk or yogurt intake calculated from frequency and portion size. Categorized into Low or Standard based on mL/day. (Non-static variable – measured biweekly.)",
+        "Diary-plant based products mL/day": "Diary-plant based products consumption is defined based on the self-reported milk (ml) or yogurt frequency and portion size provided in the Food Consumption questionnaire (NELI app).<br /><br />" +
+            "Quantity/day (in mL) was calculated using the reported frequency and portion size, following the methodology described in the dictionary.<br /><br />" +
+            "The resulting intake (mL/day) was then categorized as follows: Low (<480 mL/day) and Standard (>= 480 mL/day).<br /><br />" +
+            "(Non-Static variable – measured biweekly.)",
 
-        "Fruits grams/day":
-            "Fruit consumption calculated from frequency and portion size. Categorized into Low or Standard based on grams/day. (Non-static variable – measured biweekly.)",
+        "Fruits grams/day": "Fruit consumption is defined based on the self-reported fruit consumption frequency and portion size provided in the Food Consumption questionnaire (NELI app).<br /><br />" +
+            "Fruit quantity/day (in grams) was calculated using the reported frequency and portion size, following the methodology described in the dictionary.<br /><br />" +
+            "The resulting intake (grams/day) was then categorized as follows: Low (<120 g/day) and Standard (>= 120 g/day).<br /><br />" +
+            "(Non-Static variable – measured biweekly.)",
 
-        "Large fatty fish grams/day":
-            "Large fatty fish consumption calculated from frequency and portion size. Categorized into Low or Standard based on grams/day. (Non-static variable – measured biweekly.)",
+        "Large fatty fish grams/day": "Large fatty fish consumption is defined based on the self-reported large fatty fish consumption frequency and portion size provided in the Food Consumption questionnaire (NELI app).<br /><br />" +
+            "Quantity/day (in grams) was calculated using the reported frequency and portion size, following the methodology described in the dictionary.<br /><br />" +
+            "The resulting intake (grams/day) was then categorized as follows: Low (<43 g/day) and Standard (>= 43 g/day).<br /><br />" +
+            "(Non-Static variable – measured biweekly.)",
 
-        "Legumes grams/day":
-            "Legume consumption calculated from frequency and portion size. Categorized into Low or Standard based on grams/day. (Non-static variable – measured biweekly.)",
+        "Legumes grams/day": "Legume consumption is defined based on the self-reported legume consumption frequency and portion size provided in the Food Consumption questionnaire (NELI app).<br /><br />" +
+            "Quantity/day (in grams) was calculated using the reported frequency and portion size, following the methodology described in the dictionary.<br /><br />" +
+            "The resulting intake (grams/day) was then categorized as follows: Low (<64 g/day) and Standard (>= 64 g/day).<br /><br />" +
+            "(Non-Static variable – measured biweekly.)",
 
-        "Nuts seeds grams/day":
-            "Nut consumption calculated from frequency and portion size. Categorized into Standard or High based on grams/day. (Non-static variable – measured biweekly.)",
+        "Nuts seeds grams/day": "Nuts consumption is defined based on the self-reported nuts consumption frequency and portion size provided in the Food Consumption questionnaire (NELI app).<br /><br />" +
+            "Quantity/day (in grams) was calculated using the reported frequency and portion size, following the methodology described in the dictionary.<br /><br />" +
+            "The resulting intake (grams/day) was then categorized as follows: Standard (<=30 g/day) and High (>30 g/day).<br /><br />" +
+            "(Non-Static variable – measured biweekly.)",
 
-        "Processed meat grams/day":
-            "Processed meat consumption calculated from frequency and portion size. Categorized into Standard or High based on grams/day. (Non-static variable – measured biweekly.)",
+        "Processed meat grams/day": "Processed meat consumption is defined based on the self-reported processed meat consumption frequency and portion size provided in the Food Consumption questionnaire (NELI app).<br /><br />" +
+            "Quantity/day (in grams) was calculated using the reported frequency and portion size, following the methodology described in the dictionary.<br /><br />" +
+            "The resulting intake (grams/day) was then categorized as follows: Standard (<=7 g/day) and High (>7 g/day).<br /><br />" +
+            "(Non-Static variable – measured biweekly.)",
 
-        "Raw vegetables grams/day":
-            "Raw vegetable consumption calculated from frequency and portion size. Categorized into Low or Standard based on grams/day. (Non-static variable – measured biweekly.)",
+        "Raw vegetables grams/day": "Raw vegetables consumption is defined based on the self-reported raw vegetables consumption frequency and portion size provided in the Food Consumption questionnaire (NELI app).<br /><br />" +
+            "Quantity/day (in grams) was calculated using the reported frequency and portion size, following the methodology described in the dictionary.<br /><br />" +
+            "The resulting intake (grams/day) was then categorized as follows: Low (<150 g/day) and Standard (>=150 g/day).<br /><br />" +
+            "(Non-Static variable – measured biweekly.)",
 
-        "Red meat grams/day":
-            "Red meat consumption calculated from frequency and portion size. Categorized into Standard or High based on grams/day. (Non-static variable – measured biweekly.)",
+        "Red meat grams/day": "Red meat consumption is defined based on the self-reported red meat consumption frequency and portion size provided in the Food Consumption questionnaire (NELI app).<br /><br />" +
+            "Quantity/day (in grams) was calculated using the reported frequency and portion size, following the methodology described in the dictionary.<br /><br />" +
+            "The resulting intake (grams/day) was then categorized as follows: Standard (<=21 g/day) and High (>21 g/day).<br /><br />" +
+            "(Non-Static variable – measured biweekly.)",
 
-        "Small fatty fish grams/day":
-            "Small fatty fish consumption calculated from frequency and portion size. Categorized into Low or Standard based on grams/day. (Non-static variable – measured biweekly.)",
+        "Small fatty fish grams/day": "Small fatty fish consumption is defined based on the self-reported small fatty fish consumption frequency and portion size provided in the Food Consumption questionnaire (NELI app).<br /><br />" +
+            "Quantity/day (in grams) was calculated using the reported frequency and portion size, following the methodology described in the dictionary.<br /><br />" +
+            "The resulting intake (grams/day) was then categorized as follows: Low (<43 g/day) and Standard (>=43 g/day).<br /><br />" +
+            "(Non-Static variable – measured biweekly.)",
 
-        "Wholegrains grams/day":
-            "Wholegrain or potato consumption calculated from frequency and portion size. Categorized into Low or Standard based on grams/day. (Non-static variable – measured biweekly.)"
+        "Wholegrains grams/day": "Wholegrain consumption is defined based on the self-reported wholegrain or potato consumption frequency and portion size provided in the Food Consumption questionnaire (NELI app).<br /><br />" +
+            "Quantity/day (in grams) was calculated using the reported frequency and portion size, following the methodology described in the dictionary.<br /><br />" +
+            "The resulting intake (grams/day) was then categorized as follows: Low (<350 g/day) and Standard (>=350 g/day).<br />" +
+            "(Non-Static variable – measured biweekly.)"
     };
 
 
@@ -612,7 +667,7 @@ const AggregationAnalysis = () => {
         <div className="container-fluid mt-3">
 
             <div className="row">
-                <h3>Aggregation Analysis</h3>
+                <h3>Aggregation Analysis - {country}</h3>
                 {/* Left Column */}
                 <div className="col-2">
                     <label className="fw-bold mb-1">Select Variable</label>
@@ -659,19 +714,22 @@ const AggregationAnalysis = () => {
                     {selectedVariable && (
                         <div className="mb-3">
                             <strong>Description</strong>
-                            <small className="form-control mt-1">
-                                {variableDescription[selectedVariable] ?? ""}
-                            </small>
+                            <small className="form-control mt-1"
+                                dangerouslySetInnerHTML={{ __html: variableDescription[selectedVariable] ?? "" }} />
                         </div>
                     )}
+
                 </div>
 
                 {/* Main Column */}
                 <div className="col-8 mt-5">
 
                     <h5 className="">{selectedVariable}</h5>
-                    {!selectedVariable && <p>Through this tab, users can explore insights from <strong>LIP2</strong> (Greece).<br></br><br></br>
+                    {!selectedVariable && country == 'Greece' && <p>Through this tab, users can explore insights from <strong>LIT2</strong> (Greece).<br></br><br></br>
                         The <strong>Aggregation Analysis </strong>summarizes data from the NELI mobile app (T4.2),<br></br> providing population-level insights across <strong>Greece.</strong> <br></br><br></br>Please select a variable from the dropdown menu on the left.
+                    </p>}
+                    {!selectedVariable && country == 'Romania' && <p>Through this tab, users can explore insights from <strong>LIP1</strong> (Romania).<br></br><br></br>
+                        The <strong>Aggregation Analysis </strong>summarizes data from the NELI mobile app (T4.2),<br></br> providing population-level insights across <strong>Romania.</strong> <br></br><br></br>Please select a variable from the dropdown menu on the left.
                     </p>}
                     {loading && (
                         <div

@@ -7,7 +7,7 @@ import { Form } from 'react-bootstrap';
 import Comments from "./Comments.tsx";
 import { Accordion } from 'react-bootstrap';
 import SaveGraphButton from "./SaveGraphButton.tsx";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import CountryFilter from "./CountryFilter.tsx";
 // import trendCorrelationStaticData from '../assets/trend_correlation.json';
 // import trendForecastingCRCData from '../assets/forecasting_CRC_new.json';
@@ -121,6 +121,12 @@ const EuropeMap = () => {
     // const [selectedAge_int, set_selectedAge] = useState(0);
 
     const [ceilYear_int, set_ceilYear_int] = useState(0);
+
+
+    const location = useLocation();
+    const navigate = useNavigate();
+
+
 
     useEffect(() => {
         const filteredOrderedData = selectedRiskFactors
@@ -452,7 +458,7 @@ const EuropeMap = () => {
         return paramsObj;
     };
 
-    const location = useLocation();
+    //const location = useLocation();
     const savedIframeUrl = location.state?.iframeUrl;
 
     useEffect(() => {
@@ -1494,7 +1500,55 @@ const EuropeMap = () => {
         "Forecasting CRC": accordionContentForecastingCRC_dictLst,
     };
 
+    const urlToAnalysisType: Record<string, string> = {
+        "trend-analysis": "Trend Analysis",
+        "association-analysis": "Association Analysis",
+        "trend-correlation": "Trend Correlation",
+        "forecasting-crc": "Forecasting CRC",
+    };
+
+    const analysisTypeToUrl: Record<string, string> = {
+        "Trend Analysis": "trend-analysis",
+        "Association Analysis": "association-analysis",
+        "Trend Correlation": "trend-correlation",
+        "Forecasting CRC": "forecasting-crc",
+    };
+
     const accordionContent_dictLst = accordionContentMap[analysisType] || [];
+    useEffect(() => {
+        const params = new URLSearchParams(location.search);
+        const tabParam = params.get("tab"); // <-- was "analysis"
+        const mappedType = tabParam ? urlToAnalysisType[tabParam] : "";
+        setAnalysisType(mappedType);
+    }, [location.search]);
+
+    useEffect(() => {
+        if (analysisType === "Association Analysis") {
+            setSelectedRiskFactors([...DEFAULT_RISK_FACTORS]);
+        } else if (analysisType === "Trend Correlation") {
+            setSelectedRiskFactors([...DEFAULT_RISK_FACTORS2]);
+        } else {
+            setSelectedRiskFactors([]); // optional fallback
+        }
+    }, [analysisType]);
+
+    const handleAnalysisTypeChange = (value: string) => {
+        setAnalysisType(value);
+
+
+
+        // ✅ URL sync
+        const urlParam = analysisTypeToUrl[value] || "";
+        const params = new URLSearchParams(location.search);
+
+        if (urlParam) params.set("tab", urlParam);
+        else params.delete("tab");
+
+        navigate(`${location.pathname}?${params.toString()}`, { replace: true });
+    };
+
+
+
 
     //    #5470c6
 
@@ -1514,24 +1568,14 @@ const EuropeMap = () => {
                             id="analysis-type"
                             className="form-control"
                             value={analysisType}
-                            onChange={(e) => {
-                                const selectedType = e.target.value;
-                                setAnalysisType(selectedType);
-                                if (selectedType === "Association Analysis") {
-                                    setSelectedRiskFactors([...DEFAULT_RISK_FACTORS || []]);
-                                } else if (selectedType === "Trend Correlation") {
-                                    setSelectedRiskFactors([...DEFAULT_RISK_FACTORS2 || []]);
-                                }
-                            }}
-
+                            onChange={(e) => handleAnalysisTypeChange(e.target.value)}
                         >
                             <option value="">-- Select --</option>
-                            <option value="Trend Analysis">Trend Analysis</option>
-                            <option value="Association Analysis">Association Analysis</option>
-                            <option value="Trend Correlation">Trend Correlation</option>
-                            <option value="Forecasting CRC">Forecasting CRC</option>
-
+                            {Object.keys(analysisTypeToUrl).map(type => (
+                                <option key={type} value={type}>{type}</option>
+                            ))}
                         </select>
+
                     </div>
                     {(analysisType === "Association Analysis" || analysisType === "Trend Correlation") && (
                         <Form className="mb-3" style={{ maxWidth: "400px" }}>

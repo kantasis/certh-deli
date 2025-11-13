@@ -50,6 +50,7 @@ export const renameDashboard = async (dashboardId: number, name: string) => {
     await axios.patch(`${DASHBOARD_API_URL}/api/rename-dashboard/${dashboardId}`, {
         name,
     });
+ window.dispatchEvent(new Event("dashboardRenamed"));
 };
 
 export const saveGraphToDashboard = async (
