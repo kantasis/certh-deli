@@ -6,7 +6,8 @@ import Comments from "./Comments.tsx";
 import { Accordion, Modal, Button } from 'react-bootstrap';
 import SaveGraphButton from "./SaveGraphButton.tsx";
 import { useLocation, useNavigate } from "react-router-dom";
-
+import biasData from "../assets/bias_assessment.json";
+import reportPdf from "../assets/Bias_Analysis_Report.pdf";
 
 const countries_strLst = [
     "Austria", "Belgium", "Bulgaria", "Croatia", "Cyprus", "Czechia",
@@ -73,18 +74,15 @@ const DeliPredictions = () => {
     }, [location.search]);
 
 
-    useEffect(() => {
-        fetch("/src/assets/bias_assessment.json")
-            .then((res) => res.json())
-            .then((data) => {
-                const alerts = data?.["Alerts Consolidation"]?.["Bias Analysis Alerts"];
-                if (Array.isArray(alerts)) {
-                    setBiasContent(alerts);
-                }
-            })
-            .catch((err) => console.error("Failed to load Bias Analysis Alerts:", err));
-    }, []);
 
+
+useEffect(() => {
+  const alerts =
+    biasData?.["Alerts Consolidation"]?.["Bias Analysis Alerts"];
+  if (Array.isArray(alerts)) {
+    setBiasContent(alerts);
+  }
+}, []);
 
 
     useEffect(() => {
@@ -836,7 +834,7 @@ const DeliPredictions = () => {
                     </Button>
 
                 </div>
-                <div className="mt-3 text-center">Click <a href="/src/assets/Bias_Analysis_Report.pdf" target="_blank">here</a> to download the Bias Analysis Report</div>
+                <div className="mt-3 text-center">Click <a href={reportPdf}  target="_blank">here</a> to download the Bias Analysis Report</div>
             </>
         );
     };
