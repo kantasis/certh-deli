@@ -167,6 +167,7 @@ button:focus-visible {
   background: var(--brand);
   border-radius: 50%;
   margin-top: 6px;
+  flex-shrink: 0;
 }
 
 .dropdown-item .label { font-weight: 600; }

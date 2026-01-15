@@ -4,6 +4,7 @@ import ReactECharts from "echarts-for-react";
 import { Accordion, Modal, Button } from 'react-bootstrap';
 import { useSearchParams } from "react-router-dom";
 import Comments from "./Comments.tsx";
+import { useLocation } from "react-router-dom";
 
 const AggregationAnalysis = () => {
     const [selectedVariable, setSelectedVariable] = useState("");
@@ -15,6 +16,8 @@ const AggregationAnalysis = () => {
     const [loading, setLoading] = useState(true); // Loading state
     const [error, setError] = useState(null); // Error state
     const rowsPerPage = 10;
+    const location = useLocation();
+    const isPopulationGroups = location.pathname.includes("lip2-population-groups");
 
     const variables = useMemo(() => [...new Set(data.map((d) => d.Variable))], [data]);
     const periodTypes = ["Week", "Month"];
@@ -115,6 +118,69 @@ const AggregationAnalysis = () => {
         },
 
 
+    ];
+
+    const populationGroupsData = [
+        {
+            cluster: 1,
+            variables: "Age_group: <40, BMI_group: Normal, Biological Sex: Female, Smoking status: I have never smoked, Activity level: Active, Education: Postgraduate education (Master’s degree, PhD), Employment: Full-time / Self-employed, Region: Urban, Occupation: Technician and associate professional",
+            score: 2
+        },
+        {
+            cluster: 2,
+            variables: "Age_group: <40, BMI_group: Overweight, Biological Sex: Male, Smoking status: I have never smoked, Activity level: Not active at all/Sedentary, Education: Postgraduate education (Master’s degree, PhD), Employment: Full-time / Self-employed, Region: Urban, Occupation: Professional",
+            score: 2
+        },
+        {
+            cluster: 3,
+            variables: "Age_group: <40, BMI_group: Normal, Biological Sex: Male, Smoking status: I am a former smoker, Activity level: Active, Education: University education (Bachelor’s degree), Employment: Full-time / Self-employed, Region: Urban, Occupation: Professional",
+            score: 2
+        },
+        {
+            cluster: 4,
+            variables: "Age_group: <40, BMI_group: Normal, Biological Sex: Both, Smoking status: I have never smoked, Activity level: Somewhat active, Education: Secondary education or vocational training, Employment: Full-time / Self-employed, Region: Urban, Occupation: Missing",
+            score: 2
+        },
+        {
+            cluster: 5,
+            variables: "Age_group: Not answered, BMI_group: Not answered, Biological Sex: Not answered, Smoking status: I am currently a regular smoker, Activity level: Somewhat active, Education: University education (Bachelor’s degree), Employment: Full-time / Self-employed, Region: Urban, Occupation: ['Missing','Professional']",
+            score: 2
+        },
+        {
+            cluster: 6,
+            variables: "Age_group: Not answered, BMI_group: Normal, Biological Sex: Female, Smoking status: I am a former smoker, Activity level: Active, Education: Elementary education (Basic reading and writing), Employment: Part-time / Seasonal employment, Region: Suburban, Occupation: Skilled agricultural, forestry and fishery worker",
+            score: 2
+        },
+        {
+            cluster: 7,
+            variables: "Age_group: <40, BMI_group: Overweight, Biological Sex: Male, Smoking status: I am a former smoker, Activity level: Active, Education: Secondary education or vocational training, Employment: Full-time / Self-employed, Region: Suburban, Occupation: Missing",
+            score: 2
+        },
+        {
+            cluster: 8,
+            variables: "Age_group: 40-70, BMI_group: Obese, Biological Sex: Male, Smoking status: I have never smoked, Activity level: Active, Education: Postgraduate education (Master’s degree, PhD), Employment: Full-time / Self-employed, Region: Suburban, Occupation: Professional",
+            score: 3
+        },
+        {
+            cluster: 9,
+            variables: "Age_group: Not answered, BMI_group: Not answered, Biological Sex: Not answered, Smoking status: I have never smoked, Activity level: Active, Education: Postgraduate education (Master’s degree, PhD), Employment: Full-time / Self-employed, Region: Urban, Occupation: Professional",
+            score: 3
+        },
+        {
+            cluster: 10,
+            variables: "Age_group: <40, BMI_group: Abnormal weight, Biological Sex: Female, Smoking status: I am a former smoker, Activity level: Somewhat active, Education: Secondary education or vocational training, Employment: Full-time / Self-employed, Region: Urban, Occupation: ['Don't know / No answer','Elementary occupation','Service and sales worker']",
+            score: 3
+        },
+        {
+            cluster: 11,
+            variables: "Age_group: 70+, BMI_group: Obese, Biological Sex: Female, Smoking status: I am currently a regular smoker, Activity level: Somewhat active, Education: Secondary education or vocational training, Employment: Retired, Region: Urban, Occupation: Don't know / No answer",
+            score: 4
+        },
+        {
+            cluster: 12,
+            variables: "Age_group: Not answered, BMI_group: Not answered, Biological Sex: Not answered, Smoking status: I have never smoked, Activity level: Somewhat active, Education: Postgraduate education (Master’s degree, PhD), Employment: Retired, Region: Suburban, Occupation: ['Don't know / No answer','Manager','Professional']",
+            score: 4
+        }
     ];
     // ✅ Get query params using React Router's hook
     const [searchParams] = useSearchParams();
@@ -271,7 +337,7 @@ const AggregationAnalysis = () => {
 
             return matchesVariable && matchesPeriodType && matchesTimePeriod;
         });
-    }, [selectedVariable, selectedPeriodType, selectedTimePeriod, country]);
+    }, [data, selectedVariable, selectedPeriodType, selectedTimePeriod, country]);
 
 
 
@@ -291,18 +357,23 @@ const AggregationAnalysis = () => {
             "Min",
             "Max",
         ];
-        const rows = filteredData.map((row) => [
-            row.Variable,
-            row.Category,
-            row.Frequency != null ? row.Frequency.toString() : "-",
-            row["Percentage of Total"] != null ? row["Percentage of Total"].toFixed(2).replace(".", ",") : "-",
-            row.Mean != null ? row.Mean.toFixed(2).replace(".", ",") : "-",
-            row.Median != null ? (typeof row.Median === "number" ? row.Median.toFixed(2).replace(".", ",") : row.Median) : "-",
-            row["Std. Dev."] != null ? row["Std. Dev."].toFixed(2).replace(".", ",") : "-",
-            row.Min != null ? row.Min.toString().replace(".", ",") : "-",
-            row.Max != null ? row.Max.toString().replace(".", ",") : "-",
-        ]);
 
+        const rows = filteredData.map((row) => {
+            // Mutate Category for "50-60" to "40-70"
+            const displayCategory = row.Category === "50-60" ? "40-70" : row.Category;
+
+            return [
+                row.Variable,
+                displayCategory, // Use mutated category here
+                row.Frequency != null ? row.Frequency.toString() : "-",
+                row["Percentage of Total"] != null ? row["Percentage of Total"].toFixed(2).replace(".", ",") : "-",
+                row.Mean != null ? row.Mean.toFixed(2).replace(".", ",") : "-",
+                row.Median != null ? (typeof row.Median === "number" ? row.Median.toFixed(2).replace(".", ",") : row.Median) : "-",
+                row["Std. Dev."] != null ? row["Std. Dev."].toFixed(2).replace(".", ",") : "-",
+                row.Min != null ? row.Min.toString().replace(".", ",") : "-",
+                row.Max != null ? row.Max.toString().replace(".", ",") : "-",
+            ];
+        });
 
         const csvArray = [header, ...rows].map((r) => r.map((cell) => `"${cell}"`).join(";"));
         const csvContent = "\uFEFF" + csvArray.join("\n");
@@ -314,6 +385,7 @@ const AggregationAnalysis = () => {
         link.click();
         document.body.removeChild(link);
     };
+
 
     const totalPages = Math.ceil(filteredData.length / rowsPerPage);
     const currentData = filteredData.slice(
@@ -395,7 +467,7 @@ const AggregationAnalysis = () => {
             "(Static variable – does not change over time.)",
 
         "Age": "Age is calculated from the participant’s year of birth reported in the Health and Lifestyle questionnaire (NELI app) and the year the data was recorded.<br /><br />" +
-            "The resulting age is then categorized as: <40, 50-60, 70+.<br /><br />" +
+            "The resulting age is then categorized as: <40, 40-70, 70+.<br /><br />" +
             "(Static variable – does not change over time.)",
 
         "BMI": "Body Mass Index (BMI) is calculated from the participant’s weight (kg) and height (cm) reported in the Health and Lifestyle questionnaire (NELI app), using the formula: BMI = weight / (height/100)^2.<br /><br />" +
@@ -538,65 +610,72 @@ const AggregationAnalysis = () => {
             dataSorted = [...filteredData]; // original order if no custom order
         }
 
-        const seriesData = dataSorted.map((d) => ({
-            name: d.Category,
-            value: d["Percentage of Total"] ?? 0,
-            itemStyle: { color: colorMapping[selectedVariable]?.[d.Category] || "#ccc" },
-        }));
+        const seriesData = dataSorted.map((d) => {
+            const displayName =
+                selectedVariable === "Age" && d.Category === "50-60" ? "40-70" : d.Category;
+
+            return {
+                name: displayName,        // displayed in tooltip & legend
+                value: d["Percentage of Total"] ?? 0,
+                itemStyle: { color: colorMapping[selectedVariable]?.[d.Category] || "#ccc" },
+                raw: d,                   // keep the original raw data (Category still "50-60")
+            };
+        });
+
 
         return {
             tooltip: {
                 trigger: "item",
                 formatter: (params) => {
-                    const row = filteredData.find((r) => r.Category === params.name);
-                    if (!row) return '';
-                    const pct = row["Percentage of Total"] != null ? row["Percentage of Total"].toFixed(2) : "-";
-                    const freq = row.Frequency != null ? row.Frequency : "-";
+                    const entry = params.data?.raw || {};
+
+                    // Show display name for 50-60 → 40-70
+                    const categoryDisplay =
+                        selectedVariable === "Age" && entry.Category === "50-60" ? "40-70" : entry.Category;
 
                     return `
-                    <strong>${params.name}</strong><br/>
-                    <strong>Percentage of Total:</strong> ${pct}%<br/>
-                    <strong>Frequency:</strong> ${freq}<br/>
-                    ${detailed
-                            ? `<strong>Mean:</strong> ${row.Mean?.toFixed(2) ?? "-"}<br/>
-                           <strong>Median:</strong> ${row.Median?.toFixed(2) ?? "-"}<br/>
-                           <strong>Std. Dev.:</strong> ${row["Std. Dev."]?.toFixed(2) ?? "-"}<br/>
-                           <strong>Min:</strong> ${row.Min?.toFixed(2) ?? "-"}<br/>
-                           <strong>Max:</strong> ${row.Max?.toFixed(2) ?? "-"}`
-                            : ""}
-                `;
+      <strong>${categoryDisplay}</strong><br/>
+      <strong>Frequency: </strong>${entry.Frequency ?? "-"}<br/>
+      <strong>Percentage of Total: </strong>${entry["Percentage of Total"]?.toFixed(2) ?? "-"}%<br/>
+      ${typeof entry.Mean === "number" ? `<strong>Mean: </strong>${entry.Mean.toFixed(2)}<br/>` : ""}
+      ${typeof entry.Median === "number" ? `<strong>Median: </strong>${entry.Median.toFixed(2)}<br/>` : ""}
+      ${typeof entry["Std. Dev."] === "number" ? `<strong>Std. Dev.: </strong>${entry["Std. Dev."].toFixed(2)}<br/>` : ""}
+      ${typeof entry.Min === "number" ? `<strong>Min: </strong>${entry.Min.toFixed(2)}<br/>` : ""}
+      ${typeof entry.Max === "number" ? `<strong>Max: </strong>${entry.Max.toFixed(2)}<br/>` : ""}
+    `;
                 },
             },
+
             legend: { top: 20 },
             series: [{ type: "pie", radius: "60%", data: seriesData }],
         };
     };
     // helper function to map your custom colors to bootstrap table classes
-    const getBootstrapRowClass = (variable: string, category: string) => {
-        const color = colorMapping[variable]?.[category];
+    // const getBootstrapRowClass = (variable: string, category: string) => {
+    //     const color = colorMapping[variable]?.[category];
 
-        switch (color) {
-            case "green":
-            case "#91cc75":
-            case "lightgreen":
-                return "table-success";
-            case "red":
-                return "table-danger";
-            case "yellow":
-            case "orange":
-            case "#fac858":
-                return "table-warning";
-            case "blue":
-            case "lightblue":
-            case "#5470c6":
-                return "table-info";
-            case "gray":
-            case "lightgray":
-                return "table-secondary";
-            default:
-                return "";
-        }
-    };
+    //     switch (color) {
+    //         case "green":
+    //         case "#91cc75":
+    //         case "lightgreen":
+    //             return "table-success";
+    //         case "red":
+    //             return "table-danger";
+    //         case "yellow":
+    //         case "orange":
+    //         case "#fac858":
+    //             return "table-warning";
+    //         case "blue":
+    //         case "lightblue":
+    //         case "#5470c6":
+    //             return "table-info";
+    //         case "gray":
+    //         case "lightgray":
+    //             return "table-secondary";
+    //         default:
+    //             return "";
+    //     }
+    // };
 
 
 
@@ -661,120 +740,185 @@ const AggregationAnalysis = () => {
             series
         };
     };
-
+    const riskScoreColor = {
+        2: "#28a745", // green
+        3: "#ffc107", // yellow
+        4: "#dc3545", // red
+    };
     return (
-
         <div className="container-fluid mt-3">
-
-            <div className="row">
+            {!isPopulationGroups && (
                 <h3>Aggregation Analysis - {country}</h3>
-                {/* Left Column */}
-                <div className="col-2">
-                    <label className="fw-bold mb-1">Select Variable</label>
-                    <select
-                        className="form-control mb-3"
-                        value={selectedVariable}
-                        onChange={(e) => setSelectedVariable(e.target.value)}
-                    >
-                        <option value="">-- Select Variable --</option>
-                        {variables.map((v, i) => (
-                            <option key={i} value={v}>{v}</option>
-                        ))}
-                    </select>
-
-                    {barChartVarsTime.includes(selectedVariable) && (
-                        <>
-                            <label><strong>Period Type</strong></label>
-                            <select
-                                className="form-control mb-3"
-                                value={selectedPeriodType}
-                                onChange={(e) => setSelectedPeriodType(e.target.value)}
-                            >
-                                <option value="">-- All Period Types --</option>
-                                {periodTypes.map((pt, i) => (
-                                    <option key={i} value={pt}>{pt}</option>
-                                ))}
-                            </select>
-
-                            <label><strong>Time Period</strong></label>
-                            <select
-                                className="form-control mb-3"
-                                value={selectedTimePeriod}
-                                onChange={(e) => setSelectedTimePeriod(e.target.value)}
-                                disabled={!selectedPeriodType}
-                            >
-                                <option value="">-- All Time Periods --</option>
-                                {timePeriods.map((tp, i) => (
-                                    <option key={i} value={tp}>{formatTimePeriod(tp)}</option>
-                                ))}
-                            </select>
-                        </>
-                    )}
-
-                    {selectedVariable && (
-                        <div className="mb-3">
-                            <strong>Description</strong>
-                            <small className="form-control mt-1"
-                                dangerouslySetInnerHTML={{ __html: variableDescription[selectedVariable] ?? "" }} />
-                        </div>
-                    )}
-
-                </div>
-
-                {/* Main Column */}
-                <div className="col-8 mt-5">
-
-                    <h5 className="">{selectedVariable}</h5>
-                    {!selectedVariable && country == 'Greece' && <p>Through this tab, users can explore insights from <strong>LIT2</strong> (Greece).<br></br><br></br>
-                        The <strong>Aggregation Analysis </strong>summarizes data from the NELI mobile app (T4.2),<br></br> providing population-level insights across <strong>Greece.</strong> <br></br><br></br>Please select a variable from the dropdown menu on the left.
-                    </p>}
-                    {!selectedVariable && country == 'Romania' && <p>Through this tab, users can explore insights from <strong>LIP1</strong> (Romania).<br></br><br></br>
-                        The <strong>Aggregation Analysis </strong>summarizes data from the NELI mobile app (T4.2),<br></br> providing population-level insights across <strong>Romania.</strong> <br></br><br></br>Please select a variable from the dropdown menu on the left.
-                    </p>}
-                    {loading && (
-                        <div
-                            style={{
-                                position: "absolute",
-                                top: 0,
-                                left: 0,
-                                width: "100%",
-                                height: "100%",
-                                backgroundColor: "rgba(255, 255, 255, 0.7)",
-                                display: "flex",
-                                flexDirection: "column",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                zIndex: 10,
-                            }}
+            )}
+            <div className="row">
+                {/* ================= LEFT COLUMN ================= */}
+                {!isPopulationGroups && (
+                    <div className="col-2">
+                        <label className="fw-bold mb-1">Select Variable</label>
+                        <select
+                            className="form-control mb-3"
+                            value={selectedVariable}
+                            onChange={(e) => setSelectedVariable(e.target.value)}
                         >
-                            <div
-                                className="spinner-border text-primary"
-                                role="status"
-                                style={{ width: "3rem", height: "3rem" }}
-                            ></div>
-                            <div
-                                style={{
-                                    marginTop: "1rem",
-                                    fontWeight: "bold",
-                                    fontSize: "1rem",
-                                    color: "#333",
-                                }}
-                            >
-                                Loading...
+                            <option value="">-- Select Variable --</option>
+                            {variables.map((v, i) => (
+                                <option key={i} value={v}>{v}</option>
+                            ))}
+                        </select>
+
+                        {barChartVarsTime.includes(selectedVariable) && (
+                            <>
+                                <label><strong>Period Type</strong></label>
+                                <select
+                                    className="form-control mb-3"
+                                    value={selectedPeriodType}
+                                    onChange={(e) => setSelectedPeriodType(e.target.value)}
+                                >
+                                    <option value="">-- All Period Types --</option>
+                                    {periodTypes.map((pt, i) => (
+                                        <option key={i} value={pt}>{pt}</option>
+                                    ))}
+                                </select>
+
+                                <label><strong>Time Period</strong></label>
+                                <select
+                                    className="form-control mb-3"
+                                    value={selectedTimePeriod}
+                                    onChange={(e) => setSelectedTimePeriod(e.target.value)}
+                                    disabled={!selectedPeriodType}
+                                >
+                                    <option value="">-- All Time Periods --</option>
+                                    {timePeriods.map((tp, i) => (
+                                        <option key={i} value={tp}>{formatTimePeriod(tp)}</option>
+                                    ))}
+                                </select>
+                            </>
+                        )}
+
+                        {selectedVariable && (
+                            <div className="mb-3">
+                                <strong>Description</strong>
+                                <small
+                                    className="form-control mt-1"
+                                    dangerouslySetInnerHTML={{
+                                        __html: variableDescription[selectedVariable] ?? "",
+                                    }}
+                                />
                             </div>
+                        )}
+                    </div>
+                )}
+
+                {/* ================= MAIN COLUMN ================= */}
+                {isPopulationGroups && (
+                    <div className={isPopulationGroups ? "col-2 mt-5" : "col-2 mt-5"}></div>
+                )}
+                <div className={isPopulationGroups ? "col-8 mt-5" : "col-8 mt-5"}>
+                    {isPopulationGroups && (
+                        <h3 className="mb-5">CRC Incidence Population Groups</h3>
+                    )}
+                    {/* 👉 POPULATION GROUPS TABLE */}
+                    {isPopulationGroups && (
+
+                        <div className="table-responsive">
+                            <table className="table table-bordered table-striped align-middle">
+                                <thead className="table-light">
+                                    <tr>
+                                        <th>Color</th>
+                                        <th>Cluster</th>
+                                        <th>Variables</th>
+                                        <th>CRC Risk Score</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {populationGroupsData.map((row) => (
+                                        <tr key={row.cluster}>
+                                            <td className="text-center">
+                                                <span
+                                                    style={{
+                                                        display: "inline-block",
+                                                        width: "14px",
+                                                        height: "14px",
+                                                        borderRadius: "50%",
+                                                        backgroundColor: riskScoreColor[row.score] || "#ccc",
+                                                    }}
+                                                    title={`Risk Score ${row.score}`}
+                                                />
+                                            </td>
+                                            <td>{row.cluster}</td>
+                                            <td style={{ whiteSpace: "pre-wrap" }}>{row.variables}</td>
+                                            <td>{row.score}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
                         </div>
                     )}
-                    {selectedVariable && !loading && filteredData.length > 0 && (
-                        <>
-                            {chartType === "pie-detailed" && <ReactECharts key={selectedVariable} option={getPieOptions(true)} style={{ height: 400 }} />}
-                            {chartType === "pie-simple" && <ReactECharts key={selectedVariable} option={getPieOptions(false)} style={{ height: 400 }} />}
-                            {chartType === "bar" && <ReactECharts key={selectedVariable} option={getBarOptions()} style={{ height: 400 }} />}
 
-                            <Button className="mt-3" onClick={() => setShowModal(true)}>View Table</Button>
+
+                    {/* 👉 DEFAULT TEXT */}
+                    {!isPopulationGroups && !selectedVariable && country === "Greece" && (
+                        <p>
+                            Through this tab, users can explore insights from <strong>LIT2</strong> (Greece).
+                            <br /><br />
+                            The <strong>Aggregation Analysis</strong> summarizes data from the NELI mobile app (T4.2),
+                            providing population-level insights across <strong>Greece</strong>.
+                            <br /><br />
+                            Please select a variable from the dropdown menu on the left.
+                        </p>
+                    )}
+
+                    {!isPopulationGroups && !selectedVariable && country === "Romania" && (
+                        <p>
+                            Through this tab, users can explore insights from <strong>LIP1</strong> (Romania).
+                            <br /><br />
+                            The <strong>Aggregation Analysis</strong> summarizes data from the NELI mobile app (T4.2),
+                            providing population-level insights across <strong>Romania</strong>.
+                            <br /><br />
+                            Please select a variable from the dropdown menu on the left.
+                        </p>
+                    )}
+
+                    {/* 👉 LOADING */}
+                    {loading && (
+                        <div className="text-center mt-5">
+                            <div className="spinner-border text-primary" />
+                            <div className="fw-bold mt-2">Loading...</div>
+                        </div>
+                    )}
+
+                    {/* 👉 CHARTS */}
+                    {!isPopulationGroups && selectedVariable && !loading && filteredData.length > 0 && (
+                       
+                        <>
+                         <h3>{selectedVariable}</h3>
+                            {chartType === "pie-detailed" && (
+                                <ReactECharts
+                                    key={`${selectedVariable}-pie-detailed`}
+                                    option={getPieOptions(true)}
+                                    style={{ height: 400 }}
+                                />
+                            )}
+
+                            {chartType === "pie-simple" && (
+                                <ReactECharts
+                                    key={`${selectedVariable}-pie-simple`}
+                                    option={getPieOptions(false)}
+                                    style={{ height: 400 }}
+                                />
+                            )}
+
+                            {chartType === "bar" && (
+                                <ReactECharts
+                                    key={`${selectedVariable}-bar`}
+                                    option={getBarOptions()}
+                                    style={{ height: 400 }}
+                                />
+
+                            )}<Button className="mt-3" onClick={() => setShowModal(true)}>View Table</Button>
 
                             <Modal show={showModal} onHide={() => setShowModal(false)} size="xl" centered>
-                                <Modal.Header closeButton>
-                                    <Modal.Title>{selectedVariable}</Modal.Title>
+                                <Modal.Header closeButton> <Modal.Title>{selectedVariable}</Modal.Title>
                                     <Button variant="success" className="ms-auto" onClick={handleDownloadCSV}>Download CSV</Button>
                                 </Modal.Header>
                                 <Modal.Body style={{ maxHeight: "70vh", overflowY: "auto" }}>
@@ -783,21 +927,8 @@ const AggregationAnalysis = () => {
                                             <thead className="bg-gray-100">
                                                 <tr>
                                                     <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700 uppercase tracking-wide">Color</th>
-                                                    {[
-                                                        "Variable",
-                                                        "Category",
-                                                        "Frequency",
-                                                        "% of Total",
-                                                        "Mean",
-                                                        "Median",
-                                                        "Std. Dev.",
-                                                        "Min",
-                                                        "Max",
-                                                    ].map((header, i) => (
-                                                        <th
-                                                            key={i}
-                                                            className="px-4 py-2 text-left text-sm font-semibold text-gray-700 uppercase tracking-wide"
-                                                        >
+                                                    {["Variable", "Category", "Frequency", "% of Total", "Mean", "Median", "Std. Dev.", "Min", "Max"].map((header, i) => (
+                                                        <th key={i} className="px-4 py-2 text-left text-sm font-semibold text-gray-700 uppercase tracking-wide">
                                                             {header}
                                                         </th>
                                                     ))}
@@ -807,6 +938,9 @@ const AggregationAnalysis = () => {
                                                 {currentData.map((row, idx) => {
                                                     const color = colorMapping[row.Variable]?.[row.Category] || "#ccc";
 
+                                                    // Mutate Category for "50-60" to "40-70"
+                                                    const displayCategory = row.Category === "50-60" ? "40-70" : row.Category;
+
                                                     return (
                                                         <tr key={idx} style={{ height: "50px" }}>
                                                             <td className="px-4 py-2 text-center">
@@ -815,13 +949,13 @@ const AggregationAnalysis = () => {
                                                                         width: "16px",
                                                                         height: "16px",
                                                                         borderRadius: "50%",
-                                                                        backgroundColor: colorMapping[row.Variable]?.[row.Category] || "#ccc",
+                                                                        backgroundColor: color,
                                                                         display: "inline-block",
                                                                     }}
                                                                 />
                                                             </td>
                                                             <td className="px-4 py-2">{row.Variable}</td>
-                                                            <td className="px-4 py-2">{row.Category}</td>
+                                                            <td className="px-4 py-2">{displayCategory}</td> {/* Display the mutated category */}
                                                             <td className="px-4 py-2">{row.Frequency ?? "-"}</td>
                                                             <td className="px-4 py-2">{row["Percentage of Total"]?.toFixed(2) ?? "-"}</td>
                                                             <td className="px-4 py-2">{row.Mean?.toFixed(2) ?? "-"}</td>
@@ -834,52 +968,34 @@ const AggregationAnalysis = () => {
                                                 })}
                                             </tbody>
                                         </table>
-
                                     </div>
                                 </Modal.Body>
 
-                                <Modal.Footer>
-                                    <Button disabled={currentPage === 1} onClick={() => setCurrentPage((p) => p - 1)}>Previous</Button>
-                                    <span className="mx-2">Page {currentPage} of {totalPages}</span>
+                                <Modal.Footer> <Button disabled={currentPage === 1} onClick={() => setCurrentPage((p) => p - 1)}>Previous</Button> <span className="mx-2">Page {currentPage} of {totalPages}</span>
                                     <Button disabled={currentPage === totalPages} onClick={() => setCurrentPage((p) => p + 1)}>Next</Button>
                                 </Modal.Footer>
                             </Modal>
                         </>
                     )}
                 </div>
-                {/* Right column */}
-                <div className="col-sm-2">
-                    {/* <h5>Glossary</h5> */}
+
+                {/* ================= RIGHT COLUMN ================= */}
+                <div className={isPopulationGroups ? "col-2" : "col-2 mt-5"}  style={{margin: "130px 0px 0px 0px" }} >
                     <Accordion defaultActiveKey="-1">
-                        {accordionContent_dictLst.map((accordionContent_dict, itemIndex_int) => {
-
-                            return (
-                                <Accordion.Item
-                                    eventKey={itemIndex_int.toString()}
-                                    key={itemIndex_int}
-                                >
-                                    <Accordion.Header>
-
-                                        {accordionContent_dict.title}
-                                    </Accordion.Header>
-
-
-                                    <Accordion.Body className="text-start" style={{ height: "340px", overflow: "scroll" }}>
-                                        {accordionContent_dict.content}
-                                    </Accordion.Body>
-
-                                </Accordion.Item>
-                            );
-                        })}
+                        {accordionContent_dictLst.map((item, idx) => (
+                            <Accordion.Item eventKey={idx.toString()} key={idx}>
+                                <Accordion.Header>{item.title}</Accordion.Header>
+                                <Accordion.Body className="text-start" style={{ height: "340px", overflow: "scroll" }}>
+                                    {item.content}
+                                </Accordion.Body>
+                            </Accordion.Item>
+                        ))}
                     </Accordion>
 
                     <Comments />
-
                 </div>
-
             </div>
         </div>
     );
-};
-
+}
 export default AggregationAnalysis;

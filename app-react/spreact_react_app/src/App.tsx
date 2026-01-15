@@ -52,6 +52,7 @@ const App: React.FC = () => {
                <Route path="/crc-trend-and-association-analysis" element={< TrendAnalysis />} />
                <Route path="/comments" element={< PreviousComments />} />
                <Route path="/lip2-aggregation-analysis" element={<LIP2 />} />
+               <Route path="/lip2-population-groups" element={<LIP2 />} />
                {/* <Route path="/nutritionPanel" element={<NutritionPanel />} />
                <Route path="/lifestylePanel" element={<LifestylePanel />} /> */}
                <Route path="/crc-policy-data" element={<PolicyPanel />} />

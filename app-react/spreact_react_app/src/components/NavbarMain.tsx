@@ -20,7 +20,8 @@ const NavbarMain: React.FC = () => {
    const [mobileOpen, setMobileOpen] = useState(false);
    const navigate = useNavigate();
    const location = useLocation();
-
+   const currentUser = AuthService.getCurrentUser();
+   const isAdmin = currentUser?.roles?.includes("ROLE_ADMIN");
 
    useEffect(() => {
       const loggedIn = AuthService.isLoggedIn();
@@ -113,33 +114,68 @@ const NavbarMain: React.FC = () => {
       },
       {
          label: "Pilot Studies",
+         // subMenu: [
+         //    {
+         //       // this submenu (flyout)
+         //       label: "LIP2 ▸",
+         //       hint: "Pilot-specific analyses and integrated summaries.",
+         //       subMenu: [
+         //          { label: "LIT2 (Greece)", isSection: true },  // <-- visible inside submenu
+         //          {
+         //             label: "Aggregation Analysis (GR)",
+         //             href: "/lip2-aggregation-analysis?country=Greece",
+         //             hint: "Pilot-specific aggregation results (integrated analytics & policy relevance).",
+         //          },
+         //           { label: "CRC Incidence Population Groups", isSection: true },  // <-- visible inside submenu
+         //          {
+         //             label: "CRC Incidence",
+         //             href: "/lip2-population-groups",
+         //             hint: "CRC Incidence Population Groups",
+         //          },
+         //          { label: "LIP1 (Romania)", isSection: true },  // <-- visible inside submenu
+         //          {
+         //             label: "Aggregation Analysis (RO)",
+         //             href: "/lip2-aggregation-analysis?country=Romania",
+         //             hint: "Pilot-specific aggregation results (integrated analytics & policy relevance).",
+         //          },
+         //       ],
+
+         //    },
+         // ],
          subMenu: [
             {
-               // this submenu (flyout)
-               label: "LIP2 ▸",
+               label: "LIP2",
                hint: "Pilot-specific analyses and integrated summaries.",
-               subMenu: [
-                  { label: "LIT2 (Greece)", isSection: true },  // <-- visible inside submenu
+                },
+              
+                  { label: "LIT2 (Greece)", isSection: true },
+
                   {
                      label: "Aggregation Analysis (GR)",
                      href: "/lip2-aggregation-analysis?country=Greece",
                      hint: "Pilot-specific aggregation results (integrated analytics & policy relevance).",
                   },
-                  { label: "LIP1 (Romania)", isSection: true },  // <-- visible inside submenu
+
+                  { label: "CRC Incidence Population Groups", isSection: true },
+
+                  {
+                     label: "CRC Incidence",
+                     href: "/lip2-population-groups",
+                     hint: "CRC Incidence Population Groups",
+                  },
+
+                  { label: "LIP1 (Romania)", isSection: true },
+
                   {
                      label: "Aggregation Analysis (RO)",
                      href: "/lip2-aggregation-analysis?country=Romania",
                      hint: "Pilot-specific aggregation results (integrated analytics & policy relevance).",
                   },
-               ],
-
-            },
+               
+           
          ],
       },
-
-
    ];
-
    const renderMenu = (menu: MenuItem, depth = 0) => {
       const hasSubMenu = menu.subMenu && menu.subMenu.length > 0;
       const isOpen = openMenu === menu.label;
@@ -260,6 +296,14 @@ const NavbarMain: React.FC = () => {
                               <NavLink className="dropdown-item" to="/change-password">Change Password</NavLink>
                               <hr />
                            </li>
+                           {isAdmin && (
+                              <li>
+                                 <NavLink className="dropdown-item" to="/comments">
+                                    Comments
+                                 </NavLink>
+                                 <hr />
+                              </li>
+                           )}
 
                            {/* My Dashboards submenu */}
                            <li className="dropdown-submenu">
