@@ -110,6 +110,8 @@ const NavbarMain: React.FC = () => {
             { label: "Single-Factor Exploration", isSection: true },
             { label: "Intervention-Driven", href: "/crc-predictive-analytics?tab=sf_intervention", hint: "What-If scenarios adjusting one SEV." },
             { label: "Target-Driven", href: "/crc-predictive-analytics?tab=sf_target", hint: "SEV levels linked to CRC reduction goals." },
+            { label: "Two-Factor Exploration", isSection: true },
+            { label: "Two-Factor Joint Effect", href: "/two-factor-exploration", hint: "Two-Factor Joint Effect Graph." }
          ],
       },
       {
@@ -146,33 +148,33 @@ const NavbarMain: React.FC = () => {
             {
                label: "LIP2",
                hint: "Pilot-specific analyses and integrated summaries.",
-                },
-              
-                  { label: "LIT2 (Greece)", isSection: true },
+            },
 
-                  {
-                     label: "Aggregation Analysis (GR)",
-                     href: "/lip2-aggregation-analysis?country=Greece",
-                     hint: "Pilot-specific aggregation results (integrated analytics & policy relevance).",
-                  },
+            { label: "LIT2 (Greece)", isSection: true },
 
-                  { label: "CRC Incidence Population Groups", isSection: true },
+            {
+               label: "Aggregation Analysis (GR)",
+               href: "/lip2-aggregation-analysis?country=Greece",
+               hint: "Pilot-specific aggregation results (integrated analytics & policy relevance).",
+            },
 
-                  {
-                     label: "CRC Incidence",
-                     href: "/lip2-population-groups",
-                     hint: "CRC Incidence Population Groups",
-                  },
+            { label: "CRC Incidence Population Groups", isSection: true },
 
-                  { label: "LIP1 (Romania)", isSection: true },
+            {
+               label: "CRC Incidence",
+               href: "/lip2-population-groups",
+               hint: "CRC Incidence Population Groups",
+            },
 
-                  {
-                     label: "Aggregation Analysis (RO)",
-                     href: "/lip2-aggregation-analysis?country=Romania",
-                     hint: "Pilot-specific aggregation results (integrated analytics & policy relevance).",
-                  },
-               
-           
+            { label: "LIP1 (Romania)", isSection: true },
+
+            {
+               label: "Aggregation Analysis (RO)",
+               href: "/lip2-aggregation-analysis?country=Romania",
+               hint: "Pilot-specific aggregation results (integrated analytics & policy relevance).",
+            },
+
+
          ],
       },
    ];

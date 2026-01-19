@@ -26,6 +26,7 @@ import LIP2 from "./components/LIP2.tsx"
 import TrendAnalysis from "./components/TrendAnalysis.tsx"
 import MyDashboards from "./components/MyDashboards.tsx"
 import DeliPredictions from "./components/DeliPredictions.tsx"
+import TwoFactorHeatmapViewer from "./components/TwoFactorExloration.tsx"
 
 const App: React.FC = () => {
    return (<>
@@ -57,7 +58,8 @@ const App: React.FC = () => {
                <Route path="/lifestylePanel" element={<LifestylePanel />} /> */}
                <Route path="/crc-policy-data" element={<PolicyPanel />} />
                <Route path="/crc-predictive-analytics" element={<DeliPredictions />} />
-                {/* <Route path="/deli-predictions" element={<DeliPredictions />} /> */}
+               <Route path="/two-factor-exploration" element={<TwoFactorHeatmapViewer />} />
+               {/* <Route path="/deli-predictions" element={<DeliPredictions />} /> */}
                <Route path="/my-dashboards" element={<MyDashboards />} />
             </Routes>
          </div>
