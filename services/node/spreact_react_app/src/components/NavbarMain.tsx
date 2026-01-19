@@ -20,7 +20,8 @@ const NavbarMain: React.FC = () => {
    const [mobileOpen, setMobileOpen] = useState(false);
    const navigate = useNavigate();
    const location = useLocation();
-
+   const currentUser = AuthService.getCurrentUser();
+   const isAdmin = currentUser?.roles?.includes("ROLE_ADMIN");
 
    useEffect(() => {
       const loggedIn = AuthService.isLoggedIn();
@@ -260,6 +261,14 @@ const NavbarMain: React.FC = () => {
                               <NavLink className="dropdown-item" to="/change-password">Change Password</NavLink>
                               <hr />
                            </li>
+                           {isAdmin && (
+                              <li>
+                                 <NavLink className="dropdown-item" to="/comments">
+                                    Comments
+                                 </NavLink>
+                                 <hr />
+                              </li>
+                           )}
 
                            {/* My Dashboards submenu */}
                            <li className="dropdown-submenu">

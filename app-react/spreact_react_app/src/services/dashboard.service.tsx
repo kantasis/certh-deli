@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const authentication_host = import.meta.env.VITE_AUTHENTICATION_HOST;
-const DASHBOARD_API_URL = `http://${authentication_host}`;
+const DASHBOARD_API_URL = `https://${authentication_host}`;
 
 
 

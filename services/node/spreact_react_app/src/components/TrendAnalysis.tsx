@@ -468,12 +468,12 @@ const EuropeMap = () => {
             const parsed = JSON.parse(savedIframeUrl);
             const params = parsed.params;
 
-            //  console.log("Restoring with params:", params);
+            console.log("Restoring with params:", params);
 
             if (!params) return;
 
             setIsRestoring(true);
-
+            console.log(params.analysis)
             setAnalysisType(params.analysis);
             setSexFilter(params.sexFilter);
             setAgeFilter(params.ageFilter);
@@ -1516,11 +1516,16 @@ const EuropeMap = () => {
 
     const accordionContent_dictLst = accordionContentMap[analysisType] || [];
     useEffect(() => {
+        if (isRestoring) return;
+
         const params = new URLSearchParams(location.search);
-        const tabParam = params.get("tab"); // <-- was "analysis"
+        const tabParam = params.get("tab");
         const mappedType = tabParam ? urlToAnalysisType[tabParam] : "";
-        setAnalysisType(mappedType);
-    }, [location.search]);
+
+        if (mappedType) {
+            setAnalysisType(mappedType);
+        }
+    }, [location.search, isRestoring]);
 
     useEffect(() => {
         if (analysisType === "Association Analysis") {
@@ -1539,6 +1544,7 @@ const EuropeMap = () => {
 
         // ✅ URL sync
         const urlParam = analysisTypeToUrl[value] || "";
+
         const params = new URLSearchParams(location.search);
 
         if (urlParam) params.set("tab", urlParam);

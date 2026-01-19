@@ -63,6 +63,16 @@ const PolicyPanel: React.FC = () => {
 
    if (!isLoggedIn)
       return <h2>Unauthorized</h2>;
+const grafanaHost_url = 'https://deli.oncodir.eu';
+
+window.addEventListener("message", function(event) {
+  if (event.origin !== grafanaHost_url) return;
+  if (event.data.type !== 'click-message') return;
+
+  setCountryName(event.data['Country']);
+  setPolicies(event.data['Policies']);
+  setBestPractices(event.data['Best Practices'] || 'No available data');
+});
 
    const sources_dict: { [key: string]: string } = {
       'Austria': "Krebsrahmenprogramm Österreich 2014",
