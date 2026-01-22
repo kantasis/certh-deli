@@ -110,37 +110,75 @@ const NavbarMain: React.FC = () => {
             { label: "Single-Factor Exploration", isSection: true },
             { label: "Intervention-Driven", href: "/crc-predictive-analytics?tab=sf_intervention", hint: "What-If scenarios adjusting one SEV." },
             { label: "Target-Driven", href: "/crc-predictive-analytics?tab=sf_target", hint: "SEV levels linked to CRC reduction goals." },
+            { label: "Two-Factor Exploration", isSection: true },
+            { label: "Two-Factor Joint Effect", href: "/two-factor-exploration", hint: "Two-Factor Joint Effect Graph." }
          ],
       },
       {
          label: "Pilot Studies",
+         // subMenu: [
+         //    {
+         //       // this submenu (flyout)
+         //       label: "LIP2 ▸",
+         //       hint: "Pilot-specific analyses and integrated summaries.",
+         //       subMenu: [
+         //          { label: "LIT2 (Greece)", isSection: true },  // <-- visible inside submenu
+         //          {
+         //             label: "Aggregation Analysis (GR)",
+         //             href: "/lip2-aggregation-analysis?country=Greece",
+         //             hint: "Pilot-specific aggregation results (integrated analytics & policy relevance).",
+         //          },
+         //           { label: "CRC Incidence Population Groups", isSection: true },  // <-- visible inside submenu
+         //          {
+         //             label: "CRC Incidence",
+         //             href: "/lip2-population-groups",
+         //             hint: "CRC Incidence Population Groups",
+         //          },
+         //          { label: "LIP1 (Romania)", isSection: true },  // <-- visible inside submenu
+         //          {
+         //             label: "Aggregation Analysis (RO)",
+         //             href: "/lip2-aggregation-analysis?country=Romania",
+         //             hint: "Pilot-specific aggregation results (integrated analytics & policy relevance).",
+         //          },
+         //       ],
+
+         //    },
+         // ],
          subMenu: [
             {
-               // this submenu (flyout)
-               label: "LIP2 ▸",
+               label: "LIP2",
+               href: "/large-scale-intervention",
                hint: "Pilot-specific analyses and integrated summaries.",
-               subMenu: [
-                  { label: "LIT2 (Greece)", isSection: true },  // <-- visible inside submenu
-                  {
-                     label: "Aggregation Analysis (GR)",
-                     href: "/lip2-aggregation-analysis?country=Greece",
-                     hint: "Pilot-specific aggregation results (integrated analytics & policy relevance).",
-                  },
-                  { label: "LIP1 (Romania)", isSection: true },  // <-- visible inside submenu
-                  {
-                     label: "Aggregation Analysis (RO)",
-                     href: "/lip2-aggregation-analysis?country=Romania",
-                     hint: "Pilot-specific aggregation results (integrated analytics & policy relevance).",
-                  },
-               ],
-
             },
+
+            { label: "LIT2 (Greece)", isSection: true },
+
+            {
+               label: "Aggregation Analysis (GR)",
+               href: "/lip2-aggregation-analysis?country=Greece",
+               hint: "Pilot-specific aggregation results (integrated analytics & policy relevance).",
+            },
+
+      
+
+            {
+               label: "CRC Incidence Population Groups",
+               href: "/lip2-population-groups",
+               hint: "Clustering analysis based on LIT-02 data to identify 12 CRC incidence population groups for LiP-02",
+            },
+
+            { label: "LIP1 (Romania)", isSection: true },
+
+            {
+               label: "Aggregation Analysis (RO)",
+               href: "/lip2-aggregation-analysis?country=Romania",
+               hint: "Pilot-specific aggregation results (integrated analytics & policy relevance).",
+            },
+
+
          ],
       },
-
-
    ];
-
    const renderMenu = (menu: MenuItem, depth = 0) => {
       const hasSubMenu = menu.subMenu && menu.subMenu.length > 0;
       const isOpen = openMenu === menu.label;
