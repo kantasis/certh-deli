@@ -1,8 +1,15 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import axios from "axios";
+import * as AuthService from "../services/auth.service.tsx";
 import ReactECharts from "echarts-for-react";
 import { Accordion, Modal, Button, Card, Form, Row, Col } from 'react-bootstrap';
 import Comments from "./Comments.tsx";
+import SaveGraphButton from "./SaveGraphButton.tsx";
+import { useLocation, useNavigate } from "react-router-dom";
+
+
+
+
 
 // --------------------------------------------------
 // TwoFactorHeatmapViewer (React + ECharts)
@@ -16,6 +23,87 @@ const TwoFactorHeatmapViewer = () => {
   const [horizon, setHorizon] = useState(null);
   const [country, setCountry] = useState(null);
   const [pairId, setPairId] = useState(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [loading, setLoading] = useState(true); // Loading state
+  const [chartOptions, setChartOptions] = useState({});
+  const [chartImageUrl, setChartImageUrl] = useState<string>("");
+  const chartRef = useRef<ReactECharts>(null);
+
+
+
+  const location = useLocation();
+
+
+  const savedIframeUrl = location.state?.iframeUrl;
+
+
+  useEffect(() => {
+    setIsLoggedIn(AuthService.isLoggedIn());
+  }, []);
+
+
+  useEffect(() => {
+    if (!chartRef.current) return;
+
+    // Delay to allow the chart to fully render
+    const timeout = setTimeout(() => {
+      const echartsInstance = chartRef.current?.getEchartsInstance();
+      if (!echartsInstance) return;
+
+      const params = {
+        type: "webp",
+        quality: 0.7,
+        pixelRatio: 1,
+        backgroundColor: "#fff",
+      };
+
+      const url = echartsInstance.getDataURL(params);
+      setChartImageUrl(url);  // Save the chart image
+    }, 1500);
+
+    return () => clearTimeout(timeout);  // cleanup if chart updates before timeout
+  }, [chartOptions]); // re-run whenever the chart options change
+
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+
+    const h = params.get("horizon");
+    const c = params.get("country");
+    const p = params.get("pairId");
+
+    if (h) setHorizon(h);
+    if (c) setCountry(c);
+    if (p) setPairId(p);
+  }, []);
+
+
+
+  // Load JSON
+  useEffect(() => {
+    if (!isLoggedIn) return;
+
+    setLoading(true);
+
+    fetch("/two_factor_heatmaps_precomputed.json")
+      .then(r => r.json())
+      .then(j => {
+        setJson(j);
+        const h0 = j.meta.horizons[0];
+        const c0 = Object.keys(j.data[h0])[0];
+        const p0 = j.data[h0][c0].top_pairs_table?.[0]?.pair_id ?? null;
+
+        setHorizon(h0);
+        setCountry(c0);
+        setPairId(p0);
+      })
+      .finally(() => setLoading(false));
+  }, [isLoggedIn]);
+
+  useEffect(() => {
+    setChartImageUrl(""); // reset preview
+  }, [horizon, country, pairId]);
+
 
   useEffect(() => {
     if (!json || !horizon) return;
@@ -43,6 +131,7 @@ const TwoFactorHeatmapViewer = () => {
 
     setPairId(nextPair);
   }, [country, horizon, json]);
+
 
 
 
@@ -109,44 +198,83 @@ const TwoFactorHeatmapViewer = () => {
 
 
   ];
+  const getCurrentChartImageUrl = () => {
+    if (!chartRef.current) return "";
+    return chartRef.current.getEchartsInstance().getDataURL({
+      type: "webp",
+      pixelRatio: 2,
+      backgroundColor: "#fff",
+    });
+  };
+  const getUriParams = () => {
+    const params: Record<string, string> = {};
+
+    if (country) params.country = country;
+    if (horizon) params.horizon = horizon;
+    if (pairId) params.pairId = pairId;
 
 
-  // Load JSON
-  useEffect(() => {
-    fetch("/two_factor_heatmaps_precomputed.json")
-      .then((r) => r.json())
-      .then((j) => {
-        setJson(j);
-        const h0 = j.meta.horizons[0];
-        const c0 = Object.keys(j.data[h0])[0];
-        const p0 = j.data[h0][c0].top_pairs_table?.[0]?.pair_id ?? null;
-        setHorizon(h0);
-        setCountry(c0);
-        setPairId(p0);
-      });
-  }, []);
+
+    return params;
+  };
+
+
+  const getChartImageUrl = () => {
+    if (!chartRef.current) return "";
+
+    const ec = chartRef.current.getEchartsInstance();
+
+
+    return ec.getDataURL({
+      type: "webp",
+      quality: 0.7,
+      pixelRatio: 1,
+      backgroundColor: "#fff",
+    });
+  };
+
 
   const countries = useMemo(() => {
+
     if (!json || !horizon) return [];
+
     return Object.keys(json.data[horizon]);
+
   }, [json, horizon]);
 
   const pairs = useMemo(() => {
+
     if (!json || !horizon || !country) return [];
+
     return json.data[horizon][country].top_pairs_table || [];
   }, [json, horizon, country]);
 
   const heatmap = useMemo(() => {
+
     if (!json || !horizon || !country || !pairId) return null;
+
     return json.data[horizon][country].heatmaps.find(
       (h) => h.pair_id === pairId
     );
   }, [json, horizon, country, pairId]);
 
-  if (!json) return <div className="p-4">Loading…</div>;
 
   const capitalizeWords = (str) =>
     str.replace(/\b\w/g, (char) => char.toUpperCase());
+
+  if (!isLoggedIn) {
+    return <h2>Unauthorized</h2>;
+  }
+
+  if (loading) {
+    return (
+      <div className="text-center mt-5">
+        <div className="spinner-border text-primary" />
+        <div className="fw-bold mt-2">Loading...</div>
+      </div>
+    );
+  }
+  if (!json) return <div className="p-4">Something went wrong. Please try again !</div>;
 
   return (
 
@@ -197,11 +325,36 @@ const TwoFactorHeatmapViewer = () => {
         </select>
       </div>
 
-
       {/* Heatmap */}
 
       <div className="col-8">
-        {heatmap && <HeatmapEChart {...{ heatmap, country, horizon }} />}
+
+        {/* 👉 LOADING */}
+        {/* {loading && (
+          <div className="text-center mt-5">
+            <div className="spinner-border text-primary" />
+            <div className="fw-bold mt-2">Loading...</div>
+          </div>
+        )} */}
+        {heatmap && (
+          <>
+            <HeatmapEChart
+              heatmap={heatmap}
+              country={country}
+              horizon={horizon}
+              chartRef={chartRef}
+              onChartRendered={(url) => setChartImageUrl(url)} // update only after render
+            />
+
+            <SaveGraphButton
+              iframeUrl={{
+                url: getCurrentChartImageUrl(), // ✅ always fetch the latest chart
+                params: getUriParams(),
+                preview: getCurrentChartImageUrl(), // updated dynamically
+              }}
+            />
+          </>
+        )}
       </div>
       <div className="col-2">
         <div>
@@ -228,7 +381,7 @@ const TwoFactorHeatmapViewer = () => {
 // --------------------------------------------------
 // ECharts heatmap
 // --------------------------------------------------
-function HeatmapEChart({ heatmap, country, horizon }) {
+function HeatmapEChart({ heatmap, country, horizon, chartRef, onChartRendered }) {
   const Z = heatmap.Z_plot;
   const rows = Z.length;
   const cols = Z[0].length;
@@ -236,7 +389,6 @@ function HeatmapEChart({ heatmap, country, horizon }) {
   const xGrid = heatmap.x_axis?.grid ?? [];
   const yGrid = heatmap.y_axis?.grid ?? [];
 
-  // Convert matrix to [x, y, value] — y=0 is top
   const data = [];
   for (let y = 0; y < rows; y++) {
     for (let x = 0; x < cols; x++) {
@@ -244,9 +396,6 @@ function HeatmapEChart({ heatmap, country, horizon }) {
     }
   }
 
-  // ------------------------
-  // Helper functions
-  // ------------------------
   const capitalizeWords = (str) =>
     str.replace(/\b\w/g, (char) => char.toUpperCase());
 
@@ -257,111 +406,114 @@ function HeatmapEChart({ heatmap, country, horizon }) {
   const friendlyFactor1 = capitalizeWords(heatmap.factor_1.replace(/_/g, " "));
   const friendlyFactor2 = capitalizeWords(heatmap.factor_2.replace(/_/g, " "));
 
-  // ------------------------
-  // ECharts option
-  // ------------------------
   const option = {
     title: [
       {
         text: `${friendlyCountry} | ${formatHorizon(horizon)} | ${friendlyFactor1} × ${friendlyFactor2}`,
         left: "center",
         top: 10,
-        textStyle: {
-          fontSize: 16,
-          fontWeight: "bold",
-        },
+        textStyle: { fontSize: 16, fontWeight: "bold" },
       },
       {
         text: `Baseline: ${heatmap.baseline_incidence} | Max Δ: ${heatmap.Z_max.toFixed(3)}%`,
         left: "center",
         top: 35,
-        textStyle: {
-          fontSize: 12,
-          color: "#444",
-        },
+        textStyle: { fontSize: 12, color: "#444" },
       },
     ],
-
     tooltip: {
+      backgroundColor: "#ffffff",
+      borderColor: "#000",      // ✅ black border
+      borderWidth: 1,
+      textStyle: {
+        color: "#000",
+        fontSize: 12,
+      },
       formatter: (p) => {
         const x = xGrid[p.value[0]];
         const y = yGrid[p.value[1]];
         return `
           ${friendlyFactor1}: ${(100 * y).toFixed(1)}%<br/>
           ${friendlyFactor2}: ${(100 * x).toFixed(1)}%<br/>
-          <span>Predicted percentage change from baseline incidence: </span><b>${p.value[2].toFixed(2)}%</b><br>
           <b>Change vs Baseline: ${p.value[2].toFixed(2)}%</b>
         `;
       },
     },
-
-    grid: {
-      top: 80,
-      left: 80,
-      right: 80,
-      bottom: 80,
-    },
-
     xAxis: {
       type: "category",
       name: friendlyFactor2,
       nameLocation: "middle",
-      nameGap: 40,
+      nameGap: 50,
       data: xGrid.map((v) => `${(v * 100).toFixed(1)}%`),
-      inverse: false,
-      axisLabel: {
-        rotate: 45,
-        fontSize: 11,
-      },
+      axisLabel: { rotate: 45 },
     },
-
     yAxis: {
       type: "category",
       name: friendlyFactor1,
       nameLocation: "middle",
-      nameGap: 55,
-      inverse: true,// top row = 0
+      nameRotate: 90,
+      nameGap: 50,
+      inverse: true,
       data: yGrid.map((v) => `${(v * 100).toFixed(1)}%`),
-      axisLabel: {
-        // formatter: (v) => `${(v * 10).toFixed(1)}%`,
-        fontSize: 11,
-      },
     },
-
     visualMap: {
       min: 0,
       max: heatmap.Z_max,
       orient: "vertical",
-      right: 10,
+      right: 20,
       top: "middle",
-      calculable: false,
-      inRange: {
-        color: ["#440154", "#3b528b", "#21918c", "#5ec962", "#fde725"], // matplotlib viridis-like
-      },
-      text: ["High", "Low"],
-      textStyle: { fontSize: 11 },
-      formatter: (v) => `${v}%`,
-    },
+      itemHeight: 220,
+      itemWidth: 14,
+      calculable: true,
 
+      text: ["Higher risk", "Lower risk"],
+      textStyle: {
+        fontSize: 12,
+        color: "#333",
+        fontWeight: 500,
+      },
+
+      formatter: (value) => `${value.toFixed(2)}%`,
+
+      inRange: {
+        color: ["#440154", "#3b528b", "#21918c", "#5ec962", "#fde725"],
+      },
+    },
     series: [
       {
         type: "heatmap",
         data,
-        itemStyle: {
-          borderWidth: 0,
-        },
+
         emphasis: {
           itemStyle: {
-            borderColor: "#000",
-            borderWidth: 1,
+            borderColor: "#000",  // ✅ black border
+            borderWidth: 1.5,     // thickness
           },
         },
       },
-    ],
+    ]
   };
 
-  return <ReactECharts option={option} style={{ height: 600, width: "100%" }} />;
+  return (
+    <ReactECharts
+      ref={chartRef}
+      option={option}
+      notMerge={true}       // replaces the old option completely
+      lazyUpdate={false}    // forces immediate chart update
+      style={{ height: 600, width: "100%" }}
+      onChartReady={() => {
+        if (!chartRef.current) return;
+        const url = chartRef.current.getEchartsInstance().getDataURL({
+          type: "webp",
+          pixelRatio: 3,
+          backgroundColor: "#fff",
+        });
+        onChartRendered(url); // ✅ image only after chart fully rendered
+      }}
+    />
+  );
 }
+
 
 export default TwoFactorHeatmapViewer;
 

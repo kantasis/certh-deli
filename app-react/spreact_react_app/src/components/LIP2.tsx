@@ -1,10 +1,11 @@
 import React, { useState, useMemo, useEffect } from "react";
 import axios from "axios";
 import ReactECharts from "echarts-for-react";
-import { Accordion, Modal, Button } from 'react-bootstrap';
+import { Accordion, Modal, Button, Card } from 'react-bootstrap';
 import { useSearchParams } from "react-router-dom";
 import Comments from "./Comments.tsx";
 import { useLocation } from "react-router-dom";
+import { helper } from "echarts";
 
 const AggregationAnalysis = () => {
     const [selectedVariable, setSelectedVariable] = useState("");
@@ -18,6 +19,8 @@ const AggregationAnalysis = () => {
     const rowsPerPage = 10;
     const location = useLocation();
     const isPopulationGroups = location.pathname.includes("lip2-population-groups");
+    const [showGraph, setShowGraph] = useState(false);
+
 
     const variables = useMemo(() => [...new Set(data.map((d) => d.Variable))], [data]);
     const periodTypes = ["Week", "Month"];
@@ -56,7 +59,7 @@ const AggregationAnalysis = () => {
         "CRC Risk Assessment Score (PYRAMID)",
     ];
 
-    const accordionContent_dictLst = [
+    const accordionContentAggregation_dictLst = [
         {
             title: 'Data Sources',
             content: (<>
@@ -120,68 +123,50 @@ const AggregationAnalysis = () => {
 
     ];
 
-    const populationGroupsData = [
+    const accordionContentPopulation_dictLst = [
         {
-            cluster: 1,
-            variables: "Age_group: <40, BMI_group: Normal, Biological Sex: Female, Smoking status: I have never smoked, Activity level: Active, Education: Postgraduate education (Master’s degree, PhD), Employment: Full-time / Self-employed, Region: Urban, Occupation: Technician and associate professional",
-            score: 2
+            title: 'Data Sources',
+            content: (<>
+                <div style={{ height: '340px', overflow: 'scroll' }}>
+                    <p>
+                        <li><strong>Source: </strong>ONCODIR’s project prospective data, collected through the NELI mobile application (T4.2) during the Living Lab Integration Test (LIT-02). LIT-02 was designed as a technology acceptance study conducted with external citizens to evaluate both the technical functionality of NELI and its capacity for reliable data collection.
+                        </li><br />
+                        <li><strong>Data collection: </strong>Preparations for citizen enrollment began in September 2024, and the main study period ran from October to December 2024. By late November 2024, 46 participants were enrolled, exceeding the target of 40, with distribution across countries as follows: 40 in Greece, 3 in Lithuania, 1 in Luxembourg, and 2 in Romania. Only Greek participants were used in this analysis.
+                        </li><br />
+                        <li><strong>Variables: </strong> The dataset includes both <strong>static variables</strong>, obtained from initial questionnaires, and <strong>non-static variables</strong>, collected bi-weekly.<br></br>
+                            <br></br>      <strong>  •	Static variables</strong> cover demographics (e.g., age, biological sex, BMI, ethnicity, country), lifestyle choices (e.g., smoking, daily activity), socioeconomic status (e.g., employment/occupational status, living area, type of housing), education level (e.g., primary education) and clinical history (e.g., family history of CRC, metabolic syndromes).<br></br>
+                            <br></br>   <strong>  •	Non-static variables</strong> include nutritional habits (e.g., frequency and portion size of red meat, vegetables, and fruits), and CRC risk assessment scores (evaluated using the <strong>Risk-Stratification Engine</strong>, <strong>PYRAMID</strong>).
+
+                        </li><br />
+
+
+                    </p>
+                </div>
+
+            </>)
         },
         {
-            cluster: 2,
-            variables: "Age_group: <40, BMI_group: Overweight, Biological Sex: Male, Smoking status: I have never smoked, Activity level: Not active at all/Sedentary, Education: Postgraduate education (Master’s degree, PhD), Employment: Full-time / Self-employed, Region: Urban, Occupation: Professional",
-            score: 2
+            title: 'Methodology',
+            content: (<>
+                <p>
+
+                    <strong>Categorization of numerical variables</strong><br></br><br></br>
+                    Age was grouped into &lt;40, 40-70, 70+, while BMI was classified as underweight (&lt;18.5), normal (18.5–24.9), overweight (25–29.9), and obese (&ge;30).<br /><br />
+                    <strong>Non-static variable transformation</strong><br></br><br></br>
+                    Dietary intake (frequency × portion size) was standardized to grams/day. Due to limited bi-weekly data, non-static variables were transformed to static by being summarized as participant means (numerical) or medians (categorical). Participants with &lt;40% missing data were excluded, while remaining missing values were imputed/filled (mean for numerical, “Missing” or “Not answered” for categorical).<br></br><br></br>
+                    <strong>Clustering</strong><br></br><br></br>
+                    Hierarchical clustering with Gower distance was applied. Twelve clusters (k=12) were predefined. Cluster centroids were calculated using means for numerical variables and medians or the most frequent non-missing categories for categorical variables, enabling the identification of each cluster’s unique characteristics.
+                    <br></br><br></br> Clustering analysis was based on an optimized 10-feature set provided by the MoHGR and restricted to Greek citizens (n=40), resulting in 12 distinct and interpretable subgroups
+
+                </p>
+            </>)
         },
-        {
-            cluster: 3,
-            variables: "Age_group: <40, BMI_group: Normal, Biological Sex: Male, Smoking status: I am a former smoker, Activity level: Active, Education: University education (Bachelor’s degree), Employment: Full-time / Self-employed, Region: Urban, Occupation: Professional",
-            score: 2
-        },
-        {
-            cluster: 4,
-            variables: "Age_group: <40, BMI_group: Normal, Biological Sex: Both, Smoking status: I have never smoked, Activity level: Somewhat active, Education: Secondary education or vocational training, Employment: Full-time / Self-employed, Region: Urban, Occupation: Missing",
-            score: 2
-        },
-        {
-            cluster: 5,
-            variables: "Age_group: Not answered, BMI_group: Not answered, Biological Sex: Not answered, Smoking status: I am currently a regular smoker, Activity level: Somewhat active, Education: University education (Bachelor’s degree), Employment: Full-time / Self-employed, Region: Urban, Occupation: ['Missing','Professional']",
-            score: 2
-        },
-        {
-            cluster: 6,
-            variables: "Age_group: Not answered, BMI_group: Normal, Biological Sex: Female, Smoking status: I am a former smoker, Activity level: Active, Education: Elementary education (Basic reading and writing), Employment: Part-time / Seasonal employment, Region: Suburban, Occupation: Skilled agricultural, forestry and fishery worker",
-            score: 2
-        },
-        {
-            cluster: 7,
-            variables: "Age_group: <40, BMI_group: Overweight, Biological Sex: Male, Smoking status: I am a former smoker, Activity level: Active, Education: Secondary education or vocational training, Employment: Full-time / Self-employed, Region: Suburban, Occupation: Missing",
-            score: 2
-        },
-        {
-            cluster: 8,
-            variables: "Age_group: 40-70, BMI_group: Obese, Biological Sex: Male, Smoking status: I have never smoked, Activity level: Active, Education: Postgraduate education (Master’s degree, PhD), Employment: Full-time / Self-employed, Region: Suburban, Occupation: Professional",
-            score: 3
-        },
-        {
-            cluster: 9,
-            variables: "Age_group: Not answered, BMI_group: Not answered, Biological Sex: Not answered, Smoking status: I have never smoked, Activity level: Active, Education: Postgraduate education (Master’s degree, PhD), Employment: Full-time / Self-employed, Region: Urban, Occupation: Professional",
-            score: 3
-        },
-        {
-            cluster: 10,
-            variables: "Age_group: <40, BMI_group: Abnormal weight, Biological Sex: Female, Smoking status: I am a former smoker, Activity level: Somewhat active, Education: Secondary education or vocational training, Employment: Full-time / Self-employed, Region: Urban, Occupation: ['Don't know / No answer','Elementary occupation','Service and sales worker']",
-            score: 3
-        },
-        {
-            cluster: 11,
-            variables: "Age_group: 70+, BMI_group: Obese, Biological Sex: Female, Smoking status: I am currently a regular smoker, Activity level: Somewhat active, Education: Secondary education or vocational training, Employment: Retired, Region: Urban, Occupation: Don't know / No answer",
-            score: 4
-        },
-        {
-            cluster: 12,
-            variables: "Age_group: Not answered, BMI_group: Not answered, Biological Sex: Not answered, Smoking status: I have never smoked, Activity level: Somewhat active, Education: Postgraduate education (Master’s degree, PhD), Employment: Retired, Region: Suburban, Occupation: ['Don't know / No answer','Manager','Professional']",
-            score: 4
-        }
+
+
+
     ];
+
+
     // ✅ Get query params using React Router's hook
     const [searchParams] = useSearchParams();
     const country = searchParams.get("country");
@@ -740,11 +725,155 @@ const AggregationAnalysis = () => {
             series
         };
     };
+    const populationGroupsScatterData = [
+        { X: 0.806140985, Y: 0.663293783, cluster: 1, variables: "Age_group: <40, BMI_group: Normal, Biological Sex: Female, Smoking status: I have never smoked, Activity level: Active, Education: Postgraduate education (Master’s degree, PhD), Employment: Full-time / Self-employed, Region: Urban, Occupation: Technician and associate professional", score: 2 },
+        { X: 0.601444065, Y: 1.147868221, cluster: 1, variables: "Age_group: <40, BMI_group: Normal, Biological Sex: Female, Smoking status: I have never smoked, Activity level: Active, Education: Postgraduate education (Master’s degree, PhD), Employment: Full-time / Self-employed, Region: Urban, Occupation: Technician and associate professional", score: 2 },
+        { X: 0.504394982, Y: 1.367235465, cluster: 1, variables: "Age_group: <40, BMI_group: Normal, Biological Sex: Female, Smoking status: I have never smoked, Activity level: Active, Education: Postgraduate education (Master’s degree, PhD), Employment: Full-time / Self-employed, Region: Urban, Occupation: Technician and associate professional", score: 2 },
+        { X: 0.310943742, Y: 1.275045535, cluster: 1, variables: "Age_group: <40, BMI_group: Normal, Biological Sex: Female, Smoking status: I have never smoked, Activity level: Active, Education: Postgraduate education (Master’s degree, PhD), Employment: Full-time / Self-employed, Region: Urban, Occupation: Technician and associate professional", score: 2 },
+        { X: 0.504394982, Y: 1.367235465, cluster: 1, variables: "Age_group: <40, BMI_group: Normal, Biological Sex: Female, Smoking status: I have never smoked, Activity level: Active, Education: Postgraduate education (Master’s degree, PhD), Employment: Full-time / Self-employed, Region: Urban, Occupation: Technician and associate professional", score: 2 },
+        { X: 0.740383451, Y: 1.302743695, cluster: 1, variables: "Age_group: <40, BMI_group: Normal, Biological Sex: Female, Smoking status: I have never smoked, Activity level: Active, Education: Postgraduate education (Master’s degree, PhD), Employment: Full-time / Self-employed, Region: Urban, Occupation: Technician and associate professional", score: 2 },
+        { X: 0.633460778, Y: 0.71635909, cluster: 2, variables: "Age_group: <40, BMI_group: Overweight, Biological Sex: Male, Smoking status: I have never smoked, Activity level: Not active at all/Sedentary, Education: Postgraduate education (Master’s degree, PhD), Employment: Full-time / Self-employed, Region: Urban, Occupation: Professional", score: 2 },
+        { X: 0.36853148, Y: 1.364731766, cluster: 2, variables: "Age_group: <40, BMI_group: Overweight, Biological Sex: Male, Smoking status: I have never smoked, Activity level: Not active at all/Sedentary, Education: Postgraduate education (Master’s degree, PhD), Employment: Full-time / Self-employed, Region: Urban, Occupation: Professional", score: 2 },
+        { X: 0.261533619, Y: 1.034579777, cluster: 2, variables: "Age_group: <40, BMI_group: Overweight, Biological Sex: Male, Smoking status: I have never smoked, Activity level: Not active at all/Sedentary, Education: Postgraduate education (Master’s degree, PhD), Employment: Full-time / Self-employed, Region: Urban, Occupation: Professional", score: 2 },
+        { X: 0.768539364, Y: 0.232646995, cluster: 3, variables: "Age_group: <40, BMI_group: Normal, Biological Sex: Male, Smoking status: I am a former smoker, Activity level: Active, Education: University education (Bachelor’s degree), Employment: Full-time / Self-employed, Region: Urban, Occupation: Professional", score: 2 },
+        { X: 0.42612985, Y: 0.777297508, cluster: 3, variables: "Age_group: <40, BMI_group: Normal, Biological Sex: Male, Smoking status: I am a former smoker, Activity level: Active, Education: University education (Bachelor’s degree), Employment: Full-time / Self-employed, Region: Urban, Occupation: Professional", score: 2 },
+        { X: 0.758819255, Y: 0.543060221, cluster: 3, variables: "Age_group: <40, BMI_group: Normal, Biological Sex: Male, Smoking status: I am a former smoker, Activity level: Active, Education: University education (Bachelor’s degree), Employment: Full-time / Self-employed, Region: Urban, Occupation: Professional", score: 2 },
+        { X: 1.836561987, Y: -0.855670276, cluster: 4, variables: "Age_group: <40, BMI_group: Normal, Biological Sex: Both, Smoking status: I have never smoked, Activity level: Somewhat active, Education: Secondary education or vocational training, Employment: Full-time / Self-employed, Region: Urban, Occupation: Missing", score: 2 },
+        { X: 1.826439, Y: -0.596198075, cluster: 4, variables: "Age_group: <40, BMI_group: Normal, Biological Sex: Both, Smoking status: I have never smoked, Activity level: Somewhat active, Education: Secondary education or vocational training, Employment: Full-time / Self-employed, Region: Urban, Occupation: Missing", score: 2 },
+        { X: 1.807412296, Y: -0.934443639, cluster: 4, variables: "Age_group: <40, BMI_group: Normal, Biological Sex: Both, Smoking status: I have never smoked, Activity level: Somewhat active, Education: Secondary education or vocational training, Employment: Full-time / Self-employed, Region: Urban, Occupation: Missing", score: 2 },
+        { X: 1.400750568, Y: -0.593957907, cluster: 4, variables: "Age_group: <40, BMI_group: Normal, Biological Sex: Both, Smoking status: I have never smoked, Activity level: Somewhat active, Education: Secondary education or vocational training, Employment: Full-time / Self-employed, Region: Urban, Occupation: Missing", score: 2 },
+        { X: 1.744328232, Y: -0.641550062, cluster: 4, variables: "Age_group: <40, BMI_group: Normal, Biological Sex: Both, Smoking status: I have never smoked, Activity level: Somewhat active, Education: Secondary education or vocational training, Employment: Full-time / Self-employed, Region: Urban, Occupation: Missing", score: 2 },
+        { X: 1.429900259, Y: -0.515184543, cluster: 4, variables: "Age_group: <40, BMI_group: Normal, Biological Sex: Both, Smoking status: I have never smoked, Activity level: Somewhat active, Education: Secondary education or vocational training, Employment: Full-time / Self-employed, Region: Urban, Occupation: Missing", score: 2 },
+        { X: -1.032482269, Y: -0.413268741, cluster: 5, variables: "Age_group: Not answered, BMI_group: Not answered, Biological Sex: Not answered, Smoking status: I am currently a regular smoker, Activity level: Somewhat active, Education: University education (Bachelor’s degree), Employment: Full-time / Self-employed, Region: Urban, Occupation: ['Missing','Professional']", score: 2 },
+        { X: -0.231431663, Y: -1.846214624, cluster: 5, variables: "Age_group: Not answered, BMI_group: Not answered, Biological Sex: Not answered, Smoking status: I am currently a regular smoker, Activity level: Somewhat active, Education: University education (Bachelor’s degree), Employment: Full-time / Self-employed, Region: Urban, Occupation: ['Missing','Professional']", score: 2 },
+        { X: -0.21157701, Y: -0.477852742, cluster: 6, variables: "Age_group: Not answered, BMI_group: Normal, Biological Sex: Female, Smoking status: I am a former smoker, Activity level: Active, Education: Elementary education (Basic reading and writing), Employment: Part-time / Seasonal employment, Region: Suburban, Occupation: Skilled agricultural, forestry and fishery worker", score: 2 },
+        { X: 1.129342273, Y: -1.324870669, cluster: 7, variables: "Age_group: <40, BMI_group: Overweight, Biological Sex: Male, Smoking status: I am a former smoker, Activity level: Active, Education: Secondary education or vocational training, Employment: Full-time / Self-employed, Region: Suburban, Occupation: Missing", score: 2 },
+        { X: 0.1437820547, Y: -0.43863981, cluster: 7, variables: "Age_group: <40, BMI_group: Overweight, Biological Sex: Male, Smoking status: I am a former smoker, Activity level: Active, Education: Secondary education or vocational training, Employment: Full-time / Self-employed, Region: Suburban, Occupation: Missing", score: 2 },
+        { X: -0.600396094, Y: 1.156112978, cluster: 8, variables: "Age_group: 40-70, BMI_group: Obese, Biological Sex: Male, Smoking status: I have never smoked, Activity level: Active, Education: Postgraduate education (Master’s degree, PhD), Employment: Full-time / Self-employed, Region: Suburban, Occupation: Professional", score: 3 },
+        { X: -0.204859086, Y: 0.905417971, cluster: 8, variables: "Age_group: 40-70, BMI_group: Obese, Biological Sex: Male, Smoking status: I have never smoked, Activity level: Active, Education: Postgraduate education (Master’s degree, PhD), Employment: Full-time / Self-employed, Region: Suburban, Occupation: Professional", score: 3 },
+        { X: -0.857377682, Y: 0.644102379, cluster: 8, variables: "Age_group: 40-70, BMI_group: Obese, Biological Sex: Male, Smoking status: I have never smoked, Activity level: Active, Education: Postgraduate education (Master’s degree, PhD), Employment: Full-time / Self-employed, Region: Suburban, Occupation: Professional", score: 3 },
+        { X: -1.971381667, Y: 0.377195941, cluster: 9, variables: "Age_group: Not answered, BMI_group: Not answered, Biological Sex: Not answered, Smoking status: I have never smoked, Activity level: Active, Education: Postgraduate education (Master’s degree, PhD), Employment: Full-time / Self-employed, Region: Urban, Occupation: Professional", score: 3 },
+        { X: -1.596747939, Y: -0.480512399, cluster: 9, variables: "Age_group: Not answered, BMI_group: Not answered, Biological Sex: Not answered, Smoking status: I have never smoked, Activity level: Active, Education: Postgraduate education (Master’s degree, PhD), Employment: Full-time / Self-employed, Region: Urban, Occupation: Professional", score: 3 },
+        { X: -2.146889435, Y: 0.170351389, cluster: 9, variables: "Age_group: Not answered, BMI_group: Not answered, Biological Sex: Not answered, Smoking status: I have never smoked, Activity level: Active, Education: Postgraduate education (Master’s degree, PhD), Employment: Full-time / Self-employed, Region: Urban, Occupation: Professional", score: 3 },
+        { X: -1.785797068, Y: -0.113437321, cluster: 9, variables: "Age_group: Not answered, BMI_group: Not answered, Biological Sex: Not answered, Smoking status: I have never smoked, Activity level: Active, Education: Postgraduate education (Master’s degree, PhD), Employment: Full-time / Self-employed, Region: Urban, Occupation: Professional", score: 3 },
+        { X: -1.509775688, Y: -0.002401828, cluster: 9, variables: "Age_group: Not answered, BMI_group: Not answered, Biological Sex: Not answered, Smoking status: I have never smoked, Activity level: Active, Education: Postgraduate education (Master’s degree, PhD), Employment: Full-time / Self-employed, Region: Urban, Occupation: Professional", score: 3 },
+        { X: -1.419098314, Y: 0.067641457, cluster: 9, variables: "Age_group: Not answered, BMI_group: Not answered, Biological Sex: Not answered, Smoking status: I have never smoked, Activity level: Active, Education: Postgraduate education (Master’s degree, PhD), Employment: Full-time / Self-employed, Region: Urban, Occupation: Professional", score: 3 },
+        { X: -1.78019068, Y: 0.351430167, cluster: 9, variables: "Age_group: Not answered, BMI_group: Not answered, Biological Sex: Not answered, Smoking status: I have never smoked, Activity level: Active, Education: Postgraduate education (Master’s degree, PhD), Employment: Full-time / Self-employed, Region: Urban, Occupation: Professional", score: 3 },
+        { X: 0.132278324, Y: -0.817953453, cluster: 10, variables: "Age_group: <40, BMI_group: Abnormal weight, Biological Sex: Female, Smoking status: I am a former smoker, Activity level: Somewhat active, Education: Secondary education or vocational training, Employment: Full-time / Self-employed, Region: Urban, Occupation: ['Don't know / No answer','Elementary occupation','Service and sales worker']", score: 3 },
+        { X: 0.062844003, Y: -0.47281406, cluster: 10, variables: "Age_group: <40, BMI_group: Abnormal weight, Biological Sex: Female, Smoking status: I am a former smoker, Activity level: Somewhat active, Education: Secondary education or vocational training, Employment: Full-time / Self-employed, Region: Urban, Occupation: ['Don't know / No answer','Elementary occupation','Service and sales worker']", score: 3 },
+        { X: 0.52546068, Y: -0.268178732, cluster: 10, variables: "Age_group: <40, BMI_group: Abnormal weight, Biological Sex: Female, Smoking status: I am a former smoker, Activity level: Somewhat active, Education: Secondary education or vocational training, Employment: Full-time / Self-employed, Region: Urban, Occupation: ['Don't know / No answer','Elementary occupation','Service and sales worker']", score: 3 },
+        { X: 0.294452287, Y: -1.541422178, cluster: 11, variables: "Age_group: 70+, BMI_group: Obese, Biological Sex: Female, Smoking status: I am currently a regular smoker, Activity level: Somewhat active, Education: Secondary education or vocational training, Employment: Retired, Region: Urban, Occupation: Don't know / No answer", score: 4 },
+        { X: -1.390369091, Y: -1.072594112, cluster: 12, variables: "Age_group: Not answered, BMI_group: Not answered, Biological Sex: Not answered, Smoking status: I have never smoked, Activity level: Somewhat active, Education: Postgraduate education (Master’s degree, PhD), Employment: Retired, Region: Suburban, Occupation: ['Don't know / No answer','Manager','Professional']", score: 4 },
+        { X: -1.95478712, Y: -0.875884183, cluster: 12, variables: "Age_group: Not answered, BMI_group: Not answered, Biological Sex: Not answered, Smoking status: I have never smoked, Activity level: Somewhat active, Education: Postgraduate education (Master’s degree, PhD), Employment: Retired, Region: Suburban, Occupation: ['Don't know / No answer','Manager','Professional']", score: 4 },
+        { X: -1.619146205, Y: -1.181300452, cluster: 12, variables: "Age_group: Not answered, BMI_group: Not answered, Biological Sex: Not answered, Smoking status: I have never smoked, Activity level: Somewhat active, Education: Postgraduate education (Master’s degree, PhD), Employment: Retired, Region: Suburban, Occupation: ['Don't know / No answer','Manager','Professional']", score: 4 },
+    ];
+    const populationGroupsScatterDataWithId = populationGroupsScatterData.map((d, idx) => ({
+        ...d,
+        id: idx, // unique ID for React keys
+    }));
     const riskScoreColor = {
         2: "#28a745", // green
         3: "#ffc107", // yellow
         4: "#dc3545", // red
     };
+    const clusterColors = [
+        "#1f77b4", "#aec7e8", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf", "#9edae5"
+    ];
+    // const parseNumeric = (val) => {
+    //     if (typeof val === "number") return val;
+    //     if (!val) return 0;
+    //     // Remove all dots used as thousands separators
+    //     return Number(val.toString().replace(/\./g, ""));
+    // };
+    const scatterOptions = useMemo(() => {
+        // Group by cluster
+        const grouped = {};
+        populationGroupsScatterDataWithId.forEach(d => {
+            if (!grouped[d.cluster]) grouped[d.cluster] = [];
+            grouped[d.cluster].push({
+                value: [d.X, d.Y],  // required for scatter
+                variables: d.variables,
+                score: d.score,
+                id: d.id
+            });
+        });
+
+        const series = Object.entries(grouped).map(([cluster, data]) => ({
+            name: `Cluster ${cluster}`,
+            type: "scatter",
+            data, // array of objects
+            symbolSize: 12,
+            itemStyle: { color: clusterColors[cluster - 1] || "#ccc" },
+        }));
+
+        return {
+            tooltip: {
+                trigger: 'item',
+                extraCssText: 'max-width: 700px; white-space: normal;',
+                formatter: (params) => {
+                    const { value, variables, score } = params.data;
+                    const [x, y] = value;
+                    const shortVariables = variables?.replace(/, /g, "<br/>");
+                    return `
+                    <strong>${params.seriesName}</strong><br/>
+                    X: ${x.toFixed(2)}<br/>
+                    Y: ${y.toFixed(2)}<br/>
+                    <strong>CRC Risk Score:</strong> ${score}<br/>
+                    <strong>Variables:</strong><br/>${shortVariables}
+                `;
+                }
+            },
+            xAxis: { name: "PCA 1", type: "value", nameLocation: "middle", nameGap: 50 },
+            yAxis: { name: "PCA 2", type: "value", nameLocation: "middle", nameRotate: 90, nameGap: 50 },
+            legend: {
+                orient: 'vertical',
+                right: 10,
+                top: 'center',
+                data: series.map(s => s.name),
+                textStyle: { fontSize: 12 },
+                itemWidth: 12,
+                itemHeight: 12,
+                padding: 5,
+            },
+            series,
+        };
+    }, [populationGroupsScatterDataWithId]);
+
+    const downloadCSV = () => {
+        const headers = ["Cluster", "Variables", "CRC Risk Score"];
+
+        const rows = populationGroupsScatterDataWithId.map(row => [
+            row.cluster,
+            row.variables,
+            row.score
+        ]);
+
+        const csvContent =
+            "\uFEFF" + // Excel UTF-8 fix
+            [
+                headers.join(";"),
+                ...rows.map(r =>
+                    r.map(value =>
+                        `"${String(value).replace(/"/g, '""')}"`
+                    ).join(";")
+                )
+            ].join("\n");
+
+        const blob = new Blob([csvContent], {
+            type: "text/csv;charset=utf-8;"
+        });
+
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "crc_population_groups.csv";
+        link.click();
+        URL.revokeObjectURL(url);
+    };
+
+
+
+
     return (
         <div className="container-fluid mt-3">
             {!isPopulationGroups && (
@@ -811,16 +940,94 @@ const AggregationAnalysis = () => {
 
                 {/* ================= MAIN COLUMN ================= */}
                 {isPopulationGroups && (
-                    <div className={isPopulationGroups ? "col-2 mt-5" : "col-2 mt-5"}></div>
+                    <div className={isPopulationGroups ? "col-2 mt-5" : "col-2 mt-5"}>
+                        {isPopulationGroups && (
+                            <>
+                                <Card>
+                                    <div><strong>CRC incidence population groups</strong> represent distinct and interpretable subgroups based on shared demographic, lifestyle, and health-related characteristics. These groups support tailored policy decisions and targeted interventions within  <strong> LiP-02</strong>. Their analysis is based on data collected in <strong>Greece</strong> through the <strong>NELI mobile application</strong> during Living Lab Integration Test 02 (<strong>LIT-02</strong>).<br></br><br></br>
+                                        Clustering analysis was performed using an optimized set of 10 variables: age group, BMI group, biological sex, smoking status, activity level, education, employment, region, occupation, and CRC Risk Score.<br></br><br></br>
+                                        Hierarchical clustering with Gower distance identified <strong>12 population groups</strong> in accordance with project KPIs, distributed as follows:<br></br>
+                                        <br></br> •	7 groups with CRC risk score 2
+                                        <br></br>  •	3 groups with CRC risk score 3
+                                        <br></br>  •	2 groups with CRC risk score 4
+                                    </div>
+                                </Card>
+
+                            </>
+                        )}
+                    </div>
                 )}
                 <div className={isPopulationGroups ? "col-8 mt-5" : "col-8 mt-5"}>
                     {isPopulationGroups && (
-                        <h3 className="mb-5">CRC Incidence Population Groups</h3>
+                        <>
+                            <h3 className="mb-3">CRC Incidence Population Groups</h3>
+                            <Button className="mb-3" onClick={() => setShowGraph(prev => !prev)}>
+                                {showGraph ? "Show Table" : "Show Graph"}
+                            </Button>
+                            <span className="m-2"></span>
+                            {!showGraph && (
+                            
+                                <Button className="my-auto mb-3"
+                                    variant="success"
+                                    onClick={downloadCSV}
+                                >
+                                    Download CSV
+                                </Button>
+                            )}
+                        </>
+
                     )}
                     {/* 👉 POPULATION GROUPS TABLE */}
-                    {isPopulationGroups && (
+                    {!showGraph && isPopulationGroups && (
+                            
+                        <div className="table-responsive">
+
+                            <table className="table table-bordered table-striped align-middle">
+                                <thead className="table-light">
+                                    <tr>
+                                        <th>Color</th>
+                                        <th>Cluster</th>
+                                        <th>Variables</th>
+                                        <th>CRC Risk Score</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {populationGroupsScatterDataWithId.map(row => (
+                                        <tr key={row.id}>
+                                            <td className="text-center">
+                                                <span
+                                                    style={{
+                                                        display: "inline-block",
+                                                        width: "14px",
+                                                        height: "14px",
+                                                        borderRadius: "50%",
+                                                        backgroundColor: riskScoreColor[row.score] || "#ccc",
+                                                    }}
+                                                    title={`Risk Score ${row.score}`}
+                                                />
+                                            </td>
+                                            <td>{row.cluster}</td>
+                                            <td style={{ whiteSpace: "pre-wrap" }}>{row.variables}</td>
+                                            <td>{row.score}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    )}
+
+                    {showGraph && isPopulationGroups && (
+                        <><h3>PCA Scatterplot of Clustered CRC Incidence Population Groups</h3>
+
+                            <ReactECharts option={scatterOptions} style={{ height: 500 }} />
+                        </>
+                    )}
+
+
+                    {/* {isPopulationGroups && !showGraph && (
 
                         <div className="table-responsive">
+
                             <table className="table table-bordered table-striped align-middle">
                                 <thead className="table-light">
                                     <tr>
@@ -853,7 +1060,7 @@ const AggregationAnalysis = () => {
                                 </tbody>
                             </table>
                         </div>
-                    )}
+                    )} */}
 
 
                     {/* 👉 DEFAULT TEXT */}
@@ -889,9 +1096,9 @@ const AggregationAnalysis = () => {
 
                     {/* 👉 CHARTS */}
                     {!isPopulationGroups && selectedVariable && !loading && filteredData.length > 0 && (
-                       
+
                         <>
-                         <h3>{selectedVariable}</h3>
+                            <h3>{selectedVariable}</h3>
                             {chartType === "pie-detailed" && (
                                 <ReactECharts
                                     key={`${selectedVariable}-pie-detailed`}
@@ -980,9 +1187,9 @@ const AggregationAnalysis = () => {
                 </div>
 
                 {/* ================= RIGHT COLUMN ================= */}
-                <div className={isPopulationGroups ? "col-2" : "col-2 mt-5"}  style={{margin: "130px 0px 0px 0px" }} >
+                <div className={isPopulationGroups ? "col-2" : "col-2 mt-5"} style={{ margin: "130px 0px 0px 0px" }} >
                     <Accordion defaultActiveKey="-1">
-                        {accordionContent_dictLst.map((item, idx) => (
+                        {(!isPopulationGroups ? accordionContentAggregation_dictLst : accordionContentPopulation_dictLst).map((item, idx) => (
                             <Accordion.Item eventKey={idx.toString()} key={idx}>
                                 <Accordion.Header>{item.title}</Accordion.Header>
                                 <Accordion.Body className="text-start" style={{ height: "340px", overflow: "scroll" }}>

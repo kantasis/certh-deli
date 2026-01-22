@@ -158,12 +158,12 @@ const NavbarMain: React.FC = () => {
                hint: "Pilot-specific aggregation results (integrated analytics & policy relevance).",
             },
 
-            { label: "CRC Incidence Population Groups", isSection: true },
+      
 
             {
-               label: "CRC Incidence",
+               label: "CRC Incidence Population Groups",
                href: "/lip2-population-groups",
-               hint: "CRC Incidence Population Groups",
+               hint: "Clustering analysis based on LIT-02 data to identify 12 CRC incidence population groups for LiP-02",
             },
 
             { label: "LIP1 (Romania)", isSection: true },
