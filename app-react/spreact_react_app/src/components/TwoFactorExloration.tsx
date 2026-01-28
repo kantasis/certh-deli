@@ -20,26 +20,82 @@ import { useLocation, useNavigate } from "react-router-dom";
 // --------------------------------------------------
 const TwoFactorHeatmapViewer = () => {
   const [json, setJson] = useState(null);
-  const [horizon, setHorizon] = useState(null);
-  const [country, setCountry] = useState(null);
+  const [country, setCountry] = useState("Austria");
   const [pairId, setPairId] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loading, setLoading] = useState(true); // Loading state
   const [chartOptions, setChartOptions] = useState({});
   const [chartImageUrl, setChartImageUrl] = useState<string>("");
   const chartRef = useRef<ReactECharts>(null);
-
-
+  const [token, setToken] = useState(null);
+  const [horizon, setHorizon] = useState("1");
+  const [isRestored, setIsRestored] = useState(false);
 
   const location = useLocation();
-
+  // console.log(location)
 
   const savedIframeUrl = location.state?.iframeUrl;
-
+  // console.log(savedIframeUrl)
 
   useEffect(() => {
     setIsLoggedIn(AuthService.isLoggedIn());
   }, []);
+
+
+  useEffect(() => {
+    if (!savedIframeUrl) {
+      setCountry("Austria");
+      setHorizon("1");
+      setIsRestored(true);
+      return;
+    }
+
+    try {
+      const parsed = JSON.parse(savedIframeUrl);
+      const params = parsed.params;
+
+      if (!params) return;
+
+      setCountry(params.country);
+      setHorizon(String(params.horizon));
+      setPairId(params.pairId);
+
+      setIsRestored(true); // ✅ IMPORTANT
+    } catch (error) {
+      console.error("Invalid savedIframeUrl format", error);
+    }
+  }, [savedIframeUrl]);
+
+  // useEffect(() => {
+  //   const controller = new AbortController();
+
+  //   fetch("https://oncodir-datapi.catalink.eu/v1/services/login/", {
+  //     method: "POST",
+  //     headers: {
+  //       "Content-Type": "application/json"
+  //     },
+  //     body: JSON.stringify({
+  //       service_name: import.meta.env.VITE_SERVICE_NAME,
+  //       password: import.meta.env.VITE_SERVICE_PASSWORD
+  //     }),
+  //     signal: controller.signal
+  //   })
+  //     .then(res => {
+  //       if (!res.ok) throw new Error(`HTTP error: ${res.status}`);
+  //       return res.text();
+  //     })
+  //     .then(token => {
+  //       setToken(token);
+  //       console.log("TOken: " + token)
+  //     })
+  //     .catch(err => {
+  //       if (err.name !== "AbortError") {
+  //         console.error("Failed to fetch token:", err);
+  //       }
+  //     });
+
+  //   return () => controller.abort();
+  // }, []);
 
 
   useEffect(() => {
@@ -65,40 +121,97 @@ const TwoFactorHeatmapViewer = () => {
   }, [chartOptions]); // re-run whenever the chart options change
 
 
-  useEffect(() => {
-    const params = new URLSearchParams(location.search);
+  // useEffect(() => {
+  //   if (!location.search) return; // skip if no query params
 
-    const h = params.get("horizon");
-    const c = params.get("country");
-    const p = params.get("pairId");
+  //   const params = new URLSearchParams(location.search);
 
-    if (h) setHorizon(h);
-    if (c) setCountry(c);
-    if (p) setPairId(p);
-  }, []);
+  //   const h = params.get("horizon"); // e.g., "1Y"
+  //   const c = params.get("country"); // e.g., "Austria"
+  //   const p = params.get("pairId");  // optional
+
+  //   // console.log(h)
+
+  //   if (h) setHorizon(h);
+  //   if (c) setCountry(c);
+  //   if (p) setPairId(p);
+  // }, [location.search]);
 
 
 
   // Load JSON
+  // useEffect(() => {
+  //   if (!isLoggedIn) return;
+
+  //   setLoading(true);
+
+  //   fetch("/two_factor_heatmaps_precomputed.json")
+  //     .then(r => r.json())
+  //     .then(j => {
+  //       setJson(j);
+  //       const h0 = j.meta.horizons[0];
+  //       const c0 = Object.keys(j.data[h0])[0];
+  //       const p0 = j.data[h0][c0].top_pairs_table?.[0]?.pair_id ?? null;
+
+  //       setHorizon(h0);
+  //       setCountry(c0);
+  //       setPairId(p0);
+  //     })
+  //     .finally(() => setLoading(false));
+  // }, [isLoggedIn]);
+  // const didFetchRef = useRef(false);
   useEffect(() => {
-    if (!isLoggedIn) return;
+    if (!isLoggedIn || !horizon || !country || !isRestored) return;
 
-    setLoading(true);
+    const controller = new AbortController();
 
-    fetch("/two_factor_heatmaps_precomputed.json")
-      .then(r => r.json())
-      .then(j => {
+    const loadData = async () => {
+      try {
+        setLoading(true);
+
+        const res = await fetch(
+          `https://oncodir-datapi.catalink.eu/v1/deli/predictions` +
+          `?type=two_factor_heatmaps` +
+          `&prediction_horizon=${horizon}` +
+          `&country=${country}`,
+          {
+            // headers: {
+            //   Authorization: `Bearer ${token}`,
+            //   "Content-Type": "application/json",
+            // },
+            // signal: controller.signal,
+          }
+        );
+
+        if (!res.ok) {
+          throw new Error(`HTTP ${res.status}`);
+        }
+
+        const j = await res.json();
         setJson(j);
-        const h0 = j.meta.horizons[0];
-        const c0 = Object.keys(j.data[h0])[0];
-        const p0 = j.data[h0][c0].top_pairs_table?.[0]?.pair_id ?? null;
 
-        setHorizon(h0);
+        const c0 = j.country;
+        const p0 = j.top_pairs_table?.[0]?.pair_id ?? null;
+
         setCountry(c0);
         setPairId(p0);
-      })
-      .finally(() => setLoading(false));
-  }, [isLoggedIn]);
+
+
+      } catch (err) {
+        if (err.name !== "AbortError") {
+          console.error("API error:", err);
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadData();
+
+    return () => controller.abort();
+  }, [isLoggedIn, horizon, country]);
+
+
 
   useEffect(() => {
     setChartImageUrl(""); // reset preview
@@ -106,31 +219,9 @@ const TwoFactorHeatmapViewer = () => {
 
 
   useEffect(() => {
-    if (!json || !horizon) return;
-
-    const availableCountries = Object.keys(json.data[horizon]);
-
-    // Keep country if it still exists
-    const nextCountry = availableCountries.includes(country)
-      ? country
-      : availableCountries[0];
-
-    const nextPair =
-      json.data[horizon][nextCountry].top_pairs_table?.[0]?.pair_id ?? null;
-
-    setCountry(nextCountry);
-    setPairId(nextPair);
-  }, [horizon, json]);
-
-
-  useEffect(() => {
-    if (!json || !horizon || !country) return;
-
-    const nextPair =
-      json.data[horizon][country].top_pairs_table?.[0]?.pair_id ?? null;
-
-    setPairId(nextPair);
-  }, [country, horizon, json]);
+    if (!json) return;
+    setPairId(json.top_pairs_table?.[0]?.pair_id ?? null);
+  }, [json]);
 
 
 
@@ -213,10 +304,18 @@ const TwoFactorHeatmapViewer = () => {
     if (horizon) params.horizon = horizon;
     if (pairId) params.pairId = pairId;
 
-
+    // console.log(params)
 
     return params;
   };
+  const countries = [
+    "Austria", "Belgium", "Bulgaria", "Croatia", "Cyprus",
+    "Czechia", "Denmark", "Estonia", "Finland", "France",
+    "Germany", "Greece", "Hungary", "Ireland", "Italy",
+    "Latvia", "Lithuania", "Luxembourg", "Malta", "Netherlands",
+    "Poland", "Portugal", "Romania", "Slovakia", "Slovenia",
+    "Spain", "Sweden"
+  ];
 
 
   const getChartImageUrl = () => {
@@ -233,30 +332,20 @@ const TwoFactorHeatmapViewer = () => {
     });
   };
 
-
-  const countries = useMemo(() => {
-
-    if (!json || !horizon) return [];
-
-    return Object.keys(json.data[horizon]);
-
-  }, [json, horizon]);
+  // const countries = useMemo(() => {
+  //   if (!json) return [];
+  //   return [json.country];
+  // }, [json]);
 
   const pairs = useMemo(() => {
-
-    if (!json || !horizon || !country) return [];
-
-    return json.data[horizon][country].top_pairs_table || [];
-  }, [json, horizon, country]);
+    if (!json) return [];
+    return json.top_pairs_table || [];
+  }, [json]);
 
   const heatmap = useMemo(() => {
-
-    if (!json || !horizon || !country || !pairId) return null;
-
-    return json.data[horizon][country].heatmaps.find(
-      (h) => h.pair_id === pairId
-    );
-  }, [json, horizon, country, pairId]);
+    if (!json || !pairId) return null;
+    return json.heatmaps.find(h => h.pair_id === pairId);
+  }, [json, pairId]);
 
 
   const capitalizeWords = (str) =>
@@ -287,11 +376,11 @@ const TwoFactorHeatmapViewer = () => {
           value={horizon}
           onChange={e => setHorizon(e.target.value)}
         >
-          {json.meta.horizons.map(h => (
-            <option key={h} value={h}>
-              {h.endsWith("Y") ? `${h.slice(0, -1)} ${h === "1Y" ? "Year" : "Years"}` : h}
-            </option>
-          ))}
+          <option value="1">1 Year</option>
+          <option value="2">2 Years</option>
+          <option value="3">3 Years</option>
+          <option value="5">5 Years</option>
+          <option value="10">10 Years</option>
         </select>
 
 
@@ -348,9 +437,9 @@ const TwoFactorHeatmapViewer = () => {
 
             <SaveGraphButton
               iframeUrl={{
-                url: getCurrentChartImageUrl(), // ✅ always fetch the latest chart
+                url: chartImageUrl, // ✅ always fetch the latest chart
                 params: getUriParams(),
-                preview: getCurrentChartImageUrl(), // updated dynamically
+                preview: chartImageUrl, // updated dynamically
               }}
             />
           </>
@@ -399,8 +488,10 @@ function HeatmapEChart({ heatmap, country, horizon, chartRef, onChartRendered })
   const capitalizeWords = (str) =>
     str.replace(/\b\w/g, (char) => char.toUpperCase());
 
-  const formatHorizon = (h) =>
-    h.endsWith("Y") ? `${h.slice(0, -1)} ${h === "1Y" ? "Year" : "Years"}` : h;
+  const formatHorizon = (h) => {
+    const n = h.replace("Y", "");
+    return `${n} ${n === "1" ? "Year" : "Years"}`;
+  };
 
   const friendlyCountry = capitalizeWords(country.replace(/_/g, " "));
   const friendlyFactor1 = capitalizeWords(heatmap.factor_1.replace(/_/g, " "));
@@ -441,7 +532,7 @@ function HeatmapEChart({ heatmap, country, horizon, chartRef, onChartRendered })
     },
     xAxis: {
       type: "category",
-      name: friendlyFactor2,
+      name: friendlyFactor2 + ": exposure reduction (%)",
       nameLocation: "middle",
       nameGap: 50,
       data: xGrid.map((v) => `${(v * 100).toFixed(1)}%`),
@@ -449,7 +540,7 @@ function HeatmapEChart({ heatmap, country, horizon, chartRef, onChartRendered })
     },
     yAxis: {
       type: "category",
-      name: friendlyFactor1,
+      name: friendlyFactor1 + ": exposure reduction (%)",
       nameLocation: "middle",
       nameRotate: 90,
       nameGap: 50,
@@ -460,24 +551,40 @@ function HeatmapEChart({ heatmap, country, horizon, chartRef, onChartRendered })
       min: 0,
       max: heatmap.Z_max,
       orient: "vertical",
-      right: 20,
+      right: -3,
       top: "middle",
       itemHeight: 220,
-      itemWidth: 14,
+      itemWidth: 16,
       calculable: true,
-
-      text: ["Higher risk", "Lower risk"],
+      text: ["Highest reduction", "Lowest reduction"],
       textStyle: {
         fontSize: 12,
         color: "#333",
         fontWeight: 500,
       },
-
       formatter: (value) => `${value.toFixed(2)}%`,
-
       inRange: {
         color: ["#440154", "#3b528b", "#21918c", "#5ec962", "#fde725"],
       },
+    },
+    graphic: {
+      elements: [
+        {
+          type: "text",
+          right: 6,                // close to visualMap
+          top: "middle",
+          rotation: -Math.PI / 2,
+          z: 100,                  // VERY IMPORTANT
+          style: {
+            text: "Estimated CRC incidence reduction (%)",
+            fill: "#333",
+            fontSize: 12,
+            fontWeight: 500,
+            textAlign: "center",
+            textVerticalAlign: "middle",
+          },
+        },
+      ],
     },
     series: [
       {
@@ -498,17 +605,21 @@ function HeatmapEChart({ heatmap, country, horizon, chartRef, onChartRendered })
     <ReactECharts
       ref={chartRef}
       option={option}
-      notMerge={true}       // replaces the old option completely
-      lazyUpdate={false}    // forces immediate chart update
+      notMerge
+      lazyUpdate={false}
       style={{ height: 600, width: "100%" }}
       onChartReady={() => {
-        if (!chartRef.current) return;
-        const url = chartRef.current.getEchartsInstance().getDataURL({
-          type: "webp",
-          pixelRatio: 3,
-          backgroundColor: "#fff",
-        });
-        onChartRendered(url); // ✅ image only after chart fully rendered
+        // Force capture after chart fully renders
+        setTimeout(() => {
+          const instance = chartRef.current?.getEchartsInstance();
+          if (!instance) return;
+          const url = instance.getDataURL({
+            type: "webp",
+            pixelRatio: 2,
+            backgroundColor: "#fff",
+          });
+          onChartRendered(url);
+        }, 500); // 500ms usually enough for first render
       }}
     />
   );

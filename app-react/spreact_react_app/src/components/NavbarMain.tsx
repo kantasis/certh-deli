@@ -147,6 +147,7 @@ const NavbarMain: React.FC = () => {
          subMenu: [
             {
                label: "LIP2",
+               href: "/large-scale-intervention",
                hint: "Pilot-specific analyses and integrated summaries.",
             },
 

@@ -561,21 +561,24 @@ const SavedDashboards: React.FC = () => {
 
                                             const normalizedFilter = filter.replace(/ filter$/, '').toLowerCase();
                                             const formatPairId = (str: string) => {
+                                                if (!str) return "";
                                                 return str
                                                     .replace(/__/g, " × ")      // double underscore → ×
                                                     .replace(/_/g, " ")         // single underscore → space
-                                                    .replace(/\b\w/g, char => char.toUpperCase()); // capitalize first letter of each word
+                                                    .replace(/\b\w/g, char => char.toUpperCase()) // capitalize first letter of each word
+                                                    .trim();                     // remove extra spaces
                                             };
-                                            if (normalizedFilter === "pair id") {
+
+                                            if (normalizedFilter === "pair id" && values?.length) {
                                                 return (
                                                     <OverlayTrigger
                                                         key={filter}
                                                         placement="top"
-                                                        overlay={<Tooltip id={`tooltip-${filter}`}>
-                                                            {filter.toLowerCase() === "pair id"
-                                                                ? values.map(formatPairId).join(", ") // ✅ formatted for tooltip
-                                                                : values.join(", ")}                 
-                                                        </Tooltip>}
+                                                        overlay={
+                                                            <Tooltip id={`tooltip-${filter}`}>
+                                                                {values.map(formatPairId).join(", ")}
+                                                            </Tooltip>
+                                                        }
                                                     >
                                                         <Badge
                                                             pill

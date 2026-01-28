@@ -5,7 +5,7 @@ import { Accordion, Modal, Button, Card } from 'react-bootstrap';
 import { useSearchParams } from "react-router-dom";
 import Comments from "./Comments.tsx";
 import { useLocation } from "react-router-dom";
-import { helper } from "echarts";
+
 
 const AggregationAnalysis = () => {
     const [selectedVariable, setSelectedVariable] = useState("");
