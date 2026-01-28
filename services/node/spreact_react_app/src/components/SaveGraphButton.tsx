@@ -417,6 +417,18 @@ const SaveGraphButton: React.FC<SaveGraphButtonProps> = ({ iframeUrl }) => {
                                                                     displaySet.add("Coverage of CRC screening (%)");
                                                                 displayValues = Array.from(displaySet).join(", ");
                                                             }
+                                                            // --- Pair ID formatting ---
+                                                            if (normalizedFilter === "pairid") {
+                                                                displayValues = values
+                                                                    .map(v =>
+                                                                        v
+                                                                            .replace(/__/g, " × ")
+                                                                            .replace(/_/g, " ")
+                                                                            .replace(/\b\w/g, char => char.toUpperCase())
+                                                                            .trim()
+                                                                    )
+                                                                    .join(", ");
+                                                            }
 
                                                             if (!displayValues.trim()) return null;
 

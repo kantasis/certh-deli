@@ -560,6 +560,37 @@ const SavedDashboards: React.FC = () => {
 
 
                                             const normalizedFilter = filter.replace(/ filter$/, '').toLowerCase();
+                                            const formatPairId = (str: string) => {
+                                                if (!str) return "";
+                                                return str
+                                                    .replace(/__/g, " × ")      // double underscore → ×
+                                                    .replace(/_/g, " ")         // single underscore → space
+                                                    .replace(/\b\w/g, char => char.toUpperCase()) // capitalize first letter of each word
+                                                    .trim();                     // remove extra spaces
+                                            };
+
+                                            if (normalizedFilter === "pair id" && values?.length) {
+                                                return (
+                                                    <OverlayTrigger
+                                                        key={filter}
+                                                        placement="top"
+                                                        overlay={
+                                                            <Tooltip id={`tooltip-${filter}`}>
+                                                                {values.map(formatPairId).join(", ")}
+                                                            </Tooltip>
+                                                        }
+                                                    >
+                                                        <Badge
+                                                            pill
+                                                            bg=""
+                                                            style={{ cursor: "pointer", backgroundColor: "#dee5fa", color: "#206985" }}
+                                                        >
+                                                            Pair: {formatPairId(values[0])}
+                                                        </Badge>
+                                                    </OverlayTrigger>
+                                                );
+                                            }
+
 
                                             // Special tooltip for Countries filter
                                             if (normalizedFilter === "country") {
@@ -570,10 +601,17 @@ const SavedDashboards: React.FC = () => {
                                                         placement="top"
                                                         overlay={<Tooltip id={`tooltip-${filter}`}>{values.join(", ")}</Tooltip>}
                                                     >
-                                                        <Badge pill bg="" style={{ cursor: "pointer", backgroundColor: "#dee5fa", color: "#206985" }}>
-                                                            Countries: {values.length}
+                                                        <Badge
+                                                            pill
+                                                            bg=""
+                                                            style={{ cursor: "pointer", backgroundColor: "#dee5fa", color: "#206985" }}
+                                                        >
+                                                            {values.length === 1
+                                                                ? `Country: ${values[0]}`
+                                                                : `Countries: ${values.length}`}
                                                         </Badge>
                                                     </OverlayTrigger>
+
                                                 );
                                             }
 
@@ -590,6 +628,7 @@ const SavedDashboards: React.FC = () => {
                                                     </OverlayTrigger>
                                                 );
                                             }
+
 
 
 
