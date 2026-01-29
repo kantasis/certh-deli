@@ -6,8 +6,7 @@ import Comments from "./Comments.tsx";
 import { Accordion, Modal, Button } from 'react-bootstrap';
 import SaveGraphButton from "./SaveGraphButton.tsx";
 import { useLocation, useNavigate } from "react-router-dom";
-import biasData from "../assets/bias_assessment.json";
-import reportPdf from "../assets/Bias_Analysis_Report.pdf";
+
 
 const countries_strLst = [
     "Austria", "Belgium", "Bulgaria", "Croatia", "Cyprus", "Czechia",
@@ -48,7 +47,7 @@ const DeliPredictions = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [cleanToken, setToken] = useState(null);
+    const [token, setToken] = useState(null);
     const [riskFactorsLst, setRiskFactorsLst] = useState([]);
     const chartRef = useRef<ReactECharts>(null);
     const [showModal, setShowModal] = useState(false);
@@ -61,6 +60,7 @@ const DeliPredictions = () => {
     const [baselineShift, setBaselineShift] = useState(0);
     const [apiResponse, setApiResponse] = useState(null);
     const [selectedTarget, setSelectedTarget] = useState(0);
+  
 
     const [chartImageUrl, setChartImageUrl] = useState<string>("");
 
@@ -74,15 +74,18 @@ const DeliPredictions = () => {
     }, [location.search]);
 
 
+    useEffect(() => {
+        fetch("/src/assets/bias_assessment.json")
+            .then((res) => res.json())
+            .then((data) => {
+                const alerts = data?.["Alerts Consolidation"]?.["Bias Analysis Alerts"];
+                if (Array.isArray(alerts)) {
+                    setBiasContent(alerts);
+                }
+            })
+            .catch((err) => console.error("Failed to load Bias Analysis Alerts:", err));
+    }, []);
 
-
-useEffect(() => {
-  const alerts =
-    biasData?.["Alerts Consolidation"]?.["Bias Analysis Alerts"];
-  if (Array.isArray(alerts)) {
-    setBiasContent(alerts);
-  }
-}, []);
 
 
     useEffect(() => {
@@ -94,36 +97,57 @@ useEffect(() => {
     }, [horizon, type]);
 
     useEffect(() => {
-        const controller = new AbortController();
+        const TOKEN_KEY = "oncodir_token";
+        const TOKEN_TS_KEY = "oncodir_token_ts"; // timestamp of last token fetch
+        const ONE_DAY = 24 * 60 * 60 * 1000; // 24 hours in ms
 
-        fetch("https://oncodir-datapi.catalink.eu/v1/services/login/", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                service_name: import.meta.env.VITE_SERVICE_NAME,
-                password: import.meta.env.VITE_SERVICE_PASSWORD
-            }),
-            signal: controller.signal
-        })
-            .then(res => {
-                if (!res.ok) throw new Error(`HTTP error: ${res.status}`);
-                return res.text();
-            })
-            .then(token => {
-                const cleanToken = token.replace(/^"|"$/g, ""); // remove quotes
-                setToken(cleanToken);
-                // console.log("Token:", cleanToken);
-            })
-            .catch(err => {
+        const getToken = async () => {
+            const storedToken = localStorage.getItem(TOKEN_KEY);
+            const storedTs = localStorage.getItem(TOKEN_TS_KEY);
+            const now = Date.now();
+
+            if (storedToken && storedTs && now - parseInt(storedTs) < ONE_DAY) {
+                // Token is still valid
+                setToken(storedToken);
+                return;
+            }
+
+            // Token missing or expired → fetch new token
+            const controller = new AbortController();
+            try {
+                const res = await fetch(
+                    "https://oncodir-datapi.catalink.eu/v1/services/login/",
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                            service_name: import.meta.env.VITE_SERVICE_NAME,
+                            password: import.meta.env.VITE_SERVICE_PASSWORD,
+                        }),
+                        signal: controller.signal,
+                    }
+                );
+
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const newToken = await res.text();
+
+                localStorage.setItem(TOKEN_KEY, newToken);
+                localStorage.setItem(TOKEN_TS_KEY, now.toString());
+                setToken(newToken);
+            } catch (err) {
                 if (err.name !== "AbortError") {
-                    console.error("Failed to fetch token:", err);
+                    console.error("Login failed:", err);
                 }
-            });
+            }
 
-        return () => controller.abort();
+            return () => controller.abort();
+        };
+
+        getToken();
     }, []);
+
 
 
 
@@ -156,7 +180,8 @@ useEffect(() => {
 
 
 
-        if (!type || !horizon || !cleanToken) return;
+        if (!type || !horizon || !token) return;
+
         // Only fetch if type requires a country and a country is selected
         if (["sf_intervention", "sf_target", "exposure_weighted"].includes(type) && !country) {
             return; // skip fetch if country not selected
@@ -179,7 +204,7 @@ useEffect(() => {
 
                 const res = await axios.get(url, {
                     headers: {
-                        "Authorization": `Bearer ${cleanToken}`,
+                        "Authorization": `Bearer ${token}`,
                         "Content-Type": "application/json",
                     }
                 });
@@ -217,7 +242,9 @@ useEffect(() => {
 
 
         fetchData();
-    }, [type, horizon, country, riskFactor, cleanToken]);
+    }, [type, horizon, country, riskFactor, token]);
+
+
     useEffect(() => {
         if (!chartRef.current) return;
         const chart = chartRef.current.getEchartsInstance();
@@ -834,7 +861,7 @@ useEffect(() => {
                     </Button>
 
                 </div>
-                <div className="mt-3 text-center">Click <a href={reportPdf}  target="_blank">here</a> to download the Bias Analysis Report</div>
+                <div className="mt-3 text-center">Click <a href="/src/assets/Bias_Analysis_Report.pdf" target="_blank">here</a> to download the Bias Analysis Report</div>
             </>
         );
     };

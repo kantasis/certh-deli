@@ -35,7 +35,7 @@ const TwoFactorHeatmapViewer = () => {
   // console.log(location)
 
   const savedIframeUrl = location.state?.iframeUrl;
-  console.log(savedIframeUrl)
+  // console.log(savedIframeUrl)
 
   useEffect(() => {
     setIsLoggedIn(AuthService.isLoggedIn());
@@ -66,36 +66,9 @@ const TwoFactorHeatmapViewer = () => {
     }
   }, [savedIframeUrl]);
 
-  // useEffect(() => {
-  //   const controller = new AbortController();
 
-  //   fetch("https://oncodir-datapi.catalink.eu/v1/services/login/", {
-  //     method: "POST",
-  //     headers: {
-  //       "Content-Type": "application/json"
-  //     },
-  //     body: JSON.stringify({
-  //       service_name: import.meta.env.VITE_SERVICE_NAME,
-  //       password: import.meta.env.VITE_SERVICE_PASSWORD
-  //     }),
-  //     signal: controller.signal
-  //   })
-  //     .then(res => {
-  //       if (!res.ok) throw new Error(`HTTP error: ${res.status}`);
-  //       return res.text();
-  //     })
-  //     .then(token => {
-  //       setToken(token);
-  //       console.log("TOken: " + token)
-  //     })
-  //     .catch(err => {
-  //       if (err.name !== "AbortError") {
-  //         console.error("Failed to fetch token:", err);
-  //       }
-  //     });
 
-  //   return () => controller.abort();
-  // }, []);
+
 
 
   useEffect(() => {
@@ -120,6 +93,59 @@ const TwoFactorHeatmapViewer = () => {
     return () => clearTimeout(timeout);  // cleanup if chart updates before timeout
   }, [chartOptions]); // re-run whenever the chart options change
 
+
+
+  useEffect(() => {
+    const TOKEN_KEY = "oncodir_token";
+    const TOKEN_TS_KEY = "oncodir_token_ts"; // timestamp of last token fetch
+    const ONE_DAY = 24 * 60 * 60 * 1000; // 24 hours in ms
+
+    const getToken = async () => {
+      const storedToken = localStorage.getItem(TOKEN_KEY);
+      const storedTs = localStorage.getItem(TOKEN_TS_KEY);
+      const now = Date.now();
+
+      if (storedToken && storedTs && now - parseInt(storedTs) < ONE_DAY) {
+        // Token is still valid
+        setToken(storedToken);
+        return;
+      }
+
+      // Token missing or expired → fetch new token
+      const controller = new AbortController();
+      try {
+        const res = await fetch(
+          "https://oncodir-datapi.catalink.eu/v1/services/login/",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              service_name: import.meta.env.VITE_SERVICE_NAME,
+              password: import.meta.env.VITE_SERVICE_PASSWORD,
+            }),
+            signal: controller.signal,
+          }
+        );
+
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const newToken = await res.text();
+
+        localStorage.setItem(TOKEN_KEY, newToken);
+        localStorage.setItem(TOKEN_TS_KEY, now.toString());
+        setToken(newToken);
+      } catch (err) {
+        if (err.name !== "AbortError") {
+          console.error("Login failed:", err);
+        }
+      }
+
+      return () => controller.abort();
+    };
+
+    getToken();
+  }, []);
 
   // useEffect(() => {
   //   if (!location.search) return; // skip if no query params
@@ -161,8 +187,9 @@ const TwoFactorHeatmapViewer = () => {
   // }, [isLoggedIn]);
   // const didFetchRef = useRef(false);
   useEffect(() => {
-    if (!isLoggedIn || !horizon || !country || !isRestored) return;
-
+    if (!isLoggedIn || !token || !horizon || !country || !isRestored) return;
+    if (!token) return;
+    
     const controller = new AbortController();
 
     const loadData = async () => {
@@ -175,11 +202,11 @@ const TwoFactorHeatmapViewer = () => {
           `&prediction_horizon=${horizon}` +
           `&country=${country}`,
           {
-            // headers: {
-            //   Authorization: `Bearer ${token}`,
-            //   "Content-Type": "application/json",
-            // },
-            // signal: controller.signal,
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+            signal: controller.signal,
           }
         );
 
@@ -209,7 +236,7 @@ const TwoFactorHeatmapViewer = () => {
     loadData();
 
     return () => controller.abort();
-  }, [isLoggedIn, horizon, country]);
+  }, [isLoggedIn, token, horizon, country, isRestored]);
 
 
 
@@ -377,7 +404,6 @@ const TwoFactorHeatmapViewer = () => {
           onChange={e => setHorizon(e.target.value)}
         >
           <option value="1">1 Year</option>
-          <option value="2">2 Years</option>
           <option value="3">3 Years</option>
           <option value="5">5 Years</option>
           <option value="10">10 Years</option>
