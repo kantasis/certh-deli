@@ -755,6 +755,9 @@ const EuropeMap = () => {
     useEffect(() => {
         if (analysisType !== "Trend Correlation") return;
 
+
+
+
         const controller = new AbortController();
         setLoading(true);
 
@@ -806,39 +809,61 @@ const EuropeMap = () => {
 
 
     useEffect(() => {
-        const controller = new AbortController();
+        const TOKEN_KEY = "oncodir_token";
+        const TOKEN_TS_KEY = "oncodir_token_ts"; // timestamp of last token fetch
+        const ONE_DAY = 24 * 60 * 60 * 1000; // 24 hours in ms
 
-        fetch("https://oncodir-datapi.catalink.eu/v1/services/login/", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                service_name: import.meta.env.VITE_SERVICE_NAME,
-                password: import.meta.env.VITE_SERVICE_PASSWORD
-            }),
-            signal: controller.signal
-        })
-            .then(res => {
-                if (!res.ok) throw new Error(`HTTP error: ${res.status}`);
-                return res.text();
-            })
-            .then(token => {
-                setToken(token);
-                console.log("TOken: " + token)
-            })
-            .catch(err => {
+        const getToken = async () => {
+            const storedToken = localStorage.getItem(TOKEN_KEY);
+            const storedTs = localStorage.getItem(TOKEN_TS_KEY);
+            const now = Date.now();
+
+            if (storedToken && storedTs && now - parseInt(storedTs) < ONE_DAY) {
+                // Token is still valid
+                setToken(storedToken);
+                return;
+            }
+
+            // Token missing or expired → fetch new token
+            const controller = new AbortController();
+            try {
+                const res = await fetch(
+                    "https://oncodir-datapi.catalink.eu/v1/services/login/",
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                            service_name: import.meta.env.VITE_SERVICE_NAME,
+                            password: import.meta.env.VITE_SERVICE_PASSWORD,
+                        }),
+                        signal: controller.signal,
+                    }
+                );
+
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const newToken = await res.text();
+
+                localStorage.setItem(TOKEN_KEY, newToken);
+                localStorage.setItem(TOKEN_TS_KEY, now.toString());
+                setToken(newToken);
+            } catch (err) {
                 if (err.name !== "AbortError") {
-                    console.error("Failed to fetch token:", err);
+                    console.error("Login failed:", err);
                 }
-            });
+            }
 
-        return () => controller.abort();
+            return () => controller.abort();
+        };
+
+        getToken();
     }, []);
+
 
     useEffect(() => {
         if (analysisType !== "Trend Analysis") return;
-
+        if (!token) return;
         const controller = new AbortController();
         setLoading(true);
         const params = new URLSearchParams({
@@ -879,13 +904,13 @@ const EuropeMap = () => {
             }, 300));
 
         return () => controller.abort();
-    }, [analysisType, sexFilter, ageFilter, yearInterval]);
+    }, [analysisType, sexFilter, ageFilter, yearInterval, token]);
 
 
 
     useEffect(() => {
         if (analysisType !== "Association Analysis") return;
-
+        if (!token) return;
         const controller = new AbortController();
         setLoading(true);
 
@@ -923,7 +948,7 @@ const EuropeMap = () => {
             .finally(() => setLoading(false));
 
         return () => controller.abort();
-    }, [analysisType, sexFilter, ageFilter, selectedRiskFactors]);
+    }, [analysisType, sexFilter, ageFilter, selectedRiskFactors,token]);
 
 
 
