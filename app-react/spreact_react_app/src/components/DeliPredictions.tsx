@@ -60,7 +60,7 @@ const DeliPredictions = () => {
     const [baselineShift, setBaselineShift] = useState(0);
     const [apiResponse, setApiResponse] = useState(null);
     const [selectedTarget, setSelectedTarget] = useState(0);
-  
+
 
     const [chartImageUrl, setChartImageUrl] = useState<string>("");
 
@@ -74,8 +74,9 @@ const DeliPredictions = () => {
     }, [location.search]);
 
 
+
     useEffect(() => {
-        fetch("/src/assets/bias_assessment.json")
+        fetch("/bias_assessment.json")
             .then((res) => res.json())
             .then((data) => {
                 const alerts = data?.["Alerts Consolidation"]?.["Bias Analysis Alerts"];

@@ -112,3 +112,9 @@ services:
             - main_network
          depends_on:
             - db_label  # Wait for DB service to be ready
+         environment:
+            DB_HOST: db_label
+            DB_PORT: ${GLOBAL_PGPORT}
+            DB_USER: ${GLOBAL_POSTGRES_USER}
+            DB_PASSWORD: ${GLOBAL_POSTGRES_PASSWORD}
+            DB_NAME: ${GLOBAL_POSTGRES_DB}
