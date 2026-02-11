@@ -74,17 +74,18 @@ const DeliPredictions = () => {
     }, [location.search]);
 
 
-    useEffect(() => {
-        fetch("/src/assets/bias_assessment.json")
-            .then((res) => res.json())
-            .then((data) => {
-                const alerts = data?.["Alerts Consolidation"]?.["Bias Analysis Alerts"];
-                if (Array.isArray(alerts)) {
-                    setBiasContent(alerts);
-                }
-            })
-            .catch((err) => console.error("Failed to load Bias Analysis Alerts:", err));
-    }, []);
+useEffect(() => {
+  fetch("/bias_assessment.json")
+    .then((res) => res.json())
+    .then((data) => {
+      const alerts =
+        data?.["Alerts Consolidation"]?.["Bias Analysis Alerts"];
+      if (Array.isArray(alerts)) setBiasContent(alerts);
+    })
+    .catch((err) =>
+      console.error("Failed to load Bias Analysis Alerts:", err)
+    );
+}, []);
 
 
 

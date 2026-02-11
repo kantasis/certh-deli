@@ -31,12 +31,18 @@ app.all('/api/*', (req, res, next) => {
 // });
 // PostgreSQL Connection
 const pool = new Pool({
-    user: process.env.DB_USER || 'postgres',
-    host: process.env.DB_HOST || 'deli_db_container',
-    database: process.env.DB_NAME || 'deli_db',
-    password: process.env.DB_PASSWORD || 'postgres',
-    port: process.env.DB_PORT || 5433,
+    user: process.env.DB_USER,
+    host: process.env.DB_HOST,
+    database: process.env.DB_NAME ,
+    password: process.env.DB_PASSWORD ,
+    port: process.env.DB_PORT,
 });
+
+if (!process.env.DB_HOST) {
+  throw new Error("DB_HOST is not set");
+}else{
+	console.log('All good')
+}
 
 // Insert new comment with page name
 app.post('/submit-text', async (req, res) => {
