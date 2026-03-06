@@ -41,11 +41,17 @@ const Home: React.FC = () => {
                >
 
                </iframe> */}
-               <video width="560" height="315" controls poster="/src/assets/Oncodir photo for video.png">
+               {/* <video width="560" height="315" controls poster="/src/assets/Oncodir photo for video.png">
                   <source src="/src/assets/Oncodir with voiceover - no music.mp4" type="video/mp4"/>
                      Your browser does not support the video tag.
-               </video>
-
+               </video> */}
+               <iframe
+                  src="https://drive.google.com/file/d/1eJ5PAV4OcF7lokUzzoHG1iIHzQQsQize/preview"
+                  width="560"
+                  height="315"
+                  allow="fullscreen"
+                  allowfullscreen>
+               </iframe>
                {/* <Carousel>
                   {carouselImages_strLst.map((carouselImage_str, index_i)=>(
                      <Carousel.Item>

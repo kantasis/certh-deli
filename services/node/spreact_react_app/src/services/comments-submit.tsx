@@ -1,20 +1,39 @@
-import axios from 'axios';
+import axios from "axios";
 
-const authentication_host = import.meta.env.VITE_AUTHENTICATION_HOST;
-const API_URL = `https://${authentication_host}`; //"http://localhost:8435"; // Use container name, NOT localhost
+const isProduction = import.meta.env.MODE === "production";
+const host = import.meta.env.VITE_AUTHENTICATION_HOST;
 
+// Relative URL in production (Nginx handles routing)
+const API_URL = isProduction
+    ? "/submit-text"
+    : `http://${host}:8435/submit-text`;
 
-export const submitComment = async (text: string, username: string, page_name: string) => {
+// ------------------------
+// Submit Comment
+// ------------------------
+export const submitComment = async (
+    text: string,
+    username: string,
+    page_name: string
+) => {
     try {
-        console.log("Sending request to:", `${API_URL}/submit-text`);
+        console.log("Sending request to:", `${API_URL}`);
         console.log("Submitting comment:", { text, username, page_name });
-        const response = await axios.post(`${API_URL}/submit-text`, { text, username, page_name });
+
+        const response = await axios.post(`${API_URL}`, {
+            text,
+            username,
+            page_name
+        });
+
         console.log("Response:", response.data);
-        return response;
-    } catch (error) {
-        console.error("Error submitting comment:", error.response?.data || error.message);
+        return response.data;
+
+    } catch (error: any) {
+        console.error(
+            "Error submitting comment:",
+            error.response?.data || error.message
+        );
         throw new Error("Failed to submit comment");
     }
 };
-
-

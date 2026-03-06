@@ -3,9 +3,14 @@ import axios from 'axios';
 import { getCurrentUser } from '../services/auth.service';
 import { submitComment } from '../services/comments-submit';
 
+const isProduction = import.meta.env.MODE === "production";
+const host = import.meta.env.VITE_AUTHENTICATION_HOST;
 
-const authentication_host = import.meta.env.VITE_AUTHENTICATION_HOST;
-const API_URL = `https://${authentication_host}`;
+// Dev -> direct container
+// Prod -> through nginx
+const API_URL = isProduction
+    ? "/submit-text"
+    : `http://${host}:8435/submit-text`;
 
 interface Comment {
     id: number;
@@ -14,7 +19,7 @@ interface Comment {
     created_at: string;
     page_name: string;
 }
-console.log("🔥 THIS IS THE NEW BUILD 🔥");
+
 const Comments: React.FC = () => {
     const [text, setText] = useState('');
     const [comments, setComments] = useState<Comment[]>([]);
@@ -23,6 +28,7 @@ const Comments: React.FC = () => {
 
     useEffect(() => {
         const currentUser = getCurrentUser();
+        console.log("Current user roles:", currentUser?.roles);
         if (currentUser && currentUser.username) {
             setUsername(currentUser.username);
         }
@@ -31,7 +37,7 @@ const Comments: React.FC = () => {
     useEffect(() => {
         const fetchComments = async () => {
             try {
-                const response = await axios.get(`${API_URL}/all-comments`);
+                const response = await axios.get(`${API_URL}`);
                 setComments(Array.isArray(response.data) ? response.data : []);
             } catch (error) {
                 console.error('Error fetching comments:', error);
@@ -50,24 +56,27 @@ const Comments: React.FC = () => {
             return;
         }
 
-        let currentPage = window.location.pathname.replace("/", ""); // Remove "/"
+        let currentPage = window.location.pathname.replace("/", "");
 
         if (currentPage === "LIT03") {
             const lit03Panel = localStorage.getItem("lit03Panel") || "Unknown Panel";
             currentPage = `LIT03-${lit03Panel}`;
         }
 
-
         console.log("Submitting comment with:", { text, username, currentPage });
 
         try {
             const newComment = await submitComment(text, username, currentPage);
-            setComments([...comments, newComment.data]);
+
+            setComments([...comments, newComment]);
             setText('');
+
             setMessage({ text: '✅ Comment submitted successfully!', type: 'success' });
             setTimeout(() => setMessage(null), 5000);
+
         } catch (error) {
             console.error('Error submitting comment:', error);
+
             setMessage({ text: '❌ Failed to submit comment.', type: 'danger' });
             setTimeout(() => setMessage(null), 5000);
         }
@@ -78,14 +87,12 @@ const Comments: React.FC = () => {
             <h5 className="mb-3">💬 Comments</h5>
             <p><strong>Logged in as:</strong> {username}</p>
 
-            {/* Success / Error Messages */}
             {message && (
                 <div className={`alert alert-${message.type} fade show`} role="alert">
                     {message.text}
                 </div>
             )}
 
-            {/* Comment Form */}
             <form onSubmit={handleSubmit} className="mb-4">
                 <div className="mb-3">
                     <textarea
@@ -97,12 +104,11 @@ const Comments: React.FC = () => {
                         required
                     />
                 </div>
+
                 <button type="submit" className="btn btn-primary">
                     ✍️ Submit Comment
                 </button>
             </form>
-
-
         </div>
     );
 };

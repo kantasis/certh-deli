@@ -4,7 +4,15 @@ import { getCurrentUser } from '../services/auth.service'; // Import your authen
 import { getUserRole } from '../services/auth.service';
 
 const authentication_host = import.meta.env.VITE_AUTHENTICATION_HOST;
-const API_URL = `https://${authentication_host}`;
+// const API_URL = `http://${authentication_host}:8435`;
+const isProduction = import.meta.env.MODE === 'production';
+const host = import.meta.env.VITE_AUTHENTICATION_HOST;
+
+// Relative URL in prod, full dev URL otherwise
+const API_URL = isProduction
+    ? '/all-comments'
+    : `http://${host}:8435/comments`;
+
 interface Comment {
     id: number;
     content: string;
@@ -48,7 +56,7 @@ const Comments: React.FC = () => {
     useEffect(() => {
         const fetchComments = async () => {
             try {
-                const response = await axios.get(`${API_URL}/all-comments`);
+                const response = await axios.get(`${API_URL}`);
                 setComments(Array.isArray(response.data) ? response.data : []);
             } catch (error) {
                 console.error('Error fetching comments:', error);

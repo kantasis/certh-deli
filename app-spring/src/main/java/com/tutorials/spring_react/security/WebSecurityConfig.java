@@ -73,16 +73,46 @@ public class WebSecurityConfig {
    public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception{
       return authConfig.getAuthenticationManager();
    }
+   @Bean
+   public org.springframework.web.cors.CorsConfigurationSource corsConfigurationSource() {
+      org.springframework.web.cors.CorsConfiguration configuration =
+            new org.springframework.web.cors.CorsConfiguration();
+
+      configuration.setAllowedOrigins(
+      java.util.List.of(
+         "http://localhost:5173",
+         "http://localhost:9080",
+         "https://deli.oncodir.eu"
+      )
+   );
+
+
+      configuration.setAllowedMethods(
+            java.util.List.of("GET","POST","PUT","DELETE","OPTIONS")
+      );
+
+      configuration.setAllowedHeaders(java.util.List.of("*"));
+      configuration.setAllowCredentials(true);
+
+      org.springframework.web.cors.UrlBasedCorsConfigurationSource source =
+            new org.springframework.web.cors.UrlBasedCorsConfigurationSource();
+
+      source.registerCorsConfiguration("/**", configuration);
+      return source;
+   }
 
    @Bean
    // TODO: Rename this function to a verb
    public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception{
       httpSecurity
+         .cors(cors -> {}) 
          .csrf(csrf -> csrf.disable())
          // Let me get this straight: ANY exception is handled as unauthenticated?
          .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
          .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
          .authorizeHttpRequests(auth -> auth
+         .requestMatchers("/api/v1/auth/**").permitAll()
+         .requestMatchers("/api/v1/users/**").authenticated() // must be authenticated
          // // .requestMatchers("/api/data**").permitAll()
          //    // Allow the auth endpoints to be public (duh!)
          //    .requestMatchers("/api/auth/**").permitAll()

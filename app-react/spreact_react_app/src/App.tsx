@@ -26,6 +26,9 @@ import LIP2 from "./components/LIP2.tsx"
 import TrendAnalysis from "./components/TrendAnalysis.tsx"
 import MyDashboards from "./components/MyDashboards.tsx"
 import DeliPredictions from "./components/DeliPredictions.tsx"
+import TwoFactorHeatmapViewer from "./components/TwoFactorExloration.tsx"
+import LargeScaleIntervention from "./components/LargeScaleInterventionLIP2.tsx"
+import AdminUsers from "./components/AdminUsers.tsx";
 
 const App: React.FC = () => {
    return (<>
@@ -52,12 +55,16 @@ const App: React.FC = () => {
                <Route path="/crc-trend-and-association-analysis" element={< TrendAnalysis />} />
                <Route path="/comments" element={< PreviousComments />} />
                <Route path="/lip2-aggregation-analysis" element={<LIP2 />} />
+               <Route path="/lip2-population-groups" element={<LIP2 />} />
                {/* <Route path="/nutritionPanel" element={<NutritionPanel />} />
                <Route path="/lifestylePanel" element={<LifestylePanel />} /> */}
                <Route path="/crc-policy-data" element={<PolicyPanel />} />
                <Route path="/crc-predictive-analytics" element={<DeliPredictions />} />
-                {/* <Route path="/deli-predictions" element={<DeliPredictions />} /> */}
+               <Route path="/two-factor-exploration" element={<TwoFactorHeatmapViewer />} />
+                <Route path="/large-scale-intervention" element={<LargeScaleIntervention />} />
+               {/* <Route path="/deli-predictions" element={<DeliPredictions />} /> */}
                <Route path="/my-dashboards" element={<MyDashboards />} />
+               <Route path="/admin/users" element={<AdminUsers />} />
             </Routes>
          </div>
 

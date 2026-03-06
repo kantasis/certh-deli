@@ -22,6 +22,7 @@ const NavbarMain: React.FC = () => {
    const location = useLocation();
    const currentUser = AuthService.getCurrentUser();
    const isAdmin = currentUser?.roles?.includes("ROLE_ADMIN");
+   const isModerator = currentUser?.roles?.includes("ROLE_MODERATOR");
 
    useEffect(() => {
       const loggedIn = AuthService.isLoggedIn();
@@ -106,7 +107,7 @@ const NavbarMain: React.FC = () => {
             { label: "Overview", isSection: true },
             { label: "Effect per SEV Unit", href: "/crc-predictive-analytics?tab=effect_sev_unit", hint: "Strength of association per unit change (EU view)." },
             { label: "Exposure-Weighted", href: "/crc-predictive-analytics?tab=exposure_weighted", hint: "Association strength combined with exposure prevalence." },
-            { label: "Quick Wins", href: "/crc-predictive-analytics?tab=quick_wins", hint: "Highlights factors with stronger associations (non-causal)." },
+            { label: "Quick Wins", href: "/crc-predictive-analytics?tab=quick_wins", hint: "Highlights factors with stronger associations." },
             { label: "Single-Factor Exploration", isSection: true },
             { label: "Intervention-Driven", href: "/crc-predictive-analytics?tab=sf_intervention", hint: "What-If scenarios adjusting one SEV." },
             { label: "Target-Driven", href: "/crc-predictive-analytics?tab=sf_target", hint: "SEV levels linked to CRC reduction goals." },
@@ -162,22 +163,23 @@ const NavbarMain: React.FC = () => {
 
 
             {
-               label: "CRC Prevalence Population Groups",
+               label: "CRC Incidence Population Groups",
                href: "/lip2-population-groups",
-               hint: "Clustering analysis based on LIT-02 data to identify 12 CRC prevalence population groups for LiP-02",
+               hint: "Clustering analysis based on LIT-02 data to identify 12 CRC Incidence population groups for LiP-02",
             },
 
-            { label: "LIP1 (Romania)", isSection: true },
+            // { label: "LIP1 (Romania)", isSection: true },
 
-            {
-               label: "Aggregation Analysis (RO)",
-               href: "/lip2-aggregation-analysis?country=Romania",
-               hint: "Pilot-specific aggregation results (integrated analytics & policy relevance).",
-            },
+            // {
+            //    label: "Aggregation Analysis (RO)",
+            //    href: "/lip2-aggregation-analysis?country=Romania",
+            //    hint: "Pilot-specific aggregation results (integrated analytics & policy relevance).",
+            // },
 
 
          ],
       },
+
    ];
    const renderMenu = (menu: MenuItem, depth = 0) => {
       const hasSubMenu = menu.subMenu && menu.subMenu.length > 0;
@@ -300,12 +302,21 @@ const NavbarMain: React.FC = () => {
                               <hr />
                            </li>
                            {isAdmin && (
-                              <li>
-                                 <NavLink className="dropdown-item" to="/comments">
-                                    Comments
-                                 </NavLink>
+                              <>
+                                 <li>
+                                    <NavLink className="dropdown-item" to="/comments">
+                                       Comments
+                                    </NavLink>
+                                 </li>
+                                 {isModerator && (
+                                    <li>
+                                       <NavLink className="dropdown-item" to="/admin/users">
+                                          Admin Panel
+                                       </NavLink>
+                                    </li>
+                                 )}
                                  <hr />
-                              </li>
+                              </>
                            )}
 
                            {/* My Dashboards submenu */}
