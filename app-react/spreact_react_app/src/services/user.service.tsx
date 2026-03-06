@@ -1,41 +1,32 @@
 import axios from "axios";
 import authHeader from "./auth-header";
 
-// TODO: Make this be loaded from one place
-// const API_URL = "http://localhost:3000/api/auth/";
-const authentication_host = import.meta.env.VITE_AUTHENTICATION_HOST;
-const API_URL = `${authentication_host}:8081/api/v1/content/`;
-//const API_URL = "http://localhost:8081/api/v1/content/";
+const isProduction = import.meta.env.MODE === "production";
+const host = import.meta.env.VITE_AUTHENTICATION_HOST;
 
-// TODO: This is not a user.service but a content.service
-export const getPublicContent = () => {
-   return axios.get(
-      API_URL + "all",
-      { headers: authHeader() }
-   );
-};
+// Relative URLs in production, full URLs in dev
+const API_URL = isProduction
+   ? "/api/v1/content/"
+   : `http://${host}:8081/api/v1/content/`;
 
-// TODO: Rename the 'Board' in 'Page'
-export const getUserBoard = () => {
-   return axios.get(
-      API_URL + "user",
-      { headers: authHeader() }
-   );
-};
+const USERS_API = isProduction
+   ? "/api/v1/users"
+   : `http://${host}:8081/api/v1/users`;
 
-// TODO: Rename the 'Board' in 'Page'
-export const getModeratorBoard = () => {
-   return axios.get(
-      API_URL + "mod",
-      { headers: authHeader() }
-   );
-};
+// ------------------------
+// Content endpoints
+// ------------------------
+export const getPublicContent = () => axios.get(API_URL + "all", { headers: authHeader() });
+export const getUserBoard = () => axios.get(API_URL + "user", { headers: authHeader() });
+export const getModeratorBoard = () => axios.get(API_URL + "mod", { headers: authHeader() });
+export const getAdminBoard = () => axios.get(API_URL + "admin", { headers: authHeader() });
 
-
-// TODO: Rename the 'Board' in 'Page'
-export const getAdminBoard = () => {
-   return axios.get(
-      API_URL + "admin",
-      { headers: authHeader() }
-   );
-};
+// ------------------------
+// User management
+// ------------------------
+export const getAllUsers = () => axios.get(USERS_API, { headers: authHeader() });
+export const updateUserRoles = (id: string, roles: string[]) =>
+   axios.put(`${USERS_API}/${id}/roles`, roles, { headers: authHeader() });
+export const deleteUser = (id: string) => axios.delete(`${USERS_API}/${id}`, { headers: authHeader() });
+export const updateUserNames = (id: string, data: { name: string; surname: string }) =>
+   axios.put(`${USERS_API}/${id}/name`, data, { headers: authHeader() });

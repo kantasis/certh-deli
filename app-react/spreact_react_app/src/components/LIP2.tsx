@@ -792,7 +792,7 @@ const AggregationAnalysis = () => {
     const clusterColors = [
         "#1f77b4", "#aec7e8", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf", "#9edae5"
     ];
-    
+
     const scatterOptions = useMemo(() => {
         // Group by cluster
         const grouped = {};
@@ -952,7 +952,7 @@ const AggregationAnalysis = () => {
                         {isPopulationGroups && (
                             <>
                                 <Card>
-                                    <div><strong>CRC Prevalence population groups</strong> represent distinct and interpretable subgroups based on shared demographic, lifestyle, and health-related characteristics. These groups support tailored policy decisions and targeted interventions within  <strong> LiP-02</strong>. Their analysis is based on data collected in <strong>Greece</strong> through the <strong>NELI mobile application</strong> during Living Lab Integration Test 02 (<strong>LIT-02</strong>).<br></br><br></br>
+                                    <div><strong>CRC Incidence population groups</strong> represent distinct and interpretable subgroups based on shared demographic, lifestyle, and health-related characteristics. These groups support tailored policy decisions and targeted interventions within  <strong> LiP-02</strong>. Their analysis is based on data collected in <strong>Greece</strong> through the <strong>NELI mobile application</strong> during Living Lab Integration Test 02 (<strong>LIT-02</strong>).<br></br><br></br>
                                         Clustering analysis was performed using an optimized set of 10 variables: age group, BMI group, biological sex, smoking status, activity level, education, employment, region, occupation, and CRC Risk Score.<br></br><br></br>
                                         Hierarchical clustering with Gower distance identified <strong>12 population groups</strong> in accordance with project KPIs, distributed as follows:<br></br>
                                         <br></br> •	7 groups with CRC risk score 2
@@ -968,13 +968,13 @@ const AggregationAnalysis = () => {
                 <div className={isPopulationGroups ? "col-8 mt-5" : "col-8 mt-5"}>
                     {isPopulationGroups && (
                         <>
-                            <h3 className="mb-3">CRC Prevalence Population Groups</h3>
+                            <h3 className="mb-3">CRC Incidence Population Groups</h3>
                             <Button className="mb-3" onClick={() => setShowGraph(prev => !prev)}>
                                 {showGraph ? "Show Table" : "Show Graph"}
                             </Button>
                             <span className="m-2"></span>
                             {!showGraph && (
-                            
+
                                 <Button className="my-auto mb-3"
                                     variant="success"
                                     onClick={downloadCSV}
@@ -987,7 +987,7 @@ const AggregationAnalysis = () => {
                     )}
                     {/* 👉 POPULATION GROUPS TABLE - NOW SHOWING UNIQUE ROWS */}
                     {!showGraph && isPopulationGroups && (
-                            
+
                         <div className="table-responsive">
 
                             <table className="table table-bordered table-striped align-middle">
@@ -1025,7 +1025,7 @@ const AggregationAnalysis = () => {
                     )}
 
                     {showGraph && isPopulationGroups && (
-                        <><h3>PCA Scatterplot of Clustered CRC Prevalence Population Groups</h3>
+                        <><h3>PCA Scatterplot of Clustered CRC Incidence Population Groups</h3>
 
                             <ReactECharts option={scatterOptions} style={{ height: 500 }} />
                         </>

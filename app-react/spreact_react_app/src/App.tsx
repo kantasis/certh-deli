@@ -28,6 +28,7 @@ import MyDashboards from "./components/MyDashboards.tsx"
 import DeliPredictions from "./components/DeliPredictions.tsx"
 import TwoFactorHeatmapViewer from "./components/TwoFactorExloration.tsx"
 import LargeScaleIntervention from "./components/LargeScaleInterventionLIP2.tsx"
+import AdminUsers from "./components/AdminUsers.tsx";
 
 const App: React.FC = () => {
    return (<>
@@ -63,6 +64,7 @@ const App: React.FC = () => {
                 <Route path="/large-scale-intervention" element={<LargeScaleIntervention />} />
                {/* <Route path="/deli-predictions" element={<DeliPredictions />} /> */}
                <Route path="/my-dashboards" element={<MyDashboards />} />
+               <Route path="/admin/users" element={<AdminUsers />} />
             </Routes>
          </div>
 

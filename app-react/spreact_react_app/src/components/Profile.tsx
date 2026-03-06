@@ -9,16 +9,25 @@ import {
   TableRow,
   TableCell,
   TableContainer,
+  Stack,
+  Chip,
 } from "@mui/material";
 
 interface User {
-  id: number;
+  id: string;         // use string if your backend uses UUIDs
   name: string;
-  surName: string;
+  surname: string;    // keep lowercase consistent with backend
   username: string;
   email: string;
   roles: string[];
 }
+
+// Friendly mapping for roles
+const roleLabels: { [key: string]: string } = {
+  ROLE_USER: "User",
+  ROLE_MODERATOR: "Moderator",
+  ROLE_ADMIN: "Administrator",
+};
 
 const Profile: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -61,17 +70,18 @@ const Profile: React.FC = () => {
               <TableCell>{user.email}</TableCell>
             </TableRow>
             <TableRow>
-              <TableCell>Authorities</TableCell>
+              <TableCell>Roles</TableCell>
               <TableCell>
-                {user.roles
-                  .map((role) =>
-                    role === "ROLE_USER"
-                      ? "User"
-                      : role === "ROLE_ADMIN"
-                        ? "Administrator"
-                        : role
-                  )
-                  .join(", ")}
+                <Stack direction="row" spacing={1} flexWrap="wrap">
+                  {user.roles.map((role) => (
+                    <Chip
+                      key={role}
+                      label={roleLabels[role] || role}
+                      size="small"
+                      color="primary"
+                    />
+                  ))}
+                </Stack>
               </TableCell>
             </TableRow>
           </TableBody>
