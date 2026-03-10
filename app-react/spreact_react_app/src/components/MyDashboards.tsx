@@ -201,6 +201,7 @@ const SavedDashboards: React.FC = () => {
 
             const event = new CustomEvent("dashboardDeleted");
             window.dispatchEvent(event);
+            console.log(event)
 
             setShowDashboardDeleteModal(false);
         } catch (err) {

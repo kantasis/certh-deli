@@ -17,7 +17,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
-// allows Spring to find and automatically apply the class to the global Web Security.
+// allows Spring to find and automatically apply the class to the global Web
+// Security.
 @EnableMethodSecurity
 public class WebSecurityConfig {
 
@@ -27,20 +28,20 @@ public class WebSecurityConfig {
 
    @Autowired
    UserDetailsServiceImpl userDetailsService;
-   
 
    @Autowired
    private AuthEntryPointJwt unauthorizedHandler;
 
    @Bean
-   public AuthTokenFilter authenticationJwtTokenFilter(){
+   public AuthTokenFilter authenticationJwtTokenFilter() {
       return new AuthTokenFilter();
    }
 
    // // Not implemented in the datalake
    // @Override
-   // public void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
-   //    authenticationManagerBuilder.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
+   // public void configure(AuthenticationManagerBuilder
+   // authenticationManagerBuilder) throws Exception {
+   // authenticationManagerBuilder.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
    // }
 
    // // Not implemented in the datalake
@@ -48,7 +49,7 @@ public class WebSecurityConfig {
    // @Override
    // // Why the heck do I need to override this???
    // public AuthenticationManager authenticationManagerBean() throws Exception {
-   //    return super.authenticationManagerBean();
+   // return super.authenticationManagerBean();
    // }
 
    @Bean
@@ -58,7 +59,7 @@ public class WebSecurityConfig {
 
    @Bean
    // TODO: Rename this function to a verb
-   public DaoAuthenticationProvider authenticationProvider(){
+   public DaoAuthenticationProvider authenticationProvider() {
       DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
       authProvider.setUserDetailsService(userDetailsService);
 
@@ -70,9 +71,10 @@ public class WebSecurityConfig {
 
    @Bean
    // TODO: Rename this function to a verb
-   public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception{
+   public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
       return authConfig.getAuthenticationManager();
    }
+
    @Bean
    public org.springframework.web.cors.CorsConfigurationSource corsConfigurationSource() {
       org.springframework.web.cors.CorsConfiguration configuration =
@@ -82,7 +84,8 @@ public class WebSecurityConfig {
       java.util.List.of(
          "http://localhost:5173",
          "http://localhost:9080",
-         "https://deli.oncodir.eu"
+         "https://deli.oncodir.eu",
+         "https://deli-dashboard.oncodir.eu-ailabs.com/"
       )
    );
 
@@ -103,51 +106,46 @@ public class WebSecurityConfig {
 
    @Bean
    // TODO: Rename this function to a verb
-   public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception{
+   public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
       httpSecurity
-         .cors(cors -> {}) 
-         .csrf(csrf -> csrf.disable())
-         // Let me get this straight: ANY exception is handled as unauthenticated?
-         .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
-         .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-         .authorizeHttpRequests(auth -> auth
-         .requestMatchers("/api/v1/auth/**").permitAll()
-         .requestMatchers("/api/v1/users/**").authenticated() // must be authenticated
-         // // .requestMatchers("/api/data**").permitAll()
-         //    // Allow the auth endpoints to be public (duh!)
-         //    .requestMatchers("/api/auth/**").permitAll()
+            .cors(cors -> {
+            })
+            .csrf(csrf -> csrf.disable())
+            // Let me get this straight: ANY exception is handled as unauthenticated?
+            .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authorizeHttpRequests(auth -> auth
+                  .requestMatchers("/api/v1/auth/**").permitAll()
+                  .requestMatchers("/api/v1/users/**").authenticated() // must be authenticated
+                  // // .requestMatchers("/api/data**").permitAll()
+                  // // Allow the auth endpoints to be public (duh!)
+                  // .requestMatchers("/api/auth/**").permitAll()
 
-         //    // This is to test the Authorization (eventually)
-         //    .requestMatchers("/api/content/**").permitAll()
+                  // // This is to test the Authorization (eventually)
+                  // .requestMatchers("/api/content/**").permitAll()
 
-         //    // This is to test the general availability of the system
-         //    .requestMatchers("/hello").permitAll()
+                  // // This is to test the general availability of the system
+                  // .requestMatchers("/hello").permitAll()
 
-         //    // Allow H2 console endpoints
-         //    .requestMatchers(h2ConsolePath + "/**").permitAll()
+                  // // Allow H2 console endpoints
+                  // .requestMatchers(h2ConsolePath + "/**").permitAll()
 
-         //    // Swagger endpoints. Let's keep them here
-         //    .requestMatchers("/v3/api-docs/**").permitAll()
-         //    .requestMatchers("/swagger-ui/**").permitAll()
+                  // // Swagger endpoints. Let's keep them here
+                  // .requestMatchers("/v3/api-docs/**").permitAll()
+                  // .requestMatchers("/swagger-ui/**").permitAll()
 
-            // .anyRequest().authenticated()
-            .anyRequest().permitAll()
-         )
-      ;
+                  // .anyRequest().authenticated()
+                  .anyRequest().permitAll());
 
-       // fix H2 database console: Refused to display ' in a frame because it set 'X-Frame-Options' to 'deny'
-      httpSecurity.headers(headers -> 
-         headers.frameOptions(frameOption -> 
-            frameOption.sameOrigin()
-         )
-      );
+      // fix H2 database console: Refused to display ' in a frame because it set
+      // 'X-Frame-Options' to 'deny'
+      httpSecurity.headers(headers -> headers.frameOptions(frameOption -> frameOption.sameOrigin()));
 
       httpSecurity.authenticationProvider(authenticationProvider());
       httpSecurity.addFilterBefore(
-         authenticationJwtTokenFilter(), 
-         UsernamePasswordAuthenticationFilter.class
-      );
-      
+            authenticationJwtTokenFilter(),
+            UsernamePasswordAuthenticationFilter.class);
+
       return httpSecurity.build();
    }
 
