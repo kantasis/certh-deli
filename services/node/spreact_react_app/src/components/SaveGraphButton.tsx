@@ -230,6 +230,7 @@ const SaveGraphButton: React.FC<SaveGraphButtonProps> = ({ iframeUrl }) => {
         const newDb = await createDashboard(userId, newDashboardName);
         setDashboards(prev => [...prev, { ...newDb, graphs: [] }]);
         setNewDashboardName("");
+         window.dispatchEvent(new CustomEvent("dashboardCreated"));
     };
 
     const handleRenameDashboard = async () => {

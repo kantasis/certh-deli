@@ -46,39 +46,43 @@ const NavbarMain: React.FC = () => {
    }, []);
 
 
+   // 1️⃣ define outside useEffect
+   const refreshDashboards = async () => {
+      const freshUser = AuthService.getCurrentUser();
+      if (!freshUser?.id) return;
+
+      try {
+         const updatedDashboards = await getUserDashboards(freshUser.id);
+         setDashboards(
+            updatedDashboards.map((d: any) => ({
+               label: d.name,
+               href: `/my-dashboards?dashboardId=${d.id}`,
+            }))
+         );
+      } catch (err) {
+         console.error("Failed to refresh dashboards:", err);
+      }
+   };
+
+   // 2️⃣ useEffect just adds/removes listeners
    useEffect(() => {
-      const refreshDashboards = async () => {
-         const freshUser = AuthService.getCurrentUser();
-         if (!freshUser?.id) return;
-
-         try {
-            const updatedDashboards = await getUserDashboards(freshUser.id);
-            setDashboards(
-               updatedDashboards.map((d: any) => ({
-                  label: d.name,
-                  href: `/my-dashboards?dashboardId=${d.id}`,
-               }))
-            );
-         } catch (err) {
-            console.error("Failed to refresh dashboards:", err);
-         }
-      };
-
       window.addEventListener("dashboardCreated", refreshDashboards);
       window.addEventListener("dashboardDeleted", refreshDashboards);
       window.addEventListener("dashboardRenamed", refreshDashboards);
 
+      // initial load if logged in
+      if (AuthService.isLoggedIn()) refreshDashboards();
+
       return () => {
          window.removeEventListener("dashboardCreated", refreshDashboards);
          window.removeEventListener("dashboardDeleted", refreshDashboards);
-         window.addEventListener("dashboardRenamed", refreshDashboards);
+         window.removeEventListener("dashboardRenamed", refreshDashboards);
       };
    }, []);
 
-
    const logout = () => {
       AuthService.logout();
-      window.location.reload();
+      window.location.href = '/login';
    };
 
    const menus: MenuItem[] = [
@@ -254,7 +258,7 @@ const NavbarMain: React.FC = () => {
                <img
                   width="158"
                   height="25"
-                  src="https://www.oncodir.eu/wp-content/uploads/2023/07/ONCODIR-LOGO.svg"
+                  src="/ONCODIR-LOGO.svg"
                   alt="ONCODIR Logo"
                />
             </NavLink>

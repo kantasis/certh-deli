@@ -5,7 +5,7 @@ import { Accordion, Modal, Button, Card } from 'react-bootstrap';
 import { useSearchParams } from "react-router-dom";
 import Comments from "./Comments.tsx";
 import { useLocation } from "react-router-dom";
-
+import * as AuthService from "../services/auth.service.tsx";
 
 const AggregationAnalysis = () => {
     const [selectedVariable, setSelectedVariable] = useState("");
@@ -20,6 +20,12 @@ const AggregationAnalysis = () => {
     const location = useLocation();
     const isPopulationGroups = location.pathname.includes("lip2-population-groups");
     const [showGraph, setShowGraph] = useState(false);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+
+    useEffect(() => {
+        setIsLoggedIn(AuthService.isLoggedIn());
+    }, []);
 
 
     const variables = useMemo(() => [...new Set(data.map((d) => d.Variable))], [data]);
@@ -814,6 +820,8 @@ const AggregationAnalysis = () => {
             itemStyle: { color: clusterColors[cluster - 1] || "#ccc" },
         }));
 
+
+
         return {
             tooltip: {
                 trigger: 'item',
@@ -878,13 +886,21 @@ const AggregationAnalysis = () => {
         link.click();
         URL.revokeObjectURL(url);
     };
+    console.log("isLoggedIn:", isLoggedIn);
+    if (!isLoggedIn) {
+        return (
+            <div className="container mt-5 text-center">
+                <h2>Unauthorized</h2>
 
-
-
+            </div>
+        );
+    }
 
     return (
+
         <div className="container-fluid mt-3">
             {!isPopulationGroups && (
+
                 <h3>Aggregation Analysis - {country}</h3>
             )}
             <div className="row">

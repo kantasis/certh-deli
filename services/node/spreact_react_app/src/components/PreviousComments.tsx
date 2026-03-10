@@ -40,7 +40,7 @@ const Comments: React.FC = () => {
 
     const userRole = getUserRole();
     console.log(userRole);
-    if (userRole !== "ROLE_ADMIN")
+    if (userRole !== "ROLE_ADMIN" && userRole !== "ROLE_MODERATOR")
         return <h2>Unauthorized</h2>;
     // Fetch logged-in user on component mount
     useEffect(() => {

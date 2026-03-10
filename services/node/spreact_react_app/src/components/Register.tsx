@@ -211,15 +211,17 @@ const Register: React.FC = () => {
                            </div>
                         )}
 
-                        <div className="d-flex justify-content-center mt-3">
-                           <button
-                              type="submit"
-                              className="btn btn-primary btn-block"
-                              disabled={loading}
-                           >
-                              {loading ? "Signing Up..." : "Sign Up"}
-                           </button>
-                        </div>
+                        {!successful && (
+                           <div className="d-flex justify-content-center mt-3">
+                              <button
+                                 type="submit"
+                                 className="btn btn-primary btn-block"
+                                 disabled={loading}
+                              >
+                                 {loading ? "Signing Up..." : "Sign Up"}
+                              </button>
+                           </div>
+                        )}
                      </Form>
                   );
                }}
