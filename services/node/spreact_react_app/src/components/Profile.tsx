@@ -55,7 +55,7 @@ const Profile: React.FC = () => {
             </TableRow>
             <TableRow>
               <TableCell>Surname</TableCell>
-              <TableCell>{user.surName}</TableCell>
+              <TableCell>{user.surname}</TableCell>
             </TableRow>
             <TableRow>
               <TableCell>Username</TableCell>
