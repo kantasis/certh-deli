@@ -599,10 +599,12 @@ function HeatmapEChart({ heatmap, country, horizon, chartRef, onChartRendered })
 
         emphasis: {
           itemStyle: {
-            borderColor: "#000",  // ✅ black border
-            borderWidth: 1.5,     // thickness
-          },
-        },
+            borderColor: "#111",
+            borderWidth: 2,
+            shadowBlur: 15,
+            shadowColor: "rgba(0,0,0,0.3)"
+          }
+        }
       },
     ]
   };

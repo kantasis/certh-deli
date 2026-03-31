@@ -23,6 +23,7 @@ const analysisValueMap: Record<string, string> = {
     effect_sev_unit: "Overview: Effect per SEV Unit",
     sf_intervention: "Single-Factor Intervention",
     sf_target: "Single-Factor Target",
+    two_factor_heatmaps: "Two-Factor Joint Effect"
 };
 
 
@@ -501,7 +502,7 @@ const SavedDashboards: React.FC = () => {
                                             }
 
 
-                                            if (label.toLowerCase() === "horizon") {
+                                            if (label.toLowerCase() === "horizon" || label.toLowerCase() === "tf horizon" ) {
                                                 displayLabel = "Horizon";
 
                                                 // Map numeric horizon to friendly string
@@ -594,7 +595,7 @@ const SavedDashboards: React.FC = () => {
 
 
                                             // Special tooltip for Countries filter
-                                            if (normalizedFilter === "country") {
+                                            if (normalizedFilter === "country" || normalizedFilter === "tf country") {
                                                 // console.log("Countries extracted:", values);
                                                 return (
                                                     <OverlayTrigger
