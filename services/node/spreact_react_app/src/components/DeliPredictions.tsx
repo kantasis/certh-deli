@@ -471,7 +471,7 @@ const DeliPredictions = () => {
                     <Button variant="primary" onClick={() => setCurrentPage((p) => p + 1)} disabled={end >= biasContent.length}>Next</Button>
                 </div>
                 <div className="mt-3 text-center">
-                    Click <a href="/src/assets/Bias_Analysis_Report.pdf" target="_blank">here</a> to download the Bias Analysis Report
+                    Click <a href="/Bias_Analysis_Report.pdf" target="_blank">here</a> to download the Bias Analysis Report
                 </div>
             </>
         );
