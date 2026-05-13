@@ -1,11 +1,10 @@
 import { useEffect, useMemo, useState, useRef } from "react";
-import axios from "axios";
 import * as AuthService from "../services/auth.service.tsx";
 import ReactECharts from "echarts-for-react";
-import { Accordion, Modal, Button, Card, Form, Row, Col } from 'react-bootstrap';
+import { Accordion } from 'react-bootstrap';
 import Comments from "./Comments.tsx";
 import SaveGraphButton from "./SaveGraphButton.tsx";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 
 
@@ -256,42 +255,37 @@ const TwoFactorHeatmapViewer = () => {
   const accordionContent_dictLst = [
     {
       title: 'Source',
-      content: (<>
-        <div style={{ height: '340px', overflow: 'scroll' }}>
-          <p>
-            <li><strong>Source: </strong>Global Burden of Disease 2021.
-            </li><br />
-            <li><strong>Years: </strong>Data from 1990 to 2021.
-            </li><br />
-            <li><strong>Geographic Coverage: </strong> 27 European countries.</li><br></br>
-            <li><strong>CRC Incidence Rate: </strong>Number of new CRC cases diagnosed per 100,000 population in a year. </li><br />
-            <li><strong>Sex Groups: </strong>Both Sexes (Aggregated data for males and females), Males (males only), and Females (females only).</li>
-            <br />
-
-
-          </p>
+      content: (
+        <div style={{ maxHeight: '320px', overflowY: 'auto' }}>
+          <ul className="ps-3" style={{ fontSize: '13px', lineHeight: 1.65 }}>
+            <li><strong>Source:</strong> Global Burden of Disease 2021</li>
+            <li><strong>Years:</strong> 1990–2021</li>
+            <li><strong>Geographic Coverage:</strong> 27 European countries</li>
+            <li><strong>CRC Incidence Rate:</strong> New CRC cases per 100,000 population per year</li>
+            <li><strong>Sex Groups:</strong> Both Sexes, Males, Females</li>
+          </ul>
         </div>
-
-      </>)
+      )
     },
     {
       title: 'Summary Exposure Value (SEV)',
-      content: (<>
-        <p>
+      content: (
+        <p style={{ fontSize: '13px', lineHeight: 1.6 }}>
           Measure of a population's exposure to a risk factor that takes into account the extent of exposure by risk level and the severity of that risk's contribution to disease burden.
           Year lags refer to the time interval between risk factor exposure and CRC incidence.
         </p>
-      </>)
+      )
     },
     {
       title: 'Methodology',
-      content: (<>
-        <p>XGBoost (XGB) regression models trained across all 27 EU countries, incorporating country as a native categorical variable to capture country-specific baseline effects.
-          The best risk factor subset was selected by comparing three feature importance strategies i.e. permutation importance, tree gain importance, and Maximum Relevance Minimum Redundancy (MRMR), evaluated via time-series cross-validation, with the best-performing method chosen per horizon.
+      content: (
+        <p style={{ fontSize: '13px', lineHeight: 1.6 }}>
+          XGBoost (XGB) regression models trained across all 27 EU countries, incorporating country as a native categorical variable to capture country-specific baseline effects.
+          The best risk factor subset was selected by comparing three feature importance strategies: permutation importance, tree gain importance, and Maximum Relevance Minimum Redundancy (MRMR), evaluated via time-series cross-validation.
           Time-lag analyses of 1, 3, 5 and 10 years between CRC incidence and risk factor SEVs investigated potential downstream effects.
-          For visualization purposes, only cross-category pairs were considered, combining one lifestyle and one dietary risk factor. Pairs with known biological redundancy or high collinearity were excluded.
-          The top 5 pairs per country and horizon were ranked by their estimated joint CRC incidence reduction at a standardised exposure reduction.</p>
-      </>)
+          The top 5 pairs per country and horizon were ranked by their estimated joint CRC incidence reduction at a standardised exposure reduction.
+        </p>
+      )
     },
 
 
@@ -358,118 +352,180 @@ const TwoFactorHeatmapViewer = () => {
   const capitalizeWords = (str) =>
     str.replace(/\b\w/g, (char) => char.toUpperCase());
 
-  if (!isLoggedIn) {
-    return <h2>Unauthorized</h2>;
-  }
+  if (!isLoggedIn) return <h2 className="text-center mt-5">Unauthorized</h2>;
 
   if (loading) {
     return (
-      <div className="text-center mt-5">
-        <div className="spinner-border text-primary" />
-        <div className="fw-bold mt-2">Loading...</div>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '400px', gap: '12px' }}>
+        <div className="spinner" aria-label="Loading" />
+        <span style={{ fontSize: '14px', color: 'var(--text-muted, #475569)', fontWeight: 500 }}>Loading data…</span>
       </div>
     );
   }
-  if (!json) return <div className="p-4">Something went wrong. Please try again !</div>;
+
+  if (!json) return <div className="p-4 text-center" style={{ color: 'var(--text-muted, #475569)' }}>Something went wrong. Please try again.</div>;
 
   return (
+    <>
+      <style>{`
+        .tf-page { padding: 24px 0 40px; }
 
-    <div className="row mt-5">
-      {/* Horizon */}
-      <div className="col-2">
-        <label className="fw-bold mb-1">Select Horizon</label>
-        <select
-          className="form-select"
-          value={horizon}
-          onChange={e => setHorizon(e.target.value)}
-        >
-          <option value="1">1 Year</option>
-          <option value="3">3 Years</option>
-          <option value="5">5 Years</option>
-          <option value="10">10 Years</option>
-        </select>
+        .tf-header { margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--border, #e5e7eb); }
+        .tf-header h1 { font-size: 20px; font-weight: 800; color: var(--text, #0f172a); margin: 0 0 3px; }
+        .tf-header p { font-size: 13px; color: var(--text-muted, #475569); margin: 0; }
 
+        .tf-sidebar-card {
+          background: var(--bg, #fff);
+          border: 1px solid var(--border, #e5e7eb);
+          border-radius: 14px;
+          padding: 18px 16px;
+          margin-bottom: 12px;
+        }
+        .tf-sidebar-card .filter-label {
+          display: block;
+          font-size: 12px;
+          font-weight: 700;
+          color: var(--text-muted, #475569);
+          text-transform: uppercase;
+          letter-spacing: 0.06em;
+          margin-bottom: 8px;
+        }
+        .tf-select {
+          width: 100%;
+          font-size: 13px;
+          padding: 7px 10px;
+          border: 1px solid var(--border, #e5e7eb);
+          border-radius: 8px;
+          background: var(--bg, #fff);
+          color: var(--text, #0f172a);
+          appearance: none;
+          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' stroke='%23475569' stroke-width='2' viewBox='0 0 24 24'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+          background-repeat: no-repeat;
+          background-position: right 10px center;
+          cursor: pointer;
+        }
+        .tf-select:focus { outline: none; border-color: var(--brand, #1f6580); box-shadow: 0 0 0 3px rgba(31,101,128,0.15); }
 
-        {/* Country */}
-        <label className="fw-bold mb-1">Select Country</label>
-        <select
-          className="form-select"
-          value={country}
-          onChange={e => setCountry(e.target.value)}
-        >
-          {countries.map(c => (
-            <option key={c} value={c}>
-              {c.replace(/_/g, " ")}
-            </option>
-          ))}
-        </select>
+        .tf-chart-wrapper {
+          position: relative;
+          border: 1px solid var(--border, #e5e7eb);
+          border-radius: 14px;
+          overflow: hidden;
+          background: var(--muted, #f5f7fb);
+          min-height: 600px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .tf-chart-inner { width: 100%; padding: 8px; }
+        .tf-empty-state { text-align: center; padding: 60px 24px; }
+        .tf-empty-title { font-size: 15px; font-weight: 600; color: var(--text, #0f172a); margin: 12px 0 6px; }
+        .tf-empty-sub { font-size: 13px; color: var(--text-muted, #475569); margin: 0; }
+        .tf-empty-icon { color: var(--text-muted, #475569); }
 
+        .tf-accordion { margin-bottom: 16px; }
+        .tf-accordion .accordion-button {
+          font-size: 13px; font-weight: 600; color: var(--text, #0f172a);
+          background: var(--bg, #fff); padding: 12px 14px;
+        }
+        .tf-accordion .accordion-button:not(.collapsed) { color: var(--brand, #1f6580); background: #e8f2f6; box-shadow: none; }
+        .tf-accordion .accordion-body { font-size: 13px; padding: 12px 14px; color: var(--text, #0f172a); line-height: 1.6; }
+        .tf-accordion .accordion-item { border: 1px solid var(--border, #e5e7eb); border-radius: 10px !important; margin-bottom: 6px; overflow: hidden; }
+        .tf-accordion .accordion-item + .accordion-item { border-top: 1px solid var(--border, #e5e7eb); }
 
-        {/* Factor Pair */}
-        <label className="fw-bold mb-1">Select Pair</label>
-        <select
-          className="form-select"
-          value={pairId}
-          onChange={e => setPairId(e.target.value)}
-        >
-          {pairs.map(p => (
-            <option key={p.pair_id} value={p.pair_id}>
-              {capitalizeWords(p.factor_1.replace(/_/g, " "))} × {capitalizeWords(p.factor_2.replace(/_/g, " "))}
-            </option>
-          ))}
-        </select>
-      </div>
+        @media (prefers-reduced-motion: reduce) {
+          .tf-chart-wrapper { transition: none; }
+        }
+      `}</style>
 
-      {/* Heatmap */}
+      <div className="container-fluid tf-page">
 
-      <div className="col-8">
+        <div className="tf-header">
+          <h1>Two-Factor Exploration</h1>
+          <p>Joint CRC incidence reduction heatmaps for top risk factor pairs · XGBoost predictions · GBD 2021</p>
+        </div>
 
-        {/* 👉 LOADING */}
-        {/* {loading && (
-          <div className="text-center mt-5">
-            <div className="spinner-border text-primary" />
-            <div className="fw-bold mt-2">Loading...</div>
+        <div className="row g-3">
+
+          {/* ── Left sidebar ── */}
+          <div className="col-xl-2 col-lg-3">
+            <div className="tf-sidebar-card">
+              <span className="filter-label">Prediction Horizon</span>
+              <select className="tf-select" value={horizon} onChange={e => setHorizon(e.target.value)}>
+                <option value="1">1 Year</option>
+                <option value="3">3 Years</option>
+                <option value="5">5 Years</option>
+                <option value="10">10 Years</option>
+              </select>
+            </div>
+            <div className="tf-sidebar-card">
+              <span className="filter-label">Country</span>
+              <select className="tf-select" value={country} onChange={e => setCountry(e.target.value)}>
+                {countries.map(c => (
+                  <option key={c} value={c}>{c.replace(/_/g, " ")}</option>
+                ))}
+              </select>
+            </div>
+            <div className="tf-sidebar-card">
+              <span className="filter-label">Risk Factor Pair</span>
+              <select className="tf-select" value={pairId} onChange={e => setPairId(e.target.value)}>
+                {pairs.map(p => (
+                  <option key={p.pair_id} value={p.pair_id}>
+                    {capitalizeWords(p.factor_1.replace(/_/g, " "))} &times; {capitalizeWords(p.factor_2.replace(/_/g, " "))}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
-        )} */}
-        {heatmap && (
-          <>
-            <HeatmapEChart
-              heatmap={heatmap}
-              country={country}
-              horizon={horizon}
-              chartRef={chartRef}
-              onChartRendered={(url) => setChartImageUrl(url)} // update only after render
-            />
 
-            <SaveGraphButton
-              iframeUrl={{
-                url: chartImageUrl, // ✅ always fetch the latest chart
-                params: getUriParams(),
-                preview: chartImageUrl, // updated dynamically
-              }}
-            />
-          </>
-        )}
-      </div>
-      <div className="col-2">
-        <div>
-          <Accordion defaultActiveKey="-1">
-            {accordionContent_dictLst.map((item, idx) => (
-              <Accordion.Item eventKey={idx.toString()} key={idx}>
-                <Accordion.Header>{item.title}</Accordion.Header>
-                <Accordion.Body className="text-start" style={{ height: "340px", overflow: "scroll" }}>
-                  {item.content}
-                </Accordion.Body>
-              </Accordion.Item>
-            ))}
-          </Accordion>
+          {/* ── Center heatmap ── */}
+          <div className="col-xl-8 col-lg-6">
+            <div className="tf-chart-wrapper">
+              {heatmap ? (
+                <div className="tf-chart-inner">
+                  <HeatmapEChart
+                    heatmap={heatmap}
+                    country={country}
+                    horizon={horizon}
+                    chartRef={chartRef}
+                    onChartRendered={(url) => setChartImageUrl(url)}
+                  />
+                </div>
+              ) : (
+                <div className="tf-empty-state">
+                  <div className="tf-empty-icon" aria-hidden="true">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                      <rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/>
+                    </svg>
+                  </div>
+                  <p className="tf-empty-title">No heatmap available</p>
+                  <p className="tf-empty-sub">Select a country and horizon to load factor pair data.</p>
+                </div>
+              )}
+            </div>
+            {heatmap && (
+              <div className="mt-3">
+                <SaveGraphButton iframeUrl={{ url: chartImageUrl, params: getUriParams(), preview: chartImageUrl }} />
+              </div>
+            )}
+          </div>
 
-          <Comments />
+          {/* ── Right: accordion + comments ── */}
+          <div className="col-xl-2 col-lg-3">
+            <Accordion defaultActiveKey="-1" className="tf-accordion">
+              {accordionContent_dictLst.map((item, idx) => (
+                <Accordion.Item eventKey={idx.toString()} key={idx}>
+                  <Accordion.Header>{item.title}</Accordion.Header>
+                  <Accordion.Body className="text-start">{item.content}</Accordion.Body>
+                </Accordion.Item>
+              ))}
+            </Accordion>
+            <Comments />
+          </div>
+
         </div>
       </div>
-    </div>
-
-
+    </>
   );
 };
 

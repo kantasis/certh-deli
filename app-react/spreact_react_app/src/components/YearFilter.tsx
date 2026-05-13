@@ -1,15 +1,12 @@
-import React, { useState, useEffect } from "react";
-import { Form } from 'react-bootstrap';
+import React, { useEffect } from "react";
 
-// Interface for the properties of this component
-// Interface for the properties of this component
 interface FilterProps {
-   minYear_int: number,
-   set_minYear: Function,
-   maxYear_int: number,
-   set_maxYear: Function,
-   floorYear_int?: number,  // Optional: Default 1990
-   ceilYear_int?: number,   // Optional: Default 2019
+   minYear_int: number;
+   set_minYear: Function;
+   maxYear_int: number;
+   set_maxYear: Function;
+   floorYear_int?: number;
+   ceilYear_int?: number;
 }
 
 const YearFilter: React.FC<FilterProps> = ({
@@ -18,24 +15,30 @@ const YearFilter: React.FC<FilterProps> = ({
    maxYear_int,
    set_maxYear,
    floorYear_int = 1990,
-   ceilYear_int = 2021
+   ceilYear_int = 2021,
 }) => {
-
    useEffect(() => {
       if (minYear_int === 0) set_minYear(floorYear_int);
       if (maxYear_int === 0) set_maxYear(ceilYear_int);
    }, [floorYear_int, ceilYear_int, set_minYear, set_maxYear]);
 
    return (
-      <div className="col-lg">
-         <div className="row">
-            <div className="col-lg">
-               <label className="form-label">
-                  <strong>Select Min Year: </strong>
-                  <span style={{ color: 'green', fontWeight: '600' }}>{minYear_int}</span>
-               </label>
+      <>
+         <style>{`
+            .yf-range { accent-color: var(--brand, #1f6580); width: 100%; cursor: pointer; }
+            .yf-value { font-size: 13px; font-weight: 700; color: var(--brand-dark, #185569); }
+            .yf-row { margin-bottom: 14px; }
+            .yf-range-label { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+         `}</style>
+         <div>
+            <div className="yf-row">
+               <div className="yf-range-label">
+                  <label className="filter-label" htmlFor="yf-min" style={{ margin: 0 }}>From year</label>
+                  <span className="yf-value">{minYear_int}</span>
+               </div>
                <input
-                  className="form-range"
+                  id="yf-min"
+                  className="yf-range"
                   type="range"
                   min={floorYear_int}
                   max={ceilYear_int}
@@ -43,15 +46,14 @@ const YearFilter: React.FC<FilterProps> = ({
                   onChange={(e) => set_minYear(Math.min(maxYear_int, +e.target.value))}
                />
             </div>
-         </div>
-         <div className="row">
-            <div className="col-lg">
-               <label className="form-label">
-                  <strong>Select Max Year: </strong>
-                  <span style={{ color: 'green', fontWeight: '600' }}>{maxYear_int}</span>
-               </label>
+            <div className="yf-row">
+               <div className="yf-range-label">
+                  <label className="filter-label" htmlFor="yf-max" style={{ margin: 0 }}>To year</label>
+                  <span className="yf-value">{maxYear_int}</span>
+               </div>
                <input
-                  className="form-range"
+                  id="yf-max"
+                  className="yf-range"
                   type="range"
                   min={floorYear_int}
                   max={ceilYear_int}
@@ -60,9 +62,8 @@ const YearFilter: React.FC<FilterProps> = ({
                />
             </div>
          </div>
-      </div>
+      </>
    );
 };
 
 export default YearFilter;
-

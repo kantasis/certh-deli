@@ -3,7 +3,6 @@ import * as AuthService from "../services/auth.service.tsx";
 import ReactECharts from "echarts-for-react";
 import * as echarts from "echarts";
 import worldJson from "../assets/map/world.json";
-import { Form } from 'react-bootstrap';
 import Comments from "./Comments.tsx";
 import { Accordion } from 'react-bootstrap';
 import SaveGraphButton from "./SaveGraphButton.tsx";
@@ -468,12 +467,9 @@ const EuropeMap = () => {
             const parsed = JSON.parse(savedIframeUrl);
             const params = parsed.params;
 
-            console.log("Restoring with params:", params);
-
             if (!params) return;
 
             setIsRestoring(true);
-            console.log(params.analysis)
             setAnalysisType(params.analysis);
             setSexFilter(params.sexFilter);
             setAgeFilter(params.ageFilter);
@@ -521,223 +517,156 @@ const EuropeMap = () => {
     const accordionContentTrend_dictLst = [
         {
             title: 'Data Sources',
-            content: (<>
-                <div style={{ height: '340px', overflow: 'scroll' }}>
-                    <p>
-                        <li><strong>Source: </strong>Global Burden of Disease Study 2021</li><br />
-
-                        <li><strong>Years: </strong>1990-2021</li><br />
-
-                        <li><strong>Geographic Coverage: </strong>46 countries in Europe</li><br />
-
-                        <li><strong>Age Groups: </strong>Under 25 (0–24 years), 25–50 (25 to 49 years), Above 50 (50 and older), Age-Standardized (Adjusted rates that account for differences in age distributions across populations)</li><br />
-
-                        <li><strong>Sex Groups: </strong>Both Sexes (Aggregated data for males and females), Males (males only), and Females (females only)</li><br />
-
-                        <li><strong>CRC Incidence Rate: </strong>Number of new CRC cases diagnosed per 100,000 population in a year</li><br />
-
-                        <li><strong>Risk factors: </strong>22 risk factors, comprising 4 lifestyle factors, 15 nutrition factors, 2 comorbidities, and 1 socioeconomic factor</li><br />
-
-                        <li><strong>Summary Exposure Value (SEV) rates: </strong>This metric represents the relative risk-weighted prevalence of exposure, accounting for both the extent of exposure and its contribution to disease burden. SEV is the metric for 21 risk factors (excluding socioeconomic factor)</li><br />
-                    </p>
+            content: (
+                <div style={{ maxHeight: '320px', overflowY: 'auto' }}>
+                    <ul className="ps-3" style={{ fontSize: '13px', lineHeight: 1.65 }}>
+                        <li><strong>Source:</strong> Global Burden of Disease Study 2021</li>
+                        <li><strong>Years:</strong> 1990–2021</li>
+                        <li><strong>Geographic Coverage:</strong> 46 countries in Europe</li>
+                        <li><strong>Age Groups:</strong> Under 25 (0–24 years), 25–50 (25–49 years), Above 50 (50+), Age-Standardized</li>
+                        <li><strong>Sex Groups:</strong> Both Sexes, Males, Females</li>
+                        <li><strong>CRC Incidence Rate:</strong> New CRC cases per 100,000 population per year</li>
+                        <li><strong>Risk factors:</strong> 22 factors — 4 lifestyle, 15 nutrition, 2 comorbidities, 1 socioeconomic</li>
+                        <li><strong>SEV rates:</strong> Relative risk-weighted prevalence of exposure (21 risk factors)</li>
+                    </ul>
                 </div>
-            </>)
+            )
         },
         {
             title: 'Methodology',
-            content: (<>
-                <div style={{ height: '340px', overflow: 'scroll' }}>
-                    <p>
-                        <strong>Trend Analysis</strong><br /><br />
-
-                        Temporal trends in CRC incidence were analyzed utilizing the <strong>Estimated Annual Percentage Change (EAPC)</strong> over multiple intervals: 5, 10, 15, 20, 25, and 30 years.<br /><br />
-
-                        The EAPC describes the rate of change in Age-Standardized Rates (ASRs) over time by fitting a regression model to the natural logarithm of ASRs, using time as the explanatory variable. This approach applies a Generalized Linear Model with a Gaussian distribution and assumes a constant rate of change on the logarithmic scale.<br /><br />
-
-                        <strong>Interpreting Trends:</strong><br />
-                        <strong>Increasing trend:</strong> EAPC and 95% CI {">"} 0<br />
-                        <strong>Decreasing trend: </strong>EAPC and 95% CI {"<"} 0<br />
-                        <strong>Stable trend: </strong>95% CI includes 0 (no statistically significant change)<br />
-
-                    </p>
+            content: (
+                <div style={{ maxHeight: '320px', overflowY: 'auto', fontSize: '13px', lineHeight: 1.6 }}>
+                    <p><strong>Trend Analysis</strong></p>
+                    <p>Temporal trends in CRC incidence were analyzed using the <strong>Estimated Annual Percentage Change (EAPC)</strong> over multiple intervals: 5, 10, 15, 20, 25, and 30 years.</p>
+                    <p>The EAPC describes the rate of change in Age-Standardized Rates (ASRs) by fitting a regression model to the natural logarithm of ASRs. This applies a Generalized Linear Model with a Gaussian distribution, assuming a constant rate of change on the logarithmic scale.</p>
+                    <p><strong>Interpreting Trends:</strong></p>
+                    <ul className="ps-3">
+                        <li><strong>Increasing:</strong> EAPC and 95% CI &gt; 0</li>
+                        <li><strong>Decreasing:</strong> EAPC and 95% CI &lt; 0</li>
+                        <li><strong>Stable:</strong> 95% CI includes 0</li>
+                    </ul>
                 </div>
-            </>)
+            )
         },
         {
             title: 'References',
-            content: (<>
-
-                <p>
-                    B. F. Hankey, L. A. Ries, C. L. Kosary, E. J. Feuer, R. M. Merrill, L. X. Clegg, and B. K. Edwards, “Partitioning linear trends in age-adjusted rates,” Cancer causes & control, vol. 11, pp. 31–35, 2000. <br /><br />
-
-                    L. X. Clegg, B. F. Hankey, R. Tiwari, E. J. Feuer, and B. K. Edwards, “Estimating average annual per cent change in trend analysis,” Statistics in medicine, vol. 28, no. 29, pp. 3670–3682, 2009.<br /><br />
-
-                </p>
-
-            </>)
+            content: (
+                <div style={{ maxHeight: '320px', overflowY: 'auto', fontSize: '13px', lineHeight: 1.6 }}>
+                    <p>B. F. Hankey et al., "Partitioning linear trends in age-adjusted rates," <em>Cancer Causes &amp; Control</em>, vol. 11, pp. 31–35, 2000.</p>
+                    <p>L. X. Clegg et al., "Estimating average annual per cent change in trend analysis," <em>Statistics in Medicine</em>, vol. 28, no. 29, pp. 3670–3682, 2009.</p>
+                </div>
+            )
         },
     ];
 
     const accordionContentTrendCorrelation_dictLst = [
         {
             title: 'Data Sources',
-            content: (<>
-                <div style={{ height: '340px', overflow: 'scroll' }}>
-                    <p>
-                        <li><strong>Source: </strong>Global Burden of Disease Study 2021</li><br />
-
-                        <li><strong>Years: </strong>1990-2021</li><br />
-
-                        <li><strong>Geographic Coverage: </strong>46 countries in Europe</li><br />
-
-                        <li><strong>Age Groups: </strong>Under 25 (0–24 years), 25–50 (25 to 49 years), Above 50 (50 and older), Age-Standardized (Adjusted rates that account for differences in age distributions across populations)</li><br />
-
-                        <li><strong>Sex Groups: </strong>Both Sexes (Aggregated data for males and females), Males (males only), and Females (females only)</li><br />
-
-                        <li><strong>CRC Incidence Rate: </strong>Number of new CRC cases diagnosed per 100,000 population in a year</li><br />
-
-                        <li><strong>Risk factors: </strong>22 risk factors, comprising 4 lifestyle factors, 15 nutrition factors, 2 comorbidities, and 1 socioeconomic factor</li><br />
-
-                        <li><strong>Summary Exposure Value (SEV) rates: </strong>This metric represents the relative risk-weighted prevalence of exposure, accounting for both the extent of exposure and its contribution to disease burden. SEV is the metric for 21 risk factors (excluding socioeconomic factor)</li><br />
-                    </p>
+            content: (
+                <div style={{ maxHeight: '320px', overflowY: 'auto' }}>
+                    <ul className="ps-3" style={{ fontSize: '13px', lineHeight: 1.65 }}>
+                        <li><strong>Source:</strong> Global Burden of Disease Study 2021</li>
+                        <li><strong>Years:</strong> 1990–2021</li>
+                        <li><strong>Geographic Coverage:</strong> 46 countries in Europe</li>
+                        <li><strong>Age Groups:</strong> Under 25, 25–50, Above 50, Age-Standardized</li>
+                        <li><strong>Sex Groups:</strong> Both Sexes, Males, Females</li>
+                        <li><strong>CRC Incidence Rate:</strong> New CRC cases per 100,000 population per year</li>
+                        <li><strong>Risk factors:</strong> 22 factors — 4 lifestyle, 15 nutrition, 2 comorbidities, 1 socioeconomic</li>
+                        <li><strong>SEV rates:</strong> Relative risk-weighted prevalence of exposure (21 risk factors)</li>
+                    </ul>
                 </div>
-            </>)
+            )
         },
         {
             title: 'Methodology',
-            content: (<>
-                <div style={{ height: '340px', overflow: 'scroll' }}>
-
-                    <strong>Trend Correlation</strong><br /><br />
-
-                    <p>Associations between long-term trends in modifiable risk factors and trends in CRC incidence were examined over a 30-year period (1990–2021) to determine whether changes in specific risk factors correspond to increases or decreases in CRC incidence over time.</p>
-                    <p>To evaluate these associations, a weighted linear regression analysis was conducted using Estimated Annual Percentage Changes (EAPCs) for both risk factors and CRC incidence.</p>
-                    <p>The <strong>EAPC</strong> describes the rate of change in Age-Standardized Rates (ASRs) over time by fitting a regression model to the natural logarithm of ASRs, using time as the explanatory variable. This approach applies a Generalized Linear Model with a Gaussian distribution and assumes a constant rate of change on the logarithmic scale.</p>
-                    <p>A <strong>Weighted Linear Regression</strong> model assessed the association between the EAPC of a risk factor (independent variable) and the EAPC of CRC incidence (dependent variable). Weights were derived from the inverse of the sum of squared standard errors of both variables, incorporating uncertainty in both axes. Outliers were identified using studentized residuals, with a threshold of ±2.5.</p>
-
-                    The analysis included<strong>22 risk factors</strong> and was performed across defined age and sex groups.
-
+            content: (
+                <div style={{ maxHeight: '320px', overflowY: 'auto', fontSize: '13px', lineHeight: 1.6 }}>
+                    <p><strong>Trend Correlation</strong></p>
+                    <p>Associations between long-term trends in modifiable risk factors and CRC incidence were examined over 1990–2021 using weighted linear regression on EAPCs.</p>
+                    <p>The <strong>EAPC</strong> describes the rate of change in Age-Standardized Rates (ASRs) using a GLM with Gaussian distribution on the log scale. A <strong>Weighted Linear Regression</strong> model assessed the link between risk factor EAPC and CRC EAPC. Outliers identified via studentized residuals (threshold ±2.5). Analysis covers 22 risk factors across age and sex groups.</p>
                     <p><strong>Interpreting Associations:</strong></p>
-
-                    <p><strong>Positive association:</strong> regression coefficients (β) &gt; 0 and p-value &lt; 0.05 (an increasing trend in the risk factor is associated with an increasing trend in CRC incidence)</p>
-
-                    <p><strong>Negative association:</strong> β &gt; 0 and p-value  &lt; 0.05 (a decreasing trend in the risk factor is associated with a decreasing trend in CRC incidence)</p>
-
-                    <strong>No statistically significant association:</strong> p ≥ 0.05
-
-
-
+                    <ul className="ps-3">
+                        <li><strong>Positive:</strong> β &gt; 0 and p &lt; 0.05</li>
+                        <li><strong>Negative:</strong> β &lt; 0 and p &lt; 0.05</li>
+                        <li><strong>Non-significant:</strong> p ≥ 0.05</li>
+                    </ul>
                 </div>
-            </>)
+            )
         }
-
     ];
     const accordionContentForecastingCRC_dictLst = [
         {
             title: 'Data Sources',
-            content: (<>
-                <div style={{ height: '340px', overflow: 'scroll' }}>
-                    <p>
-                        <li><strong>Source: </strong>Global Burden of Disease Study 2021</li><br />
-
-                        <li><strong>Years: </strong>1990-2021</li><br />
-
-                        <li><strong>Geographic Coverage: </strong>46 countries in Europe</li><br />
-
-                        <li><strong>Age Groups: </strong>Under 25 (0–24 years), 25–50 (25 to 49 years), Above 50 (50 and older), Age-Standardized (Adjusted rates that account for differences in age distributions across populations)</li><br />
-
-                        <li><strong>Sex Groups: </strong>Both Sexes (Aggregated data for males and females), Males (males only), and Females (females only)</li><br />
-
-                        <li><strong>CRC Incidence Rate: </strong>Number of new CRC cases diagnosed per 100,000 population in a year</li><br />
-
-                        <li><strong>Risk factors: </strong>22 risk factors, comprising 4 lifestyle factors, 15 nutrition factors, 2 comorbidities, and 1 socioeconomic factor</li><br />
-
-                        <li><strong>Summary Exposure Value (SEV) rates: </strong>This metric represents the relative risk-weighted prevalence of exposure, accounting for both the extent of exposure and its contribution to disease burden. SEV is the metric for 21 risk factors (excluding socioeconomic factor)</li><br />
-                    </p>
+            content: (
+                <div style={{ maxHeight: '320px', overflowY: 'auto' }}>
+                    <ul className="ps-3" style={{ fontSize: '13px', lineHeight: 1.65 }}>
+                        <li><strong>Source:</strong> Global Burden of Disease Study 2021</li>
+                        <li><strong>Years:</strong> 1990–2021</li>
+                        <li><strong>Geographic Coverage:</strong> 46 countries in Europe</li>
+                        <li><strong>Age Groups:</strong> Under 25, 25–50, Above 50, Age-Standardized</li>
+                        <li><strong>Sex Groups:</strong> Both Sexes, Males, Females</li>
+                        <li><strong>CRC Incidence Rate:</strong> New CRC cases per 100,000 population per year</li>
+                        <li><strong>Risk factors:</strong> 22 factors — 4 lifestyle, 15 nutrition, 2 comorbidities, 1 socioeconomic</li>
+                        <li><strong>SEV rates:</strong> Relative risk-weighted prevalence of exposure (21 risk factors)</li>
+                    </ul>
                 </div>
-            </>)
+            )
         },
         {
             title: 'Methodology',
-            content: (<>
-                <div style={{ height: '340px', overflow: 'scroll' }}>
-                    <p>
-                        <strong>Forecasting CRC</strong><br /><br />
-
-                        <p>Future CRC incidence rates over the next 30 years across EU countries for various population groups are projected using the AutoRegressive Integrated Moving Average (ARIMA) time series model, which captures temporal trends and autocorrelations in historical data.</p>
-                        <p>The <strong>ARIMA </strong>model integrates three components: autoregression (using past values), moving average (using past forecast errors), and differencing (to correct for non-stationarity). It is defined by the parameters ARIMA(p, d, q), where p is the number of lagged observations, d is the number of differencing steps required for stationarity, and q is the number of lagged forecast errors. An automated ARIMA (autoARIMA) approach was employed to identify optimal parameter values by testing multiple combinations and selecting the best-fitting model based on the Akaike Information Criterion (AIC).</p>
-                        <p>The final models produced projections with <strong>95% confidence intervals (CI)</strong>, providing <strong>country</strong>-specific and <strong>subgroup</strong>-specific forecasts (by age and sex) of CRC incidence rates through the year 2050.</p>
-
-
-
-                    </p>
+            content: (
+                <div style={{ maxHeight: '320px', overflowY: 'auto', fontSize: '13px', lineHeight: 1.6 }}>
+                    <p><strong>Forecasting CRC</strong></p>
+                    <p>Future CRC incidence rates over 30 years are projected using the <strong>ARIMA</strong> time series model, which integrates autoregression, moving average, and differencing (ARIMA(p, d, q)).</p>
+                    <p>An <strong>autoARIMA</strong> approach selects optimal parameters via AIC. Models produce projections with <strong>95% confidence intervals</strong>, providing country-specific and subgroup-specific (age/sex) CRC incidence forecasts through 2050.</p>
                 </div>
-            </>)
+            )
         },
-
     ];
-    const accordionContentAssociation_dictLst = [{
-        title: 'Data Sources',
-        content: (<>
-            <div style={{ height: '340px', overflow: 'scroll' }}>
-                <p>
-                    <li><strong>Source: </strong>Global Burden of Disease Study 2021</li><br />
-
-                    <li><strong>Years: </strong>1990-2021</li><br />
-
-                    <li><strong>Geographic Coverage: </strong>46 countries in Europe</li><br />
-
-                    <li><strong>Age Groups: </strong>Under 25 (0–24 years), 25–50 (25 to 49 years), Above 50 (50 and older), Age-Standardized (Adjusted rates that account for differences in age distributions across populations)</li><br />
-
-                    <li><strong>Sex Groups: </strong>Both Sexes (Aggregated data for males and females), Males (males only), and Females (females only)</li><br />
-
-                    <li><strong>CRC Incidence Rate: </strong>Number of new CRC cases diagnosed per 100,000 population in a year</li><br />
-
-                    <li><strong>Risk factors: </strong>22 risk factors, comprising 4 lifestyle factors, 15 nutrition factors, 2 comorbidities, and 1 socioeconomic factor</li><br />
-
-                    <li><strong>Summary Exposure Value (SEV) rates: </strong>This metric represents the relative risk-weighted prevalence of exposure, accounting for both the extent of exposure and its contribution to disease burden. SEV is the metric for 21 risk factors (excluding socioeconomic factor)</li><br />
-                </p>
-            </div>
-        </>)
-    }, {
-        title: 'Methodology',
-        content: (<>
-            <div style={{ height: '340px', overflow: 'scroll' }}>
-                <p>
-                    <strong>Association analysis</strong><br /><br />
-
-                    Associations between CRC incidence and modifiable risk factors were assessed using a <strong>Fixed-Effects Regression Model</strong>, applied across 46 countries and 20 years.<br /><br />
-
-                    A Fixed-Effects Regression Model is a longitudinal analysis that accounts for repeated measurements within each country while capturing the shared influence of risk factors across Europe.<br /><br />
-
-                    To address the latency between exposure and cancer development, a <strong>10-year time lag</strong> was applied, pairing risk factor data from 1990–2011 with CRC incidence data from 2000–2021. <br /><br />
-
-                    The analysis included <strong>22 risk factors</strong> and was performed across defined <strong>age</strong> and <strong>sex groups</strong>.<br /><br />
-
-                    <strong>Interpreting Associations:</strong><br /><br />
-                    <strong>Positive association: </strong>regression coefficients (β) {">"} 0 and p-value {"<"} 0.05<br /><br />
-                    <strong>Negative association: </strong>β {"<"} 0 and p-value  {"<"} 0.05<br /><br />
-                    <strong>No statistically significant association: </strong>p ≥ 0.05<br /><br />
-
-
-
-
-                </p>
-            </div>
-        </>)
-    }, {
-        title: 'References',
-        content: (<>
-
-            <p>
-                P. D. Allison, Fixed effects regression models. SAGE publications, 2009. <br /><br />
-
-                B. Hicks, J. A. Kaye, L. Azoulay, K. B. Kristensen, L. A. Habel, and A. Pottegard, “The application of lag times in cancer pharmacoepidemi ology: a narrative review,” Annals of Epidemiology, vol. 84, pp. 25–32, 2023.<br /><br />
-
-            </p>
-
-        </>)
-    }];
+    const accordionContentAssociation_dictLst = [
+        {
+            title: 'Data Sources',
+            content: (
+                <div style={{ maxHeight: '320px', overflowY: 'auto' }}>
+                    <ul className="ps-3" style={{ fontSize: '13px', lineHeight: 1.65 }}>
+                        <li><strong>Source:</strong> Global Burden of Disease Study 2021</li>
+                        <li><strong>Years:</strong> 1990–2021</li>
+                        <li><strong>Geographic Coverage:</strong> 46 countries in Europe</li>
+                        <li><strong>Age Groups:</strong> Under 25, 25–50, Above 50, Age-Standardized</li>
+                        <li><strong>Sex Groups:</strong> Both Sexes, Males, Females</li>
+                        <li><strong>CRC Incidence Rate:</strong> New CRC cases per 100,000 population per year</li>
+                        <li><strong>Risk factors:</strong> 22 factors — 4 lifestyle, 15 nutrition, 2 comorbidities, 1 socioeconomic</li>
+                        <li><strong>SEV rates:</strong> Relative risk-weighted prevalence of exposure (21 risk factors)</li>
+                    </ul>
+                </div>
+            )
+        },
+        {
+            title: 'Methodology',
+            content: (
+                <div style={{ maxHeight: '320px', overflowY: 'auto', fontSize: '13px', lineHeight: 1.6 }}>
+                    <p><strong>Association Analysis</strong></p>
+                    <p>Associations between CRC incidence and modifiable risk factors were assessed using a <strong>Fixed-Effects Regression Model</strong> across 46 countries and 20 years, capturing shared risk-factor influence while accounting for country-level repeated measurements.</p>
+                    <p>A <strong>10-year time lag</strong> was applied, pairing risk factor data from 1990–2011 with CRC incidence data from 2000–2021. Covers 22 risk factors across defined age and sex groups.</p>
+                    <p><strong>Interpreting Associations:</strong></p>
+                    <ul className="ps-3">
+                        <li><strong>Positive:</strong> β &gt; 0 and p &lt; 0.05</li>
+                        <li><strong>Negative:</strong> β &lt; 0 and p &lt; 0.05</li>
+                        <li><strong>Non-significant:</strong> p ≥ 0.05</li>
+                    </ul>
+                </div>
+            )
+        },
+        {
+            title: 'References',
+            content: (
+                <div style={{ maxHeight: '320px', overflowY: 'auto', fontSize: '13px', lineHeight: 1.6 }}>
+                    <p>P. D. Allison, <em>Fixed Effects Regression Models</em>. SAGE Publications, 2009.</p>
+                    <p>B. Hicks et al., "The application of lag times in cancer pharmacoepidemiology: a narrative review," <em>Annals of Epidemiology</em>, vol. 84, pp. 25–32, 2023.</p>
+                </div>
+            )
+        }
+    ];
 
     const toggleRiskFactor = (factor) => {
         setSelectedRiskFactors((prev) => {
@@ -919,7 +848,6 @@ const EuropeMap = () => {
             age: ageFilter,
             year_interval: yearInterval.split(" ")[0],
         });
-        console.log(selectedRiskFactors)
         // selectedRiskFactors.forEach((rf) => {
         //     params.append("Risk_Factor", rf);
         // });
@@ -1581,396 +1509,341 @@ const EuropeMap = () => {
 
 
 
-    //    #5470c6
-
-    if (!isLoggedIn) return <h2>Unauthorized</h2>;
+    if (!isLoggedIn) return <h2 className="text-center mt-5">Unauthorized</h2>;
     return (
+        <>
+            <style>{`
+                .ta-page { padding: 24px 0 40px; }
+                .ta-header { margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--border, #e5e7eb); }
+                .ta-header h1 { font-size: 20px; font-weight: 800; color: var(--text, #0f172a); margin: 0 0 3px; }
+                .ta-header p { font-size: 13px; color: var(--text-muted, #475569); margin: 0; }
 
-        <div className="container-fluid mt-5">
-            <div className="row">
-                {/* Left Column */}
-                <div className="col-2">
-                    {/* Always-visible Analysis Type Dropdown */}
-                    <div className="form-group mb-4">
-                        <label htmlFor="analysis-type" style={{ fontWeight: "bold", margin: "0px 0px 5px 0px" }}>
-                            Select Analysis Type:
-                        </label>
+                .ta-sidebar-card {
+                    background: var(--bg, #fff);
+                    border: 1px solid var(--border, #e5e7eb);
+                    border-radius: 14px;
+                    padding: 18px 16px;
+                    margin-bottom: 12px;
+                }
+                .ta-sidebar-card .filter-label {
+                    display: block;
+                    font-size: 12px;
+                    font-weight: 700;
+                    color: var(--text-muted, #475569);
+                    text-transform: uppercase;
+                    letter-spacing: 0.06em;
+                    margin-bottom: 8px;
+                }
+                .ta-select {
+                    width: 100%;
+                    border: 1.5px solid var(--border, #e5e7eb);
+                    border-radius: 8px;
+                    padding: 7px 10px;
+                    font-size: 13px;
+                    color: var(--text, #0f172a);
+                    background: #fff;
+                    outline: none;
+                    cursor: pointer;
+                    transition: border-color 0.2s, box-shadow 0.2s;
+                    font-family: inherit;
+                }
+                .ta-select:focus { border-color: var(--brand, #1f6580); box-shadow: 0 0 0 3px rgba(31,101,128,0.15); }
+
+                .ta-check-list {
+                    max-height: 240px;
+                    overflow-y: auto;
+                    border: 1.5px solid var(--border, #e5e7eb);
+                    border-radius: 8px;
+                    padding: 6px 4px;
+                }
+                .ta-check-list label {
+                    display: flex;
+                    align-items: center;
+                    gap: 7px;
+                    padding: 4px 8px;
+                    font-size: 13px;
+                    color: var(--text, #0f172a);
+                    cursor: pointer;
+                    border-radius: 5px;
+                }
+                .ta-check-list label:hover { background: #f0f5f8; }
+                .ta-check-list input[type="checkbox"] { accent-color: var(--brand, #1f6580); flex-shrink: 0; }
+
+                .ta-chart-wrapper {
+                    position: relative;
+                    border: 1px solid var(--border, #e5e7eb);
+                    border-radius: 14px;
+                    overflow: hidden;
+                    background: var(--muted, #f5f7fb);
+                    min-height: 580px;
+                    display: flex;
+                    flex-direction: column;
+                }
+                .ta-chart-inner { padding: 12px; flex: 1; }
+                .ta-chart-loading {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    min-height: 580px;
+                    gap: 12px;
+                }
+                .ta-chart-loading span { font-size: 13px; color: var(--text-muted, #475569); font-weight: 500; }
+                .ta-empty-state {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    min-height: 400px;
+                    padding: 32px;
+                    text-align: center;
+                }
+                .ta-empty-icon { width: 52px; height: 52px; border-radius: 14px; background: #e8f2f6; color: var(--brand-dark, #185569); display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; }
+                .ta-empty-title { font-size: 16px; font-weight: 700; color: var(--text, #0f172a); margin: 0 0 6px; }
+                .ta-empty-sub { font-size: 13px; color: var(--text-muted, #475569); margin: 0; max-width: 380px; line-height: 1.6; }
+
+                .ta-accordion .accordion-button { font-size: 13px; font-weight: 600; color: var(--text, #0f172a); padding: 10px 14px; background: transparent; }
+                .ta-accordion .accordion-button:not(.collapsed) { color: var(--brand-dark, #185569); background: #e8f2f6; }
+                .ta-accordion .accordion-button:focus { box-shadow: 0 0 0 3px rgba(31,101,128,0.15); }
+                .ta-accordion .accordion-body { font-size: 13px; padding: 12px 14px; }
+                .ta-accordion .accordion-item { border-color: var(--border, #e5e7eb); }
+
+                @media (prefers-reduced-motion: reduce) {
+                    .ta-select, .ta-check-list label { transition: none; }
+                }
+            `}</style>
+
+        <div className="container-fluid ta-page">
+
+            <div className="ta-header">
+                <h1>CRC Trend &amp; Association Analysis</h1>
+                <p>EAPC trend maps, risk factor associations, trend correlations, and CRC incidence forecasting · GBD 2021</p>
+            </div>
+
+            <div className="row g-3">
+                {/* ── Left sidebar ── */}
+                <div className="col-xl-2 col-lg-3">
+                    <div className="ta-sidebar-card">
+                        <span className="filter-label">Analysis Type</span>
                         <select
-                            id="analysis-type"
-                            className="form-control"
+                            className="ta-select"
                             value={analysisType}
                             onChange={(e) => handleAnalysisTypeChange(e.target.value)}
+                            aria-label="Select analysis type"
                         >
-                            <option value="">-- Select --</option>
+                            <option value="">— Select —</option>
                             {Object.keys(analysisTypeToUrl).map(type => (
                                 <option key={type} value={type}>{type}</option>
                             ))}
                         </select>
-
                     </div>
                     {(analysisType === "Association Analysis" || analysisType === "Trend Correlation") && (
-                        <Form className="mb-3" style={{ maxWidth: "400px" }}>
-                            <Form.Label style={{ fontWeight: "bold" }}>
-                                Select Risk Factors (max 10):
-                            </Form.Label>
-                            <div className="form-control" style={{ maxHeight: "280px", overflowY: "auto", padding: "5px", textAlign: "left" }}>
+                        <div className="ta-sidebar-card">
+                            <span className="filter-label">Risk Factors (max 10)</span>
+                            <div className="ta-check-list" role="group" aria-label="Risk factor checkboxes">
                                 {uniqueRiskFactors.map((factor, index) => {
-
                                     const isSelected = selectedRiskFactors.includes(factor);
-                                    const disableCheckbox = selectedRiskFactors.length >= 10 && !isSelected;
-
+                                    const disabled = selectedRiskFactors.length >= 10 && !isSelected;
                                     return (
-                                        <Form.Check
-                                            key={index}
-                                            type="checkbox"
-                                            label={factor}
-                                            value={factor}
-                                            checked={isSelected}
-                                            onChange={() => toggleRiskFactor(factor)}
-                                            disabled={disableCheckbox}
-                                        />
+                                        <label key={index} style={{ opacity: disabled ? 0.5 : 1 }}>
+                                            <input
+                                                type="checkbox"
+                                                checked={isSelected}
+                                                onChange={() => toggleRiskFactor(factor)}
+                                                disabled={disabled}
+                                            />
+                                            {factor}
+                                        </label>
                                     );
-
                                 })}
                             </div>
-                        </Form>
-
+                        </div>
                     )}
                     {analysisType === "Forecasting CRC" && (
-
-                        <div className="form-group mb-3">
-                            <label htmlFor="country-select" style={{ fontWeight: "bold" }}>
-                                Select Country:
-                            </label>
+                        <div className="ta-sidebar-card">
+                            <span className="filter-label">Country</span>
                             <select
-                                className="form-control"
-                                id="country-select"
+                                className="ta-select"
                                 value={selectedCountry}
                                 onChange={(e) => setSelectedCountry(e.target.value)}
+                                aria-label="Select country"
                             >
-                                <option value="">-- Select a country --</option>
+                                <option value="">— Select a country —</option>
                                 {COUNTRY_OPTIONS.map((country, index) => (
-                                    <option key={index} value={country}>
-                                        {country}
-                                    </option>
+                                    <option key={index} value={country}>{country}</option>
                                 ))}
                             </select>
                             {selectedCountry && (
-                                <YearFilter
-                                    minYear_int={minYear_int ?? dataMinYear}  // fallback in case undefined
-                                    set_minYear={set_minYear}
-                                    maxYear_int={maxYear_int ?? dataMaxYear}
-                                    set_maxYear={set_maxYear}
-                                    floorYear_int={dataMinYear}
-                                    ceilYear_int={dataMaxYear}
-
-                                />
-
+                                <div style={{ marginTop: "12px" }}>
+                                    <YearFilter
+                                        minYear_int={minYear_int ?? dataMinYear}
+                                        set_minYear={set_minYear}
+                                        maxYear_int={maxYear_int ?? dataMaxYear}
+                                        set_maxYear={set_maxYear}
+                                        floorYear_int={dataMinYear}
+                                        ceilYear_int={dataMaxYear}
+                                    />
+                                </div>
                             )}
-
                         </div>
-
-
                     )}
-                    {/* Show filters only for Trend Analysis */}
-                    {(
-                        (analysisType === "Forecasting CRC" && selectedCountry) ||
-                        (analysisType === "Trend Analysis" ||
-                            analysisType === "Association Analysis" ||
-                            analysisType === "Trend Correlation")
-                    ) && (
-                            <>
-                                <div className="form-group mb-3">
-                                    <label htmlFor="sex-select" style={{ fontWeight: "bold" }}>
-                                        Select Sex:
-                                    </label>
-                                    <select
-                                        className="form-control"
-                                        id="sex-select"
-                                        value={sexFilter}
-                                        onChange={(e) => setSexFilter(e.target.value)}
-                                    >
-                                        <option value="Both">Both</option>
-                                        <option value="Male">Male</option>
-                                        <option value="Female">Female</option>
+
+                    {((analysisType === "Forecasting CRC" && selectedCountry) ||
+                        analysisType === "Trend Analysis" ||
+                        analysisType === "Association Analysis" ||
+                        analysisType === "Trend Correlation") && (
+                        <div className="ta-sidebar-card" style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
+                            <div>
+                                <span className="filter-label">Sex</span>
+                                <select className="ta-select" value={sexFilter} onChange={(e) => setSexFilter(e.target.value)} aria-label="Select sex">
+                                    <option value="Both">Both</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                </select>
+                            </div>
+                            <div>
+                                <span className="filter-label">Age</span>
+                                <select className="ta-select" value={ageFilter} onChange={(e) => setAgeFilter(e.target.value)} aria-label="Select age">
+                                    <option value="Age-standardized">Age-standardized</option>
+                                    <option value="Under 25">Under 25</option>
+                                    <option value="25 to 50">25 to 50</option>
+                                    <option value="Above 50">Above 50</option>
+                                </select>
+                            </div>
+                            {analysisType === "Trend Analysis" && (
+                                <div>
+                                    <span className="filter-label">Year Interval</span>
+                                    <select className="ta-select" value={yearInterval} onChange={(e) => setYearInterval(e.target.value)} aria-label="Select year interval">
+                                        <option value="5 years (2016-2021)">5 years (2016–2021)</option>
+                                        <option value="10 years (2011-2021)">10 years (2011–2021)</option>
+                                        <option value="15 years (2006-2021)">15 years (2006–2021)</option>
+                                        <option value="20 years (2001-2021)">20 years (2001–2021)</option>
+                                        <option value="25 years (1996-2021)">25 years (1996–2021)</option>
+                                        <option value="30 years (1991-2021)">30 years (1991–2021)</option>
                                     </select>
                                 </div>
-
-                                <div className="form-group mb-3">
-                                    <label htmlFor="age-select" style={{ fontWeight: "bold" }}>
-                                        Select Age:
-                                    </label>
-                                    <select
-                                        className="form-control"
-                                        id="age-select"
-                                        value={ageFilter}
-                                        onChange={(e) => setAgeFilter(e.target.value)}
-                                    >
-                                        <option value="Age-standardized">Age-standardized</option>
-                                        <option value="Under 25">Under 25</option>
-                                        <option value="25 to 50">25 to 50</option>
-                                        <option value="Above 50">Above 50</option>
-                                    </select>
-                                </div>
-
-
-
-
-
-                                {/* Show year interval only for Trend Analysis */}
-                                {analysisType === "Trend Analysis" && (
-                                    <div className="form-group mb-3">
-                                        <label htmlFor="year-select" style={{ fontWeight: "bold" }}>
-                                            Select Year Interval:
-                                        </label>
-                                        <select
-                                            className="form-control"
-                                            id="year-select"
-                                            value={yearInterval}
-                                            onChange={(e) => setYearInterval(e.target.value)}
-                                        >
-                                            <option value="5 years (2016-2021)">5 years (2016-2021)</option>
-                                            <option value="10 years (2011-2021)">10 years (2011-2021)</option>
-                                            <option value="15 years (2006-2021)">15 years (2006-2021)</option>
-                                            <option value="20 years (2001-2021)">20 years (2001-2021)</option>
-                                            <option value="25 years (1996-2021)">25 years (1996-2021)</option>
-                                            <option value="30 years (1991-2021)">30 years (1991-2021)</option>
-                                        </select>
-                                    </div>
-
-                                )}
-
-                            </>
-
-                        )}
-
-
+                            )}
+                        </div>
+                    )}
 
                 </div>
 
-                {/* Center Column */}
-                <div className="col-8">
+
+                {/* ── Center chart ── */}
+                <div className="col-xl-8 col-lg-6">
+
                     {!analysisType && (
-                        <div>
-                            <p>In this page, you can explore insights through two types of analysis: <strong>Trend Analysis</strong> and <strong>Association Analysis</strong> on various age and sex groups.</p>
-
-                            <p>Please select the desired type of analysis results from the <strong>drop-down menu on the left.</strong></p>
-
-                            <p>In the menu on the<strong> right-hand side</strong>, you can find detailed information about the <strong>data sources</strong> and <strong>methodology</strong> of the analysis.</p>
+                        <div className="ta-chart-wrapper">
+                            <div className="ta-empty-state">
+                                <div className="ta-empty-icon" aria-hidden="true">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                                        <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>
+                                    </svg>
+                                </div>
+                                <p className="ta-empty-title">Select an Analysis Type</p>
+                                <p className="ta-empty-sub">Choose <strong>Trend Analysis</strong>, <strong>Association Analysis</strong>, <strong>Trend Correlation</strong>, or <strong>Forecasting CRC</strong> from the sidebar to begin.</p>
+                            </div>
                         </div>
                     )}
+
                     {analysisType === "Trend Analysis" && (
-                        <>
-                            <h5>
-                                <strong>EAPC in European Countries</strong>
-                            </h5>
-                            {loading && (
-                                <div
-                                    style={{
-                                        position: "absolute",
-                                        top: 0,
-                                        left: 0,
-                                        width: "100%",
-                                        height: "100%",
-                                        backgroundColor: "rgba(255, 255, 255, 0.7)",
-                                        display: "flex",
-                                        flexDirection: "column",
-                                        alignItems: "center",
-                                        justifyContent: "center",
-                                        zIndex: 10,
-                                    }}
-                                >
-                                    <div
-                                        className="spinner-border text-primary"
-                                        role="status"
-                                        style={{ width: "3rem", height: "3rem" }}
-                                    ></div>
-                                    <div
-                                        style={{
-                                            marginTop: "1rem",
-                                            fontWeight: "bold",
-                                            fontSize: "1rem",
-                                            color: "#333",
-                                        }}
-                                    >
-                                        Loading...
-                                    </div>
+                        <div className="ta-chart-wrapper">
+                            {loading ? (
+                                <div className="ta-chart-loading">
+                                    <div className="spinner" aria-label="Loading chart" />
+                                    <span>Loading trend data…</span>
+                                </div>
+                            ) : (
+                                <div className="ta-chart-inner">
+                                    <ReactECharts ref={chartRef} key={JSON.stringify(chartData)} option={trendOption} style={{ height: "550px", width: "100%" }} />
                                 </div>
                             )}
-                            <ReactECharts ref={chartRef} key={JSON.stringify(chartData)} option={trendOption} style={{ height: "550px", width: "100%", margin: "15px 0px " }} />
-                            <SaveGraphButton iframeUrl={{ url: getChartImageUrl(chartIframeUrl), params: getUriParams() }} />
-
-                        </>
+                        </div>
                     )}
 
                     {analysisType === "Association Analysis" && (
-                        <>
-
-                            {/* <h5>
-                                <strong>Association Analysis</strong>
-                               
-                            </h5> */}
-                            {loading && (
-                                <div
-                                    style={{
-                                        position: "absolute",
-                                        top: 0,
-                                        left: 0,
-                                        width: "100%",
-                                        height: "100%",
-                                        backgroundColor: "rgba(255, 255, 255, 0.7)",
-                                        display: "flex",
-                                        flexDirection: "column",
-                                        alignItems: "center",
-                                        justifyContent: "center",
-                                        zIndex: 10,
-                                    }}
-                                >
-                                    <div
-                                        className="spinner-border text-primary"
-                                        role="status"
-                                        style={{ width: "3rem", height: "3rem" }}
-                                    ></div>
-                                    <div
-                                        style={{
-                                            marginTop: "1rem",
-                                            fontWeight: "bold",
-                                            fontSize: "1rem",
-                                            color: "#333",
-                                        }}
-                                    >
-                                        Loading...
-                                    </div>
+                        <div className="ta-chart-wrapper">
+                            {loading ? (
+                                <div className="ta-chart-loading">
+                                    <div className="spinner" aria-label="Loading chart" />
+                                    <span>Loading association data…</span>
+                                </div>
+                            ) : (
+                                <div className="ta-chart-inner">
+                                    <ReactECharts ref={chartRef} option={associationOption} style={{ height: "580px", width: "100%" }} />
                                 </div>
                             )}
-                            <ReactECharts
-                                ref={chartRef}
-                                option={associationOption}
-                                style={{ height: "600px", width: "100%" }}
-                            />
-                            <SaveGraphButton iframeUrl={{ url: getChartImageUrl(chartIframeUrl), params: getUriParams() }} />
-
-                        </>
-
+                        </div>
                     )}
+
                     {analysisType === "Trend Correlation" && (
-                        <>
-                            <h5><strong>Trend Correlation between Risk Factors and CRC incidence</strong></h5>
-                            {loading && (
-                                <div
-                                    style={{
-                                        position: "absolute",
-                                        top: 0,
-                                        left: 0,
-                                        width: "100%",
-                                        height: "100%",
-                                        backgroundColor: "rgba(255, 255, 255, 0.7)",
-                                        display: "flex",
-                                        flexDirection: "column",
-                                        alignItems: "center",
-                                        justifyContent: "center",
-                                        zIndex: 10,
-                                    }}
-                                >
-                                    <div
-                                        className="spinner-border text-primary"
-                                        role="status"
-                                        style={{ width: "3rem", height: "3rem" }}
-                                    ></div>
-                                    <div
-                                        style={{
-                                            marginTop: "1rem",
-                                            fontWeight: "bold",
-                                            fontSize: "1rem",
-                                            color: "#333",
-                                        }}
-                                    >
-                                        Loading...
-                                    </div>
+                        <div className="ta-chart-wrapper">
+                            {loading ? (
+                                <div className="ta-chart-loading">
+                                    <div className="spinner" aria-label="Loading chart" />
+                                    <span>Loading trend correlation data…</span>
+                                </div>
+                            ) : (
+                                <div className="ta-chart-inner">
+                                    <ReactECharts ref={chartRef} key={JSON.stringify(chartData)} option={trendCorrelationOption} style={{ height: "580px", width: "100%" }} />
                                 </div>
                             )}
-                            <ReactECharts
-                                ref={chartRef}
-                                key={JSON.stringify(chartData)}
-                                option={trendCorrelationOption}
-                                style={{ height: "600px", width: "100%" }}
-                            />
-                            <SaveGraphButton iframeUrl={{ url: getChartImageUrl("Trend Correlation"), params: getUriParams() }} />
-                        </>
+                        </div>
                     )}
-                    {analysisType === "Forecasting CRC" && !forecastChartOption && (
-                        <>
-                            <h6>Please select a <strong>Country </strong> using the menu on the left side</h6>
 
-                        </>
+                    {analysisType === "Forecasting CRC" && !forecastChartOption && (
+                        <div className="ta-chart-wrapper">
+                            <div className="ta-empty-state">
+                                <div className="ta-empty-icon" aria-hidden="true">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                                        <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                                    </svg>
+                                </div>
+                                <p className="ta-empty-title">Select a Country</p>
+                                <p className="ta-empty-sub">Choose a country from the sidebar to view the CRC forecast chart.</p>
+                            </div>
+                        </div>
                     )}
 
                     {analysisType === "Forecasting CRC" && forecastChartOption && (
-                        <>
-                            <h5><strong>Forecasting CRC</strong></h5>
-                            {loading && (
-                                <div
-                                    style={{
-                                        position: "absolute",
-                                        top: 0,
-                                        left: 0,
-                                        width: "100%",
-                                        height: "100%",
-                                        backgroundColor: "rgba(255, 255, 255, 0.7)",
-                                        display: "flex",
-                                        flexDirection: "column",
-                                        alignItems: "center",
-                                        justifyContent: "center",
-                                        zIndex: 10,
-                                    }}
-                                >
-                                    <div
-                                        className="spinner-border text-primary"
-                                        role="status"
-                                        style={{ width: "3rem", height: "3rem" }}
-                                    ></div>
-                                    <div
-                                        style={{
-                                            marginTop: "1rem",
-                                            fontWeight: "bold",
-                                            fontSize: "1rem",
-                                            color: "#333",
-                                        }}
-                                    >
-                                        Loading...
-                                    </div>
+                        <div className="ta-chart-wrapper">
+                            {loading ? (
+                                <div className="ta-chart-loading">
+                                    <div className="spinner" aria-label="Loading chart" />
+                                    <span>Loading forecast data…</span>
+                                </div>
+                            ) : (
+                                <div className="ta-chart-inner">
+                                    <ReactECharts ref={chartRef} key={JSON.stringify(chartData)} option={forecastChartOption} style={{ height: "580px", width: "100%" }} />
                                 </div>
                             )}
-                            <ReactECharts
-                                ref={chartRef}
-                                key={JSON.stringify(chartData)}
-                                option={forecastChartOption}
-
-                                style={{ height: "600px", width: "100%" }}
-                            />
-                            <SaveGraphButton iframeUrl={{ url: getChartImageUrl("Forecasting CRC"), params: getUriParams() }} />
-                        </>
+                        </div>
                     )}
 
+                    {analysisType && (
+                        <div className="mt-3">
+                            <SaveGraphButton iframeUrl={{ url: getChartImageUrl(analysisType === "Trend Analysis" ? chartIframeUrl : analysisType), params: getUriParams() }} />
+                        </div>
+                    )}
 
                 </div>
 
-                {/* Right Column (Optional) */}
-                <div className="col-2">{/* Reserved for future content */}
-
-                    <Accordion defaultActiveKey="-1">
+                {/* ── Right: accordion + comments ── */}
+                <div className="col-xl-2 col-lg-3">
+                    <Accordion defaultActiveKey="-1" className="ta-accordion" style={{ marginBottom: "16px" }}>
                         {accordionContent_dictLst.map(({ title, content }, index) => (
                             <Accordion.Item eventKey={index.toString()} key={index}>
-                                <Accordion.Header className="text-left">{title}</Accordion.Header>
+                                <Accordion.Header>{title}</Accordion.Header>
                                 <Accordion.Body className="text-start">{content}</Accordion.Body>
                             </Accordion.Item>
                         ))}
                     </Accordion>
+                    <Comments />
+                </div>
 
-                    <Comments /></div>
             </div>
-        </div >
-
+        </div>
+        </>
     );
 
 };

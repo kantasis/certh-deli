@@ -2,113 +2,94 @@ import React, { useState, useEffect } from "react";
 import * as AuthService from "../services/auth.service.tsx";
 import { Accordion } from 'react-bootstrap';
 
-
-const grafana_host = import.meta.env.VITE_GRAFANA_HOST;
-const grafana_port = import.meta.env.VITE_GRAFANA_PORT;
-const grafana_path = import.meta.env.VITE_GRAFANA_PATH;
-const dashboard_name = import.meta.env.VITE_GRAFANA_DASHBOARD;
-
-const panel_id = 4;
-const grafana_url = `http://${grafana_host}:${grafana_port}/${grafana_path}/${dashboard_name}?panelId=${panel_id}&orgId=1&theme=light`
+const accordionItems = [
+    {
+        title: 'Data Sources',
+        content: (
+            <div style={{ maxHeight: '320px', overflowY: 'auto' }}>
+                <ul className="ps-3" style={{ margin: 0 }}>
+                    <li><strong>Source:</strong> Global Burden of Disease Study 2021</li>
+                    <li><strong>Years:</strong> 1990–2021</li>
+                    <li><strong>Geographic Coverage:</strong> 46 countries in Europe</li>
+                    <li><strong>Age Groups:</strong> Under 25, 25–50, Above 50, Age-Standardized</li>
+                    <li><strong>Sex Groups:</strong> Both Sexes, Males, Females</li>
+                    <li><strong>CRC Incidence Rate:</strong> New CRC cases per 100,000 population per year</li>
+                    <li><strong>Risk factors:</strong> 22 factors — lifestyle, nutrition, comorbidities, socioeconomic</li>
+                    <li><strong>SEV rates:</strong> Relative risk-weighted prevalence of exposure (21 risk factors)</li>
+                </ul>
+            </div>
+        ),
+    },
+    {
+        title: 'Summary Exposure Value (SEV)',
+        content: (
+            <p>Measure of a population's exposure to a risk factor that takes into account the extent of exposure by risk level and the severity of that risk's contribution to disease burden.</p>
+        ),
+    },
+    {
+        title: 'Deaths',
+        content: <p>Number of deaths in the population per 100,000.</p>,
+    },
+    {
+        title: 'Disability Adjusted Life Years (DALYs)',
+        content: <p>Number of DALYs in the population per 100,000.</p>,
+    },
+    {
+        title: 'Years of Life Lost (YLLs)',
+        content: <p>Number of YLLs in the population per 100,000.</p>,
+    },
+    {
+        title: 'Years Lived with Disability (YLDs)',
+        content: <p>Number of YLDs in the population per 100,000.</p>,
+    },
+];
 
 const Glossary: React.FC = () => {
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-   const [isLoggedIn, setIsLoggedIn] = useState(false);
+    useEffect(() => {
+        setIsLoggedIn(AuthService.isLoggedIn());
+    }, []);
 
-   useEffect(
-      () => {
-         setIsLoggedIn(AuthService.isLoggedIn());
-      },
-      []
-   );
+    if (!isLoggedIn) return null;
 
-   if (!isLoggedIn)
-      return <h2>Unauthorized</h2>;
-
-   const accordionContent_dictLst = [
-      {
-         title: 'Data Sources',
-         content: (<>
-            <div style={{ height: '340px', overflow: 'scroll' }}>
-               <p>
-                  <li><strong>Source: </strong>Global Burden of Disease Study 2021</li><br />
-
-                  <li><strong>Years: </strong>1990-2021</li><br />
-
-                  <li><strong>Geographic Coverage: </strong>46 countries in Europe</li><br />
-
-                  <li><strong>Age Groups: </strong>Under 25 (0–24 years), 25–50 (25 to 49 years), Above 50 (50 and older), Age-Standardized (Adjusted rates that account for differences in age distributions across populations)</li><br />
-
-                  <li><strong>Sex Groups: </strong>Both Sexes (Aggregated data for males and females), Males (males only), and Females (females only)</li><br />
-
-                  <li><strong>CRC Incidence Rate: </strong>Number of new CRC cases diagnosed per 100,000 population in a year</li><br />
-
-                  <li><strong>Risk factors: </strong>22 risk factors, comprising 4 lifestyle factors, 15 nutrition factors, 2 comorbidities, and 1 socioeconomic factor</li><br />
-
-                  <li><strong>Summary Exposure Value (SEV) rates: </strong>This metric represents the relative risk-weighted prevalence of exposure, accounting for both the extent of exposure and its contribution to disease burden. SEV is the metric for 21 risk factors (excluding socioeconomic factor)</li><br />
-               </p>
-            </div>
-         </>)
-      },
-      {
-         title: 'Summary Exposure Value (SEV)',
-         content: (<>
-            <p>
-               Measure of a population's exposure to a risk factor that takes into account the extent of exposure by risk level and the severity of that risk's contribution to disease burden.
-            </p>
-         </>)
-      },
-      {
-         title: 'Deaths',
-         content: (<>
-            <p>
-               Number of deaths in the population per 100,000.
-            </p>
-         </>)
-      },
-      {
-         title: 'Disability adjusted life years (DALYs)',
-         content: (<>
-            <p>
-               Number of DALYs in the population per 100,000.
-            </p>
-         </>)
-      },
-      {
-         title: 'Years of life lost (YLLs)',
-         content: (<>
-            <p>
-               Number of YLLs in the population per 100,000
-            </p>
-         </>)
-      },
-      {
-         title: 'Years lived with disability (YLDs)',
-         content: (<>
-            <p>
-               Number of YLDs in the population per 100,000
-            </p>
-         </>)
-      },
-   ];
-
-   return (<>
-
-      {/* <h5>Glossary</h5> */}
-      <div className="mt-5">
-         <Accordion defaultActiveKey="-1">
-            {accordionContent_dictLst.map((accordionContent_dict, itemIndex_int) => (
-               <Accordion.Item
-                  eventKey={itemIndex_int.toString()}
-                  key={itemIndex_int}
-               >
-                  <Accordion.Header>{accordionContent_dict['title']}</Accordion.Header>
-                  <Accordion.Body className="text-start" >{accordionContent_dict['content']}</Accordion.Body>
-               </Accordion.Item>
-            ))}
-         </Accordion>
-      </div>
-   </>);
+    return (
+        <>
+            <style>{`
+                .gl-accordion .accordion-button {
+                    font-size: 13px;
+                    font-weight: 700;
+                    color: var(--text, #0f172a);
+                    padding: 10px 14px;
+                    background: transparent;
+                }
+                .gl-accordion .accordion-button:not(.collapsed) {
+                    color: var(--brand-dark, #185569);
+                    background: #e8f2f6;
+                    box-shadow: none;
+                }
+                .gl-accordion .accordion-button:focus { box-shadow: 0 0 0 3px rgba(31,101,128,0.15); }
+                .gl-accordion .accordion-item { border-color: var(--border, #e5e7eb); }
+                .gl-accordion .accordion-body {
+                    font-size: 13px;
+                    line-height: 1.6;
+                    padding: 12px 14px;
+                    color: var(--text-muted, #475569);
+                }
+                .gl-accordion .accordion-body p { margin: 0; font-size: 13px; line-height: 1.6; }
+                .gl-accordion .accordion-body ul { font-size: 13px; line-height: 1.6; }
+                .gl-accordion .accordion-body li + li { margin-top: 6px; }
+            `}</style>
+            <Accordion defaultActiveKey="-1" className="gl-accordion">
+                {accordionItems.map((item, idx) => (
+                    <Accordion.Item eventKey={idx.toString()} key={idx}>
+                        <Accordion.Header>{item.title}</Accordion.Header>
+                        <Accordion.Body className="text-start">{item.content}</Accordion.Body>
+                    </Accordion.Item>
+                ))}
+            </Accordion>
+        </>
+    );
 };
 
 export default Glossary;
