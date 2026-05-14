@@ -12,7 +12,9 @@ const GEO_URL =
 
 // Map from GeoJSON feature name → internal region name used by filters
 const NAME_MAP: Record<string, string> = {
+  "Andalucia": "Andalucia",
   "Andalucía": "Andalucia",
+  "Aragon": "Aragon",
   "Aragón": "Aragon",
   "Asturias": "Asturias",
   "Illes Balears": "Baleares",
@@ -21,9 +23,12 @@ const NAME_MAP: Record<string, string> = {
   "Canarias": "Canarias",
   "Cantabria": "Cantabria",
   "Castilla-La Mancha": "Castilla-La Mancha",
+  "Castilla-Leon": "Castilla y Leon",
   "Castilla y León": "Castilla y Leon",
+  "Castilla y Leon": "Castilla y Leon",
   "Cataluña": "Catalonia",
   "Catalunya": "Catalonia",
+  "Valencia": "Comunitat Valenciana",
   "Comunitat Valenciana": "Comunitat Valenciana",
   "Comunidad Valenciana": "Comunitat Valenciana",
   "Extremadura": "Extremadura",
@@ -35,6 +40,7 @@ const NAME_MAP: Record<string, string> = {
   "Murcia": "Murcia",
   "Comunidad Foral de Navarra": "Navarra",
   "Navarra": "Navarra",
+  "Pais Vasco": "Basque Country",
   "País Vasco": "Basque Country",
   "Euskadi": "Basque Country",
 };
