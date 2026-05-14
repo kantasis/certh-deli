@@ -1525,6 +1525,13 @@ const EuropeMap = () => {
         "Forecasting CRC": "forecasting-crc",
     };
 
+    const analysisTypeHints: Record<string, string> = {
+        "Trend Analysis": "Long-term CRC incidence by demographic subgroup.",
+        "Association Analysis": "Statistical associations between CRC and SEVs.",
+        "Trend Correlation": "Relationships between CRC and SEV trends.",
+        "Forecasting CRC": "Short-term extrapolations from historical data.",
+    };
+
     const accordionContent_dictLst = accordionContentMap[analysisType] || [];
     useEffect(() => {
         if (isRestoring) return;
@@ -1669,8 +1676,8 @@ const EuropeMap = () => {
         <div className="container-fluid ta-page">
 
             <div className="ta-header">
-                <h1>CRC Trend &amp; Association Analysis</h1>
-                <p>EAPC trend maps, risk factor associations, trend correlations, and CRC incidence forecasting · GBD 2021</p>
+                <h1>{analysisType || "CRC Trend & Association Analysis"}</h1>
+                <p>{analysisType ? analysisTypeHints[analysisType] : "Historical, subgroup-level analyses (associational)."}</p>
             </div>
 
             <div className="row g-3">

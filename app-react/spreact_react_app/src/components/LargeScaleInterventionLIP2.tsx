@@ -236,8 +236,8 @@ const LargeScaleIntervention = () => {
             <div className="container-fluid li-page">
 
                 <div className="li-header">
-                    <h1>Large-scale Intervention Pilot 2 – Greece</h1>
-                    <p>CRC Primary Prevention at Regional Level</p>
+                    <h1>LIP2</h1>
+                    <p>Pilot-specific analyses and integrated summaries.</p>
                 </div>
 
                 <div className="row g-3">

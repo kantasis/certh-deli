@@ -373,8 +373,8 @@ const TwoFactorHeatmapViewer = () => {
         .tf-page { padding: 24px 0 40px; }
 
         .tf-header { margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--border, #e5e7eb); }
-        .tf-header h1 { font-size: 20px; font-weight: 800; color: var(--text, #0f172a); margin: 0 0 3px; }
-        .tf-header p { font-size: 13px; color: var(--text-muted, #475569); margin: 0; }
+        .tf-header h1 { font-size: 22px; font-weight: 800; color: var(--text, #0f172a); margin: 0 0 3px; }
+        .tf-header p { font-size: 14px; color: var(--text-muted, #475569); margin: 0; }
 
         .tf-sidebar-card {
           background: var(--bg, #fff);
@@ -385,7 +385,7 @@ const TwoFactorHeatmapViewer = () => {
         }
         .tf-sidebar-card .filter-label {
           display: block;
-          font-size: 12px;
+          font-size: 13px;
           font-weight: 700;
           color: var(--text-muted, #475569);
           text-transform: uppercase;
@@ -394,7 +394,7 @@ const TwoFactorHeatmapViewer = () => {
         }
         .tf-select {
           width: 100%;
-          font-size: 13px;
+          font-size: 15px;
           padding: 7px 10px;
           border: 1px solid var(--border, #e5e7eb);
           border-radius: 8px;
@@ -422,7 +422,7 @@ const TwoFactorHeatmapViewer = () => {
         .tf-chart-inner { width: 100%; padding: 8px; }
         .tf-empty-state { text-align: center; padding: 60px 24px; }
         .tf-empty-title { font-size: 15px; font-weight: 600; color: var(--text, #0f172a); margin: 12px 0 6px; }
-        .tf-empty-sub { font-size: 13px; color: var(--text-muted, #475569); margin: 0; }
+        .tf-empty-sub { font-size: 14px; color: var(--text-muted, #475569); margin: 0; }
         .tf-empty-icon { color: var(--text-muted, #475569); }
 
         @media (prefers-reduced-motion: reduce) {
@@ -434,7 +434,7 @@ const TwoFactorHeatmapViewer = () => {
 
         <div className="tf-header">
           <h1>Two-Factor Exploration</h1>
-          <p>Joint CRC incidence reduction heatmaps for top risk factor pairs · XGBoost predictions · GBD 2021</p>
+          <p>Two-Factor Joint Effect Graph.</p>
         </div>
 
         <div className="row g-3">

@@ -81,9 +81,12 @@ const CRCmortalityPanel: React.FC = () => {
         <>
             <style>{`
                 .cm-page { padding: 24px 0 40px; }
-                .cm-header { margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--border, #e5e7eb); }
-                .cm-header h1 { font-size: 22px; font-weight: 800; color: var(--text, #0f172a); margin: 0 0 3px; }
-                .cm-header p { font-size: 14px; color: var(--text-muted, #475569); margin: 0; }
+                .cm-header {
+                    margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--border, #e5e7eb);
+                    display: flex; flex-direction: column; align-items: center; width: 100%;
+                }
+                .cm-header h1 { font-size: 22px; font-weight: 800; color: var(--text, #0f172a); margin: 0 0 6px; text-align: center; }
+                .cm-header p { font-size: 14px; color: var(--text-muted, #475569); margin: 0; text-align: center; }
                 .cm-sidebar-card {
                     background: var(--bg, #fff);
                     border: 1px solid var(--border, #e5e7eb);
@@ -123,7 +126,7 @@ const CRCmortalityPanel: React.FC = () => {
 
                 <div className="cm-header">
                     <h1>CRC Mortality — Spain</h1>
-                    <p>CRC mortality rates in the autonomous communities of Spain · Spanish Ministry of Health</p>
+                    <p>Subnational CRC mortality and risk factor patterns.</p>
                 </div>
 
                 <div className="row g-3">

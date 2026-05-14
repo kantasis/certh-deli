@@ -56,50 +56,67 @@ const LIT03: React.FC = () => {
             <style>{`
                 .lit-page { padding: 24px 0 40px; }
                 .lit-toolbar {
+                    position: relative;
                     display: flex;
                     align-items: center;
-                    gap: 12px;
                     margin-bottom: 20px;
                     padding-bottom: 16px;
                     border-bottom: 1px solid var(--border, #e5e7eb);
                 }
-                .lit-title { font-size: 22px; font-weight: 800; color: var(--text, #0f172a); margin: 0; }
+                .lit-select-wrap { display: flex; align-items: center; gap: 8px; }
+                .lit-select-label {
+                    font-size: 12px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase;
+                    color: var(--brand, #1f6580); white-space: nowrap;
+                }
                 .lit-select {
                     font-size: 14px;
+                    font-weight: 600;
                     padding: 7px 32px 7px 12px;
-                    border: 1px solid var(--border, #e5e7eb);
+                    border: 1.5px solid var(--brand, #1f6580);
                     border-radius: 8px;
                     background: var(--bg, #fff);
-                    color: var(--text, #0f172a);
+                    color: var(--brand, #1f6580);
                     appearance: none;
-                    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' stroke='%23475569' stroke-width='2' viewBox='0 0 24 24'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+                    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' stroke='%231f6580' stroke-width='2' viewBox='0 0 24 24'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
                     background-repeat: no-repeat;
                     background-position: right 10px center;
                     cursor: pointer;
                     min-width: 180px;
                 }
-                .lit-select:focus { outline: none; border-color: var(--brand, #1f6580); box-shadow: 0 0 0 3px rgba(31,101,128,0.15); }
+                .lit-select:focus { outline: none; border-color: var(--brand-dark, #185569); box-shadow: 0 0 0 3px rgba(31,101,128,0.15); }
+                .lit-viewing {
+                    position: absolute;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    font-size: 17px;
+                    font-weight: 500;
+                    color: var(--text-muted, #475569);
+                    white-space: nowrap;
+                }
+                .lit-viewing strong { color: var(--text, #0f172a); font-weight: 700; }
             `}</style>
 
             <div className="container-fluid lit-page">
                 <div className="lit-toolbar">
-                    <h1 className="lit-title">Large-Scale Intervention</h1>
-                    <select
-                        className="lit-select"
-                        value={selectedPanel || ""}
-                        onChange={e => {
-                            const value = e.target.value;
-                            if (value === "") localStorage.setItem("lit03Panel", "");
-                            setSelectedPanel(value || null);
-                        }}
-                    >
-                        <option value="">Select a Panel</option>
-                        {Object.entries(panelLabels).map(([key, label]) => (
-                            <option key={key} value={key}>{label}</option>
-                        ))}
-                    </select>
+                    <div className="lit-select-wrap">
+                        <span className="lit-select-label">View</span>
+                        <select
+                            className="lit-select"
+                            value={selectedPanel || ""}
+                            onChange={e => {
+                                const value = e.target.value;
+                                if (value === "") localStorage.setItem("lit03Panel", "");
+                                setSelectedPanel(value || null);
+                            }}
+                        >
+                            <option value="">Select a Panel</option>
+                            {Object.entries(panelLabels).map(([key, label]) => (
+                                <option key={key} value={key}>{label}</option>
+                            ))}
+                        </select>
+                    </div>
                     {selectedPanel && (
-                        <span style={{ fontSize: '13px', color: 'var(--text-muted, #475569)' }}>
+                        <span className="lit-viewing">
                             Viewing: <strong>{panelLabels[selectedPanel]}</strong>
                         </span>
                     )}

@@ -74,7 +74,7 @@ const NutritionPanel: React.FC = () => {
 
             <div className="np-header">
                <h1>Nutrition Risk Factors</h1>
-               <p>Nutrition-related CRC risk factor exposure across European countries · GBD 2021</p>
+               <p>Descriptive SEV levels across subgroups and years.</p>
             </div>
 
             <div className="row g-3">

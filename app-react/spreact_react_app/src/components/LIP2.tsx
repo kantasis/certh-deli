@@ -754,12 +754,12 @@ const AggregationAnalysis = () => {
                     <h1>
                         {isPopulationGroups
                             ? "CRC Incidence Population Groups"
-                            : `Aggregation Analysis${country ? ` — ${country}` : ""}`}
+                            : "Aggregation Analysis (GR)"}
                     </h1>
                     <p>
                         {isPopulationGroups
-                            ? "Hierarchical clustering of participant subgroups by CRC risk profile · LiP-02 · Greece"
-                            : "Population-level insights from NELI app data (T4.2) · Living Lab Integration Test LIT-02"}
+                            ? "Clustering analysis based on LIT-02 data to identify 12 CRC Incidence population groups for LiP-02"
+                            : "Pilot-specific aggregation results (integrated analytics & policy relevance)."}
                     </p>
                 </div>
 

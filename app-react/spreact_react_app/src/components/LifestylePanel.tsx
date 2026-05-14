@@ -74,7 +74,7 @@ const LifestylePanel: React.FC = () => {
 
             <div className="lp-header">
                <h1>Lifestyle Risk Factors</h1>
-               <p>Lifestyle-related CRC risk factor exposure across European countries · GBD 2021</p>
+               <p>Descriptive SEV levels across subgroups and years.</p>
             </div>
 
             <div className="row g-3">

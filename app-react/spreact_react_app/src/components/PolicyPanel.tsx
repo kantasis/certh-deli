@@ -184,7 +184,7 @@ const PolicyPanel: React.FC = () => {
 
                 <div className="pp-header">
                     <h1>CRC Policy Data</h1>
-                    <p>National cancer plans and prevention policy interventions across EU member states · Click a country on the map to explore</p>
+                    <p>EU policy and intervention mappings across domains.</p>
                 </div>
 
                 <div className="row g-3">

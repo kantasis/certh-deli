@@ -165,7 +165,7 @@ const EpidimiologicalPanel: React.FC = () => {
             {/* Page header */}
             <div className="ep-header">
                <h1>CRC Incidence</h1>
-               <p>Colorectal cancer incidence, DALYs, YLDs, and YLLs across European countries · GBD 2021</p>
+               <p>Incidence patterns by age, sex, country, and year.</p>
             </div>
 
             <div className="row g-3">

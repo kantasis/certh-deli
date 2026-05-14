@@ -25,6 +25,22 @@ const typeOptions = [
     { value: "two_factor_heatmaps", label: "Two-Factor Joint Effect" }
 ];
 
+const tabTitles: Record<string, string> = {
+    effect_sev_unit: "Effect per SEV Unit",
+    exposure_weighted: "Exposure-Weighted",
+    quick_wins: "Quick Wins",
+    sf_intervention: "Intervention-Driven",
+    sf_target: "Target-Driven",
+};
+
+const tabHints: Record<string, string> = {
+    effect_sev_unit: "Strength of association per unit change (EU view).",
+    exposure_weighted: "Association strength combined with exposure prevalence.",
+    quick_wins: "Highlights factors with stronger associations.",
+    sf_intervention: "What-If scenarios adjusting one SEV.",
+    sf_target: "SEV levels linked to CRC reduction goals.",
+};
+
 // ─────────────────────────────────────────────
 // Inline HeatmapEChart (ported from TwoFactorHeatmapViewer)
 // ─────────────────────────────────────────────
@@ -710,27 +726,27 @@ const DeliPredictions = () => {
             <style>{`
                 .dp-page { padding: 24px 0 40px; }
                 .dp-header { margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--border, #e5e7eb); }
-                .dp-header h1 { font-size: 20px; font-weight: 800; color: var(--text, #0f172a); margin: 0 0 3px; }
-                .dp-header p { font-size: 13px; color: var(--text-muted, #475569); margin: 0; }
+                .dp-header h1 { font-size: 22px; font-weight: 800; color: var(--text, #0f172a); margin: 0 0 3px; }
+                .dp-header p { font-size: 14px; color: var(--text-muted, #475569); margin: 0; }
 
                 .dp-sidebar-card { background: var(--bg, #fff); border: 1px solid var(--border, #e5e7eb); border-radius: 14px; padding: 18px 16px; margin-bottom: 12px; }
-                .dp-sidebar-card .filter-label { display: block; font-size: 12px; font-weight: 700; color: var(--text-muted, #475569); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
-                .dp-sidebar-card .form-select { font-size: 14px; }
-                .dp-sidebar-card p { font-size: 13px; line-height: 1.6; color: var(--text-muted, #475569); margin: 0; }
+                .dp-sidebar-card .filter-label { display: block; font-size: 13px; font-weight: 700; color: var(--text-muted, #475569); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
+                .dp-sidebar-card .form-select { font-size: 15px; }
+                .dp-sidebar-card p { font-size: 14px; line-height: 1.6; color: var(--text-muted, #475569); margin: 0; }
                 .dp-sidebar-card p strong { color: var(--text, #0f172a); }
                 .dp-range { accent-color: var(--brand, #1f6580); width: 100%; cursor: pointer; margin-top: 6px; }
-                .dp-range-label { font-size: 13px; color: var(--text, #0f172a); font-weight: 600; margin-bottom: 2px; display: block; }
+                .dp-range-label { font-size: 14px; color: var(--text, #0f172a); font-weight: 600; margin-bottom: 2px; display: block; }
 
                 .dp-chart-wrapper { position: relative; border: 1px solid var(--border, #e5e7eb); border-radius: 14px; overflow: hidden; background: var(--bg, #fff); }
                 .dp-chart-loading { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(255,255,255,0.85); z-index: 10; gap: 12px; }
-                .dp-chart-loading span { font-size: 14px; font-weight: 600; color: var(--text, #0f172a); }
+                .dp-chart-loading span { font-size: 15px; font-weight: 600; color: var(--text, #0f172a); }
 
                 .dp-intro { padding: 24px; background: var(--bg, #fff); border: 1px solid var(--border, #e5e7eb); border-radius: 14px; }
-                .dp-intro p { font-size: 14px; line-height: 1.65; color: var(--text, #0f172a); margin-bottom: 12px; }
+                .dp-intro p { font-size: 15px; line-height: 1.65; color: var(--text, #0f172a); margin-bottom: 12px; }
                 .dp-intro p:last-child { margin-bottom: 0; }
 
-                .dp-alert-warn { background: #fffbeb; border: 1px solid #fcd34d; color: #92400e; border-radius: 10px; padding: 12px 16px; font-size: 14px; margin: 16px; }
-                .dp-alert-err { background: #fef2f2; border: 1px solid #fecaca; color: #dc2626; border-radius: 10px; padding: 12px 16px; font-size: 14px; margin: 16px; }
+                .dp-alert-warn { background: #fffbeb; border: 1px solid #fcd34d; color: #92400e; border-radius: 10px; padding: 12px 16px; font-size: 15px; margin: 16px; }
+                .dp-alert-err { background: #fef2f2; border: 1px solid #fecaca; color: #dc2626; border-radius: 10px; padding: 12px 16px; font-size: 15px; margin: 16px; }
 
 
                 @media (prefers-reduced-motion: reduce) {
@@ -741,8 +757,8 @@ const DeliPredictions = () => {
             <div className="container-fluid dp-page">
 
                 <div className="dp-header">
-                    <h1>CRC Predictive Analytics</h1>
-                    <p>Risk factor interventions, exposure-weighted analysis, and two-factor joint effects for CRC incidence prediction</p>
+                    <h1>{type && tabTitles[type] ? tabTitles[type] : "CRC Predictive Analytics"}</h1>
+                    <p>{type && tabHints[type] ? tabHints[type] : "Risk factor interventions, exposure-weighted analysis, and two-factor joint effects for CRC incidence prediction"}</p>
                 </div>
 
                 <div className="row g-3">
