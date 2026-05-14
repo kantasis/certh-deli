@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import * as AuthService from "../services/auth.service";
 import { getUserDashboards } from "../services/dashboard.service";
-import oncodirLogo from "../assets/ONCODIR-LOGO.svg";
+import oncodirLogo from "../assets/ONCODIR-LOGO.png";
 
 type MenuItem = {
    label: string;
