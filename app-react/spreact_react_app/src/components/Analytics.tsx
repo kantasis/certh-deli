@@ -17,7 +17,7 @@ const grafana_path = import.meta.env.VITE_GRAFANA_PATH;
 const dashboard_name = import.meta.env.VITE_GRAFANA_DASHBOARD;
 
 
-const grafana_url = `http://${grafana_host}:${grafana_port}/${grafana_path}/${dashboard_name}?orgId=1&theme=light`;
+const grafana_url = `${window.location.protocol}//${grafana_host}:${grafana_port}/${grafana_path}/${dashboard_name}?orgId=1&theme=light`;
 
 const AnalyticsPanel: React.FC = () => {
    const savedParamsRef = useRef<{ analysis: number, riskFactor: string | null, yearLag: number } | null>(null);

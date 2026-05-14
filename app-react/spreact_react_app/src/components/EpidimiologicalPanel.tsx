@@ -16,7 +16,7 @@ const grafana_path = import.meta.env.VITE_GRAFANA_PATH;
 const dashboard_name = import.meta.env.VITE_GRAFANA_DASHBOARD;
 
 const panel_id = 1;
-const grafana_url = `http://${grafana_host}:${grafana_port}/${grafana_path}/${dashboard_name}?panelId=${panel_id}&orgId=1&theme=light`;
+const grafana_url = `${window.location.protocol}//${grafana_host}:${grafana_port}/${grafana_path}/${dashboard_name}?panelId=${panel_id}&orgId=1&theme=light`;
 
 const sex_dictLst = [
    { value: 0, label: "Both Sexes", var_filter: "Both" },

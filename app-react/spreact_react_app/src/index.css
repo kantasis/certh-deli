@@ -458,10 +458,10 @@ button:focus-visible {
   align-items: center;
 }
 .gk_footer-logo {
-  max-height: 55px;
+  max-height: 60px;
   width: auto;
-  opacity: 0.9;
   flex-shrink: 0;
+  image-rendering: auto;
 }
 .gk_footer-copy {
   position: absolute;

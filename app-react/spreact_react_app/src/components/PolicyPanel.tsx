@@ -13,7 +13,7 @@ const grafana_path = import.meta.env.VITE_GRAFANA_PATH;
 const dashboard_name = import.meta.env.VITE_GRAFANA_DASHBOARD;
 
 const panel_id = 4;
-const grafanaHost_url = `http://${grafana_host}:${grafana_port}`;
+const grafanaHost_url = `${window.location.protocol}//${grafana_host}:${grafana_port}`;
 const grafana_url = `${grafanaHost_url}/${grafana_path}/${dashboard_name}?panelId=${panel_id}&orgId=1&theme=light`;
 
 const PolicyPanel: React.FC = () => {

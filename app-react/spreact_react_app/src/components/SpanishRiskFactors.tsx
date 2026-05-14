@@ -39,7 +39,7 @@ const SpanishRiskFactorsDataPanel: React.FC = () => {
     const grafana_path = import.meta.env.VITE_GRAFANA_PATH;
     const dashboard_name = import.meta.env.VITE_GRAFANA_DASHBOARD;
 
-    const grafana_url = `http://${grafana_host}:${grafana_port}/${grafana_path}/${dashboard_name}?orgId=1&theme=light`;
+    const grafana_url = `${window.location.protocol}//${grafana_host}:${grafana_port}/${grafana_path}/${dashboard_name}?orgId=1&theme=light`;
     const panelLabel = localStorage.getItem("lit03Panel");
     const getUriParams = () => `panelId=10&var-riskFactorRegion_filter=${selectedRiskFactor}&panelLabel=${panelLabel}`;
     const iFrame_url = `${grafana_url}&${getUriParams()}`;
