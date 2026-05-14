@@ -60,31 +60,31 @@ const PolicyPanel: React.FC = () => {
     const sources_dict: { [key: string]: string } = {
         'Austria': "Krebsrahmenprogramm Österreich 2014",
         'Belgium': "Joint Plan for the Chronically Ill-Integrated Care for Better Health",
-        'Bulgaria': "NATIONAL PROGRAM FOR THE PREVENTION OF CHRONIC NON-COMMUNICABLE DISEASES 2014-2020",
+        'Bulgaria': "NATIONAL PROGRAM FOR THE PREVENTION OF CHRONIC NON-COMMUNICABLE DISEASES -2014-2020 WORK PROGRAMME",
         'Croatia': "National Cancer Control Plan 2020-2030",
         'Cyprus': "National Cancer Plan 2019",
-        'Chezh Republic': "National Cancer Control Plan 2030",
+        'Chezh Republic': "National Cancer Control Plan  2030",
         'Denmark': "PATIENTS' CANCER PLAN CANCER PLAN IV",
         'Estonia': "Estonian Cancer Control Plan 2021-2030",
         'Finland': "National Cancer Plan II 2014-2025",
         'France': "FRANCE TEN-YEAR CANCER-CONTROL STRATEGY",
-        'Germany': "Nationaler Krebsplan Handlungsfelder, Ziele und Umsetzungsempfehlungen",
-        'Greece': "National Public Health Plan 2021-2025",
-        'Hungary': "National Cancer Program (2006)",
-        'Ireland': "National Cancer Strategy 2017-2026",
-        'Italy': "National Cancer Plan 2023-2027",
+        'Germany': "Nationaler Krebsplan Handlungsfelder, Ziele und Umsetzungsempfehlungen & IN FORM Deutschlands Initiative für gesunde\tErnährung und\tmehr Bewegung Nationaler Aktionsplan zur Prävention von Fehlernährung, Bewegungsmangel, Übergewicht und damit zusammenhängenden Krankheiten",
+        'Greece': "National Public Health Plan 2021-2025 (Provisions for cancer are incorporated)",
+        'Hungary': "National Cancer Program (2006)No Update",
+        'Ireland': "National Cancer Strategy 2017-2026 ",
+        'Italy': "National Cancer Plan  2023-2027",
         'Latvia': "Public Health Guidelines 2014-2020",
-        'Lithuania': "National Program for the Prevention and Control of Cancer 2014-2025",
+        'Lithuania': "THE NATIONAL PROGRAM FOR THE PREVENTION AND CONTROL OF CANCER FOR THE PERIOD 2014-2025",
         'Luxemburg': "National Cancer Plan 2020-2024",
-        'Malta': "National Cancer Plan 2017-2021",
+        'Malta': "National Cancer Plan 2017-2021 (No update available)",
         'Netherlands': "The Dutch Cancer Agenda (2023)",
-        'Poland': "National Cancer Strategy 2020-2030",
-        'Portugal': "<a href='https://www.sns.gov.pt/sns/' target='_blank'>Saúde + – SNS</a>",
+        'Poland': "Program wieloletni pn. NARODOWA STRATEGIA ONKOLOGICZNA na lata 2020-2030 & National Cancer Strategy 2017-2024",
+        'Portugal': "<a href='https://www.sns.gov.pt/sns/' target='_blank' >Saúde + – SNS</a>",
         'Romania': "Planul National de Combatere a Cancerului 2022",
-        'Slovakia': "National Oncology Program 2021-2025",
+        'Slovakia': "National Oncology Program  2021-2025 ",
         'Slovenia': "National Cancer Control Program 2022-2026",
-        'Spain': "Estrategia en Cáncer del Sistema Nacional de Salud (2010)",
-        'Sweden': "National Cancer Strategy 2009",
+        'Spain': "Estrategia en Cáncer del Sistema Nacional de Salud (2010) + Estrategia para el Abordaje de la Cronicidad  en el Sistema Nacional de Salud (2012)",
+        'Sweden': "National Cancer Strategy 2009 (No update available)",
     };
 
     function capitalizeFirstLetter(str: string) {
@@ -101,8 +101,8 @@ const PolicyPanel: React.FC = () => {
                 .pp-page { padding: 24px 0 40px; }
 
                 .pp-header { margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--border, #e5e7eb); }
-                .pp-header h1 { font-size: 20px; font-weight: 800; color: var(--text, #0f172a); margin: 0 0 3px; }
-                .pp-header p { font-size: 13px; color: var(--text-muted, #475569); margin: 0; }
+                .pp-header h1 { font-size: 22px; font-weight: 800; color: var(--text, #0f172a); margin: 0 0 3px; }
+                .pp-header p { font-size: 14px; color: var(--text-muted, #475569); margin: 0; }
 
                 .pp-sidebar-card {
                     background: var(--bg, #fff);
@@ -113,7 +113,7 @@ const PolicyPanel: React.FC = () => {
                 }
                 .pp-sidebar-card .filter-label {
                     display: block;
-                    font-size: 12px;
+                    font-size: 13px;
                     font-weight: 700;
                     color: var(--text-muted, #475569);
                     text-transform: uppercase;
@@ -121,7 +121,7 @@ const PolicyPanel: React.FC = () => {
                     margin-bottom: 8px;
                 }
                 .pp-sidebar-desc {
-                    font-size: 12.5px;
+                    font-size: 13.5px;
                     color: var(--text-muted, #475569);
                     line-height: 1.6;
                 }
@@ -131,19 +131,19 @@ const PolicyPanel: React.FC = () => {
                     border: 1px solid var(--border, #e5e7eb);
                     border-radius: 14px;
                     overflow: hidden;
-                    background: var(--muted, #f5f7fb);
+                    background: #fff;
                     min-height: 600px;
                 }
                 .pp-iframe-loading {
                     position: absolute; inset: 0;
                     display: flex; flex-direction: column; align-items: center; justify-content: center;
-                    background: var(--muted, #f5f7fb);
+                    background: #fff;
                     z-index: 2;
                     gap: 12px;
                     transition: opacity 0.3s ease;
                 }
                 .pp-iframe-loading.hidden { opacity: 0; pointer-events: none; }
-                .pp-iframe-loading span { font-size: 13px; color: var(--text-muted, #475569); font-weight: 500; }
+                .pp-iframe-loading span { font-size: 14px; color: var(--text-muted, #475569); font-weight: 500; }
                 .pp-iframe { display: block; border: none; width: 100%; height: 600px; }
 
                 .pp-info-card {
@@ -154,7 +154,7 @@ const PolicyPanel: React.FC = () => {
                     padding: 20px;
                 }
                 .pp-info-card h6 {
-                    font-size: 13px;
+                    font-size: 14px;
                     font-weight: 700;
                     color: var(--text-muted, #475569);
                     text-transform: uppercase;
@@ -162,7 +162,7 @@ const PolicyPanel: React.FC = () => {
                     margin: 0 0 12px;
                 }
                 .pp-info-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-                .pp-info-field { font-size: 14px; color: var(--text, #0f172a); margin-bottom: 8px; line-height: 1.5; }
+                .pp-info-field { font-size: 15px; color: var(--text, #0f172a); margin-bottom: 8px; line-height: 1.5; }
                 .pp-info-field strong { color: var(--brand-dark, #185569); }
                 .pp-policy-list { list-style: none; padding: 0; margin: 8px 0 0; }
                 .pp-policy-list li {
@@ -170,23 +170,10 @@ const PolicyPanel: React.FC = () => {
                     margin-bottom: 4px;
                     background: var(--muted, #f5f7fb);
                     border-radius: 8px;
-                    font-size: 13px;
+                    font-size: 14px;
                     color: var(--text, #0f172a);
                 }
-                .pp-empty-info { font-size: 13px; color: var(--text-muted, #475569); font-style: italic; margin-top: 8px; }
-
-                .pp-accordion { margin-bottom: 16px; }
-                .pp-accordion .accordion-button {
-                    font-size: 13px;
-                    font-weight: 600;
-                    color: var(--text, #0f172a);
-                    background: var(--bg, #fff);
-                    padding: 12px 14px;
-                }
-                .pp-accordion .accordion-button:not(.collapsed) { color: var(--brand, #1f6580); background: #e8f2f6; box-shadow: none; }
-                .pp-accordion .accordion-body { font-size: 13px; padding: 12px 14px; color: var(--text, #0f172a); line-height: 1.6; }
-                .pp-accordion .accordion-item { border: 1px solid var(--border, #e5e7eb); border-radius: 10px !important; margin-bottom: 6px; overflow: hidden; }
-                .pp-accordion .accordion-item + .accordion-item { border-top: 1px solid var(--border, #e5e7eb); }
+                .pp-empty-info { font-size: 14px; color: var(--text-muted, #475569); font-style: italic; margin-top: 8px; }
 
                 @media (prefers-reduced-motion: reduce) {
                     .pp-iframe-loading { transition: none; }
@@ -212,7 +199,7 @@ const PolicyPanel: React.FC = () => {
                         </div>
                         <div className="pp-sidebar-card">
                             <p className="pp-sidebar-desc">
-                                Explore types and examples of current policies and interventions related to CRC prevention implemented across EU countries. Select a policy domain above, then click a country on the map.
+                                On this page you can see types and examples of current policies and interventions related to various domains of CRC prevention that are implemented across EU countries.
                             </p>
                         </div>
                     </div>
@@ -247,14 +234,14 @@ const PolicyPanel: React.FC = () => {
                                             {hasBestPractices ? bestPractices_str : <span style={{ color: 'var(--text-muted, #475569)', fontStyle: 'italic' }}>No data available</span>}
                                         </div>
                                         <div className="pp-info-field">
-                                            <strong>Source:</strong>{" "}
-                                            {sources_dict[country_name] ? (
-                                                country_name === 'Portugal'
-                                                    ? <span dangerouslySetInnerHTML={{ __html: sources_dict[country_name] }} />
-                                                    : capitalizeFirstLetter(sources_dict[country_name])
-                                            ) : (
-                                                <span style={{ color: 'var(--text-muted, #475569)', fontStyle: 'italic' }}>Not available</span>
-                                            )}
+                                            <strong>Sources</strong>:{" "}
+                                            <span className="simpleList">
+                                                {sources_dict[country_name] && country_name === 'Portugal' ? (
+                                                    <span dangerouslySetInnerHTML={{ __html: sources_dict[country_name] }} />
+                                                ) : (
+                                                    capitalizeFirstLetter(sources_dict[country_name])
+                                                )}
+                                            </span>
                                         </div>
                                     </div>
                                     <div>
@@ -274,21 +261,25 @@ const PolicyPanel: React.FC = () => {
 
                     {/* ── Right: accordion + comments ── */}
                     <div className="col-xl-2 col-lg-3">
-                        <Accordion defaultActiveKey="-1" className="pp-accordion">
+                        <Accordion defaultActiveKey="-1" className="app-accordion">
                             <Accordion.Item eventKey="0">
                                 <Accordion.Header>Methodology</Accordion.Header>
                                 <Accordion.Body className="text-start">
-                                    <ul className="ps-3">
-                                        <li>CRC prevention policies and interventions as depicted in the standing national cancer plans, public health action plans, or equivalent documents from the 27 EU member states. Policy domains can be selected from the drop-down menu.</li>
+                                    <ul className="simpleList">
+                                        <li>
+                                            CRC prevention policies and interventions as depicted in the standing national cancer plans, public health action plans, or equivalent documents from the 27 EU member states.
+                                            Policy domains can be selected from a drop-down menu on the page
+                                        </li>
                                     </ul>
                                 </Accordion.Body>
                             </Accordion.Item>
                             <Accordion.Item eventKey="1">
                                 <Accordion.Header>Definitions</Accordion.Header>
                                 <Accordion.Body className="text-start">
-                                    <ul className="ps-3">
-                                        <li><strong>0 Policies:</strong> Country included in the mapping (27 EU MS) but no policies were identified in that policy domain in the standing national cancer plan / public health action plan or equivalent document.</li>
-                                        <li style={{ marginTop: '8px' }}><strong>Unknown:</strong> Country was not included in the mapping (non EU MS).</li>
+                                    <ul className="simpleList">
+                                        <li><strong>0 Policies:</strong> Country included in the mapping (27 EU MS) but no policies were identified in that particular policy domain in the standing national cancer plan / public health action plan or equivalent document.</li>
+                                        <br />
+                                        <li><strong>Unknown:</strong> Country was not included in the mapping (non EU MS)</li>
                                     </ul>
                                 </Accordion.Body>
                             </Accordion.Item>

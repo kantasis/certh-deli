@@ -145,14 +145,22 @@ const SpanishRiskFactorsDataPanel: React.FC = () => {
 
             {/* Right Panel - Sources */}
             <div className="col-sm-2">
-                <h5>Sources</h5>
-                <div style={{
-                    border: '1px solid #e2e6e9',
-                    borderRadius: 'var(--bs-border-radius)',
-                    padding: '10px'
-                }}>
-                    Spanish National Health Survey <br />
-                    <a target="_blank" href="https://www.sanidad.gob.es/estadEstudios/estadisticas/encuestaNacional/home.htm">Link</a>
+                <style>{`
+                    .srf-src-card { border: 1px solid var(--border, #e5e7eb); border-radius: 10px; overflow: hidden; margin-bottom: 6px; }
+                    .srf-src-title { font-size: 14px; font-weight: 600; color: var(--text, #0f172a); padding: 10px 14px; background: var(--bg, #fff); border-bottom: 1px solid var(--border, #e5e7eb); }
+                    .srf-src-body { font-size: 14px; line-height: 1.6; padding: 12px 14px; color: var(--text, #0f172a); }
+                    .srf-src-body a { color: var(--brand, #1f6580); text-decoration: none; }
+                    .srf-src-body a:hover { color: var(--brand-dark, #185569); text-decoration: underline; }
+                `}</style>
+                <div className="srf-src-card">
+                    <div className="srf-src-title">Source</div>
+                    <div className="srf-src-body">
+                        Spanish National Health Survey
+                        <br />
+                        <a target="_blank" rel="noopener noreferrer" href="https://www.sanidad.gob.es/estadEstudios/estadisticas/encuestaNacional/home.htm">
+                            sanidad.gob.es ↗
+                        </a>
+                    </div>
                 </div>
                 <Comments />
             </div>

@@ -88,14 +88,14 @@ const ChangePasswordForm: React.FC = () => {
                     margin-bottom: 4px;
                 }
                 .cp-subtitle {
-                    font-size: 14px;
+                    font-size: 15px;
                     color: var(--text-muted, #475569);
                     text-align: center;
                     margin-bottom: 28px;
                 }
                 .cp-field { margin-bottom: 18px; }
                 .cp-label {
-                    font-size: 13px;
+                    font-size: 14px;
                     font-weight: 600;
                     color: var(--text, #0f172a);
                     margin-bottom: 6px;
@@ -107,7 +107,7 @@ const ChangePasswordForm: React.FC = () => {
                     border: 1.5px solid var(--border, #e5e7eb);
                     border-radius: 10px;
                     padding: 10px 42px 10px 14px;
-                    font-size: 14px;
+                    font-size: 15px;
                     color: var(--text, #0f172a);
                     background: #fff;
                     transition: border-color 0.2s, box-shadow 0.2s;
@@ -175,7 +175,7 @@ const ChangePasswordForm: React.FC = () => {
                     color: #15803d;
                     border-radius: 10px;
                     padding: 10px 14px;
-                    font-size: 13px;
+                    font-size: 14px;
                     margin-top: 16px;
                     display: flex;
                     align-items: center;
@@ -187,7 +187,7 @@ const ChangePasswordForm: React.FC = () => {
                     color: #dc2626;
                     border-radius: 10px;
                     padding: 10px 14px;
-                    font-size: 13px;
+                    font-size: 14px;
                     margin-top: 16px;
                     display: flex;
                     align-items: center;

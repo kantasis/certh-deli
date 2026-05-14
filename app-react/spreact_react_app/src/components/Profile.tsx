@@ -83,7 +83,7 @@ const Profile: React.FC = () => {
           flex-shrink: 0;
         }
         .profile-name {
-          font-size: 20px;
+          font-size: 22px;
           font-weight: 800;
           color: var(--text, #0f172a);
           margin: 0 0 6px;
@@ -101,7 +101,7 @@ const Profile: React.FC = () => {
           gap: 5px;
           padding: 3px 10px;
           border-radius: 20px;
-          font-size: 12px;
+          font-size: 13px;
           font-weight: 600;
           border: 1.5px solid;
         }
@@ -123,7 +123,7 @@ const Profile: React.FC = () => {
         }
         .profile-row:last-child { border-bottom: none; }
         .profile-row-label {
-          font-size: 12px;
+          font-size: 13px;
           font-weight: 700;
           letter-spacing: 0.06em;
           text-transform: uppercase;
@@ -132,7 +132,7 @@ const Profile: React.FC = () => {
           flex-shrink: 0;
         }
         .profile-row-value {
-          font-size: 14px;
+          font-size: 15px;
           font-weight: 500;
           color: var(--text, #0f172a);
           word-break: break-all;
@@ -151,7 +151,7 @@ const Profile: React.FC = () => {
           gap: 7px;
           padding: 9px 18px;
           border-radius: 10px;
-          font-size: 14px;
+          font-size: 15px;
           font-weight: 600;
           cursor: pointer;
           text-decoration: none;

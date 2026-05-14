@@ -115,26 +115,26 @@ const AdminUsers: React.FC = () => {
                 .au-header { margin-bottom: 24px; display: flex; align-items: center; gap: 14px; }
                 .au-header-icon { width: 44px; height: 44px; border-radius: 12px; background: #e8f2f6; color: var(--brand-dark, #185569); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
                 .au-header-title { font-size: 22px; font-weight: 800; color: var(--text, #0f172a); margin: 0 0 2px; }
-                .au-header-sub { font-size: 14px; color: var(--text-muted, #475569); margin: 0; }
+                .au-header-sub { font-size: 15px; color: var(--text-muted, #475569); margin: 0; }
 
                 /* Table card */
                 .au-table-card { background: #fff; border: 1px solid var(--border, #e5e7eb); border-radius: 14px; overflow: hidden; }
                 .au-table-scroll { overflow-x: auto; }
                 .au-table { width: 100%; border-collapse: collapse; min-width: 720px; }
-                .au-table thead th { background: var(--muted, #f5f7fb); font-size: 12px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: var(--text-muted, #475569); padding: 12px 18px; border-bottom: 1px solid var(--border, #e5e7eb); white-space: nowrap; }
+                .au-table thead th { background: var(--muted, #f5f7fb); font-size: 13px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: var(--text-muted, #475569); padding: 12px 18px; border-bottom: 1px solid var(--border, #e5e7eb); white-space: nowrap; }
                 .au-table tbody tr { transition: background 0.15s; }
                 .au-table tbody tr:hover { background: #f0f5f8; }
                 .au-table tbody td { font-size: 15px; padding: 14px 18px; color: var(--text, #0f172a); border-bottom: 1px solid var(--border, #e5e7eb); vertical-align: middle; }
                 .au-table tbody tr:last-child td { border-bottom: none; }
-                .au-cell-muted { color: var(--text-muted, #475569); font-size: 14px; }
+                .au-cell-muted { color: var(--text-muted, #475569); font-size: 15px; }
 
                 /* Role chip */
-                .au-chip { display: inline-flex; align-items: center; gap: 4px; padding: 3px 9px; border-radius: 20px; font-size: 12px; font-weight: 600; border: 1.5px solid; margin: 2px 3px 2px 0; white-space: nowrap; }
+                .au-chip { display: inline-flex; align-items: center; gap: 4px; padding: 3px 9px; border-radius: 20px; font-size: 13px; font-weight: 600; border: 1.5px solid; margin: 2px 3px 2px 0; white-space: nowrap; }
                 .au-chip-dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
 
                 /* Action buttons */
                 .au-actions { display: flex; gap: 6px; justify-content: flex-end; flex-wrap: nowrap; }
-                .au-btn { display: inline-flex; align-items: center; gap: 5px; padding: 6px 12px; border-radius: 7px; font-size: 13px; font-weight: 600; cursor: pointer; border: 1.5px solid; transition: background 0.15s, border-color 0.15s, color 0.15s; white-space: nowrap; line-height: 1.4; }
+                .au-btn { display: inline-flex; align-items: center; gap: 5px; padding: 6px 12px; border-radius: 7px; font-size: 14px; font-weight: 600; cursor: pointer; border: 1.5px solid; transition: background 0.15s, border-color 0.15s, color 0.15s; white-space: nowrap; line-height: 1.4; }
                 .au-btn-edit { background: #fff; border-color: var(--border, #e5e7eb); color: var(--text, #0f172a); }
                 .au-btn-edit:hover { background: #f0f5f8; border-color: var(--brand, #1f6580); color: var(--brand-dark, #185569); }
                 .au-btn-delete { background: #fff; border-color: #fecaca; color: #dc2626; }
@@ -151,14 +151,14 @@ const AdminUsers: React.FC = () => {
                 .au-modal-footer { padding: 12px 20px 18px; display: flex; justify-content: flex-end; gap: 8px; border-top: 1px solid var(--border, #e5e7eb); }
                 .au-field { margin-bottom: 14px; }
                 .au-field:last-child { margin-bottom: 0; }
-                .au-field-label { font-size: 12px; font-weight: 600; color: var(--text, #0f172a); margin-bottom: 5px; display: block; }
+                .au-field-label { font-size: 13px; font-weight: 600; color: var(--text, #0f172a); margin-bottom: 5px; display: block; }
 
                 /* Modal action buttons */
-                .au-btn-cancel { background: #fff; border: 1.5px solid var(--border, #e5e7eb); color: var(--text, #0f172a); padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: background 0.15s; }
+                .au-btn-cancel { background: #fff; border: 1.5px solid var(--border, #e5e7eb); color: var(--text, #0f172a); padding: 8px 16px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: background 0.15s; }
                 .au-btn-cancel:hover { background: var(--muted, #f5f7fb); }
-                .au-btn-apply { background: var(--brand, #1f6580); border: 1.5px solid var(--brand, #1f6580); color: #fff; padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: background 0.15s; }
+                .au-btn-apply { background: var(--brand, #1f6580); border: 1.5px solid var(--brand, #1f6580); color: #fff; padding: 8px 16px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: background 0.15s; }
                 .au-btn-apply:hover { background: var(--brand-dark, #185569); border-color: var(--brand-dark, #185569); }
-                .au-btn-confirm-delete { background: #dc2626; border: 1.5px solid #dc2626; color: #fff; padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: background 0.15s; }
+                .au-btn-confirm-delete { background: #dc2626; border: 1.5px solid #dc2626; color: #fff; padding: 8px 16px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: background 0.15s; }
                 .au-btn-confirm-delete:hover { background: #b91c1c; border-color: #b91c1c; }
 
                 /* Role checkbox list */
@@ -169,17 +169,17 @@ const AdminUsers: React.FC = () => {
                 .au-role-option input[type="checkbox"] { accent-color: var(--brand, #1f6580); width: 15px; height: 15px; cursor: pointer; flex-shrink: 0; }
 
                 /* Delete warning */
-                .au-delete-warning { background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 12px 14px; font-size: 13.5px; color: #991b1b; line-height: 1.55; }
+                .au-delete-warning { background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 12px 14px; font-size: 15px; color: #991b1b; line-height: 1.55; }
                 .au-delete-warning strong { color: #7f1d1d; }
 
                 /* Toast */
-                .au-toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 2000; padding: 11px 18px; border-radius: 10px; font-size: 13px; font-weight: 600; box-shadow: 0 4px 16px rgba(2,6,23,0.15); display: flex; align-items: center; gap: 8px; min-width: 260px; max-width: 90vw; animation: au-slide-down 0.2s ease; }
+                .au-toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 2000; padding: 11px 18px; border-radius: 10px; font-size: 14px; font-weight: 600; box-shadow: 0 4px 16px rgba(2,6,23,0.15); display: flex; align-items: center; gap: 8px; min-width: 260px; max-width: 90vw; animation: au-slide-down 0.2s ease; }
                 .au-toast-success { background: #f0fdf4; border: 1px solid #86efac; color: #15803d; }
                 .au-toast-error { background: #fef2f2; border: 1px solid #fecaca; color: #dc2626; }
                 @keyframes au-slide-down { from { opacity: 0; transform: translateX(-50%) translateY(-8px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
 
                 /* Empty state */
-                .au-empty { text-align: center; padding: 48px 24px; color: var(--text-muted, #475569); font-size: 14px; }
+                .au-empty { text-align: center; padding: 48px 24px; color: var(--text-muted, #475569); font-size: 15px; }
 
                 @media (prefers-reduced-motion: reduce) {
                     .au-table tbody tr, .au-btn, .au-modal-close, .au-btn-cancel, .au-btn-apply, .au-btn-confirm-delete, .au-role-option { transition: none; }

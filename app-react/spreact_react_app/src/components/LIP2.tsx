@@ -167,36 +167,108 @@ const pieCategoryOrder: Record<string, string[] | null> = {
 };
 
 const variableDescription: Record<string, string> = {
-    "Activity level": "Participant's self-reported activity level from the Health and Lifestyle questionnaire (NELI app).<br /><br />Options: Very active, Active, Somewhat active, Not active at all/Sedentary.<br /><br /><em>Static variable – does not change over time.</em>",
-    Age: "Age calculated from participant's birth year (NELI app) and year recorded. Categorized as: &lt;40, 40–70, 70+.<br /><br /><em>Static variable.</em>",
-    BMI: "Body Mass Index from weight (kg) and height (cm) via NELI app. Categorized: Underweight (&lt;18.5), Normal (18.5–24.9), Overweight (25–29.9), Obese (≥30).<br /><br /><em>Static variable.</em>",
-    "Biological Sex": "Participant's biological sex. Options: Male, Female.<br /><br /><em>Static variable.</em>",
-    "CRC Family history": "Self-reported CRC family history. Options: Yes, No.<br /><br /><em>Static variable.</em>",
-    Diabetes: "Self-reported diabetes status. Options: Yes, No.<br /><br /><em>Static variable.</em>",
-    Education: "Self-reported education level. Options: Elementary, Secondary/vocational, Bachelor's, Postgraduate.<br /><br /><em>Static variable.</em>",
-    Employment: "Self-reported employment status. Options: Still studying, Part-time/Seasonal, Full-time/Self-employed, Retired.<br /><br /><em>Static variable.</em>",
-    Ethnicity: "Self-reported ethnicity. Options: Caucasian, Asian, African, Hispanic/Latino, Jewish, Romani, Other.<br /><br /><em>Static variable.</em>",
-    Housing: "Self-reported housing type. Options: Apartment, Duplex, Single-family house, Studio, Townhouse.<br /><br /><em>Static variable.</em>",
-    IBD: "Self-reported Inflammatory Bowel Disease. Options: Yes, No.<br /><br /><em>Static variable.</em>",
-    "Metabolic syndrome": "Self-reported metabolic syndrome. Options: Yes, No.<br /><br /><em>Static variable.</em>",
-    Occupation: "Self-reported occupation from Socioeconomic questionnaire (NELI app).<br /><br /><em>Static variable.</em>",
-    Region: "Self-reported region. Options: Rural, Suburban, Urban.<br /><br /><em>Static variable.</em>",
-    "Relationship status": "Self-reported relationship status. Options: Living with a partner, Living without a partner.<br /><br /><em>Static variable.</em>",
-    "Smoking status": "Self-reported smoking status. Options: Never smoked, Former smoker, Current regular smoker.<br /><br /><em>Static variable.</em>",
-    "Alcohol grams/day": "Alcohol consumption (wine, beer, distilled) in g/day. Categorized by sex: Men Standard (≤30 g/day) / High (>30 g/day); Women Standard (≤15 g/day) / High (>15 g/day).<br /><br /><em>Non-static – measured biweekly.</em>",
-    "CRC Risk Assessment Score (PYRAMID)": "CRC risk score from PYRAMID tool (5 risk levels: 1–5).<br /><br /><em>Non-static – measured biweekly.</em>",
-    "Cheese grams/day": "Cheese intake in g/day. Categorized: Low (&lt;60 g/day), Standard (≥60 g/day).<br /><br /><em>Non-static – measured biweekly.</em>",
-    "Cooked vegetables grams/day": "Cooked vegetable intake. Categorized: Low (&lt;150 g/day), Standard (≥150 g/day).<br /><br /><em>Non-static – measured biweekly.</em>",
-    "Diary-plant based products mL/day": "Dairy/plant-based intake in mL/day. Categorized: Low (&lt;480 mL/day), Standard (≥480 mL/day).<br /><br /><em>Non-static – measured biweekly.</em>",
-    "Fruits grams/day": "Fruit intake. Categorized: Low (&lt;120 g/day), Standard (≥120 g/day).<br /><br /><em>Non-static – measured biweekly.</em>",
-    "Large fatty fish grams/day": "Large fatty fish intake. Categorized: Low (&lt;43 g/day), Standard (≥43 g/day).<br /><br /><em>Non-static – measured biweekly.</em>",
-    "Legumes grams/day": "Legume intake. Categorized: Low (&lt;64 g/day), Standard (≥64 g/day).<br /><br /><em>Non-static – measured biweekly.</em>",
-    "Nuts seeds grams/day": "Nuts intake. Categorized: Standard (≤30 g/day), High (>30 g/day).<br /><br /><em>Non-static – measured biweekly.</em>",
-    "Processed meat grams/day": "Processed meat intake. Categorized: Standard (≤7 g/day), High (>7 g/day).<br /><br /><em>Non-static – measured biweekly.</em>",
-    "Raw vegetables grams/day": "Raw vegetable intake. Categorized: Low (&lt;150 g/day), Standard (≥150 g/day).<br /><br /><em>Non-static – measured biweekly.</em>",
-    "Red meat grams/day": "Red meat intake. Categorized: Standard (≤21 g/day), High (>21 g/day).<br /><br /><em>Non-static – measured biweekly.</em>",
-    "Small fatty fish grams/day": "Small fatty fish intake. Categorized: Low (&lt;43 g/day), Standard (≥43 g/day).<br /><br /><em>Non-static – measured biweekly.</em>",
-    "Wholegrains grams/day": "Wholegrain/potato intake. Categorized: Low (&lt;350 g/day), Standard (≥350 g/day).<br /><br /><em>Non-static – measured biweekly.</em>",
+    "Activity level": "Participant's self-reported activity level from the Health and Lifestyle questionnaire (NELI app).<br /><br />" +
+        "Options: Very active, Active, Somewhat active, Somewhat active, Not active at all/Sedentary.<br /><br />" +
+        "(Static variable – does not change over time.)",
+    "Age": "Age is calculated from the participant's year of birth reported in the Health and Lifestyle questionnaire (NELI app) and the year the data was recorded.<br /><br />" +
+        "The resulting age is then categorized as: <40, 40-70, 70+.<br /><br />" +
+        "(Static variable – does not change over time.)",
+    "BMI": "Body Mass Index (BMI) is calculated from the participant's weight (kg) and height (cm) reported in the Health and Lifestyle questionnaire (NELI app), using the formula: BMI = weight / (height/100)^2.<br /><br />" +
+        "The results are then categorized as follows: Underweight (<18.5), Normal (18.5–24.9), Overweight (25–29.9), Obese (≥30).<br /><br />" +
+        "(Static variable – does not change over time.)",
+    "Biological Sex": "Participant's biological sex from the Health and Lifestyle questionnaire (NELI app).<br /><br />" +
+        "Options: Male, Female.<br /><br />" +
+        "(Static variable – does not change over time.)",
+    "CRC Family history": "Participant's self-reported CRC family history from the Health and Lifestyle questionnaire (NELI app).<br /><br />" +
+        "Options: Yes, No.<br /><br />" +
+        "(Static variable – does not change over time.)",
+    "Diabetes": "Participant's self-reported diabetes from the Health and Lifestyle questionnaire (NELI app).<br /><br />" +
+        "Options: Yes, No.<br /><br />" +
+        "(Static variable – does not change over time.)",
+    "Education": "Participant's self-reported education from the Health and Lifestyle questionnaire (NELI app).<br /><br />" +
+        "Options: Elementary education (Basic reading and writing), Secondary education or vocational training, University education (Bachelor's degree), Postgraduate education (Master's degree, PhD).<br /><br />" +
+        "(Static variable – does not change over time.)",
+    "Employment": "Participant's self-reported employment status from the Socioeconomic factors questionnaire (NELI app).<br /><br />" +
+        "Options: Still studying, Part-time/Seasonal employment, Full-time/Self-employed, Retired.<br /><br />" +
+        "(Static variable – does not change over time.)",
+    "Ethnicity": "Participant's self-reported ethnicity from the Health and Lifestyle questionnaire (NELI app).<br /><br />" +
+        "Options: Caucasian, Asian, African, Hispanic/Latino, Jewish, Romani, Other.<br /><br />" +
+        "(Static variable – does not change over time.)",
+    "Housing": "Participant's self-reported housing status from the Socioeconomic factors questionnaire (NELI app).<br /><br />" +
+        "Options: Apartment, Duplex, Single-family house, Studio Apartment, Townhouse.<br /><br />" +
+        "(Static variable – does not change over time.)",
+    "IBD": "Participant's self-reported Inflammatory Bowel Disease (IBD) from the Health and Lifestyle questionnaire (NELI app).<br /><br />" +
+        "Options: Yes, No.<br /><br />" +
+        "(Static variable – does not change over time.)",
+    "Metabolic syndrome": "Participant's self-reported metabolic syndrome from the Health and Lifestyle questionnaire (NELI app).<br /><br />" +
+        "Options: Yes, No.<br /><br />" +
+        "(Static variable – does not change over time.)",
+    "Occupation": "Participant's self-reported occupational status from the Socioeconomic factors questionnaire (NELI app).<br /><br />" +
+        "Options: Elementary occupation, Manager, Professional, Service and sales worker, Skilled agricultural, forestry and fishery worker, Technician and associate professional, Don't know / No answer.<br /><br />" +
+        "(Static variable – does not change over time.)",
+    "Region": "Participant's self-reported region status from the Socioeconomic factors questionnaire (NELI app).<br /><br />" +
+        "Options: Rural, Suburban, Urban.<br /><br />" +
+        "(Static variable – does not change over time.)",
+    "Relationship status": "Participant's self-reported relationship status from the Socioeconomic factors questionnaire (NELI app).<br /><br />" +
+        "Options: Living with a partner, Living without a partner.<br /><br />" +
+        "(Static variable – does not change over time.)",
+    "Smoking status": "Participant's self-reported smoking status from the Health and Lifestyle questionnaire (NELI app).<br /><br />" +
+        "Options: I have never smoked, I am a former smoker, I am currently a regular smoker.<br /><br />" +
+        "(Static variable – does not change over time.)",
+    "Alcohol grams/day": "Alcohol consumption is defined based on the self-reported wine, beer, and distilled frequency and portion size provided in the Food Consumption questionnaire (NELI app).<br /><br />" +
+        "Alcohol quantity/day (in grams) was calculated using the reported frequency and portion size, following the methodology described in the dictionary.<br /><br />" +
+        "Alcohol grams/day was then categorized according to sex: for Men, Standard (≤30 g/day) and High (>30 g/day); for Women, Standard (≤15 g/day) and High (>15 g/day).<br /><br />" +
+        "(Non-Static variable – measured biweekly.)",
+    "CRC Risk Assessment Score (PYRAMID)": "CRC risk assessment score is evaluated using PYRAMID, a risk assessment tool developed within the ONCODIR project, which takes multiple factors from NELI data as input to stratify participants into five risk levels (1–5) for CRC.<br /><br />" +
+        "(Non-Static variable – measured biweekly.)",
+    "Cheese grams/day": "Cheese consumption is defined based on the self-reported cheese consumption frequency and portion size provided in the Food Consumption questionnaire (NELI app).<br /><br />" +
+        "Cheese quantity/day (in grams) was calculated using the reported frequency and portion size, following the methodology described in the dictionary.<br /><br />" +
+        "The resulting intake (grams/day) was then categorized as follows: Low (<60 g/day) and Standard (>= 60 g/day).<br /><br />" +
+        "(Non-Static variable – measured biweekly.)",
+    "Cooked vegetables grams/day": "Cooked vegetable consumption is defined based on the self-reported cooked vegetable consumption frequency and portion size provided in the Food Consumption questionnaire (NELI app).<br /><br />" +
+        "Cooked vegetable quantity/day (in grams) was calculated using the reported frequency and portion size, following the methodology described in the dictionary.<br /><br />" +
+        "The resulting intake (grams/day) was then categorized as follows: Low (<150 g/day) and Standard (>= 150 g/day).<br /><br />" +
+        "(Non-Static variable – measured biweekly.)",
+    "Diary-plant based products mL/day": "Diary-plant based products consumption is defined based on the self-reported milk (ml) or yogurt frequency and portion size provided in the Food Consumption questionnaire (NELI app).<br /><br />" +
+        "Quantity/day (in mL) was calculated using the reported frequency and portion size, following the methodology described in the dictionary.<br /><br />" +
+        "The resulting intake (mL/day) was then categorized as follows: Low (<480 mL/day) and Standard (>= 480 mL/day).<br /><br />" +
+        "(Non-Static variable – measured biweekly.)",
+    "Fruits grams/day": "Fruit consumption is defined based on the self-reported fruit consumption frequency and portion size provided in the Food Consumption questionnaire (NELI app).<br /><br />" +
+        "Fruit quantity/day (in grams) was calculated using the reported frequency and portion size, following the methodology described in the dictionary.<br /><br />" +
+        "The resulting intake (grams/day) was then categorized as follows: Low (<120 g/day) and Standard (>= 120 g/day).<br /><br />" +
+        "(Non-Static variable – measured biweekly.)",
+    "Large fatty fish grams/day": "Large fatty fish consumption is defined based on the self-reported large fatty fish consumption frequency and portion size provided in the Food Consumption questionnaire (NELI app).<br /><br />" +
+        "Quantity/day (in grams) was calculated using the reported frequency and portion size, following the methodology described in the dictionary.<br /><br />" +
+        "The resulting intake (grams/day) was then categorized as follows: Low (<43 g/day) and Standard (>= 43 g/day).<br /><br />" +
+        "(Non-Static variable – measured biweekly.)",
+    "Legumes grams/day": "Legume consumption is defined based on the self-reported legume consumption frequency and portion size provided in the Food Consumption questionnaire (NELI app).<br /><br />" +
+        "Legume quantity/day (in grams) was calculated using the reported frequency and portion size, following the methodology described in the dictionary.<br /><br />" +
+        "The resulting intake (grams/day) was then categorized as follows: Low (<64 g/day) and Standard (>= 64 g/day).<br /><br />" +
+        "(Non-Static variable – measured biweekly.)",
+    "Nuts seeds grams/day": "Nuts consumption is defined based on the self-reported nuts consumption frequency and portion size provided in the Food Consumption questionnaire (NELI app).<br /><br />" +
+        "Nuts quantity/day (in grams) was calculated using the reported frequency and portion size, following the methodology described in the dictionary.<br /><br />" +
+        "The resulting intake (grams/day) was then categorized as follows: Standard (<=30 g/day) and High (>30 g/day).<br /><br />" +
+        "(Non-Static variable – measured biweekly.)",
+    "Processed meat grams/day": "Processed meat consumption is defined based on the self-reported processed meat consumption frequency and portion size provided in the Food Consumption questionnaire (NELI app).<br /><br />" +
+        "Quantity/day (in grams) was calculated using the reported frequency and portion size, following the methodology described in the dictionary.<br /><br />" +
+        "The resulting intake (grams/day) was then categorized as follows: Standard (<=7 g/day) and High (>7 g/day).<br /><br />" +
+        "(Non-Static variable – measured biweekly.)",
+    "Raw vegetables grams/day": "Raw vegetables consumption is defined based on the self-reported raw vegetables consumption frequency and portion size provided in the Food Consumption questionnaire (NELI app).<br /><br />" +
+        "Raw vegetables quantity/day (in grams) was calculated using the reported frequency and portion size, following the methodology described in the dictionary.<br /><br />" +
+        "The resulting intake (grams/day) was then categorized as follows: Low (<150 g/day) and Standard (>=150 g/day).<br /><br />" +
+        "(Non-Static variable – measured biweekly.)",
+    "Red meat grams/day": "Red meat consumption is defined based on the self-reported red meat consumption frequency and portion size provided in the Food Consumption questionnaire (NELI app).<br /><br />" +
+        "Red meat quantity/day (in grams) was calculated using the reported frequency and portion size, following the methodology described in the dictionary.<br /><br />" +
+        "The resulting intake (grams/day) was then categorized as follows: Standard (<=21 g/day) and High (>21 g/day).<br /><br />" +
+        "(Non-Static variable – measured biweekly.)",
+    "Small fatty fish grams/day": "Small fatty fish consumption is defined based on the self-reported small fatty fish consumption frequency and portion size provided in the Food Consumption questionnaire (NELI app).<br /><br />" +
+        "Quantity/day (in grams) was calculated using the reported frequency and portion size, following the methodology described in the dictionary.<br /><br />" +
+        "The resulting intake (grams/day) was then categorized as follows: Low (<43 g/day) and Standard (>=43 g/day).<br /><br />" +
+        "(Non-Static variable – measured biweekly.)",
+    "Wholegrains grams/day": "Wholegrain consumption is defined based on the self-reported wholegrain or potato consumption frequency and portion size provided in the Food Consumption questionnaire (NELI app).<br /><br />" +
+        "Quantity/day (in grams) was calculated using the reported frequency and portion size, following the methodology described in the dictionary.<br /><br />" +
+        "The resulting intake (grams/day) was then categorized as follows: Low (<350 g/day) and Standard (>=350 g/day).<br />" +
+        "(Non-Static variable – measured biweekly.)",
 };
 
 // ─── Population groups scatter data ──────────────────────────────────────────
@@ -595,7 +667,7 @@ const AggregationAnalysis = () => {
                     position: absolute; inset: 0;
                     display: flex; flex-direction: column;
                     align-items: center; justify-content: center;
-                    background: var(--muted, #f5f7fb);
+                    background: #fff;
                     gap: 12px; z-index: 2;
                 }
                 .aa-chart-loading span { font-size: 13px; color: var(--text-muted, #475569); font-weight: 500; }
@@ -670,13 +742,6 @@ const AggregationAnalysis = () => {
                 .aa-pagination { display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; border-top: 1px solid var(--border, #e5e7eb); font-size: 13px; }
                 .aa-pagination-info { color: var(--text-muted, #475569); }
 
-                .aa-accordion .accordion-button { font-size: 13px; font-weight: 700; color: var(--text, #0f172a); padding: 10px 14px; background: transparent; }
-                .aa-accordion .accordion-button:not(.collapsed) { color: var(--brand-dark, #185569); background: #e8f2f6; box-shadow: none; }
-                .aa-accordion .accordion-button:focus { box-shadow: 0 0 0 3px rgba(31,101,128,0.15); }
-                .aa-accordion .accordion-item { border-color: var(--border, #e5e7eb); }
-                .aa-accordion .accordion-body { font-size: 13px; line-height: 1.6; padding: 12px 14px; color: var(--text-muted, #475569); }
-                .aa-accordion .accordion-body p { margin: 0; }
-                .aa-accordion .accordion-body li { margin-bottom: 4px; }
 
                 @media (prefers-reduced-motion: reduce) {
                     .aa-btn, .aa-table tbody tr { transition: none; }
@@ -753,7 +818,7 @@ const AggregationAnalysis = () => {
 
                                 {selectedVariable && variableDescription[selectedVariable] && (
                                     <div className="aa-sidebar-card">
-                                        <span className="filter-label">About this variable</span>
+                                        <span className="filter-label">Description</span>
                                         <div className="aa-desc" dangerouslySetInnerHTML={{ __html: variableDescription[selectedVariable] }} />
                                     </div>
                                 )}
@@ -762,17 +827,19 @@ const AggregationAnalysis = () => {
 
                         {isPopulationGroups && (
                             <div className="aa-info-card">
-                                <strong>About Population Groups</strong>
-                                <p style={{ marginTop: 10, fontSize: 13, lineHeight: 1.65 }}>
-                                    Distinct and interpretable subgroups based on shared demographic, lifestyle, and health-related characteristics. Based on data from <strong>Greece</strong> via the <strong>NELI app</strong> during LIT-02.
+                                <p style={{ marginTop: 0, fontSize: 13, lineHeight: 1.65 }}>
+                                    <strong>CRC Incidence population groups</strong> represent distinct and interpretable subgroups based on shared demographic, lifestyle, and health-related characteristics. These groups support tailored policy decisions and targeted interventions within <strong>LiP-02</strong>. Their analysis is based on data collected in <strong>Greece</strong> through the <strong>NELI mobile application</strong> during Living Lab Integration Test 02 (<strong>LIT-02</strong>).
                                 </p>
                                 <p style={{ fontSize: 13, lineHeight: 1.65 }}>
-                                    Clustering used an optimized 10-variable set. Hierarchical clustering with Gower distance identified <strong>12 population groups</strong>:
+                                    Clustering analysis was performed using an optimized set of 10 variables: age group, BMI group, biological sex, smoking status, activity level, education, employment, region, occupation, and CRC Risk Score.
+                                </p>
+                                <p style={{ fontSize: 13, lineHeight: 1.65 }}>
+                                    Hierarchical clustering with Gower distance identified <strong>12 population groups</strong> in accordance with project KPIs, distributed as follows:
                                 </p>
                                 <ul style={{ fontSize: 13, marginTop: 4 }}>
-                                    <li>7 groups — CRC risk score 2</li>
-                                    <li>3 groups — CRC risk score 3</li>
-                                    <li>2 groups — CRC risk score 4</li>
+                                    <li>7 groups with CRC risk score 2</li>
+                                    <li>3 groups with CRC risk score 3</li>
+                                    <li>2 groups with CRC risk score 4</li>
                                 </ul>
                             </div>
                         )}
@@ -862,7 +929,7 @@ const AggregationAnalysis = () => {
                                     </div>
                                 )}
 
-                                {loading && (
+                                {loading && selectedVariable && (
                                     <div className="aa-chart-wrapper">
                                         <div className="aa-chart-loading">
                                             <div className="spinner" aria-label="Loading data" />
@@ -903,7 +970,7 @@ const AggregationAnalysis = () => {
                     {/* ── Right: accordion + comments ── */}
                     <div className="col-xl-2 col-lg-3">
                         <div style={{ marginBottom: 16 }}>
-                            <Accordion defaultActiveKey="-1" className="aa-accordion">
+                            <Accordion defaultActiveKey="-1" className="app-accordion">
                                 {activeAccordionItems.map((item, idx) => (
                                     <Accordion.Item eventKey={idx.toString()} key={idx}>
                                         <Accordion.Header>{item.title}</Accordion.Header>
@@ -927,7 +994,7 @@ const AggregationAnalysis = () => {
                         Download CSV
                     </button>
                 </Modal.Header>
-                <Modal.Body style={{ padding: 0, maxHeight: "65vh", overflowY: "auto" }}>
+                <Modal.Body style={{ padding: 0, maxHeight: "65vh", overflowY: "auto", paddingBottom: totalPages > 1 ? 0 : "12px" }}>
                     <table className="aa-table" style={{ borderRadius: 0 }}>
                         <thead>
                             <tr>
@@ -961,13 +1028,15 @@ const AggregationAnalysis = () => {
                         </tbody>
                     </table>
                 </Modal.Body>
-                <Modal.Footer style={{ borderTop: "1px solid var(--border, #e5e7eb)", padding: "10px 16px" }}>
-                    <div className="aa-pagination" style={{ width: "100%", padding: 0 }}>
-                        <button className="aa-btn aa-btn-secondary" disabled={currentPage === 1} onClick={() => setCurrentPage((p) => p - 1)}>Previous</button>
-                        <span className="aa-pagination-info">Page {currentPage} of {totalPages}</span>
-                        <button className="aa-btn aa-btn-secondary" disabled={currentPage === totalPages || totalPages === 0} onClick={() => setCurrentPage((p) => p + 1)}>Next</button>
-                    </div>
-                </Modal.Footer>
+                {totalPages > 1 && (
+                    <Modal.Footer style={{ borderTop: "1px solid var(--border, #e5e7eb)", padding: "10px 16px" }}>
+                        <div className="aa-pagination" style={{ width: "100%", padding: 0 }}>
+                            <button className="aa-btn aa-btn-secondary" disabled={currentPage === 1} onClick={() => setCurrentPage((p) => p - 1)}>Previous</button>
+                            <span className="aa-pagination-info">Page {currentPage} of {totalPages}</span>
+                            <button className="aa-btn aa-btn-secondary" disabled={currentPage === totalPages} onClick={() => setCurrentPage((p) => p + 1)}>Next</button>
+                        </div>
+                    </Modal.Footer>
+                )}
             </Modal>
         </>
     );

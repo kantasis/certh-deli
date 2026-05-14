@@ -61,7 +61,7 @@ const Comments: React.FC = () => {
                 .pc-header { margin-bottom: 24px; display: flex; align-items: center; gap: 14px; }
                 .pc-header-icon { width: 44px; height: 44px; border-radius: 12px; background: #e8f2f6; color: var(--brand-dark, #185569); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
                 .pc-header-title { font-size: 22px; font-weight: 800; color: var(--text, #0f172a); margin: 0 0 2px; }
-                .pc-header-sub { font-size: 14px; color: var(--text-muted, #475569); margin: 0; }
+                .pc-header-sub { font-size: 15px; color: var(--text-muted, #475569); margin: 0; }
 
                 /* Table card */
                 .pc-table-card { background: #fff; border: 1px solid var(--border, #e5e7eb); border-radius: 14px; overflow: hidden; }
@@ -69,26 +69,26 @@ const Comments: React.FC = () => {
                 .pc-table { width: 100%; border-collapse: collapse; min-width: 680px; }
 
                 /* Head */
-                .pc-table thead th { background: var(--muted, #f5f7fb); font-size: 12px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: var(--text-muted, #475569); padding: 12px 18px; border-bottom: 1px solid var(--border, #e5e7eb); white-space: nowrap; text-align: center; }
+                .pc-table thead th { background: var(--muted, #f5f7fb); font-size: 13px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: var(--text-muted, #475569); padding: 12px 18px; border-bottom: 1px solid var(--border, #e5e7eb); white-space: nowrap; text-align: center; }
                 .pc-th-inner { display: flex; align-items: center; justify-content: center; gap: 6px; }
 
                 /* Body */
                 .pc-table tbody tr { transition: background 0.15s; }
                 .pc-table tbody tr:hover { background: #f0f5f8; }
-                .pc-table tbody td { font-size: 14px; padding: 13px 18px; color: var(--text, #0f172a); border-bottom: 1px solid var(--border, #e5e7eb); vertical-align: top; }
+                .pc-table tbody td { font-size: 15px; padding: 13px 18px; color: var(--text, #0f172a); border-bottom: 1px solid var(--border, #e5e7eb); vertical-align: top; }
                 .pc-table tbody tr:last-child td { border-bottom: none; }
 
                 /* Columns */
                 .pc-col-user { font-weight: 600; white-space: nowrap; }
-                .pc-col-date { color: var(--text-muted, #475569); white-space: nowrap; font-size: 13px; font-variant-numeric: tabular-nums; }
+                .pc-col-date { color: var(--text-muted, #475569); white-space: nowrap; font-size: 14px; font-variant-numeric: tabular-nums; }
                 .pc-col-content { max-width: 360px; line-height: 1.55; word-break: break-word; }
 
                 /* Page badge */
-                .pc-badge { display: inline-flex; align-items: center; padding: 3px 9px; border-radius: 20px; font-size: 11.5px; font-weight: 600; background: #e8f2f6; color: var(--brand-dark, #185569); border: 1.5px solid #c5dce8; white-space: nowrap; }
+                .pc-badge { display: inline-flex; align-items: center; padding: 3px 9px; border-radius: 20px; font-size: 12.5px; font-weight: 600; background: #e8f2f6; color: var(--brand-dark, #185569); border: 1.5px solid #c5dce8; white-space: nowrap; }
 
                 /* States */
-                .pc-loading { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 56px 24px; color: var(--text-muted, #475569); font-size: 14px; }
-                .pc-empty { text-align: center; padding: 56px 24px; color: var(--text-muted, #475569); font-size: 14px; }
+                .pc-loading { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 56px 24px; color: var(--text-muted, #475569); font-size: 15px; }
+                .pc-empty { text-align: center; padding: 56px 24px; color: var(--text-muted, #475569); font-size: 15px; }
 
                 @media (prefers-reduced-motion: reduce) {
                     .pc-table tbody tr { transition: none; }

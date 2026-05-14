@@ -82,7 +82,7 @@ context.panel.chart.on('click',function (params_dict) {
       "Best Practices": bestPractices_dict[country_name],
       "Policies": countryPolicies_dict?countryPolicies_dict[country_name]:[],
    };
-   console.log(clickData);
+   // console.log(clickData);
    window.parent.postMessage(clickData, "*"); // Sends data to parent iframe
 });
 

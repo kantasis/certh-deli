@@ -68,9 +68,14 @@ const App: React.FC = () => {
             </Routes>
          </div>
 
-         <div className="gk_footer">
-            <img src='EU-Funding-Logo.png' />
-         </div>
+         <footer className="gk_footer">
+            <div className="gk_footer-inner">
+               <img src="EU-Funding-Logo.png" alt="Co-funded by the European Union" className="gk_footer-logo" />
+               <p className="gk_footer-copy">
+                  © {new Date().getFullYear()} ONCODIR · All rights reserved
+               </p>
+            </div>
+         </footer>
       </div>
    </>);
 };

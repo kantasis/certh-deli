@@ -74,13 +74,13 @@ const Login: React.FC<Props> = () => {
           margin-bottom: 4px;
         }
         .login-subtitle {
-          font-size: 14px;
+          font-size: 15px;
           color: var(--text-muted, #475569);
           text-align: center;
           margin-bottom: 28px;
         }
         .login-label {
-          font-size: 13px;
+          font-size: 14px;
           font-weight: 600;
           color: var(--text, #0f172a);
           margin-bottom: 6px;
@@ -91,7 +91,7 @@ const Login: React.FC<Props> = () => {
           border: 1.5px solid var(--border, #e5e7eb);
           border-radius: 10px;
           padding: 10px 14px;
-          font-size: 14px;
+          font-size: 15px;
           color: var(--text, #0f172a);
           background: #fff;
           transition: border-color 0.2s, box-shadow 0.2s;
@@ -102,7 +102,7 @@ const Login: React.FC<Props> = () => {
           box-shadow: 0 0 0 3px rgba(31,101,128,0.15);
         }
         .login-error-msg {
-          font-size: 12px;
+          font-size: 13px;
           color: #dc2626;
           margin-top: 4px;
           padding: 0;
@@ -147,7 +147,7 @@ const Login: React.FC<Props> = () => {
           color: #dc2626;
           border-radius: 10px;
           padding: 10px 14px;
-          font-size: 13px;
+          font-size: 14px;
           margin-top: 16px;
         }
         .login-field-group { margin-bottom: 18px; }

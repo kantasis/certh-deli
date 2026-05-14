@@ -26,7 +26,7 @@ const YearFilter: React.FC<FilterProps> = ({
       <>
          <style>{`
             .yf-range { accent-color: var(--brand, #1f6580); width: 100%; cursor: pointer; }
-            .yf-value { font-size: 13px; font-weight: 700; color: var(--brand-dark, #185569); }
+            .yf-value { font-size: 14px; font-weight: 700; color: var(--brand-dark, #185569); }
             .yf-row { margin-bottom: 14px; }
             .yf-range-label { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
          `}</style>

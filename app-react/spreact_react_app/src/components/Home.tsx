@@ -62,7 +62,7 @@ const Home: React.FC = () => {
           gap: 6px;
           background: #e8f2f6;
           color: var(--brand-dark, #185569);
-          font-size: 12px;
+          font-size: 13px;
           font-weight: 600;
           border-radius: 20px;
           padding: 4px 12px;
@@ -132,13 +132,13 @@ const Home: React.FC = () => {
           margin-bottom: 8px;
         }
         .home-feature-card p {
-          font-size: 14px;
+          font-size: 15px;
           color: var(--text-muted, #475569);
           line-height: 1.65;
           margin: 0;
         }
         .home-section-label {
-          font-size: 12px;
+          font-size: 13px;
           font-weight: 700;
           letter-spacing: 0.08em;
           text-transform: uppercase;

@@ -255,37 +255,39 @@ const TwoFactorHeatmapViewer = () => {
   const accordionContent_dictLst = [
     {
       title: 'Source',
-      content: (
-        <div style={{ maxHeight: '320px', overflowY: 'auto' }}>
-          <ul className="ps-3" style={{ fontSize: '13px', lineHeight: 1.65 }}>
-            <li><strong>Source:</strong> Global Burden of Disease 2021</li>
-            <li><strong>Years:</strong> 1990–2021</li>
-            <li><strong>Geographic Coverage:</strong> 27 European countries</li>
-            <li><strong>CRC Incidence Rate:</strong> New CRC cases per 100,000 population per year</li>
-            <li><strong>Sex Groups:</strong> Both Sexes, Males, Females</li>
-          </ul>
+      content: (<>
+        <div style={{ height: '340px', overflow: 'scroll' }}>
+          <p>
+            <li><strong>Source: </strong>Global Burden of Disease 2021.
+            </li><br />
+            <li><strong>Years: </strong>Data from 1990 to 2021.
+            </li><br />
+            <li><strong>Geographic Coverage: </strong> 27 European countries.</li><br></br>
+            <li><strong>CRC Incidence Rate: </strong>Number of new CRC cases diagnosed per 100,000 population in a year. </li><br />
+            <li><strong>Sex Groups: </strong>Both Sexes (Aggregated data for males and females), Males (males only), and Females (females only).</li>
+            <br />
+          </p>
         </div>
-      )
+      </>)
     },
     {
       title: 'Summary Exposure Value (SEV)',
-      content: (
-        <p style={{ fontSize: '13px', lineHeight: 1.6 }}>
+      content: (<>
+        <p>
           Measure of a population's exposure to a risk factor that takes into account the extent of exposure by risk level and the severity of that risk's contribution to disease burden.
           Year lags refer to the time interval between risk factor exposure and CRC incidence.
         </p>
-      )
+      </>)
     },
     {
       title: 'Methodology',
-      content: (
-        <p style={{ fontSize: '13px', lineHeight: 1.6 }}>
-          XGBoost (XGB) regression models trained across all 27 EU countries, incorporating country as a native categorical variable to capture country-specific baseline effects.
-          The best risk factor subset was selected by comparing three feature importance strategies: permutation importance, tree gain importance, and Maximum Relevance Minimum Redundancy (MRMR), evaluated via time-series cross-validation.
+      content: (<>
+        <p>XGBoost (XGB) regression models trained across all 27 EU countries, incorporating country as a native categorical variable to capture country-specific baseline effects.
+          The best risk factor subset was selected by comparing three feature importance strategies i.e. permutation importance, tree gain importance, and Maximum Relevance Minimum Redundancy (MRMR), evaluated via time-series cross-validation, with the best-performing method chosen per horizon.
           Time-lag analyses of 1, 3, 5 and 10 years between CRC incidence and risk factor SEVs investigated potential downstream effects.
-          The top 5 pairs per country and horizon were ranked by their estimated joint CRC incidence reduction at a standardised exposure reduction.
-        </p>
-      )
+          For visualization purposes, only cross-category pairs were considered, combining one lifestyle and one dietary risk factor. Pairs with known biological redundancy or high collinearity were excluded.
+          The top 5 pairs per country and horizon were ranked by their estimated joint CRC incidence reduction at a standardised exposure reduction.</p>
+      </>)
     },
 
 
@@ -411,7 +413,7 @@ const TwoFactorHeatmapViewer = () => {
           border: 1px solid var(--border, #e5e7eb);
           border-radius: 14px;
           overflow: hidden;
-          background: var(--muted, #f5f7fb);
+          background: #fff;
           min-height: 600px;
           display: flex;
           align-items: center;
@@ -422,16 +424,6 @@ const TwoFactorHeatmapViewer = () => {
         .tf-empty-title { font-size: 15px; font-weight: 600; color: var(--text, #0f172a); margin: 12px 0 6px; }
         .tf-empty-sub { font-size: 13px; color: var(--text-muted, #475569); margin: 0; }
         .tf-empty-icon { color: var(--text-muted, #475569); }
-
-        .tf-accordion { margin-bottom: 16px; }
-        .tf-accordion .accordion-button {
-          font-size: 13px; font-weight: 600; color: var(--text, #0f172a);
-          background: var(--bg, #fff); padding: 12px 14px;
-        }
-        .tf-accordion .accordion-button:not(.collapsed) { color: var(--brand, #1f6580); background: #e8f2f6; box-shadow: none; }
-        .tf-accordion .accordion-body { font-size: 13px; padding: 12px 14px; color: var(--text, #0f172a); line-height: 1.6; }
-        .tf-accordion .accordion-item { border: 1px solid var(--border, #e5e7eb); border-radius: 10px !important; margin-bottom: 6px; overflow: hidden; }
-        .tf-accordion .accordion-item + .accordion-item { border-top: 1px solid var(--border, #e5e7eb); }
 
         @media (prefers-reduced-motion: reduce) {
           .tf-chart-wrapper { transition: none; }
@@ -512,7 +504,7 @@ const TwoFactorHeatmapViewer = () => {
 
           {/* ── Right: accordion + comments ── */}
           <div className="col-xl-2 col-lg-3">
-            <Accordion defaultActiveKey="-1" className="tf-accordion">
+            <Accordion defaultActiveKey="-1" className="app-accordion">
               {accordionContent_dictLst.map((item, idx) => (
                 <Accordion.Item eventKey={idx.toString()} key={idx}>
                   <Accordion.Header>{item.title}</Accordion.Header>

@@ -121,16 +121,14 @@ const LargeScaleIntervention = () => {
         return interventionMatch && riskMatch;
     });
 
-    const uniqueCategories = [...new Set(interventionsData.map(i => i.category))];
-
     return (
         <>
             <style>{`
                 .li-page { padding: 24px 0 40px; }
 
                 .li-header { margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--border, #e5e7eb); }
-                .li-header h1 { font-size: 20px; font-weight: 800; color: var(--text, #0f172a); margin: 0 0 3px; }
-                .li-header p { font-size: 13px; color: var(--text-muted, #475569); margin: 0; }
+                .li-header h1 { font-size: 22px; font-weight: 800; color: var(--text, #0f172a); margin: 0 0 3px; }
+                .li-header p { font-size: 14px; color: var(--text-muted, #475569); margin: 0; }
 
                 .li-sidebar-card {
                     background: var(--bg, #fff);
@@ -141,7 +139,7 @@ const LargeScaleIntervention = () => {
                 }
                 .li-sidebar-card .filter-label {
                     display: block;
-                    font-size: 12px;
+                    font-size: 13px;
                     font-weight: 700;
                     color: var(--text-muted, #475569);
                     text-transform: uppercase;
@@ -155,10 +153,10 @@ const LargeScaleIntervention = () => {
                     overflow: hidden;
                     background: var(--bg, #fff);
                 }
-                .li-table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+                .li-table { width: 100%; border-collapse: collapse; font-size: 15px; }
                 .li-table thead th {
                     background: var(--muted, #f5f7fb);
-                    font-size: 11px;
+                    font-size: 12px;
                     font-weight: 700;
                     text-transform: uppercase;
                     letter-spacing: 0.06em;
@@ -179,14 +177,14 @@ const LargeScaleIntervention = () => {
                 }
                 .li-table tbody tr:last-child td { border-bottom: none; }
                 .li-table tbody tr:hover { background: var(--muted, #f5f7fb); transition: background 0.15s; }
-                .li-intervention-name { font-weight: 600; font-size: 13.5px; }
+                .li-intervention-name { font-weight: 600; font-size: 15px; }
 
                 .li-domain-chip {
                     display: inline-flex;
                     align-items: center;
                     padding: 3px 10px;
                     border-radius: 20px;
-                    font-size: 11.5px;
+                    font-size: 12.5px;
                     font-weight: 600;
                     white-space: nowrap;
                 }
@@ -195,7 +193,7 @@ const LargeScaleIntervention = () => {
                     display: inline-block;
                     padding: 2px 8px;
                     border-radius: 20px;
-                    font-size: 11px;
+                    font-size: 12px;
                     font-weight: 500;
                     margin: 2px 2px 2px 0;
                     background: var(--muted, #f5f7fb);
@@ -204,14 +202,14 @@ const LargeScaleIntervention = () => {
                 }
 
                 .li-legend { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
-                .li-legend-item { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--text-muted, #475569); }
+                .li-legend-item { display: flex; align-items: center; gap: 5px; font-size: 13px; color: var(--text-muted, #475569); }
                 .li-legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
 
                 .li-empty {
                     padding: 48px 16px;
                     text-align: center;
                     color: var(--text-muted, #475569);
-                    font-size: 13px;
+                    font-size: 14px;
                 }
 
                 .li-count-badge {
@@ -223,19 +221,12 @@ const LargeScaleIntervention = () => {
                     border-radius: 10px;
                     background: var(--brand, #0ea5a8);
                     color: #fff;
-                    font-size: 11px;
+                    font-size: 12px;
                     font-weight: 700;
                     padding: 0 5px;
                     margin-left: 6px;
                 }
 
-                .li-accordion .accordion-button { font-size: 13px; font-weight: 700; color: var(--text, #0f172a); padding: 10px 14px; background: transparent; }
-                .li-accordion .accordion-button:not(.collapsed) { color: var(--brand-dark, #185569); background: #e8f2f6; box-shadow: none; }
-                .li-accordion .accordion-button:focus { box-shadow: 0 0 0 3px rgba(31,101,128,0.15); }
-                .li-accordion .accordion-item { border-color: var(--border, #e5e7eb); }
-                .li-accordion .accordion-body { font-size: 13px; line-height: 1.6; padding: 12px 14px; color: var(--text-muted, #475569); max-height: 380px; overflow-y: auto; }
-                .li-accordion .accordion-body p { margin: 0; font-size: 13px; line-height: 1.6; }
-                .li-accordion .accordion-body li { margin-bottom: 6px; }
 
                 @media (prefers-reduced-motion: reduce) {
                     .li-table tbody tr { transition: none; }
@@ -246,7 +237,7 @@ const LargeScaleIntervention = () => {
 
                 <div className="li-header">
                     <h1>Large-scale Intervention Pilot 2 – Greece</h1>
-                    <p>CRC Primary Prevention at Regional Level · Prefecture of Central Macedonia</p>
+                    <p>CRC Primary Prevention at Regional Level</p>
                 </div>
 
                 <div className="row g-3">
@@ -285,20 +276,6 @@ const LargeScaleIntervention = () => {
                             </select>
                         </div>
 
-                        <div className="li-sidebar-card">
-                            <span className="filter-label">Domains</span>
-                            <div className="li-legend">
-                                {uniqueCategories.map((cat) => {
-                                    const meta = domainMeta[cat] ?? { bg: "#f3f4f6", color: "#374151" };
-                                    return (
-                                        <div key={cat} className="li-legend-item" style={{ width: "100%" }}>
-                                            <span className="li-legend-dot" style={{ background: meta.color }} />
-                                            <span style={{ color: "var(--text, #0f172a)", fontWeight: 500, fontSize: 12 }}>{cat}</span>
-                                        </div>
-                                    );
-                                })}
-                            </div>
-                        </div>
                     </div>
 
                     {/* ── Center: table ── */}
@@ -321,6 +298,8 @@ const LargeScaleIntervention = () => {
                                             </th>
                                             <th>Domain</th>
                                             <th>Related Risk Factors</th>
+                                            <th>Effectiveness</th>
+                                            <th>Relevant Recommendations</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -344,6 +323,8 @@ const LargeScaleIntervention = () => {
                                                             <span key={i} className="li-rf-tag">{rf}</span>
                                                         ))}
                                                     </td>
+                                                    <td></td>
+                                                    <td></td>
                                                 </tr>
                                             );
                                         })}
@@ -356,7 +337,7 @@ const LargeScaleIntervention = () => {
                     {/* ── Right: accordion + comments ── */}
                     <div className="col-xl-2 col-lg-3">
                         <div style={{ marginBottom: "16px" }}>
-                            <Accordion defaultActiveKey="-1" className="li-accordion">
+                            <Accordion defaultActiveKey="-1" className="app-accordion">
                                 {accordionContent_dictLst.map((item, idx) => (
                                     <Accordion.Item eventKey={idx.toString()} key={idx}>
                                         <Accordion.Header>{item.title}</Accordion.Header>

@@ -281,7 +281,7 @@ const SaveGraphButton: React.FC<SaveGraphButtonProps> = ({ iframeUrl }) => {
                     gap: 7px;
                     padding: 8px 16px;
                     border-radius: 10px;
-                    font-size: 14px;
+                    font-size: 15px;
                     font-weight: 600;
                     cursor: pointer;
                     border: 1.5px solid var(--brand, #1f6580);
@@ -338,7 +338,7 @@ const SaveGraphButton: React.FC<SaveGraphButtonProps> = ({ iframeUrl }) => {
                 .sgb-section { margin-bottom: 18px; }
                 .sgb-section:last-child { margin-bottom: 0; }
                 .sgb-label {
-                    font-size: 11px;
+                    font-size: 12px;
                     font-weight: 700;
                     letter-spacing: 0.07em;
                     text-transform: uppercase;
@@ -359,7 +359,7 @@ const SaveGraphButton: React.FC<SaveGraphButtonProps> = ({ iframeUrl }) => {
                     border: 1.5px solid var(--border, #e5e7eb);
                     border-radius: 9px;
                     padding: 8px 12px;
-                    font-size: 13.5px;
+                    font-size: 15px;
                     color: var(--text, #0f172a);
                     background: #fff;
                     outline: none;
@@ -375,7 +375,7 @@ const SaveGraphButton: React.FC<SaveGraphButtonProps> = ({ iframeUrl }) => {
                     border: 1.5px solid var(--border, #e5e7eb);
                     border-radius: 9px;
                     padding: 8px 12px;
-                    font-size: 13.5px;
+                    font-size: 15px;
                     color: var(--text, #0f172a);
                     background: #fff;
                     outline: none;
@@ -392,7 +392,7 @@ const SaveGraphButton: React.FC<SaveGraphButtonProps> = ({ iframeUrl }) => {
                 .sgb-btn {
                     display: inline-flex; align-items: center; gap: 5px;
                     padding: 7px 14px; border-radius: 8px;
-                    font-size: 13px; font-weight: 600;
+                    font-size: 14px; font-weight: 600;
                     cursor: pointer; border: 1.5px solid;
                     transition: background 0.15s, border-color 0.15s, color 0.15s;
                     white-space: nowrap; flex-shrink: 0;
@@ -415,7 +415,7 @@ const SaveGraphButton: React.FC<SaveGraphButtonProps> = ({ iframeUrl }) => {
                 }
                 .sgb-btn-danger:hover { background: #b91c1c; border-color: #b91c1c; }
                 .sgb-btn-sm {
-                    padding: 4px 9px; font-size: 12px; border-radius: 6px; gap: 4px;
+                    padding: 4px 9px; font-size: 13px; border-radius: 6px; gap: 4px;
                 }
 
                 /* Graph cards grid */
@@ -445,7 +445,7 @@ const SaveGraphButton: React.FC<SaveGraphButtonProps> = ({ iframeUrl }) => {
                 .sgb-no-preview {
                     width: 100%; height: 100%;
                     display: flex; align-items: center; justify-content: center;
-                    font-size: 12px; color: var(--text-muted, #475569);
+                    font-size: 13px; color: var(--text-muted, #475569);
                 }
                 .sgb-graph-actions {
                     display: flex; justify-content: space-between;
@@ -463,15 +463,15 @@ const SaveGraphButton: React.FC<SaveGraphButtonProps> = ({ iframeUrl }) => {
                 }
                 .sgb-result-icon-success { background: #f0fdf4; color: #15803d; }
                 .sgb-result-icon-danger { background: #fef2f2; color: #dc2626; }
-                .sgb-result-message { text-align: center; font-size: 14px; color: var(--text-muted, #475569); line-height: 1.55; }
+                .sgb-result-message { text-align: center; font-size: 15px; color: var(--text-muted, #475569); line-height: 1.55; }
                 .sgb-result-title { text-align: center; font-size: 17px; font-weight: 700; color: var(--text, #0f172a); margin-bottom: 6px; }
                 .sgb-warn-box {
                     background: #fef2f2; border: 1px solid #fecaca; border-radius: 9px;
-                    padding: 12px 14px; font-size: 13.5px; color: #991b1b; line-height: 1.5;
+                    padding: 12px 14px; font-size: 15px; color: #991b1b; line-height: 1.5;
                 }
                 .sgb-warn-box-amber {
                     background: #fffbeb; border: 1px solid #fcd34d; border-radius: 9px;
-                    padding: 12px 14px; font-size: 13.5px; color: #78350f; line-height: 1.5;
+                    padding: 12px 14px; font-size: 15px; color: #78350f; line-height: 1.5;
                 }
 
                 @media (prefers-reduced-motion: reduce) {

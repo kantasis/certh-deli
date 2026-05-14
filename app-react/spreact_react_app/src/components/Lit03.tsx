@@ -63,9 +63,9 @@ const LIT03: React.FC = () => {
                     padding-bottom: 16px;
                     border-bottom: 1px solid var(--border, #e5e7eb);
                 }
-                .lit-title { font-size: 20px; font-weight: 800; color: var(--text, #0f172a); margin: 0; }
+                .lit-title { font-size: 22px; font-weight: 800; color: var(--text, #0f172a); margin: 0; }
                 .lit-select {
-                    font-size: 13px;
+                    font-size: 14px;
                     padding: 7px 32px 7px 12px;
                     border: 1px solid var(--border, #e5e7eb);
                     border-radius: 8px;

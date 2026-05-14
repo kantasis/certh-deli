@@ -256,21 +256,21 @@ const SavedDashboards: React.FC = () => {
                 .md-header { margin-bottom: 28px; display: flex; align-items: center; gap: 14px; }
                 .md-header-icon { width: 44px; height: 44px; border-radius: 12px; background: #e8f2f6; color: var(--brand-dark, #185569); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
                 .md-header-title { font-size: 22px; font-weight: 800; color: var(--text, #0f172a); margin: 0 0 2px; }
-                .md-header-sub { font-size: 14px; color: var(--text-muted, #475569); margin: 0; }
+                .md-header-sub { font-size: 15px; color: var(--text-muted, #475569); margin: 0; }
 
                 /* Toolbar */
                 .md-toolbar { display: flex; align-items: center; gap: 10px; margin-bottom: 24px; flex-wrap: wrap; }
                 .md-select {
                     flex: 1; min-width: 200px; max-width: 320px;
                     border: 1.5px solid var(--border, #e5e7eb); border-radius: 10px;
-                    padding: 9px 14px; font-size: 14px; color: var(--text, #0f172a);
+                    padding: 9px 14px; font-size: 15px; color: var(--text, #0f172a);
                     background: #fff; outline: none; cursor: pointer;
                     transition: border-color 0.2s, box-shadow 0.2s; font-family: inherit;
                 }
                 .md-select:focus { border-color: var(--brand, #1f6580); box-shadow: 0 0 0 3px rgba(31,101,128,0.15); }
 
                 /* Buttons */
-                .md-btn { display: inline-flex; align-items: center; gap: 6px; padding: 9px 16px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; border: 1.5px solid; transition: background 0.15s, border-color 0.15s; white-space: nowrap; }
+                .md-btn { display: inline-flex; align-items: center; gap: 6px; padding: 9px 16px; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; border: 1.5px solid; transition: background 0.15s, border-color 0.15s; white-space: nowrap; }
                 .md-btn-primary { background: var(--brand, #1f6580); border-color: var(--brand, #1f6580); color: #fff; }
                 .md-btn-primary:hover:not(:disabled) { background: var(--brand-dark, #185569); border-color: var(--brand-dark, #185569); box-shadow: 0 4px 14px rgba(31,101,128,0.25); }
                 .md-btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
@@ -288,27 +288,27 @@ const SavedDashboards: React.FC = () => {
                 .md-preview { width: 100%; height: 240px; background: var(--muted, #f5f7fb); flex-shrink: 0; position: relative; }
                 .md-preview iframe { width: 100%; height: 100%; border: none; pointer-events: none; display: block; }
                 .md-preview img { width: 100%; height: 100%; object-fit: contain; display: block; }
-                .md-no-preview { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; color: var(--text-muted, #475569); font-size: 13px; }
+                .md-no-preview { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; color: var(--text-muted, #475569); font-size: 14px; }
                 .md-card-body { padding: 14px 16px; display: flex; flex-direction: column; flex: 1; }
                 .md-card-page { display: inline-flex; align-items: center; gap: 5px; margin-bottom: 10px; }
-                .md-page-badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 9px; border-radius: 20px; font-size: 12px; font-weight: 600; background: #e8f2f6; color: var(--brand-dark, #185569); border: 1.5px solid #c5dce8; }
-                .md-filters-label { font-size: 11px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: var(--text-muted, #475569); margin-bottom: 7px; display: block; }
+                .md-page-badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 9px; border-radius: 20px; font-size: 13px; font-weight: 600; background: #e8f2f6; color: var(--brand-dark, #185569); border: 1.5px solid #c5dce8; }
+                .md-filters-label { font-size: 12px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: var(--text-muted, #475569); margin-bottom: 7px; display: block; }
                 .md-badges { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 12px; }
-                .md-badge { display: inline-flex; align-items: center; padding: 3px 9px; border-radius: 20px; font-size: 12px; font-weight: 500; background: #e8f2f6; color: var(--brand-dark, #185569); border: 1.5px solid #c5dce8; cursor: default; white-space: nowrap; }
+                .md-badge { display: inline-flex; align-items: center; padding: 3px 9px; border-radius: 20px; font-size: 13px; font-weight: 500; background: #e8f2f6; color: var(--brand-dark, #185569); border: 1.5px solid #c5dce8; cursor: default; white-space: nowrap; }
                 .md-badge[data-tooltip="true"] { cursor: pointer; }
-                .md-card-meta { font-size: 12px; color: var(--text-muted, #475569); margin-bottom: 14px; }
+                .md-card-meta { font-size: 13px; color: var(--text-muted, #475569); margin-bottom: 14px; }
                 .md-card-meta strong { color: var(--text, #0f172a); }
                 .md-card-actions { display: flex; gap: 8px; margin-top: auto; }
-                .md-card-actions .md-btn { flex: 1; justify-content: center; padding: 8px 10px; font-size: 13px; }
+                .md-card-actions .md-btn { flex: 1; justify-content: center; padding: 8px 10px; font-size: 14px; }
 
                 /* Empty states */
                 .md-empty { background: #fff; border: 1px solid var(--border, #e5e7eb); border-radius: 14px; padding: 56px 24px; text-align: center; }
                 .md-empty-icon { width: 48px; height: 48px; border-radius: 14px; background: #e8f2f6; color: var(--brand-dark, #185569); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; }
                 .md-empty-title { font-size: 16px; font-weight: 700; color: var(--text, #0f172a); margin-bottom: 6px; }
-                .md-empty-sub { font-size: 13px; color: var(--text-muted, #475569); }
+                .md-empty-sub { font-size: 14px; color: var(--text-muted, #475569); }
 
                 /* Loading */
-                .md-loading { display: flex; align-items: center; justify-content: center; gap: 12px; min-height: 320px; color: var(--text-muted, #475569); font-size: 14px; }
+                .md-loading { display: flex; align-items: center; justify-content: center; gap: 12px; min-height: 320px; color: var(--text-muted, #475569); font-size: 15px; }
 
                 /* Modal overrides */
                 .md-dialog .modal-content { border-radius: 16px; border: 1px solid var(--border, #e5e7eb); box-shadow: 0 20px 60px rgba(2,6,23,0.18); overflow: hidden; }
@@ -317,10 +317,10 @@ const SavedDashboards: React.FC = () => {
                 .md-dialog .modal-body { padding: 20px; }
                 .md-dialog .modal-footer { border-top: 1px solid var(--border, #e5e7eb); padding: 12px 20px 16px; gap: 8px; }
                 .md-modal-icon { width: 34px; height: 34px; border-radius: 9px; background: #fef2f2; color: #dc2626; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-                .md-warn-box { background: #fef2f2; border: 1px solid #fecaca; border-radius: 9px; padding: 12px 14px; font-size: 13.5px; color: #991b1b; line-height: 1.55; }
+                .md-warn-box { background: #fef2f2; border: 1px solid #fecaca; border-radius: 9px; padding: 12px 14px; font-size: 15px; color: #991b1b; line-height: 1.55; }
 
                 /* Toast */
-                .md-toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 2000; padding: 11px 18px; border-radius: 10px; font-size: 13px; font-weight: 600; box-shadow: 0 4px 16px rgba(2,6,23,0.15); display: flex; align-items: center; gap: 8px; min-width: 260px; max-width: 90vw; background: #fef2f2; border: 1px solid #fecaca; color: #dc2626; animation: md-slide-down 0.2s ease; }
+                .md-toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 2000; padding: 11px 18px; border-radius: 10px; font-size: 14px; font-weight: 600; box-shadow: 0 4px 16px rgba(2,6,23,0.15); display: flex; align-items: center; gap: 8px; min-width: 260px; max-width: 90vw; background: #fef2f2; border: 1px solid #fecaca; color: #dc2626; animation: md-slide-down 0.2s ease; }
                 @keyframes md-slide-down { from { opacity: 0; transform: translateX(-50%) translateY(-8px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
 
                 @media (prefers-reduced-motion: reduce) {

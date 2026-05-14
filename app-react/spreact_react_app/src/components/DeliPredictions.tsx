@@ -464,14 +464,44 @@ const DeliPredictions = () => {
         const end = start + itemsPerPage;
         return (
             <>
-                <ul>{biasContent.slice(start, end).map((item, idx) => <li key={idx}>{item}</li>)}</ul>
-                <div className="d-flex justify-content-between align-items-center mt-3">
-                    <Button variant="primary" onClick={() => setCurrentPage((p) => p - 1)} disabled={currentPage === 0}>Previous</Button>
-                    <span className="mx-3">Page {currentPage + 1} of {totalPages}</span>
-                    <Button variant="primary" onClick={() => setCurrentPage((p) => p + 1)} disabled={end >= biasContent.length}>Next</Button>
-                </div>
-                <div className="mt-3 text-center">
-                    Click <a href="/Bias_Analysis_Report.pdf" target="_blank">here</a> to download the Bias Analysis Report
+                <ul style={{ paddingLeft: 20, margin: 0 }}>
+                    {biasContent.slice(start, end).map((item, idx) => (
+                        <li key={idx} style={{ fontSize: 14, lineHeight: 1.65, marginBottom: 10, color: "var(--text, #0f172a)" }}>
+                            {item}
+                        </li>
+                    ))}
+                </ul>
+                {totalPages > 1 && (
+                    <div style={{
+                        display: "flex", alignItems: "center", justifyContent: "space-between",
+                        marginTop: 20, paddingTop: 16, borderTop: "1px solid var(--border, #e5e7eb)"
+                    }}>
+                        <button
+                            className="btn-ghost"
+                            style={{ color: "var(--brand, #1f6580)", borderColor: "var(--brand, #1f6580)" }}
+                            onClick={() => setCurrentPage((p) => p - 1)}
+                            disabled={currentPage === 0}
+                        >
+                            Previous
+                        </button>
+                        <span style={{ fontSize: 13, color: "var(--text-muted, #475569)", fontWeight: 500 }}>
+                            Page {currentPage + 1} of {totalPages}
+                        </span>
+                        <button
+                            className="btn-ghost"
+                            style={{ color: "var(--brand, #1f6580)", borderColor: "var(--brand, #1f6580)" }}
+                            onClick={() => setCurrentPage((p) => p + 1)}
+                            disabled={end >= biasContent.length}
+                        >
+                            Next
+                        </button>
+                    </div>
+                )}
+                <div style={{
+                    marginTop: 16, paddingTop: 14, borderTop: "1px solid var(--border, #e5e7eb)",
+                    textAlign: "center", fontSize: 13, color: "var(--text-muted, #475569)"
+                }}>
+                    Click <a href="/Bias_Analysis_Report.pdf" target="_blank" style={{ color: "var(--brand, #1f6580)", fontWeight: 600 }}>here</a> to download the Bias Analysis Report
                 </div>
             </>
         );
@@ -588,59 +618,74 @@ const DeliPredictions = () => {
     // ── accordion content ─────────────────────
     const regularAccordionItems = [
         {
-            title: "Source",
-            content: (
-                <div style={{ maxHeight: "260px", overflowY: "auto" }}>
-                    <ul className="ps-3" style={{ margin: 0 }}>
-                        <li><strong>Source:</strong> Global Burden of Disease 2021</li>
-                        <li><strong>Years:</strong> Data from 1990 to 2021</li>
-                        <li><strong>Geographic Coverage:</strong> 27 European countries</li>
-                        <li><strong>CRC Incidence Rate:</strong> Number of new CRC cases diagnosed per 100,000 population in a year</li>
-                        <li><strong>Sex Groups:</strong> Both Sexes, Males, Females</li>
-                    </ul>
+            title: 'Source',
+            content: (<>
+                <div style={{ height: '340px', overflow: 'scroll' }}>
+                    <p>
+                        <li><strong>Source: </strong> Global Burden of Disease 2021.</li><br />
+                        <li><strong>Years: </strong>Data from 1990 to 2021.</li><br />
+                        <li><strong>Geographic Coverage: </strong> 27 European countries</li><br />
+                        <li><strong>CRC Incidence Rate: </strong>Number of new CRC cases diagnosed per 100,000 population in a year</li><br />
+                        <li><strong>Sex Groups: </strong>Both Sexes (Aggregated data for males and females), Males (males only), and Females (females only)</li><br />
+                    </p>
                 </div>
-            ),
+            </>)
         },
         {
-            title: "Summary Exposure Value (SEV)",
-            content: <p>Measure of a population's exposure to a risk factor that takes into account the extent of exposure by risk level and the severity of that risk's contribution to disease burden.</p>,
-        },
-        {
-            title: "Year Lags",
-            content: <p>Year lags refer to the time interval between risk factor exposure and CRC incidence. Based on: Cai et al. 2024 (Public Health).</p>,
-        },
-        {
-            title: "Methodology",
-            content: (
+            title: 'Summary Exposure Value (SEV)',
+            content: (<>
                 <p>
-                    Generalized Additive Models (GAMs) trained across all countries, incorporating country as a categorical covariate to account for country-specific variations in SEV effects.
-                    Time-lag analyses of 1, 3, 5 and 10 years between CRC Incidence and Risk Factors investigated potential downstream effects.
-                    SEV for 1991 was correlated with CRC incidence for 1992, 1994, 1996 and 2001 and so on.
+                    Measure of a population's exposure to a risk factor that takes into account the extent of exposure by risk level and the severity of that risk's contribution to disease burden.
+                </p>
+            </>)
+        },
+        {
+            title: 'Year Lags',
+            content: (<>
+                <p>
+                    Year lags refer to the time interval between risk factor exposure and CRC incidence. Based on: Cai et al. 2024 (Public Health).
+                </p>
+            </>)
+        },
+        {
+            title: 'Methodology',
+            content: (<>
+                <p>
+                    Generalized Additive Models (GAMs) trained across all countries, incorporating country as a categorical covariate to account for country-specific variations in SEV effects.<br /><br />
+                    {/* Final number of risk factors used in the model was 13. <br /><br /> */}
+                    Time-lag analyses of 1, 3, 5 and 10 years between CRC Incidence and Risk Factors investigated potential downstream effects.<br /><br />
+                    {/* For example, SEV for 1990 was correlated with CRC incidence for 1991, 1993, 1995 and 2000. <br /><br /> */}
+                    SEV for 1991 was correlated with CRC incidence for 1992, 1994, 1996 and 2001 and so on.<br /><br />
                     Negative coefficients may be related to a number of factors, e.g. the presence of confounding variables.
                 </p>
-            ),
+            </>)
         },
         ...(biasContent.length > 0 ? [{ title: "Bias Assessment", content: (<ul>{biasContent.map((item, idx) => <li key={idx}>{item}</li>)}</ul>) }] : []),
     ];
 
     const twoFactorAccordionItems = [
         {
-            title: "Source",
-            content: (
-                <div style={{ maxHeight: "260px", overflowY: "auto" }}>
-                    <ul className="ps-3" style={{ margin: 0 }}>
-                        <li><strong>Source:</strong> Global Burden of Disease 2021</li>
-                        <li><strong>Years:</strong> Data from 1990 to 2021</li>
-                        <li><strong>Geographic Coverage:</strong> 27 European countries</li>
-                        <li><strong>CRC Incidence Rate:</strong> Number of new CRC cases diagnosed per 100,000 population in a year</li>
-                        <li><strong>Sex Groups:</strong> Both Sexes, Males, Females</li>
-                    </ul>
+            title: 'Source',
+            content: (<>
+                <div style={{ height: '340px', overflow: 'scroll' }}>
+                    <p>
+                        <li><strong>Source: </strong>Global Burden of Disease 2021.</li><br />
+                        <li><strong>Years: </strong>Data from 1990 to 2021.</li><br />
+                        <li><strong>Geographic Coverage: </strong> 27 European countries.</li><br />
+                        <li><strong>CRC Incidence Rate: </strong>Number of new CRC cases diagnosed per 100,000 population in a year. </li><br />
+                        <li><strong>Sex Groups: </strong>Both Sexes (Aggregated data for males and females), Males (males only), and Females (females only).</li><br />
+                    </p>
                 </div>
-            ),
+            </>)
         },
         {
-            title: "Summary Exposure Value (SEV)",
-            content: <p>Measure of a population's exposure to a risk factor that takes into account the extent of exposure by risk level and the severity of that risk's contribution to disease burden. Year lags refer to the time interval between risk factor exposure and CRC incidence.</p>,
+            title: 'Summary Exposure Value (SEV)',
+            content: (<>
+                <p>
+                    Measure of a population's exposure to a risk factor that takes into account the extent of exposure by risk level and the severity of that risk's contribution to disease burden.
+                    Year lags refer to the time interval between risk factor exposure and CRC incidence.
+                </p>
+            </>)
         },
         {
             title: "Methodology",
@@ -687,14 +732,6 @@ const DeliPredictions = () => {
                 .dp-alert-warn { background: #fffbeb; border: 1px solid #fcd34d; color: #92400e; border-radius: 10px; padding: 12px 16px; font-size: 14px; margin: 16px; }
                 .dp-alert-err { background: #fef2f2; border: 1px solid #fecaca; color: #dc2626; border-radius: 10px; padding: 12px 16px; font-size: 14px; margin: 16px; }
 
-                .dp-accordion .accordion-button { font-size: 13px; font-weight: 700; color: var(--text, #0f172a); padding: 10px 14px; background: transparent; }
-                .dp-accordion .accordion-button:not(.collapsed) { color: var(--brand-dark, #185569); background: #e8f2f6; box-shadow: none; }
-                .dp-accordion .accordion-button:focus { box-shadow: 0 0 0 3px rgba(31,101,128,0.15); }
-                .dp-accordion .accordion-item { border-color: var(--border, #e5e7eb); }
-                .dp-accordion .accordion-body { font-size: 13px; line-height: 1.6; padding: 12px 14px; color: var(--text-muted, #475569); }
-                .dp-accordion .accordion-body p { margin: 0; font-size: 13px; line-height: 1.6; }
-                .dp-accordion .accordion-body ul { margin: 0; font-size: 13px; line-height: 1.6; }
-                .dp-accordion .accordion-body li + li { margin-top: 6px; }
 
                 @media (prefers-reduced-motion: reduce) {
                     .dp-chart-loading { transition: none; }
@@ -932,7 +969,7 @@ const DeliPredictions = () => {
 
                     {/* ── Right column ── */}
                     <div className="col-xl-2 col-lg-3">
-                        <Accordion defaultActiveKey="-1" className="dp-accordion" style={{ marginBottom: "16px" }}>
+                        <Accordion defaultActiveKey="-1" className="app-accordion" style={{ marginBottom: "16px" }}>
                             {activeAccordionItems.map((item, idx) => {
                                 const isBiasAssessment = item.title === "Bias Assessment";
                                 return (
@@ -957,10 +994,20 @@ const DeliPredictions = () => {
                         <Comments />
 
                         <Modal show={showModal} onHide={() => setShowModal(false)} centered size="lg">
-                            <Modal.Header closeButton>
-                                <Modal.Title>{modalTitle}</Modal.Title>
+                            <Modal.Header closeButton style={{
+                                borderBottom: "1px solid var(--border, #e5e7eb)",
+                                padding: "18px 24px 16px",
+                            }}>
+                                <Modal.Title style={{
+                                    fontSize: 15,
+                                    fontWeight: 700,
+                                    color: "var(--text, #0f172a)",
+                                    lineHeight: 1.5,
+                                }}>
+                                    {modalTitle}
+                                </Modal.Title>
                             </Modal.Header>
-                            <Modal.Body style={{ maxHeight: "60vh", overflowY: "auto" }}>
+                            <Modal.Body style={{ maxHeight: "60vh", overflowY: "auto", padding: "20px 24px" }}>
                                 {isBiasModal ? paginatedBiasContent() : modalContent}
                             </Modal.Body>
                         </Modal>

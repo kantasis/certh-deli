@@ -42,35 +42,35 @@ const accordionContent_dictLst = [
    {
       title: "Data Sources",
       content: (
-         <div style={{ maxHeight: "320px", overflowY: "auto" }}>
-            <ul className="ps-3" style={{ fontSize: "13px", lineHeight: 1.65 }}>
-               <li><strong>Source:</strong> Global Burden of Disease Study 2021</li>
-               <li><strong>Years:</strong> 1990–2021</li>
-               <li><strong>Geographic Coverage:</strong> 46 countries in Europe</li>
-               <li><strong>Age Groups:</strong> Under 25, 25–50, Above 50, Age-Standardized</li>
-               <li><strong>Sex Groups:</strong> Both Sexes, Males, Females</li>
-               <li><strong>CRC Incidence Rate:</strong> New CRC cases per 100,000 population per year</li>
-               <li><strong>Risk factors:</strong> 22 factors — lifestyle, nutrition, comorbidities, socioeconomic</li>
-               <li><strong>SEV rates:</strong> Relative risk-weighted prevalence of exposure (21 risk factors)</li>
-            </ul>
+         <div style={{ maxHeight: "340px", overflowY: "auto" }}>
+            <p>
+               <li><strong>Source: </strong>Global Burden of Disease Study 2021</li><br />
+               <li><strong>Years: </strong>1990-2021</li><br />
+               <li><strong>Geographic Coverage: </strong>46 countries in Europe</li><br />
+               <li><strong>Age Groups: </strong>Under 25 (0–24 years), 25–50 (25 to 49 years), Above 50 (50 and older), Age-Standardized (Adjusted rates that account for differences in age distributions across populations)</li><br />
+               <li><strong>Sex Groups: </strong>Both Sexes (Aggregated data for males and females), Males (males only), and Females (females only)</li><br />
+               <li><strong>CRC Incidence Rate: </strong>Number of new CRC cases diagnosed per 100,000 population in a year</li><br />
+               <li><strong>Risk factors: </strong>22 risk factors, comprising 4 lifestyle factors, 15 nutrition factors, 2 comorbidities, and 1 socioeconomic factor</li><br />
+               <li><strong>Summary Exposure Value (SEV) rates: </strong>This metric represents the relative risk-weighted prevalence of exposure, accounting for both the extent of exposure and its contribution to disease burden. SEV is the metric for 21 risk factors (excluding socioeconomic factor)</li><br />
+            </p>
          </div>
       ),
    },
    {
       title: "Incidence",
-      content: <p style={{ fontSize: "13px" }}>Number of new CRC cases diagnosed per 100,000 population.</p>,
+      content: <p>Number of new CRC cases diagnosed per 100,000 population</p>,
    },
    {
-      title: "DALYs — Disability Adjusted Life Years",
-      content: <p style={{ fontSize: "13px" }}>Number of DALYs in the population per 100,000.</p>,
+      title: "Disability adjusted life years (DALYs)",
+      content: <p>Number of DALYs in the population per 100,000.</p>,
    },
    {
-      title: "YLLs — Years of Life Lost",
-      content: <p style={{ fontSize: "13px" }}>Number of YLLs in the population per 100,000.</p>,
+      title: "Years of life lost (YLLs)",
+      content: <p>Number of YLLs in the population per 100,000</p>,
    },
    {
-      title: "YLDs — Years Lived with Disability",
-      content: <p style={{ fontSize: "13px" }}>Number of YLDs in the population per 100,000.</p>,
+      title: "Years lived with disability (YLDs)",
+      content: <p>Number of YLDs in the population per 100,000</p>,
    },
 ];
 
@@ -127,8 +127,8 @@ const EpidimiologicalPanel: React.FC = () => {
          <style>{`
             .ep-page { padding: 24px 0 40px; }
             .ep-header { margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--border, #e5e7eb); }
-            .ep-header h1 { font-size: 20px; font-weight: 800; color: var(--text, #0f172a); margin: 0 0 3px; }
-            .ep-header p { font-size: 13px; color: var(--text-muted, #475569); margin: 0; }
+            .ep-header h1 { font-size: 22px; font-weight: 800; color: var(--text, #0f172a); margin: 0 0 3px; }
+            .ep-header p { font-size: 14px; color: var(--text-muted, #475569); margin: 0; }
             .ep-filter-section { margin-bottom: 18px; }
             .ep-filter-section + .ep-filter-section { padding-top: 16px; border-top: 1px solid var(--border, #e5e7eb); }
             .ep-iframe-wrapper {
@@ -136,19 +136,19 @@ const EpidimiologicalPanel: React.FC = () => {
                border: 1px solid var(--border, #e5e7eb);
                border-radius: 14px;
                overflow: hidden;
-               background: var(--muted, #f5f7fb);
+               background: #fff;
                min-height: 600px;
             }
             .ep-iframe-loading {
                position: absolute; inset: 0;
                display: flex; flex-direction: column; align-items: center; justify-content: center;
-               background: var(--muted, #f5f7fb);
+               background: #fff;
                z-index: 2;
                gap: 12px;
                transition: opacity 0.3s ease;
             }
             .ep-iframe-loading.hidden { opacity: 0; pointer-events: none; }
-            .ep-iframe-loading span { font-size: 13px; color: var(--text-muted, #475569); font-weight: 500; }
+            .ep-iframe-loading span { font-size: 14px; color: var(--text-muted, #475569); font-weight: 500; }
             .ep-iframe { display: block; border: none; width: 100%; height: 600px; }
             .ep-sidebar-card {
                background: var(--bg, #fff);
@@ -158,17 +158,6 @@ const EpidimiologicalPanel: React.FC = () => {
                margin-bottom: 12px;
             }
             .ep-sidebar-card .filter-label { margin-bottom: 10px; }
-            .ep-accordion .accordion-button {
-               font-size: 13px;
-               font-weight: 600;
-               color: var(--text, #0f172a);
-               padding: 10px 14px;
-               background: transparent;
-            }
-            .ep-accordion .accordion-button:not(.collapsed) { color: var(--brand-dark, #185569); background: #e8f2f6; }
-            .ep-accordion .accordion-button:focus { box-shadow: 0 0 0 3px rgba(31,101,128,0.15); }
-            .ep-accordion .accordion-body { font-size: 13px; padding: 12px 14px; }
-            .ep-accordion .accordion-item { border-color: var(--border, #e5e7eb); }
          `}</style>
 
          <div className="container-fluid ep-page">
@@ -246,7 +235,7 @@ const EpidimiologicalPanel: React.FC = () => {
 
                {/* ── Right: glossary + comments ── */}
                <div className="col-xl-2 col-lg-3">
-                  <Accordion defaultActiveKey="-1" className="ep-accordion" style={{ marginBottom: "16px" }}>
+                  <Accordion defaultActiveKey="-1" className="app-accordion" style={{ marginBottom: "16px" }}>
                      {accordionContent_dictLst.map((item, idx) => (
                         <Accordion.Item eventKey={idx.toString()} key={idx}>
                            <Accordion.Header>{item.title}</Accordion.Header>

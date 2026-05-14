@@ -146,8 +146,8 @@ const RiskFactorExposurePanel: React.FC = () => {
                 .rf-page { padding: 24px 0 40px; }
 
                 .rf-header { margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--border, #e5e7eb); }
-                .rf-header h1 { font-size: 20px; font-weight: 800; color: var(--text, #0f172a); margin: 0 0 3px; }
-                .rf-header p { font-size: 13px; color: var(--text-muted, #475569); margin: 0; }
+                .rf-header h1 { font-size: 22px; font-weight: 800; color: var(--text, #0f172a); margin: 0 0 3px; }
+                .rf-header p { font-size: 14px; color: var(--text-muted, #475569); margin: 0; }
 
                 .rf-sidebar-card {
                     background: var(--bg, #fff);
@@ -158,7 +158,7 @@ const RiskFactorExposurePanel: React.FC = () => {
                 }
                 .rf-sidebar-card .filter-label {
                     display: block;
-                    font-size: 12px;
+                    font-size: 13px;
                     font-weight: 700;
                     color: var(--text-muted, #475569);
                     text-transform: uppercase;
@@ -171,19 +171,19 @@ const RiskFactorExposurePanel: React.FC = () => {
                     border: 1px solid var(--border, #e5e7eb);
                     border-radius: 14px;
                     overflow: hidden;
-                    background: var(--muted, #f5f7fb);
+                    background: #fff;
                     min-height: 600px;
                 }
                 .rf-iframe-loading {
                     position: absolute; inset: 0;
                     display: flex; flex-direction: column; align-items: center; justify-content: center;
-                    background: var(--muted, #f5f7fb);
+                    background: #fff;
                     z-index: 2;
                     gap: 12px;
                     transition: opacity 0.3s ease;
                 }
                 .rf-iframe-loading.hidden { opacity: 0; pointer-events: none; }
-                .rf-iframe-loading span { font-size: 13px; color: var(--text-muted, #475569); font-weight: 500; }
+                .rf-iframe-loading span { font-size: 14px; color: var(--text-muted, #475569); font-weight: 500; }
                 .rf-iframe { display: block; border: none; width: 100%; height: 600px; }
 
                 @media (prefers-reduced-motion: reduce) {
@@ -217,6 +217,7 @@ const RiskFactorExposurePanel: React.FC = () => {
                             />
                         </div>
                         <div className="rf-sidebar-card">
+                            <span className="filter-label">Year range</span>
                             <YearFilter
                                 minYear_int={minYear_int}
                                 set_minYear={set_minYear}

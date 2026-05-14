@@ -17,11 +17,6 @@
    background-color: #ff0000;
 }
 
-.footer {
-   float: left;
-   /* display:block; */
-   /* background-color: #ff0000; */
-}
 
 /* a {
    font-weight: 500;
@@ -182,7 +177,7 @@ button:focus-visible {
 
 .dropdown-item .label { font-weight: 600; }
 .dropdown-item .hint {
-  font-size: 12px;
+  font-size: 13px;
   color: var(--text-muted);
   margin-top: 2px;
   line-height: 1.2;
@@ -211,7 +206,7 @@ button:focus-visible {
 
 /* Section header inside dropdown */
 .dropdown-section-header {
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -234,7 +229,7 @@ button:focus-visible {
 
 /* Auth buttons in navbar */
 .nav-btn-login {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 600;
   color: var(--text);
   background: transparent;
@@ -254,7 +249,7 @@ button:focus-visible {
 }
 
 .nav-btn-register {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 600;
   color: #fff;
   background: var(--brand);
@@ -288,7 +283,7 @@ button:focus-visible {
 }
 
 .user-info {
-  font-size: 14px;
+  font-size: 15px;
   color: var(--text);
 }
 
@@ -329,7 +324,7 @@ button:focus-visible {
 .form-select {
   border-radius: 10px;
   border: 1.5px solid var(--border);
-  font-size: 14px;
+  font-size: 15px;
   color: var(--text);
   transition: border-color 0.2s, box-shadow 0.2s;
 }
@@ -342,7 +337,7 @@ button:focus-visible {
   border-radius: 10px;
   padding: 8px 18px;
   font-weight: 600;
-  font-size: 14px;
+  font-size: 15px;
   cursor: pointer;
   transition: background 0.2s, box-shadow 0.2s;
 }
@@ -357,7 +352,7 @@ button:focus-visible {
   border-radius: 10px;
   padding: 7px 16px;
   font-weight: 500;
-  font-size: 14px;
+  font-size: 15px;
   cursor: pointer;
   transition: border-color 0.2s, color 0.2s, background 0.2s;
 }
@@ -399,7 +394,7 @@ button:focus-visible {
 /* ── Filter sidebar label ── */
 .filter-label {
   display: block;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
   letter-spacing: 0.05em;
   text-transform: uppercase;
@@ -409,15 +404,74 @@ button:focus-visible {
 
 /* ── Page title ── */
 .page-title {
-  font-size: 22px;
+  font-size: 24px;
   font-weight: 700;
   color: var(--text);
   margin-bottom: 4px;
 }
 .page-subtitle {
-  font-size: 14px;
+  font-size: 15px;
   color: var(--text-muted);
   margin-bottom: 0;
+}
+
+/* ── Shared accordion ── */
+.app-accordion .accordion-button {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text, #0f172a);
+  padding: 10px 14px;
+  background: var(--bg, #fff);
+}
+.app-accordion .accordion-button:not(.collapsed) {
+  color: var(--brand-dark, #185569);
+  background: #e8f2f6;
+  box-shadow: none;
+}
+.app-accordion .accordion-button:focus { box-shadow: 0 0 0 3px rgba(31,101,128,0.15); }
+.app-accordion .accordion-item {
+  border: 1px solid var(--border, #e5e7eb) !important;
+  border-radius: 10px !important;
+  margin-bottom: 6px;
+  overflow: hidden;
+}
+.app-accordion .accordion-body {
+  font-size: 14px;
+  line-height: 1.6;
+  padding: 12px 14px;
+  color: var(--text, #0f172a);
+}
+.app-accordion .accordion-body p { margin: 0; font-size: 14px; line-height: 1.6; }
+.app-accordion .accordion-body ul { margin: 0; font-size: 14px; line-height: 1.6; }
+.app-accordion .accordion-body li + li { margin-top: 6px; }
+
+/* ── Footer ── */
+.gk_footer {
+  border-top: 1px solid var(--border, #e5e7eb);
+  background: var(--bg, #fff);
+  padding: 20px 32px;
+  margin-top: 40px;
+}
+.gk_footer-inner {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.gk_footer-logo {
+  max-height: 55px;
+  width: auto;
+  opacity: 0.9;
+  flex-shrink: 0;
+}
+.gk_footer-copy {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 13px;
+  color: var(--text-muted, #475569);
+  margin: 0;
+  line-height: 1.5;
+  white-space: nowrap;
 }
 
 /* ── Utility: reduced motion ── */

@@ -96,7 +96,7 @@ const Comments: React.FC = () => {
                     border-radius: 50%;
                     background: var(--brand, #1f6580);
                     color: #fff;
-                    font-size: 13px;
+                    font-size: 14px;
                     font-weight: 700;
                     display: flex;
                     align-items: center;
@@ -104,7 +104,7 @@ const Comments: React.FC = () => {
                     flex-shrink: 0;
                 }
                 .cm-username {
-                    font-size: 14px;
+                    font-size: 15px;
                     color: var(--text-muted, #475569);
                     font-weight: 500;
                     overflow: hidden;
@@ -144,7 +144,7 @@ const Comments: React.FC = () => {
                     gap: 8px;
                 }
                 .cm-char-count {
-                    font-size: 13px;
+                    font-size: 14px;
                     color: var(--text-muted, #475569);
                     flex-shrink: 0;
                 }
@@ -159,7 +159,7 @@ const Comments: React.FC = () => {
                     color: #fff;
                     border: none;
                     border-radius: 8px;
-                    font-size: 14px;
+                    font-size: 15px;
                     font-weight: 700;
                     cursor: pointer;
                     transition: background 0.2s;
@@ -183,7 +183,7 @@ const Comments: React.FC = () => {
                     gap: 6px;
                     padding: 8px 10px;
                     border-radius: 8px;
-                    font-size: 14px;
+                    font-size: 15px;
                     font-weight: 500;
                     margin-top: 10px;
                     line-height: 1.4;

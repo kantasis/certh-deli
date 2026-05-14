@@ -517,156 +517,214 @@ const EuropeMap = () => {
     const accordionContentTrend_dictLst = [
         {
             title: 'Data Sources',
-            content: (
-                <div style={{ maxHeight: '320px', overflowY: 'auto' }}>
-                    <ul className="ps-3" style={{ fontSize: '13px', lineHeight: 1.65 }}>
-                        <li><strong>Source:</strong> Global Burden of Disease Study 2021</li>
-                        <li><strong>Years:</strong> 1990–2021</li>
-                        <li><strong>Geographic Coverage:</strong> 46 countries in Europe</li>
-                        <li><strong>Age Groups:</strong> Under 25 (0–24 years), 25–50 (25–49 years), Above 50 (50+), Age-Standardized</li>
-                        <li><strong>Sex Groups:</strong> Both Sexes, Males, Females</li>
-                        <li><strong>CRC Incidence Rate:</strong> New CRC cases per 100,000 population per year</li>
-                        <li><strong>Risk factors:</strong> 22 factors — 4 lifestyle, 15 nutrition, 2 comorbidities, 1 socioeconomic</li>
-                        <li><strong>SEV rates:</strong> Relative risk-weighted prevalence of exposure (21 risk factors)</li>
-                    </ul>
+            content: (<>
+                <div style={{ height: '340px', overflow: 'scroll' }}>
+                    <p>
+                        <li><strong>Source: </strong>Global Burden of Disease Study 2021</li><br />
+
+                        <li><strong>Years: </strong>1990-2021</li><br />
+
+                        <li><strong>Geographic Coverage: </strong>46 countries in Europe</li><br />
+
+                        <li><strong>Age Groups: </strong>Under 25 (0–24 years), 25–50 (25 to 49 years), Above 50 (50 and older), Age-Standardized (Adjusted rates that account for differences in age distributions across populations)</li><br />
+
+                        <li><strong>Sex Groups: </strong>Both Sexes (Aggregated data for males and females), Males (males only), and Females (females only)</li><br />
+
+                        <li><strong>CRC Incidence Rate: </strong>Number of new CRC cases diagnosed per 100,000 population in a year</li><br />
+
+                        <li><strong>Risk factors: </strong>22 risk factors, comprising 4 lifestyle factors, 15 nutrition factors, 2 comorbidities, and 1 socioeconomic factor</li><br />
+
+                        <li><strong>Summary Exposure Value (SEV) rates: </strong>This metric represents the relative risk-weighted prevalence of exposure, accounting for both the extent of exposure and its contribution to disease burden. SEV is the metric for 21 risk factors (excluding socioeconomic factor)</li><br />
+                    </p>
                 </div>
-            )
+            </>)
         },
         {
             title: 'Methodology',
-            content: (
-                <div style={{ maxHeight: '320px', overflowY: 'auto', fontSize: '13px', lineHeight: 1.6 }}>
-                    <p><strong>Trend Analysis</strong></p>
-                    <p>Temporal trends in CRC incidence were analyzed using the <strong>Estimated Annual Percentage Change (EAPC)</strong> over multiple intervals: 5, 10, 15, 20, 25, and 30 years.</p>
-                    <p>The EAPC describes the rate of change in Age-Standardized Rates (ASRs) by fitting a regression model to the natural logarithm of ASRs. This applies a Generalized Linear Model with a Gaussian distribution, assuming a constant rate of change on the logarithmic scale.</p>
-                    <p><strong>Interpreting Trends:</strong></p>
-                    <ul className="ps-3">
-                        <li><strong>Increasing:</strong> EAPC and 95% CI &gt; 0</li>
-                        <li><strong>Decreasing:</strong> EAPC and 95% CI &lt; 0</li>
-                        <li><strong>Stable:</strong> 95% CI includes 0</li>
-                    </ul>
+            content: (<>
+                <div style={{ height: '340px', overflow: 'scroll' }}>
+                    <p>
+                        <strong>Trend Analysis</strong><br /><br />
+
+                        Temporal trends in CRC incidence were analyzed utilizing the <strong>Estimated Annual Percentage Change (EAPC)</strong> over multiple intervals: 5, 10, 15, 20, 25, and 30 years.<br /><br />
+
+                        The EAPC describes the rate of change in Age-Standardized Rates (ASRs) over time by fitting a regression model to the natural logarithm of ASRs, using time as the explanatory variable. This approach applies a Generalized Linear Model with a Gaussian distribution and assumes a constant rate of change on the logarithmic scale.<br /><br />
+
+                        <strong>Interpreting Trends:</strong><br />
+                        <strong>Increasing trend:</strong> EAPC and 95% CI {">"} 0<br />
+                        <strong>Decreasing trend: </strong>EAPC and 95% CI {"<"} 0<br />
+                        <strong>Stable trend: </strong>95% CI includes 0 (no statistically significant change)<br />
+
+                    </p>
                 </div>
-            )
+            </>)
         },
         {
             title: 'References',
-            content: (
-                <div style={{ maxHeight: '320px', overflowY: 'auto', fontSize: '13px', lineHeight: 1.6 }}>
-                    <p>B. F. Hankey et al., "Partitioning linear trends in age-adjusted rates," <em>Cancer Causes &amp; Control</em>, vol. 11, pp. 31–35, 2000.</p>
-                    <p>L. X. Clegg et al., "Estimating average annual per cent change in trend analysis," <em>Statistics in Medicine</em>, vol. 28, no. 29, pp. 3670–3682, 2009.</p>
-                </div>
-            )
+            content: (<>
+
+                <p>
+                    B. F. Hankey, L. A. Ries, C. L. Kosary, E. J. Feuer, R. M. Merrill, L. X. Clegg, and B. K. Edwards, "Partitioning linear trends in age-adjusted rates," Cancer causes & control, vol. 11, pp. 31–35, 2000. <br /><br />
+
+                    L. X. Clegg, B. F. Hankey, R. Tiwari, E. J. Feuer, and B. K. Edwards, "Estimating average annual per cent change in trend analysis," Statistics in medicine, vol. 28, no. 29, pp. 3670–3682, 2009.<br /><br />
+
+                </p>
+
+            </>)
         },
     ];
 
     const accordionContentTrendCorrelation_dictLst = [
         {
             title: 'Data Sources',
-            content: (
-                <div style={{ maxHeight: '320px', overflowY: 'auto' }}>
-                    <ul className="ps-3" style={{ fontSize: '13px', lineHeight: 1.65 }}>
-                        <li><strong>Source:</strong> Global Burden of Disease Study 2021</li>
-                        <li><strong>Years:</strong> 1990–2021</li>
-                        <li><strong>Geographic Coverage:</strong> 46 countries in Europe</li>
-                        <li><strong>Age Groups:</strong> Under 25, 25–50, Above 50, Age-Standardized</li>
-                        <li><strong>Sex Groups:</strong> Both Sexes, Males, Females</li>
-                        <li><strong>CRC Incidence Rate:</strong> New CRC cases per 100,000 population per year</li>
-                        <li><strong>Risk factors:</strong> 22 factors — 4 lifestyle, 15 nutrition, 2 comorbidities, 1 socioeconomic</li>
-                        <li><strong>SEV rates:</strong> Relative risk-weighted prevalence of exposure (21 risk factors)</li>
-                    </ul>
+            content: (<>
+                <div style={{ height: '340px', overflow: 'scroll' }}>
+                    <p>
+                        <li><strong>Source: </strong>Global Burden of Disease Study 2021</li><br />
+
+                        <li><strong>Years: </strong>1990-2021</li><br />
+
+                        <li><strong>Geographic Coverage: </strong>46 countries in Europe</li><br />
+
+                        <li><strong>Age Groups: </strong>Under 25 (0–24 years), 25–50 (25 to 49 years), Above 50 (50 and older), Age-Standardized (Adjusted rates that account for differences in age distributions across populations)</li><br />
+
+                        <li><strong>Sex Groups: </strong>Both Sexes (Aggregated data for males and females), Males (males only), and Females (females only)</li><br />
+
+                        <li><strong>CRC Incidence Rate: </strong>Number of new CRC cases diagnosed per 100,000 population in a year</li><br />
+
+                        <li><strong>Risk factors: </strong>22 risk factors, comprising 4 lifestyle factors, 15 nutrition factors, 2 comorbidities, and 1 socioeconomic factor</li><br />
+
+                        <li><strong>Summary Exposure Value (SEV) rates: </strong>This metric represents the relative risk-weighted prevalence of exposure, accounting for both the extent of exposure and its contribution to disease burden. SEV is the metric for 21 risk factors (excluding socioeconomic factor)</li><br />
+                    </p>
                 </div>
-            )
+            </>)
         },
         {
             title: 'Methodology',
-            content: (
-                <div style={{ maxHeight: '320px', overflowY: 'auto', fontSize: '13px', lineHeight: 1.6 }}>
-                    <p><strong>Trend Correlation</strong></p>
-                    <p>Associations between long-term trends in modifiable risk factors and CRC incidence were examined over 1990–2021 using weighted linear regression on EAPCs.</p>
-                    <p>The <strong>EAPC</strong> describes the rate of change in Age-Standardized Rates (ASRs) using a GLM with Gaussian distribution on the log scale. A <strong>Weighted Linear Regression</strong> model assessed the link between risk factor EAPC and CRC EAPC. Outliers identified via studentized residuals (threshold ±2.5). Analysis covers 22 risk factors across age and sex groups.</p>
+            content: (<>
+                <div style={{ height: '340px', overflow: 'scroll' }}>
+
+                    <strong>Trend Correlation</strong><br /><br />
+
+                    <p>Associations between long-term trends in modifiable risk factors and trends in CRC incidence were examined over a 30-year period (1990–2021) to determine whether changes in specific risk factors correspond to increases or decreases in CRC incidence over time.</p>
+                    <p>To evaluate these associations, a weighted linear regression analysis was conducted using Estimated Annual Percentage Changes (EAPCs) for both risk factors and CRC incidence.</p>
+                    <p>The <strong>EAPC</strong> describes the rate of change in Age-Standardized Rates (ASRs) over time by fitting a regression model to the natural logarithm of ASRs, using time as the explanatory variable. This approach applies a Generalized Linear Model with a Gaussian distribution and assumes a constant rate of change on the logarithmic scale.</p>
+                    <p>A <strong>Weighted Linear Regression</strong> model assessed the association between the EAPC of a risk factor (independent variable) and the EAPC of CRC incidence (dependent variable). Weights were derived from the inverse of the sum of squared standard errors of both variables, incorporating uncertainty in both axes. Outliers were identified using studentized residuals, with a threshold of ±2.5.</p>
+
+                    The analysis included<strong>22 risk factors</strong> and was performed across defined age and sex groups.
+
                     <p><strong>Interpreting Associations:</strong></p>
-                    <ul className="ps-3">
-                        <li><strong>Positive:</strong> β &gt; 0 and p &lt; 0.05</li>
-                        <li><strong>Negative:</strong> β &lt; 0 and p &lt; 0.05</li>
-                        <li><strong>Non-significant:</strong> p ≥ 0.05</li>
-                    </ul>
+
+                    <p><strong>Positive association:</strong> regression coefficients (β) &gt; 0 and p-value &lt; 0.05 (an increasing trend in the risk factor is associated with an increasing trend in CRC incidence)</p>
+
+                    <p><strong>Negative association:</strong> β &gt; 0 and p-value  &lt; 0.05 (a decreasing trend in the risk factor is associated with a decreasing trend in CRC incidence)</p>
+
+                    <strong>No statistically significant association:</strong> p ≥ 0.05
+
                 </div>
-            )
+            </>)
         }
+
     ];
     const accordionContentForecastingCRC_dictLst = [
         {
             title: 'Data Sources',
-            content: (
-                <div style={{ maxHeight: '320px', overflowY: 'auto' }}>
-                    <ul className="ps-3" style={{ fontSize: '13px', lineHeight: 1.65 }}>
-                        <li><strong>Source:</strong> Global Burden of Disease Study 2021</li>
-                        <li><strong>Years:</strong> 1990–2021</li>
-                        <li><strong>Geographic Coverage:</strong> 46 countries in Europe</li>
-                        <li><strong>Age Groups:</strong> Under 25, 25–50, Above 50, Age-Standardized</li>
-                        <li><strong>Sex Groups:</strong> Both Sexes, Males, Females</li>
-                        <li><strong>CRC Incidence Rate:</strong> New CRC cases per 100,000 population per year</li>
-                        <li><strong>Risk factors:</strong> 22 factors — 4 lifestyle, 15 nutrition, 2 comorbidities, 1 socioeconomic</li>
-                        <li><strong>SEV rates:</strong> Relative risk-weighted prevalence of exposure (21 risk factors)</li>
-                    </ul>
+            content: (<>
+                <div style={{ height: '340px', overflow: 'scroll' }}>
+                    <p>
+                        <li><strong>Source: </strong>Global Burden of Disease Study 2021</li><br />
+
+                        <li><strong>Years: </strong>1990-2021</li><br />
+
+                        <li><strong>Geographic Coverage: </strong>46 countries in Europe</li><br />
+
+                        <li><strong>Age Groups: </strong>Under 25 (0–24 years), 25–50 (25 to 49 years), Above 50 (50 and older), Age-Standardized (Adjusted rates that account for differences in age distributions across populations)</li><br />
+
+                        <li><strong>Sex Groups: </strong>Both Sexes (Aggregated data for males and females), Males (males only), and Females (females only)</li><br />
+
+                        <li><strong>CRC Incidence Rate: </strong>Number of new CRC cases diagnosed per 100,000 population in a year</li><br />
+
+                        <li><strong>Risk factors: </strong>22 risk factors, comprising 4 lifestyle factors, 15 nutrition factors, 2 comorbidities, and 1 socioeconomic factor</li><br />
+
+                        <li><strong>Summary Exposure Value (SEV) rates: </strong>This metric represents the relative risk-weighted prevalence of exposure, accounting for both the extent of exposure and its contribution to disease burden. SEV is the metric for 21 risk factors (excluding socioeconomic factor)</li><br />
+                    </p>
                 </div>
-            )
+            </>)
         },
         {
             title: 'Methodology',
-            content: (
-                <div style={{ maxHeight: '320px', overflowY: 'auto', fontSize: '13px', lineHeight: 1.6 }}>
-                    <p><strong>Forecasting CRC</strong></p>
-                    <p>Future CRC incidence rates over 30 years are projected using the <strong>ARIMA</strong> time series model, which integrates autoregression, moving average, and differencing (ARIMA(p, d, q)).</p>
-                    <p>An <strong>autoARIMA</strong> approach selects optimal parameters via AIC. Models produce projections with <strong>95% confidence intervals</strong>, providing country-specific and subgroup-specific (age/sex) CRC incidence forecasts through 2050.</p>
+            content: (<>
+                <div style={{ height: '340px', overflow: 'scroll' }}>
+                    <p>
+                        <strong>Forecasting CRC</strong><br /><br />
+
+                        <p>Future CRC incidence rates over the next 30 years across EU countries for various population groups are projected using the AutoRegressive Integrated Moving Average (ARIMA) time series model, which captures temporal trends and autocorrelations in historical data.</p>
+                        <p>The <strong>ARIMA </strong>model integrates three components: autoregression (using past values), moving average (using past forecast errors), and differencing (to correct for non-stationarity). It is defined by the parameters ARIMA(p, d, q), where p is the number of lagged observations, d is the number of differencing steps required for stationarity, and q is the number of lagged forecast errors. An automated ARIMA (autoARIMA) approach was employed to identify optimal parameter values by testing multiple combinations and selecting the best-fitting model based on the Akaike Information Criterion (AIC).</p>
+                        <p>The final models produced projections with <strong>95% confidence intervals (CI)</strong>, providing <strong>country</strong>-specific and <strong>subgroup</strong>-specific forecasts (by age and sex) of CRC incidence rates through the year 2050.</p>
+                    </p>
                 </div>
-            )
+            </>)
         },
+
     ];
-    const accordionContentAssociation_dictLst = [
-        {
-            title: 'Data Sources',
-            content: (
-                <div style={{ maxHeight: '320px', overflowY: 'auto' }}>
-                    <ul className="ps-3" style={{ fontSize: '13px', lineHeight: 1.65 }}>
-                        <li><strong>Source:</strong> Global Burden of Disease Study 2021</li>
-                        <li><strong>Years:</strong> 1990–2021</li>
-                        <li><strong>Geographic Coverage:</strong> 46 countries in Europe</li>
-                        <li><strong>Age Groups:</strong> Under 25, 25–50, Above 50, Age-Standardized</li>
-                        <li><strong>Sex Groups:</strong> Both Sexes, Males, Females</li>
-                        <li><strong>CRC Incidence Rate:</strong> New CRC cases per 100,000 population per year</li>
-                        <li><strong>Risk factors:</strong> 22 factors — 4 lifestyle, 15 nutrition, 2 comorbidities, 1 socioeconomic</li>
-                        <li><strong>SEV rates:</strong> Relative risk-weighted prevalence of exposure (21 risk factors)</li>
-                    </ul>
-                </div>
-            )
-        },
-        {
-            title: 'Methodology',
-            content: (
-                <div style={{ maxHeight: '320px', overflowY: 'auto', fontSize: '13px', lineHeight: 1.6 }}>
-                    <p><strong>Association Analysis</strong></p>
-                    <p>Associations between CRC incidence and modifiable risk factors were assessed using a <strong>Fixed-Effects Regression Model</strong> across 46 countries and 20 years, capturing shared risk-factor influence while accounting for country-level repeated measurements.</p>
-                    <p>A <strong>10-year time lag</strong> was applied, pairing risk factor data from 1990–2011 with CRC incidence data from 2000–2021. Covers 22 risk factors across defined age and sex groups.</p>
-                    <p><strong>Interpreting Associations:</strong></p>
-                    <ul className="ps-3">
-                        <li><strong>Positive:</strong> β &gt; 0 and p &lt; 0.05</li>
-                        <li><strong>Negative:</strong> β &lt; 0 and p &lt; 0.05</li>
-                        <li><strong>Non-significant:</strong> p ≥ 0.05</li>
-                    </ul>
-                </div>
-            )
-        },
-        {
-            title: 'References',
-            content: (
-                <div style={{ maxHeight: '320px', overflowY: 'auto', fontSize: '13px', lineHeight: 1.6 }}>
-                    <p>P. D. Allison, <em>Fixed Effects Regression Models</em>. SAGE Publications, 2009.</p>
-                    <p>B. Hicks et al., "The application of lag times in cancer pharmacoepidemiology: a narrative review," <em>Annals of Epidemiology</em>, vol. 84, pp. 25–32, 2023.</p>
-                </div>
-            )
-        }
-    ];
+    const accordionContentAssociation_dictLst = [{
+        title: 'Data Sources',
+        content: (<>
+            <div style={{ height: '340px', overflow: 'scroll' }}>
+                <p>
+                    <li><strong>Source: </strong>Global Burden of Disease Study 2021</li><br />
+
+                    <li><strong>Years: </strong>1990-2021</li><br />
+
+                    <li><strong>Geographic Coverage: </strong>46 countries in Europe</li><br />
+
+                    <li><strong>Age Groups: </strong>Under 25 (0–24 years), 25–50 (25 to 49 years), Above 50 (50 and older), Age-Standardized (Adjusted rates that account for differences in age distributions across populations)</li><br />
+
+                    <li><strong>Sex Groups: </strong>Both Sexes (Aggregated data for males and females), Males (males only), and Females (females only)</li><br />
+
+                    <li><strong>CRC Incidence Rate: </strong>Number of new CRC cases diagnosed per 100,000 population in a year</li><br />
+
+                    <li><strong>Risk factors: </strong>22 risk factors, comprising 4 lifestyle factors, 15 nutrition factors, 2 comorbidities, and 1 socioeconomic factor</li><br />
+
+                    <li><strong>Summary Exposure Value (SEV) rates: </strong>This metric represents the relative risk-weighted prevalence of exposure, accounting for both the extent of exposure and its contribution to disease burden. SEV is the metric for 21 risk factors (excluding socioeconomic factor)</li><br />
+                </p>
+            </div>
+        </>)
+    }, {
+        title: 'Methodology',
+        content: (<>
+            <div style={{ height: '340px', overflow: 'scroll' }}>
+                <p>
+                    <strong>Association analysis</strong><br /><br />
+
+                    Associations between CRC incidence and modifiable risk factors were assessed using a <strong>Fixed-Effects Regression Model</strong>, applied across 46 countries and 20 years.<br /><br />
+
+                    A Fixed-Effects Regression Model is a longitudinal analysis that accounts for repeated measurements within each country while capturing the shared influence of risk factors across Europe.<br /><br />
+
+                    To address the latency between exposure and cancer development, a <strong>10-year time lag</strong> was applied, pairing risk factor data from 1990–2011 with CRC incidence data from 2000–2021. <br /><br />
+
+                    The analysis included <strong>22 risk factors</strong> and was performed across defined <strong>age</strong> and <strong>sex groups</strong>.<br /><br />
+
+                    <strong>Interpreting Associations:</strong><br /><br />
+                    <strong>Positive association: </strong>regression coefficients (β) {">"} 0 and p-value {"<"} 0.05<br /><br />
+                    <strong>Negative association: </strong>β {"<"} 0 and p-value  {"<"} 0.05<br /><br />
+                    <strong>No statistically significant association: </strong>p ≥ 0.05<br /><br />
+                </p>
+            </div>
+        </>)
+    }, {
+        title: 'References',
+        content: (<>
+
+            <p>
+                P. D. Allison, Fixed effects regression models. SAGE publications, 2009. <br /><br />
+
+                B. Hicks, J. A. Kaye, L. Azoulay, K. B. Kristensen, L. A. Habel, and A. Pottegard, "The application of lag times in cancer pharmacoepidemi ology: a narrative review," Annals of Epidemiology, vol. 84, pp. 25–32, 2023.<br /><br />
+
+            </p>
+
+        </>)
+    }];
 
     const toggleRiskFactor = (factor) => {
         setSelectedRiskFactors((prev) => {
@@ -1515,8 +1573,8 @@ const EuropeMap = () => {
             <style>{`
                 .ta-page { padding: 24px 0 40px; }
                 .ta-header { margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--border, #e5e7eb); }
-                .ta-header h1 { font-size: 20px; font-weight: 800; color: var(--text, #0f172a); margin: 0 0 3px; }
-                .ta-header p { font-size: 13px; color: var(--text-muted, #475569); margin: 0; }
+                .ta-header h1 { font-size: 22px; font-weight: 800; color: var(--text, #0f172a); margin: 0 0 3px; }
+                .ta-header p { font-size: 14px; color: var(--text-muted, #475569); margin: 0; }
 
                 .ta-sidebar-card {
                     background: var(--bg, #fff);
@@ -1527,7 +1585,7 @@ const EuropeMap = () => {
                 }
                 .ta-sidebar-card .filter-label {
                     display: block;
-                    font-size: 12px;
+                    font-size: 13px;
                     font-weight: 700;
                     color: var(--text-muted, #475569);
                     text-transform: uppercase;
@@ -1539,7 +1597,7 @@ const EuropeMap = () => {
                     border: 1.5px solid var(--border, #e5e7eb);
                     border-radius: 8px;
                     padding: 7px 10px;
-                    font-size: 13px;
+                    font-size: 14px;
                     color: var(--text, #0f172a);
                     background: #fff;
                     outline: none;
@@ -1561,20 +1619,20 @@ const EuropeMap = () => {
                     align-items: center;
                     gap: 7px;
                     padding: 4px 8px;
-                    font-size: 13px;
+                    font-size: 14px;
                     color: var(--text, #0f172a);
                     cursor: pointer;
                     border-radius: 5px;
                 }
                 .ta-check-list label:hover { background: #f0f5f8; }
-                .ta-check-list input[type="checkbox"] { accent-color: var(--brand, #1f6580); flex-shrink: 0; }
+                .ta-check-list input[type="checkbox"] { accent-color: var(--brand, #1f6580); flex-shrink: 0; color-scheme: light; }
 
                 .ta-chart-wrapper {
                     position: relative;
                     border: 1px solid var(--border, #e5e7eb);
                     border-radius: 14px;
                     overflow: hidden;
-                    background: var(--muted, #f5f7fb);
+                    background: #fff;
                     min-height: 580px;
                     display: flex;
                     flex-direction: column;
@@ -1588,7 +1646,7 @@ const EuropeMap = () => {
                     min-height: 580px;
                     gap: 12px;
                 }
-                .ta-chart-loading span { font-size: 13px; color: var(--text-muted, #475569); font-weight: 500; }
+                .ta-chart-loading span { font-size: 14px; color: var(--text-muted, #475569); font-weight: 500; }
                 .ta-empty-state {
                     display: flex;
                     flex-direction: column;
@@ -1600,13 +1658,8 @@ const EuropeMap = () => {
                 }
                 .ta-empty-icon { width: 52px; height: 52px; border-radius: 14px; background: #e8f2f6; color: var(--brand-dark, #185569); display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; }
                 .ta-empty-title { font-size: 16px; font-weight: 700; color: var(--text, #0f172a); margin: 0 0 6px; }
-                .ta-empty-sub { font-size: 13px; color: var(--text-muted, #475569); margin: 0; max-width: 380px; line-height: 1.6; }
+                .ta-empty-sub { font-size: 14px; color: var(--text-muted, #475569); margin: 0; max-width: 380px; line-height: 1.6; }
 
-                .ta-accordion .accordion-button { font-size: 13px; font-weight: 600; color: var(--text, #0f172a); padding: 10px 14px; background: transparent; }
-                .ta-accordion .accordion-button:not(.collapsed) { color: var(--brand-dark, #185569); background: #e8f2f6; }
-                .ta-accordion .accordion-button:focus { box-shadow: 0 0 0 3px rgba(31,101,128,0.15); }
-                .ta-accordion .accordion-body { font-size: 13px; padding: 12px 14px; }
-                .ta-accordion .accordion-item { border-color: var(--border, #e5e7eb); }
 
                 @media (prefers-reduced-motion: reduce) {
                     .ta-select, .ta-check-list label { transition: none; }
@@ -1675,6 +1728,7 @@ const EuropeMap = () => {
                             </select>
                             {selectedCountry && (
                                 <div style={{ marginTop: "12px" }}>
+                                    <span className="filter-label">Year range</span>
                                     <YearFilter
                                         minYear_int={minYear_int ?? dataMinYear}
                                         set_minYear={set_minYear}
@@ -1830,7 +1884,7 @@ const EuropeMap = () => {
 
                 {/* ── Right: accordion + comments ── */}
                 <div className="col-xl-2 col-lg-3">
-                    <Accordion defaultActiveKey="-1" className="ta-accordion" style={{ marginBottom: "16px" }}>
+                    <Accordion defaultActiveKey="-1" className="app-accordion" style={{ marginBottom: "16px" }}>
                         {accordionContent_dictLst.map(({ title, content }, index) => (
                             <Accordion.Item eventKey={index.toString()} key={index}>
                                 <Accordion.Header>{title}</Accordion.Header>

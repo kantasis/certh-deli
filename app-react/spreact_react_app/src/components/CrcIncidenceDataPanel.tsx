@@ -47,13 +47,13 @@ const CrcIncidenceDataPanel: React.FC = () => {
                     border: 1px solid var(--border, #e5e7eb);
                     border-radius: 14px;
                     overflow: hidden;
-                    background: var(--muted, #f5f7fb);
+                    background: #fff;
                     min-height: 600px;
                 }
                 .ci-iframe-loading {
                     position: absolute; inset: 0;
                     display: flex; flex-direction: column; align-items: center; justify-content: center;
-                    background: var(--muted, #f5f7fb);
+                    background: #fff;
                     z-index: 2;
                     gap: 12px;
                     transition: opacity 0.3s ease;

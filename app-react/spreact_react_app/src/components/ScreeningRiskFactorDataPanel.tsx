@@ -172,17 +172,24 @@ const ScreeningDataPanel: React.FC = () => {
                 )}
             </div>
 
-            {/* Right Panel - Glossary Accordion and Comments */}
+            {/* Right Panel - Sources and Comments */}
             <div className="col-sm-2">
-                <h5>Sources</h5>
-                <div style={{
-                    border: '1px solid #e2e6e9',
-                    borderRadius: 'var(--bs-border-radius)',
-                    padding: '10px'
-                }}>
-                    Spanish network of cancer screening programs <br />
-                    <a target="_blank" href="https://cribadocancer.es/indicadores-cancer-colorrectal/">Link</a>
-
+                <style>{`
+                    .sd-src-card { border: 1px solid var(--border, #e5e7eb); border-radius: 10px; overflow: hidden; margin-bottom: 6px; }
+                    .sd-src-title { font-size: 14px; font-weight: 600; color: var(--text, #0f172a); padding: 10px 14px; background: var(--bg, #fff); border-bottom: 1px solid var(--border, #e5e7eb); }
+                    .sd-src-body { font-size: 14px; line-height: 1.6; padding: 12px 14px; color: var(--text, #0f172a); }
+                    .sd-src-body a { color: var(--brand, #1f6580); text-decoration: none; }
+                    .sd-src-body a:hover { color: var(--brand-dark, #185569); text-decoration: underline; }
+                `}</style>
+                <div className="sd-src-card">
+                    <div className="sd-src-title">Source</div>
+                    <div className="sd-src-body">
+                        Spanish network of cancer screening programs
+                        <br />
+                        <a target="_blank" rel="noopener noreferrer" href="https://cribadocancer.es/indicadores-cancer-colorrectal/">
+                            cribadocancer.es ↗
+                        </a>
+                    </div>
                 </div>
                 <Comments />
             </div>
