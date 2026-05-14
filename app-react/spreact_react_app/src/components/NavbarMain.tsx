@@ -271,15 +271,17 @@ const NavbarMain: React.FC = () => {
                />
             </NavLink>
 
-            <button
-               className="navbar-toggler"
-               type="button"
-               onClick={() => setMobileOpen(!mobileOpen)}
-               aria-expanded={mobileOpen}
-               aria-label={mobileOpen ? "Close navigation menu" : "Open navigation menu"}
-            >
-               <span className="navbar-toggler-icon"></span>
-            </button>
+            {isLoggedIn && (
+               <button
+                  className="navbar-toggler"
+                  type="button"
+                  onClick={() => setMobileOpen(!mobileOpen)}
+                  aria-expanded={mobileOpen}
+                  aria-label={mobileOpen ? "Close navigation menu" : "Open navigation menu"}
+               >
+                  <span className="navbar-toggler-icon"></span>
+               </button>
+            )}
 
             <div className={`collapse navbar-collapse${mobileOpen ? " show" : ""}`}>
                <ul className="navbar-nav me-auto mb-2 mb-lg-0">
