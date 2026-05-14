@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import * as AuthService from "../services/auth.service";
 import { getUserDashboards } from "../services/dashboard.service";
+import oncodirLogo from "../assets/ONCODIR-LOGO.svg";
 
 type MenuItem = {
    label: string;
@@ -266,7 +267,7 @@ const NavbarMain: React.FC = () => {
                <img
                   width="158"
                   height="25"
-                  src="/ONCODIR-LOGO.svg"
+                  src={oncodirLogo}
                   alt="ONCODIR Logo"
                />
             </NavLink>
