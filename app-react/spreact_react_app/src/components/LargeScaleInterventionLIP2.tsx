@@ -115,6 +115,26 @@ const LargeScaleIntervention = () => {
 
     if (!isLoggedIn) return <h2 className="text-center mt-5">Unauthorized</h2>;
 
+    const availableRiskFactors: string[] = selectedIntervention
+        ? [...new Set(
+            interventionsData
+                .filter(item => item.name === selectedIntervention)
+                .flatMap(item => item.riskFactors)
+          )]
+        : riskFactors;
+
+    const handleInterventionChange = (value: string) => {
+        setSelectedIntervention(value);
+        if (value && selectedRiskFactor) {
+            const newAvailable = [...new Set(
+                interventionsData
+                    .filter(item => item.name === value)
+                    .flatMap(item => item.riskFactors)
+            )];
+            if (!newAvailable.includes(selectedRiskFactor)) setSelectedRiskFactor("");
+        }
+    };
+
     const filteredData = interventionsData.filter((item) => {
         const interventionMatch = selectedIntervention ? item.name === selectedIntervention : true;
         const riskMatch = selectedRiskFactor ? item.riskFactors.includes(selectedRiskFactor) : true;
@@ -250,7 +270,7 @@ const LargeScaleIntervention = () => {
                                 id="li-intervention-select"
                                 className="form-select"
                                 value={selectedIntervention}
-                                onChange={(e) => setSelectedIntervention(e.target.value)}
+                                onChange={(e) => handleInterventionChange(e.target.value)}
                             >
                                 <option value="">All Interventions</option>
                                 {interventionsData.map((item, idx) => (
@@ -270,9 +290,15 @@ const LargeScaleIntervention = () => {
                                 onChange={(e) => setSelectedRiskFactor(e.target.value)}
                             >
                                 <option value="">All Risk Factors</option>
-                                {riskFactors.map((rf, idx) => (
-                                    <option key={idx} value={rf}>{rf}</option>
-                                ))}
+                                {riskFactors.map((rf, idx) => {
+                                    const available = availableRiskFactors.includes(rf);
+                                    return (
+                                        <option key={idx} value={rf} disabled={!available}
+                                            style={{ color: available ? undefined : "#9ca3af" }}>
+                                            {rf}
+                                        </option>
+                                    );
+                                })}
                             </select>
                         </div>
 
