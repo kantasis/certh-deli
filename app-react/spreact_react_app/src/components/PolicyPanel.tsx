@@ -42,7 +42,7 @@ const PolicyPanel: React.FC = () => {
 
     useEffect(() => {
         const handler = (event: MessageEvent) => {
-            if (event.origin !== grafanaHost_url) return;
+            //  if (event.origin !== grafanaHost_url) return;
             if (event.data.type !== 'click-message') return;
             setCountryName(event.data['Country']);
             setPolicies(event.data['Policies']);
@@ -51,6 +51,7 @@ const PolicyPanel: React.FC = () => {
         window.addEventListener("message", handler);
         return () => window.removeEventListener("message", handler);
     }, []);
+
 
     const getUriParams = () => `var-policy_filter=${encodeURIComponent(selectedPolicy_str)}`;
     const iFrame_url = `${grafana_url}&${getUriParams()}`;
