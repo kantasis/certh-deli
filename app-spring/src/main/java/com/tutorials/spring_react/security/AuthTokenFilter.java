@@ -27,6 +27,9 @@ public class AuthTokenFilter extends OncePerRequestFilter{
    @Autowired
    private UserDetailsServiceImpl userDetailsService;
 
+   @Autowired
+   private TokenBlacklistService tokenBlacklistService;
+
    private static final Logger logger = LoggerFactory.getLogger(AuthTokenFilter.class);
 
    @Override
@@ -37,8 +40,7 @@ public class AuthTokenFilter extends OncePerRequestFilter{
    ) throws ServletException, IOException{
       try {
          String jwt = parseJwt(request);
-         System.out.println("--- GK> Trying to authorize: "+ jwt);
-         if (jwt == null || !jwtUtils.validateJwtToken(jwt)){
+         if (jwt == null || !jwtUtils.validateJwtToken(jwt) || tokenBlacklistService.isBlacklisted(jwt)){
             filterChain.doFilter(request, response);
             return;
          }

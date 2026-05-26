@@ -19,7 +19,6 @@ import com.tutorials.spring_react.security.payloads.NameUpdateRequest;
 
 @RestController
 @RequestMapping("/api/v1/users")
-@CrossOrigin(origins = "*", maxAge = 3600)
 public class UserController {
 
     @Autowired

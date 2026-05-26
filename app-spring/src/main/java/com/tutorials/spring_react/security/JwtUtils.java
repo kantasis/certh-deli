@@ -1,5 +1,6 @@
 package com.tutorials.spring_react.security;
 
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
 
@@ -14,7 +15,6 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.UnsupportedJwtException;
-import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 
 @Component
@@ -26,7 +26,7 @@ public class JwtUtils {
    private String jwtSecret;
 
    @Value("${custom.app.jwtExpirationMs}")
-   private int jwtExpirationMs;
+   private long jwtExpirationMs;
 
    public String generateJwtToken(Authentication authentication) {
 
@@ -45,7 +45,7 @@ public class JwtUtils {
     }
   
    private Key getKey(){
-      return Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecret));
+      return Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
    }
 
    public String getUsernameFromJwtToken(String token){

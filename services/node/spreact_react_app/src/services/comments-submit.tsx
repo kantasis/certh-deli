@@ -1,12 +1,13 @@
 import axios from "axios";
+import authHeader from "./auth-header";
 
 const isProduction = import.meta.env.MODE === "production";
 const host = import.meta.env.VITE_AUTHENTICATION_HOST;
 
 // Relative URL in production (Nginx handles routing)
 const API_URL = isProduction
-    ? "/submit-text"
-    : `http://${host}:8435/submit-text`;
+    ? "/api/comments"
+    : `http://${host}:8435`;
 
 // ------------------------
 // Submit Comment
@@ -17,14 +18,14 @@ export const submitComment = async (
     page_name: string
 ) => {
     try {
-        console.log("Sending request to:", `${API_URL}`);
+        console.log("Sending request to:", `${API_URL}/submit-text`);
         console.log("Submitting comment:", { text, username, page_name });
 
-        const response = await axios.post(`${API_URL}`, {
+        const response = await axios.post(`${API_URL}/submit-text`, {
             text,
             username,
             page_name
-        });
+        }, { headers: authHeader() });
 
         console.log("Response:", response.data);
         return response.data;
