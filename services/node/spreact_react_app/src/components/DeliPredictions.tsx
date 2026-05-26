@@ -25,6 +25,22 @@ const typeOptions = [
     { value: "two_factor_heatmaps", label: "Two-Factor Joint Effect" }
 ];
 
+const tabTitles: Record<string, string> = {
+    effect_sev_unit: "Effect per SEV Unit",
+    exposure_weighted: "Exposure-Weighted",
+    quick_wins: "Quick Wins",
+    sf_intervention: "Intervention-Driven",
+    sf_target: "Target-Driven",
+};
+
+const tabHints: Record<string, string> = {
+    effect_sev_unit: "Strength of association per unit change (EU view).",
+    exposure_weighted: "Association strength combined with exposure prevalence.",
+    quick_wins: "Highlights factors with stronger associations.",
+    sf_intervention: "What-If scenarios adjusting one SEV.",
+    sf_target: "SEV levels linked to CRC reduction goals.",
+};
+
 // ─────────────────────────────────────────────
 // Inline HeatmapEChart (ported from TwoFactorHeatmapViewer)
 // ─────────────────────────────────────────────
@@ -255,7 +271,7 @@ const DeliPredictions = () => {
                 localStorage.setItem(TOKEN_TS_KEY, now.toString());
                 setToken(newToken);
             } catch (err) {
-                if (err.name !== "AbortError") console.error("Login failed:", err);
+                if (err.name !== "AbortError") { /* login failed — silent */ }
             }
             return () => controller.abort();
         };
@@ -270,7 +286,7 @@ const DeliPredictions = () => {
                 const alerts = data?.["Alerts Consolidation"]?.["Bias Analysis Alerts"];
                 if (Array.isArray(alerts)) setBiasContent(alerts);
             })
-            .catch((err) => console.error("Failed to load Bias Analysis Alerts:", err));
+            .catch(() => { /* silent */ });
     }, []);
 
     // ── reset risk factor on horizon / type change ──
@@ -374,7 +390,7 @@ const DeliPredictions = () => {
                 setTfCountry(j.country);
                 setTfPairId(j.top_pairs_table?.[0]?.pair_id ?? null);
             } catch (err) {
-                if (err.name !== "AbortError") console.error("Two-factor API error:", err);
+                if (err.name !== "AbortError") { /* two-factor API error — silent */ }
             } finally {
                 setTfLoading(false);
             }
@@ -406,8 +422,8 @@ const DeliPredictions = () => {
             if (params.tfCountry) setTfCountry(params.tfCountry);
             if (params.tfHorizon) setTfHorizon(String(params.tfHorizon));
             if (params.pairId) setTfPairId(params.pairId);
-        } catch (err) {
-            console.error("Invalid savedIframeUrl format", err);
+        } catch {
+            // invalid savedIframeUrl format — silent
         }
         setTfIsRestored(true);
     }, [savedIframeUrl]);
@@ -464,14 +480,44 @@ const DeliPredictions = () => {
         const end = start + itemsPerPage;
         return (
             <>
-                <ul>{biasContent.slice(start, end).map((item, idx) => <li key={idx}>{item}</li>)}</ul>
-                <div className="d-flex justify-content-between align-items-center mt-3">
-                    <Button variant="primary" onClick={() => setCurrentPage((p) => p - 1)} disabled={currentPage === 0}>Previous</Button>
-                    <span className="mx-3">Page {currentPage + 1} of {totalPages}</span>
-                    <Button variant="primary" onClick={() => setCurrentPage((p) => p + 1)} disabled={end >= biasContent.length}>Next</Button>
-                </div>
-                <div className="mt-3 text-center">
-                    Click <a href="/Bias_Analysis_Report.pdf" target="_blank">here</a> to download the Bias Analysis Report
+                <ul style={{ paddingLeft: 20, margin: 0 }}>
+                    {biasContent.slice(start, end).map((item, idx) => (
+                        <li key={idx} style={{ fontSize: 14, lineHeight: 1.65, marginBottom: 10, color: "var(--text, #0f172a)" }}>
+                            {item}
+                        </li>
+                    ))}
+                </ul>
+                {totalPages > 1 && (
+                    <div style={{
+                        display: "flex", alignItems: "center", justifyContent: "space-between",
+                        marginTop: 20, paddingTop: 16, borderTop: "1px solid var(--border, #e5e7eb)"
+                    }}>
+                        <button
+                            className="btn-ghost"
+                            style={{ color: "var(--brand, #1f6580)", borderColor: "var(--brand, #1f6580)" }}
+                            onClick={() => setCurrentPage((p) => p - 1)}
+                            disabled={currentPage === 0}
+                        >
+                            Previous
+                        </button>
+                        <span style={{ fontSize: 13, color: "var(--text-muted, #475569)", fontWeight: 500 }}>
+                            Page {currentPage + 1} of {totalPages}
+                        </span>
+                        <button
+                            className="btn-ghost"
+                            style={{ color: "var(--brand, #1f6580)", borderColor: "var(--brand, #1f6580)" }}
+                            onClick={() => setCurrentPage((p) => p + 1)}
+                            disabled={end >= biasContent.length}
+                        >
+                            Next
+                        </button>
+                    </div>
+                )}
+                <div style={{
+                    marginTop: 16, paddingTop: 14, borderTop: "1px solid var(--border, #e5e7eb)",
+                    textAlign: "center", fontSize: 13, color: "var(--text-muted, #475569)"
+                }}>
+                    Click <a href="/Bias_Analysis_Report.pdf" target="_blank" style={{ color: "var(--brand, #1f6580)", fontWeight: 600 }}>here</a> to download the Bias Analysis Report
                 </div>
             </>
         );
@@ -588,51 +634,75 @@ const DeliPredictions = () => {
     // ── accordion content ─────────────────────
     const regularAccordionItems = [
         {
-            title: "Source",
-            content: (
-                <div style={{ height: "340px", overflow: "scroll" }}>
+            title: 'Source',
+            content: (<>
+                <div style={{ height: '340px', overflow: 'scroll' }}>
                     <p>
-                        <li><strong>Source: </strong>Global Burden of Disease 2021.</li><br />
+                        <li><strong>Source: </strong> Global Burden of Disease 2021.</li><br />
                         <li><strong>Years: </strong>Data from 1990 to 2021.</li><br />
-                        <li><strong>Geographic Coverage: </strong>27 European countries</li><br />
+                        <li><strong>Geographic Coverage: </strong> 27 European countries</li><br />
                         <li><strong>CRC Incidence Rate: </strong>Number of new CRC cases diagnosed per 100,000 population in a year</li><br />
                         <li><strong>Sex Groups: </strong>Both Sexes (Aggregated data for males and females), Males (males only), and Females (females only)</li><br />
                     </p>
                 </div>
-            )
+            </>)
         },
-        { title: "Summary Exposure Value (SEV)", content: (<p>Measure of a population's exposure to a risk factor that takes into account the extent of exposure by risk level and the severity of that risk's contribution to disease burden.</p>) },
-        { title: "Year Lags", content: (<p>Year lags refer to the time interval between risk factor exposure and CRC incidence. Based on: Cai et al. 2024 (Public Health).</p>) },
         {
-            title: "Methodology",
-            content: (
+            title: 'Summary Exposure Value (SEV)',
+            content: (<>
+                <p>
+                    Measure of a population's exposure to a risk factor that takes into account the extent of exposure by risk level and the severity of that risk's contribution to disease burden.
+                </p>
+            </>)
+        },
+        {
+            title: 'Year Lags',
+            content: (<>
+                <p>
+                    Year lags refer to the time interval between risk factor exposure and CRC incidence. Based on: Cai et al. 2024 (Public Health).
+                </p>
+            </>)
+        },
+        {
+            title: 'Methodology',
+            content: (<>
                 <p>
                     Generalized Additive Models (GAMs) trained across all countries, incorporating country as a categorical covariate to account for country-specific variations in SEV effects.<br /><br />
+                    {/* Final number of risk factors used in the model was 13. <br /><br /> */}
                     Time-lag analyses of 1, 3, 5 and 10 years between CRC Incidence and Risk Factors investigated potential downstream effects.<br /><br />
+                    {/* For example, SEV for 1990 was correlated with CRC incidence for 1991, 1993, 1995 and 2000. <br /><br /> */}
                     SEV for 1991 was correlated with CRC incidence for 1992, 1994, 1996 and 2001 and so on.<br /><br />
                     Negative coefficients may be related to a number of factors, e.g. the presence of confounding variables.
                 </p>
-            )
+            </>)
         },
         ...(biasContent.length > 0 ? [{ title: "Bias Assessment", content: (<ul>{biasContent.map((item, idx) => <li key={idx}>{item}</li>)}</ul>) }] : []),
     ];
 
     const twoFactorAccordionItems = [
         {
-            title: "Source",
-            content: (
-                <div style={{ height: "340px", overflow: "scroll" }}>
+            title: 'Source',
+            content: (<>
+                <div style={{ height: '340px', overflow: 'scroll' }}>
                     <p>
                         <li><strong>Source: </strong>Global Burden of Disease 2021.</li><br />
                         <li><strong>Years: </strong>Data from 1990 to 2021.</li><br />
-                        <li><strong>Geographic Coverage: </strong>27 European countries.</li><br />
-                        <li><strong>CRC Incidence Rate: </strong>Number of new CRC cases diagnosed per 100,000 population in a year.</li><br />
+                        <li><strong>Geographic Coverage: </strong> 27 European countries.</li><br />
+                        <li><strong>CRC Incidence Rate: </strong>Number of new CRC cases diagnosed per 100,000 population in a year. </li><br />
                         <li><strong>Sex Groups: </strong>Both Sexes (Aggregated data for males and females), Males (males only), and Females (females only).</li><br />
                     </p>
                 </div>
-            )
+            </>)
         },
-        { title: "Summary Exposure Value (SEV)", content: (<p>Measure of a population's exposure to a risk factor that takes into account the extent of exposure by risk level and the severity of that risk's contribution to disease burden. Year lags refer to the time interval between risk factor exposure and CRC incidence.</p>) },
+        {
+            title: 'Summary Exposure Value (SEV)',
+            content: (<>
+                <p>
+                    Measure of a population's exposure to a risk factor that takes into account the extent of exposure by risk level and the severity of that risk's contribution to disease burden.
+                    Year lags refer to the time interval between risk factor exposure and CRC incidence.
+                </p>
+            </>)
+        },
         {
             title: "Methodology",
             content: (
@@ -643,239 +713,325 @@ const DeliPredictions = () => {
                     For visualization purposes, only cross-category pairs were considered, combining one lifestyle and one dietary risk factor. Pairs with known biological redundancy or high collinearity were excluded.
                     The top 5 pairs per country and horizon were ranked by their estimated joint CRC incidence reduction at a standardised exposure reduction.
                 </p>
-            )
+            ),
         },
     ];
 
     const activeAccordionItems = isTwoFactor ? twoFactorAccordionItems : regularAccordionItems;
 
-    if (!isLoggedIn) return <h2>Unauthorized</h2>;
+    if (!isLoggedIn) return <h2 className="text-center mt-5">Unauthorized</h2>;
 
     return (
-        <div className="container-fluid mt-5">
-            <div className="row">
+        <>
+            <style>{`
+                .dp-page { padding: 24px 0 40px; }
+                .dp-header { margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--border, #e5e7eb); }
+                .dp-header h1 { font-size: 22px; font-weight: 800; color: var(--text, #0f172a); margin: 0 0 3px; }
+                .dp-header p { font-size: 14px; color: var(--text-muted, #475569); margin: 0; }
 
-                {/* ── Left column ── */}
-                <div className="col-2">
-                    {/* Type selector — always visible */}
-                    <div className="form-group mb-4">
-                        <label style={{ fontWeight: "bold", margin: "0px 0px 5px 0px" }}>Type: </label>
-                        <select
-                            className="form-control"
-                            value={type || ""}
-                            onChange={(e) => {
-                                const value = e.target.value;
-                                setType(value);
-                                const params = new URLSearchParams(location.search);
-                                value ? params.set("tab", value) : params.delete("tab");
-                                navigate(`${location.pathname}?${params.toString()}`, { replace: true });
-                            }}
-                        >
-                            <option value="">Select type</option>
-                            {typeOptions.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
-                        </select>
-                    </div>
+                .dp-sidebar-card { background: var(--bg, #fff); border: 1px solid var(--border, #e5e7eb); border-radius: 14px; padding: 18px 16px; margin-bottom: 12px; }
+                .dp-sidebar-card .filter-label { display: block; font-size: 13px; font-weight: 700; color: var(--text-muted, #475569); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
+                .dp-sidebar-card .form-select { font-size: 15px; }
+                .dp-sidebar-card p { font-size: 14px; line-height: 1.6; color: var(--text-muted, #475569); margin: 0; }
+                .dp-sidebar-card p strong { color: var(--text, #0f172a); }
+                .dp-range { accent-color: var(--brand, #1f6580); width: 100%; cursor: pointer; margin-top: 6px; }
+                .dp-range-label { font-size: 14px; color: var(--text, #0f172a); font-weight: 600; margin-bottom: 2px; display: block; }
 
-                    {/* two_factor controls */}
-                    {isTwoFactor && (
-                        <>
-                            <div className="form-group mb-4">
-                                <label style={{ fontWeight: "bold", margin: "0px 0px 5px 0px" }}>Horizon: </label>
-                                <select className="form-control" value={tfHorizon} onChange={(e) => setTfHorizon(e.target.value)}>
-                                    <option value="1">1 Year</option>
-                                    <option value="3">3 Years</option>
-                                    <option value="5">5 Years</option>
-                                    <option value="10">10 Years</option>
-                                </select>
-                            </div>
+                .dp-chart-wrapper { position: relative; border: 1px solid var(--border, #e5e7eb); border-radius: 14px; overflow: hidden; background: var(--bg, #fff); }
+                .dp-chart-loading { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(255,255,255,0.85); z-index: 10; gap: 12px; }
+                .dp-chart-loading span { font-size: 15px; font-weight: 600; color: var(--text, #0f172a); }
 
-                            <div className="form-group mb-4">
-                                <label style={{ fontWeight: "bold", margin: "0px 0px 5px 0px" }}>Country: </label>
-                                <select className="form-control" value={tfCountry} onChange={(e) => setTfCountry(e.target.value)}>
-                                    {countries_strLst.map((c) => <option key={c} value={c}>{c}</option>)}
-                                </select>
-                            </div>
+                .dp-intro { padding: 24px; background: var(--bg, #fff); border: 1px solid var(--border, #e5e7eb); border-radius: 14px; }
+                .dp-intro p { font-size: 15px; line-height: 1.65; color: var(--text, #0f172a); margin-bottom: 12px; }
+                .dp-intro p:last-child { margin-bottom: 0; }
 
-                            <div className="form-group mb-4">
-                                <label style={{ fontWeight: "bold", margin: "0px 0px 5px 0px" }}>Factor Pair: </label>
-                                <select className="form-control" value={tfPairId || ""} onChange={(e) => setTfPairId(e.target.value)}>
-                                    {tfPairs.map((p) => (
-                                        <option key={p.pair_id} value={p.pair_id}>
-                                            {capitalizeWords(p.factor_1.replace(/_/g, " "))} × {capitalizeWords(p.factor_2.replace(/_/g, " "))}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
+                .dp-alert-warn { background: #fffbeb; border: 1px solid #fcd34d; color: #92400e; border-radius: 10px; padding: 12px 16px; font-size: 15px; margin: 16px; }
+                .dp-alert-err { background: #fef2f2; border: 1px solid #fecaca; color: #dc2626; border-radius: 10px; padding: 12px 16px; font-size: 15px; margin: 16px; }
 
-                            <p><strong>Two-Factor Joint Effect:</strong><br />Explore the combined impact of two risk factors on CRC incidence using a joint heatmap, showing how simultaneous reductions in exposure interact.</p>
-                        </>
-                    )}
 
-                    {/* Regular controls */}
-                    {!isTwoFactor && (
-                        <>
-                            {["sf_intervention", "sf_target", "exposure_weighted", "quick_wins", "effect_sev_unit"].includes(type) && (
-                                <div className="form-group mb-4">
-                                    <label style={{ fontWeight: "bold", margin: "0px 0px 5px 0px" }}>Horizon: </label>
-                                    <select className="form-control" value={horizon} onChange={(e) => setHorizon(e.target.value)}>
-                                        <option value="">Select horizon</option>
+                @media (prefers-reduced-motion: reduce) {
+                    .dp-chart-loading { transition: none; }
+                }
+            `}</style>
+
+            <div className="container-fluid dp-page">
+
+                <div className="dp-header">
+                    <h1>{type && tabTitles[type] ? tabTitles[type] : "CRC Predictive Analytics"}</h1>
+                    <p>{type && tabHints[type] ? tabHints[type] : "Risk factor interventions, exposure-weighted analysis, and two-factor joint effects for CRC incidence prediction"}</p>
+                </div>
+
+                <div className="row g-3">
+
+                    {/* ── Left column ── */}
+                    <div className="col-xl-2 col-lg-3">
+
+                        {/* Analysis type selector */}
+                        <div className="dp-sidebar-card">
+                            <label className="filter-label" htmlFor="dp-type-select">Analysis Type</label>
+                            <select
+                                id="dp-type-select"
+                                className="form-select"
+                                value={type || ""}
+                                onChange={(e) => {
+                                    const value = e.target.value;
+                                    setType(value);
+                                    const params = new URLSearchParams(location.search);
+                                    value ? params.set("tab", value) : params.delete("tab");
+                                    navigate(`${location.pathname}?${params.toString()}`, { replace: true });
+                                }}
+                            >
+                                <option value="">Select type</option>
+                                {typeOptions.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
+                            </select>
+                        </div>
+
+                        {/* Two-factor controls */}
+                        {isTwoFactor && (
+                            <>
+                                <div className="dp-sidebar-card">
+                                    <label className="filter-label" htmlFor="dp-tf-horizon">Horizon</label>
+                                    <select id="dp-tf-horizon" className="form-select" value={tfHorizon} onChange={(e) => setTfHorizon(e.target.value)}>
                                         <option value="1">1 Year</option>
                                         <option value="3">3 Years</option>
                                         <option value="5">5 Years</option>
                                         <option value="10">10 Years</option>
                                     </select>
                                 </div>
-                            )}
 
-                            {["sf_intervention", "sf_target", "exposure_weighted"].includes(type) && (
-                                <div className="form-group mb-4">
-                                    <label style={{ fontWeight: "bold", margin: "0px 0px 5px 0px" }}>Country: </label>
-                                    <select className="form-control" value={country} onChange={(e) => setCountry(e.target.value)}>
-                                        <option value="">Select country</option>
+                                <div className="dp-sidebar-card">
+                                    <label className="filter-label" htmlFor="dp-tf-country">Country</label>
+                                    <select id="dp-tf-country" className="form-select" value={tfCountry} onChange={(e) => setTfCountry(e.target.value)}>
                                         {countries_strLst.map((c) => <option key={c} value={c}>{c}</option>)}
                                     </select>
                                 </div>
-                            )}
 
-                            {["sf_intervention", "sf_target"].includes(type) && (
-                                <div className="form-group mb-4">
-                                    <label style={{ fontWeight: "bold", margin: "0px 0px 5px 0px" }}>Risk Factor:</label>
-                                    <select className="form-control" value={riskFactor} onChange={(e) => setRiskFactor(e.target.value)}>
-                                        <option value="">Select risk factor</option>
-                                        {riskFactorsLst.map((rf) => <option key={rf.value} value={rf.value}>{rf.label}</option>)}
+                                <div className="dp-sidebar-card">
+                                    <label className="filter-label" htmlFor="dp-tf-pair">Factor Pair</label>
+                                    <select id="dp-tf-pair" className="form-select" value={tfPairId || ""} onChange={(e) => setTfPairId(e.target.value)}>
+                                        {tfPairs.map((p) => (
+                                            <option key={p.pair_id} value={p.pair_id}>
+                                                {capitalizeWords(p.factor_1.replace(/_/g, " "))} × {capitalizeWords(p.factor_2.replace(/_/g, " "))}
+                                            </option>
+                                        ))}
                                     </select>
+                                </div>
 
-                                    {type === "sf_target" && riskFactor && apiResponse?.data?.[riskFactor] && (
-                                        <div style={{ marginTop: "1rem" }}>
-                                            <label htmlFor="targetRange">% CRC ↓ Target: <strong>{selectedTarget}%</strong></label>
-                                            <input id="targetRange" type="range" min={0} max={Math.floor(apiResponse.data[riskFactor].max_crc_reduction ?? 100)} step={1} value={selectedTarget} onChange={(e) => setSelectedTarget(Number(e.target.value))} style={{ width: "100%", cursor: "pointer" }} />
+                                <div className="dp-sidebar-card">
+                                    <p><strong>Two-Factor Joint Effect:</strong><br />Explore the combined impact of two risk factors on CRC incidence using a joint heatmap, showing how simultaneous reductions in exposure interact.</p>
+                                </div>
+                            </>
+                        )}
+
+                        {/* Regular controls */}
+                        {!isTwoFactor && (
+                            <>
+                                {["sf_intervention", "sf_target", "exposure_weighted", "quick_wins", "effect_sev_unit"].includes(type) && (
+                                    <div className="dp-sidebar-card">
+                                        <label className="filter-label" htmlFor="dp-horizon">Horizon</label>
+                                        <select id="dp-horizon" className="form-select" value={horizon} onChange={(e) => setHorizon(e.target.value)}>
+                                            <option value="">Select horizon</option>
+                                            <option value="1">1 Year</option>
+                                            <option value="3">3 Years</option>
+                                            <option value="5">5 Years</option>
+                                            <option value="10">10 Years</option>
+                                        </select>
+                                    </div>
+                                )}
+
+                                {["sf_intervention", "sf_target", "exposure_weighted"].includes(type) && (
+                                    <div className="dp-sidebar-card">
+                                        <label className="filter-label" htmlFor="dp-country">Country</label>
+                                        <select id="dp-country" className="form-select" value={country} onChange={(e) => setCountry(e.target.value)}>
+                                            <option value="">Select country</option>
+                                            {countries_strLst.map((c) => <option key={c} value={c}>{c}</option>)}
+                                        </select>
+                                    </div>
+                                )}
+
+                                {["sf_intervention", "sf_target"].includes(type) && (
+                                    <div className="dp-sidebar-card">
+                                        <label className="filter-label" htmlFor="dp-riskfactor">Risk Factor</label>
+                                        <select id="dp-riskfactor" className="form-select" value={riskFactor} onChange={(e) => setRiskFactor(e.target.value)}>
+                                            <option value="">Select risk factor</option>
+                                            {riskFactorsLst.map((rf) => <option key={rf.value} value={rf.value}>{rf.label}</option>)}
+                                        </select>
+
+                                        {type === "sf_target" && riskFactor && apiResponse?.data?.[riskFactor] && (
+                                            <div style={{ marginTop: "12px" }}>
+                                                <span className="dp-range-label">% CRC ↓ Target: <strong>{selectedTarget}%</strong></span>
+                                                <input
+                                                    id="targetRange"
+                                                    type="range"
+                                                    className="dp-range"
+                                                    min={0}
+                                                    max={Math.floor(apiResponse.data[riskFactor].max_crc_reduction ?? 100)}
+                                                    step={1}
+                                                    value={selectedTarget}
+                                                    onChange={(e) => setSelectedTarget(Number(e.target.value))}
+                                                />
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+
+                                {type === "sf_intervention" && riskFactor && apiResponse?.data?.[riskFactor]?.results && (
+                                    <div className="dp-sidebar-card">
+                                        <span className="dp-range-label">
+                                            Prediction at: {apiResponse.data[riskFactor].results[baselineShift]?.percent_reduction ?? 0}% SEV reduction
+                                        </span>
+                                        <input
+                                            type="range"
+                                            className="dp-range"
+                                            min={0}
+                                            max={apiResponse.data[riskFactor].results.length - 1}
+                                            step={1}
+                                            value={baselineShift}
+                                            onChange={(e) => setBaselineShift(Number(e.target.value))}
+                                        />
+                                    </div>
+                                )}
+
+                                {type === "effect_sev_unit" && (
+                                    <div className="dp-sidebar-card">
+                                        <p><strong>Overview (Effect per SEV Unit):</strong><br />Compare which risk factors are most strongly associated with CRC at the European level, reflecting their potency per unit of exposure.</p>
+                                    </div>
+                                )}
+                                {type === "exposure_weighted" && (
+                                    <div className="dp-sidebar-card">
+                                        <p><strong>Overview (Exposure-Weighted):</strong><br />Identify which risk factors are most associated with the selected country's CRC burden, combining both potency and population exposure levels.</p>
+                                    </div>
+                                )}
+                                {type === "quick_wins" && (
+                                    <div className="dp-sidebar-card">
+                                        <p><strong>Quick Wins:</strong><br />Highlight the highest-return intervention points most associated with CRC incidence at the European level for further policy exploration.</p>
+                                    </div>
+                                )}
+                                {type === "sf_intervention" && (
+                                    <div className="dp-sidebar-card">
+                                        <p><strong>Single-Factor Intervention:</strong> Quantify 'what-if' scenarios by estimating how reductions in a single risk factor's exposure are statistically associated with changes in future CRC cases in the selected country.</p>
+                                    </div>
+                                )}
+                            </>
+                        )}
+                    </div>
+
+                    {/* ── Center column ── */}
+                    <div className="col-xl-8 col-lg-6">
+                        {isTwoFactor ? (
+                            <>
+                                <div className="dp-chart-wrapper" style={{ minHeight: "600px" }}>
+                                    {tfLoading && (
+                                        <div className="dp-chart-loading">
+                                            <div className="spinner" aria-label="Loading chart" />
+                                            <span>Loading chart…</span>
                                         </div>
                                     )}
+                                    {!tfLoading && tfHeatmap && (
+                                        <HeatmapEChart
+                                            heatmap={tfHeatmap}
+                                            country={tfCountry}
+                                            horizon={tfHorizon}
+                                            chartRef={tfChartRef}
+                                            onChartRendered={(url) => setTfChartImageUrl(url)}
+                                        />
+                                    )}
+                                    {!tfLoading && !tfHeatmap && tfJson && (
+                                        <div className="dp-alert-warn">No heatmap data available for this selection.</div>
+                                    )}
                                 </div>
-                            )}
-
-                            {type === "sf_intervention" && riskFactor && apiResponse?.data?.[riskFactor]?.results && (
-                                <div style={{ margin: "20px 0" }}>
-                                    <label>Prediction at: {apiResponse.data[riskFactor].results[baselineShift]?.percent_reduction ?? 0}% SEV reduction</label>
-                                    <input type="range" min={0} max={apiResponse.data[riskFactor].results.length - 1} step={1} value={baselineShift} onChange={(e) => setBaselineShift(Number(e.target.value))} style={{ width: "100%", cursor: "pointer" }} />
-                                </div>
-                            )}
-
-                            {type === "effect_sev_unit" && <p><strong>Overview (Effect per SEV Unit):</strong><br />Compare which risk factors are most strongly associated with CRC at the European level, reflecting their potency per unit of exposure.</p>}
-                            {type === "exposure_weighted" && <p><strong>Overview (Exposure-Weighted):</strong><br />Identify which risk factors are most associated with the selected country's CRC burden, combining both potency and population exposure levels.</p>}
-                            {type === "quick_wins" && <p><strong>Quick Wins:</strong><br />Highlight the highest-return intervention points most associated with CRC incidence at the European level for further policy exploration.</p>}
-                            {type === "sf_intervention" && <p><strong>Single-Factor Intervention:</strong> Quantify 'what-if' scenarios by estimating how reductions in a single risk factor's exposure are statistically associated with changes in future CRC cases in the selected country.</p>}
-                        </>
-                    )}
-                </div>
-
-                {/* ── Center column ── */}
-                <div className="col-8">
-
-                    {/* two_factor heatmap */}
-                    {isTwoFactor && (
-                        <>
-                            {tfLoading && (
-                                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "400px" }}>
-                                    <div className="spinner-border text-primary" role="status" style={{ width: "3rem", height: "3rem" }} />
-                                    <div style={{ marginTop: "1rem", fontWeight: "bold", fontSize: "1rem", color: "#333" }}>Loading...</div>
-                                </div>
-                            )}
-                            {!tfLoading && tfHeatmap && (
-                                <>
-                                    <HeatmapEChart
-                                        heatmap={tfHeatmap}
-                                        country={tfCountry}
-                                        horizon={tfHorizon}
-                                        chartRef={tfChartRef}
-                                        onChartRendered={(url) => setTfChartImageUrl(url)}
-                                    />
+                                {!tfLoading && tfHeatmap && (
                                     <div className="mt-3">
                                         <SaveGraphButton iframeUrl={{ url: tfChartImageUrl, params: getUriParams(), preview: tfChartImageUrl }} />
                                     </div>
-                                </>
-                            )}
-                            {!tfLoading && !tfHeatmap && tfJson && (
-                                <div className="alert alert-warning mt-3">No heatmap data available for this selection.</div>
-                            )}
-                        </>
-                    )}
+                                )}
+                            </>
+                        ) : (
+                            <>
+                                {!type && (
+                                    <div className="dp-intro">
+                                        <p>Through this tab, users can explore different aspects of the relationship between risk factor exposure and CRC incidence, at both the European and country level.</p>
+                                        <p><strong>Note:</strong> All functionalities provide policy insights based on associations between risk factors and CRC incidence and consider time lags of 1, 3, 5, and 10 years between exposure and disease.</p>
+                                        <p><strong>Disclaimer:</strong> These functionalities are based on observational GBD data and statistical models. Results reflect associations, not proven causal effects, and should be used to inform priority setting and expert-led planning.</p>
+                                    </div>
+                                )}
 
-                    {/* Regular charts */}
-                    {!isTwoFactor && (
-                        <>
-                            {!type && (
-                                <div>
-                                    <p>Through this tab, users can explore different aspects of the relationship between risk factor exposure and CRC incidence, at both the European and country level.</p>
-                                    <p><strong>Note: </strong>All functionalities provide policy insights based on associations between risk factors and CRC incidence and consider time lags of 1, 3, 5, and 10 years between exposure and disease.</p>
-                                    <p><strong>Disclaimer: </strong>These functionalities are based on observational GBD data and statistical models. Results reflect associations, not proven causal effects, and should be used to inform priority setting and expert-led planning.</p>
-                                </div>
-                            )}
+                                {type && (
+                                    <div className="dp-chart-wrapper" style={{ minHeight: "570px" }}>
+                                        {loading && (
+                                            <div className="dp-chart-loading">
+                                                <div className="spinner" aria-label="Loading chart" />
+                                                <span>Loading chart…</span>
+                                            </div>
+                                        )}
+                                        {error && !loading && <div className="dp-alert-err">Error: {error}</div>}
+                                        {!loading && !error && !chartOptions.skipMessage && chartOptions.series && type !== "" && (
+                                            <ReactECharts ref={chartRef} option={chartOptions} style={{ height: "570px", width: "100%" }} />
+                                        )}
+                                        {chartOptions.skipMessage && (
+                                            <div className="m-auto" style={{ width: "100%", maxWidth: "600px", padding: "40px 20px" }} dangerouslySetInnerHTML={{ __html: chartOptions.skipMessage }} />
+                                        )}
+                                    </div>
+                                )}
 
-                            {loading && (
-                                <div style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", backgroundColor: "rgba(255,255,255,0.7)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", zIndex: 10 }}>
-                                    <div className="spinner-border text-primary" role="status" style={{ width: "3rem", height: "3rem" }} />
-                                    <div style={{ marginTop: "1rem", fontWeight: "bold", fontSize: "1rem", color: "#333" }}>Loading...</div>
-                                </div>
-                            )}
+                                {!chartOptions.skipMessage && type && (!["sf_intervention"].includes(type) || (type === "sf_intervention" && riskFactor)) && !loading && (
+                                    <div className="mt-3">
+                                        <SaveGraphButton iframeUrl={{ url: getChartImageUrl(), params: getUriParams(), preview: chartImageUrl }} />
+                                    </div>
+                                )}
+                            </>
+                        )}
+                    </div>
 
-                            {error && <p style={{ color: "red" }}>Error: {error}</p>}
+                    {/* ── Right column ── */}
+                    <div className="col-xl-2 col-lg-3">
+                        <Accordion defaultActiveKey="-1" className="app-accordion" style={{ marginBottom: "16px" }}>
+                            {activeAccordionItems.map((item, idx) => {
+                                const isBiasAssessment = item.title === "Bias Assessment";
+                                return (
+                                    <Accordion.Item eventKey={idx.toString()} key={idx}>
+                                        <Accordion.Header
+                                            onClick={(e) => {
+                                                if (isBiasAssessment) {
+                                                    e.stopPropagation();
+                                                    e.preventDefault();
+                                                    handleAccordionModal("The following biases were detected in the data used for the CRC Predictive Analytics:", true);
+                                                }
+                                            }}
+                                        >
+                                            {item.title}
+                                        </Accordion.Header>
+                                        {!isBiasAssessment && <Accordion.Body className="text-start">{item.content}</Accordion.Body>}
+                                    </Accordion.Item>
+                                );
+                            })}
+                        </Accordion>
 
-                            {!loading && !error && !chartOptions.skipMessage && chartOptions.series && type !== "" && (
-                                <ReactECharts ref={chartRef} option={chartOptions} style={{ height: "570px", width: "100%" }} />
-                            )}
+                        <Comments />
 
-                            {chartOptions.skipMessage && (
-                                <div className="m-auto" style={{ width: "100%", maxWidth: "600px" }} dangerouslySetInnerHTML={{ __html: chartOptions.skipMessage }} />
-                            )}
+                        <Modal show={showModal} onHide={() => setShowModal(false)} centered size="lg">
+                            <Modal.Header closeButton style={{
+                                borderBottom: "1px solid var(--border, #e5e7eb)",
+                                padding: "18px 24px 16px",
+                            }}>
+                                <Modal.Title style={{
+                                    fontSize: 15,
+                                    fontWeight: 700,
+                                    color: "var(--text, #0f172a)",
+                                    lineHeight: 1.5,
+                                }}>
+                                    {modalTitle}
+                                </Modal.Title>
+                            </Modal.Header>
+                            <Modal.Body style={{ maxHeight: "60vh", overflowY: "auto", padding: "20px 24px" }}>
+                                {isBiasModal ? paginatedBiasContent() : modalContent}
+                            </Modal.Body>
+                        </Modal>
+                    </div>
 
-                            {!chartOptions.skipMessage && type && (!["sf_intervention"].includes(type) || (type === "sf_intervention" && riskFactor)) && !loading && (
-                                <div className="mt-3">
-                                    <SaveGraphButton iframeUrl={{ url: getChartImageUrl(), params: getUriParams(), preview: chartImageUrl }} />
-                                </div>
-                            )}
-                        </>
-                    )}
                 </div>
-
-                {/* ── Right column ── */}
-                <div className="col-sm-2">
-                    <Accordion defaultActiveKey="-1">
-                        {activeAccordionItems.map((item, idx) => {
-                            const isBiasAssessment = item.title === "Bias Assessment";
-                            return (
-                                <Accordion.Item eventKey={idx.toString()} key={idx}>
-                                    <Accordion.Header
-                                        onClick={(e) => {
-                                            if (isBiasAssessment) {
-                                                e.stopPropagation();
-                                                e.preventDefault();
-                                                handleAccordionModal("The following biases were detected in the data used for the CRC Predictive Analytics:", true);
-                                            }
-                                        }}
-                                    >
-                                        {item.title}
-                                    </Accordion.Header>
-                                    {!isBiasAssessment && <Accordion.Body className="text-start">{item.content}</Accordion.Body>}
-                                </Accordion.Item>
-                            );
-                        })}
-                    </Accordion>
-
-                    <Comments />
-
-                    <Modal show={showModal} onHide={() => setShowModal(false)} centered size="lg">
-                        <Modal.Header closeButton>
-                            <Modal.Title>{modalTitle}</Modal.Title>
-                        </Modal.Header>
-                        <Modal.Body style={{ maxHeight: "60vh", overflowY: "auto" }}>
-                            {isBiasModal ? paginatedBiasContent() : modalContent}
-                        </Modal.Body>
-                    </Modal>
-                </div>
-
             </div>
-        </div>
+        </>
     );
 };
 

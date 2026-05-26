@@ -9,7 +9,7 @@ const grafana_port = import.meta.env.VITE_GRAFANA_PORT;
 const grafana_path = import.meta.env.VITE_GRAFANA_PATH;
 const dashboard_name = import.meta.env.VITE_GRAFANA_DASHBOARD;
 
-const grafana_url = `https://${grafana_host}:${grafana_port}/${grafana_path}/${dashboard_name}?orgId=1&theme=light`
+const grafana_url = `${window.location.protocol}//${grafana_host}:${grafana_port}/${grafana_path}/${dashboard_name}?orgId=1&theme=light`
 // http://localhost:3000/d-solo/edn5ahxrzaw3kc/deli-main-dashboarg?orgId=1&theme=light&panelId=4&var-deli_custom_var=5
 
 // var envs_json = JSON.stringify(import.meta.env, null, 2); // spacing level = 2

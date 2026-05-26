@@ -3,8 +3,7 @@ import React, { useState, useEffect } from "react";
 import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import * as AuthService from "../services/auth.service";
 import { getUserDashboards } from "../services/dashboard.service";
-
-
+import oncodirLogo from "../assets/ONCODIR-LOGO.png";
 
 type MenuItem = {
    label: string;
@@ -95,7 +94,7 @@ const NavbarMain: React.FC = () => {
             { label: "Risk Factors", href: "/crc-risk-factors", hint: "Descriptive SEV levels across subgroups and years." },
             { label: "CRC Policy Data", href: "/crc-policy-data", hint: "EU policy and intervention mappings across domains." },
             {
-               label: "Trend & Association Analysis ▸", href: "/crc-trend-and-association-analysis", hint: "Historical, subgroup-level analyses (associational).",
+               label: "Trend & Association Analysis", href: "/crc-trend-and-association-analysis", hint: "Historical, subgroup-level analyses (associational).",
                subMenu: [
                   { label: "Trend & Association", isSection: true },
                   { label: "Trend Analysis", href: "/crc-trend-and-association-analysis?tab=trend-analysis", hint: "Long-term CRC incidence by demographic subgroup." },
@@ -193,11 +192,17 @@ const NavbarMain: React.FC = () => {
 
       if (menu.isSection) {
          return (
-            <li key={menu.label} className="dropdown-section-header px-3 py-1 text-muted">
+            <li key={menu.label} className="dropdown-section-header" aria-hidden="true">
                {menu.label}
             </li>
          );
       }
+
+      const chevron = hasSubMenu && depth > 0 ? (
+         <svg className="submenu-chevron" xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24" aria-hidden="true">
+            <polyline points="9 18 15 12 9 6"/>
+         </svg>
+      ) : null;
 
       return (
          <li
@@ -209,22 +214,23 @@ const NavbarMain: React.FC = () => {
             {menu.href ? (
                <NavLink
                   to={menu.href!}
-                  className={({ isActive }) => {
-                     // Exact match with pathname + search
+                  className={() => {
                      const currentUrl = location.pathname + location.search;
                      const active = menu.href === currentUrl;
                      return `dropdown-item${active ? " active" : ""}`;
                   }}
+                  onClick={() => setMobileOpen(false)}
                >
                   {depth > 0 && <div className="dot"></div>}
-                  <div>
+                  <div style={{ flex: 1 }}>
                      <div className="label">{menu.label}</div>
                      {menu.hint && <div className="hint">{menu.hint}</div>}
                   </div>
+                  {chevron}
                </NavLink>
             ) : (
                <a
-                  className={`dropdown-item d-flex align-items-start gap-2`}
+                  className="dropdown-item"
                   href="#"
                   onClick={(e) => {
                      e.preventDefault();
@@ -232,11 +238,12 @@ const NavbarMain: React.FC = () => {
                   }}
                   aria-expanded={isOpen}
                >
-                  {depth > 0 && <div className="dot mb-1"></div>}
-                  <div>
+                  {depth > 0 && <div className="dot"></div>}
+                  <div style={{ flex: 1 }}>
                      <div className="label">{menu.label}</div>
                      {menu.hint && <div className="hint">{menu.hint}</div>}
                   </div>
+                  {chevron}
                </a>
             )}
 
@@ -260,18 +267,22 @@ const NavbarMain: React.FC = () => {
                <img
                   width="158"
                   height="25"
-                  src="/ONCODIR-LOGO.png"
+                  src={oncodirLogo}
                   alt="ONCODIR Logo"
                />
             </NavLink>
 
-            <button
-               className="navbar-toggler"
-               type="button"
-               onClick={() => setMobileOpen(!mobileOpen)}
-            >
-               <span className="navbar-toggler-icon"></span>
-            </button>
+            {isLoggedIn && (
+               <button
+                  className="navbar-toggler"
+                  type="button"
+                  onClick={() => setMobileOpen(!mobileOpen)}
+                  aria-expanded={mobileOpen}
+                  aria-label={mobileOpen ? "Close navigation menu" : "Open navigation menu"}
+               >
+                  <span className="navbar-toggler-icon"></span>
+               </button>
+            )}
 
             <div className={`collapse navbar-collapse${mobileOpen ? " show" : ""}`}>
                <ul className="navbar-nav me-auto mb-2 mb-lg-0">
@@ -301,22 +312,22 @@ const NavbarMain: React.FC = () => {
                         <ul className="dropdown-menu dropdown-menu-end" role="menu">
 
                            <li>
-                              <NavLink className="dropdown-item" to="/profile">View Profile</NavLink>
+                              <NavLink className="dropdown-item" to="/profile" onClick={() => setMobileOpen(false)}>View Profile</NavLink>
                            </li>
                            <li>
-                              <NavLink className="dropdown-item" to="/change-password">Change Password</NavLink>
+                              <NavLink className="dropdown-item" to="/change-password" onClick={() => setMobileOpen(false)}>Change Password</NavLink>
                               <hr />
                            </li>
                            {isAdmin && (
                               <>
                                  <li>
-                                    <NavLink className="dropdown-item" to="/comments">
+                                    <NavLink className="dropdown-item" to="/comments" onClick={() => setMobileOpen(false)}>
                                        Comments
                                     </NavLink>
                                  </li>
                                  {isModerator && (
                                     <li>
-                                       <NavLink className="dropdown-item" to="/admin/users">
+                                       <NavLink className="dropdown-item" to="/admin/users" onClick={() => setMobileOpen(false)}>
                                           Admin Panel
                                        </NavLink>
                                     </li>
@@ -327,16 +338,26 @@ const NavbarMain: React.FC = () => {
 
                            {/* My Dashboards submenu */}
                            <li className="dropdown-submenu">
-                              <a className="dropdown-item" href="/my-dashboards">My Dashboards</a>
+                              <NavLink className="dropdown-item" to="/my-dashboards" onClick={() => setMobileOpen(false)}>
+                                 <div style={{ flex: 1 }}>
+                                    <div className="label">My Dashboards</div>
+                                 </div>
+                                 {dashboards.length > 0 && (
+                                    <svg className="submenu-chevron" xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24" aria-hidden="true">
+                                       <polyline points="9 18 15 12 9 6"/>
+                                    </svg>
+                                 )}
+                              </NavLink>
                               {dashboards.length > 0 && (
                                  <ul className="dropdown-menu">
                                     {dashboards.map((db) => (
                                        <li key={db.href}>
                                           <NavLink
                                              to={db.href}
-                                             className={({ isActive }) => {
+                                             onClick={() => setMobileOpen(false)}
+                                             className={() => {
                                                 const currentUrl = location.pathname + location.search;
-                                                const active = currentUrl === db.href; // compare full URL with query
+                                                const active = currentUrl === db.href;
                                                 return `dropdown-item${active ? " active" : ""}`;
                                              }}
                                           >
@@ -355,20 +376,19 @@ const NavbarMain: React.FC = () => {
                      </li>
 
                      <li>
-                        <NavLink className="nav-link" to="/login" onClick={logout}>Logout</NavLink>
+                        <NavLink className="nav-link nav-link-logout" to="/login" onClick={logout}>Logout</NavLink>
                      </li>
                   </ul>
 
                )}
             </div>
             {!isLoggedIn && (
-               <ul className="navbar-nav ms-auto">
-                  {/* ✅ LOGIN + REGISTER WHEN LOGGED OUT */}
+               <ul className="navbar-nav ms-auto align-items-center" style={{ gap: "8px" }}>
                   <li>
-                     <NavLink className="nav-link" to="/login">Login</NavLink>
+                     <NavLink className="nav-btn-login" to="/login">Sign in</NavLink>
                   </li>
                   <li>
-                     <NavLink className="nav-link" to="/register">Register</NavLink>
+                     <NavLink className="nav-btn-register" to="/register">Register</NavLink>
                   </li>
                </ul>
             )}

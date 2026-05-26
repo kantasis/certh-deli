@@ -1,56 +1,33 @@
-import React, { useState, useEffect } from "react";
-import { Form } from 'react-bootstrap';
+import React from "react";
 
-// Interface for the properties of this component
 interface FilterProps {
-    // Lifted up State
-    selectedRiskFactorExposure_int: number,
-    set_selectedRiskFactorExposure: Function,
-    riskFactorExposure_dictLst: Array<any>,
+    selectedRiskFactorExposure_int: number;
+    set_selectedRiskFactorExposure: Function;
+    riskFactorExposure_dictLst: Array<{ value: number; label: string; var_filter?: string }>;
 }
 
-const RiskFactorExposureFilter: React.FC<FilterProps> = ({ selectedRiskFactorExposure_int, set_selectedRiskFactorExposure, riskFactorExposure_dictLst }) => {
-
-    useEffect(
-        () => {
-
-        },
-        []
-    );
-
-    return (<>
-        <label
-            className="form-label"
-            htmlFor="riskFactorExposureSelect_id"
-        >
-            <h6><strong>Select Risk Factor</strong></h6>
-        </label>
-        <Form id="riskFactorSelect_id">
-            <Form.Control
-                as="select"
+const RiskFactorExposureFilter: React.FC<FilterProps> = ({
+    selectedRiskFactorExposure_int,
+    set_selectedRiskFactorExposure,
+    riskFactorExposure_dictLst,
+}) => {
+    return (
+        <div>
+            <label className="filter-label" htmlFor="riskFactorExposureSelect_id">Risk Factor</label>
+            <select
+                id="riskFactorExposureSelect_id"
+                className="form-select"
                 value={selectedRiskFactorExposure_int}
-                onChange={(e) => {
-                    set_selectedRiskFactorExposure(
-                        e.target.value
-                    )
-                }}
+                onChange={(e) => set_selectedRiskFactorExposure(Number(e.target.value))}
             >
-                {riskFactorExposure_dictLst.map((riskFactorExposure_dict, index) => (
-                    <option
-                        key={index}
-                        value={riskFactorExposure_dict['value']}
-                        data-toggle="tooltip"
-                        data-placement="right"
-                        title={riskFactorExposure_dict['label']}
-                    // onClick={()=>( set_selectedYearLag(yearLag_dict) )}
-                    >
-                        {riskFactorExposure_dict['label']}
+                {riskFactorExposure_dictLst.map((rf) => (
+                    <option key={rf.value} value={rf.value} title={rf.label}>
+                        {rf.label}
                     </option>
                 ))}
-            </Form.Control>
-        </Form>
-    </>);
+            </select>
+        </div>
+    );
 };
-
 
 export default RiskFactorExposureFilter;

@@ -110,14 +110,18 @@ const Register: React.FC = () => {
    };
 
    return (
-      <div className="col-md-12">
-         <h2>Create Account</h2>
-         <div className="card container w-50">
-            <img
-               src="//ssl.gstatic.com/accounts/ui/avatar_2x.png"
-               alt="profile-img"
-               className="profile-img-card"
-            />
+      <div className="col-md-12" style={{ paddingTop: "40px", paddingBottom: "48px" }}>
+         <div className="card container" style={{ maxWidth: "560px", borderRadius: "20px", padding: "36px", border: "1px solid var(--border, #e5e7eb)", boxShadow: "0 8px 32px rgba(2,6,23,0.08)" }}>
+            <div style={{ width: "52px", height: "52px", borderRadius: "14px", background: "#e8f2f6", color: "var(--brand-dark, #185569)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px" }}>
+               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                  <circle cx="9" cy="7" r="4"/>
+                  <line x1="19" y1="8" x2="19" y2="14"/>
+                  <line x1="22" y1="11" x2="16" y2="11"/>
+               </svg>
+            </div>
+            <h2 style={{ textAlign: "center", fontWeight: 800, fontSize: "22px", marginBottom: "4px", color: "var(--text, #0f172a)" }}>Create Account</h2>
+            <p style={{ textAlign: "center", fontSize: "14px", color: "var(--text-muted, #475569)", marginBottom: "28px" }}>Register to access the DELI platform</p>
             <Formik
                initialValues={initialValues}
                validationSchema={validationSchema}
@@ -188,7 +192,7 @@ const Register: React.FC = () => {
                                        ref={canvasRef}
                                        width={120}
                                        height={40}
-                                       style={{ border: "1px solid #ccc" }}
+                                       style={{ border: "1px solid var(--border, #e5e7eb)", borderRadius: "8px" }}
                                     />
                                     <button type="button" className="btn btn-secondary btn-sm" onClick={refreshCaptcha}>
                                        Refresh
@@ -229,6 +233,7 @@ const Register: React.FC = () => {
          </div>
       </div>
    );
+
 };
 
 export default Register;

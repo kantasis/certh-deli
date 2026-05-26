@@ -1,6 +1,21 @@
 import axios from "axios";
 import authHeader from "./auth-header";
 
+// Auto-logout on expired/invalid token
+axios.interceptors.response.use(
+   (res) => res,
+   (err) => {
+      if (err.response?.status === 401 || err.response?.status === 403) {
+         const isAuthCall = err.config?.url?.includes("/api/v1/auth/");
+         if (!isAuthCall) {
+            localStorage.removeItem("user");
+            window.location.href = "/login";
+         }
+      }
+      return Promise.reject(err);
+   }
+);
+
 // Environment-based API URL
 const isProduction = import.meta.env.MODE === "production";
 const host = import.meta.env.VITE_AUTHENTICATION_HOST;

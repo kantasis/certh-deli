@@ -70,33 +70,33 @@ const CountryFilter: React.FC<FilterProps> = ({
         @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap');
         .cf-wrapper { sans-serif; width: 100%; max-width: 480px; }
         .cf-label { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-        .cf-label-text { font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: #374151; }
+        .cf-label-text { font-size: 14px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: #374151; }
         .cf-label-actions { display: flex; align-items: center; gap: 10px; }
         .cf-map-btn {
-          font-size: 11px; color: #6366f1; background: #eef2ff;
+          font-size: 12px; color: var(--brand-dark, #185569); background: #e8f2f6;
           border: none; border-radius: 6px; cursor: pointer;
           padding: 3px 9px; font-family: 'DM Sans', sans-serif; font-weight: 500;
           transition: background 0.15s, color 0.15s;
           display: flex; align-items: center; gap: 4px;
         }
-        .cf-map-btn:hover { background: #e0e7ff; color: #4338ca; }
-        .cf-clear-btn { font-size: 12px; color: #9ca3af; background: none; border: none; cursor: pointer; padding: 0; transition: color 0.15s; }
+        .cf-map-btn:hover { background: #d3e8f0; color: #124557; }
+        .cf-clear-btn { font-size: 13px; color: #9ca3af; background: none; border: none; cursor: pointer; padding: 0; transition: color 0.15s; }
         .cf-clear-btn:hover { color: #ef4444; }
         .cf-box { border: 1.5px solid #e5e7eb; border-radius: 12px; background: #fff; transition: border-color 0.2s, box-shadow 0.2s; overflow: hidden; }
-        .cf-box.focused { border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99,102,241,0.12); }
+        .cf-box.focused { border-color: var(--brand, #1f6580); box-shadow: 0 0 0 3px rgba(31,101,128,0.12); }
         .cf-input-area { display: flex; flex-wrap: wrap; gap: 6px; padding: 10px 12px; min-height: 48px; cursor: text; align-items: center; }
-        .cf-tag { display: inline-flex; align-items: center; gap: 5px; background: #eef2ff; color: #4338ca; border-radius: 20px; padding: 3px 10px 3px 12px; font-size: 13px; font-weight: 500; animation: tagIn 0.18s ease; white-space: nowrap; }
+        .cf-tag { display: inline-flex; align-items: center; gap: 5px; background: #e8f2f6; color: #185569; border-radius: 20px; padding: 3px 10px 3px 12px; font-size: 14px; font-weight: 500; animation: tagIn 0.18s ease; white-space: nowrap; }
         @keyframes tagIn { from { transform: scale(0.75); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-        .cf-tag-remove { display: flex; align-items: center; justify-content: center; width: 16px; height: 16px; border-radius: 50%; border: none; background: transparent; color: #818cf8; cursor: pointer; font-size: 14px; line-height: 1; padding: 0; transition: background 0.15s, color 0.15s; }
-        .cf-tag-remove:hover { background: #c7d2fe; color: #3730a3; }
-        .cf-search-input { border: none; outline: none; font-family: 'DM Sans', sans-serif; font-size: 14px; color: #111827; background: transparent; min-width: 120px; flex: 1; }
+        .cf-tag-remove { display: flex; align-items: center; justify-content: center; width: 16px; height: 16px; border-radius: 50%; border: none; background: transparent; color: #1f6580; cursor: pointer; font-size: 15px; line-height: 1; padding: 0; transition: background 0.15s, color 0.15s; }
+        .cf-tag-remove:hover { background: #d3e8f0; color: #124557; }
+        .cf-search-input { border: none; outline: none; font-family: 'DM Sans', sans-serif; font-size: 15px; color: #111827; background: transparent; min-width: 120px; flex: 1; }
         .cf-search-input::placeholder { color: #d1d5db; }
         .cf-dropdown { border-top: 1.5px solid #f3f4f6; max-height: 210px; overflow-y: auto; scrollbar-width: thin; scrollbar-color: #e5e7eb transparent; }
-        .cf-option { padding: 9px 14px; font-size: 14px; color: #374151; cursor: pointer; transition: background 0.1s; display: flex; align-items: center; gap: 8px; }
-        .cf-option:hover { background: #f5f3ff; color: #4338ca; }
-        .cf-option-dot { width: 6px; height: 6px; border-radius: 50%; background: #c7d2fe; flex-shrink: 0; }
-        .cf-empty { padding: 14px; font-size: 13px; color: #9ca3af; text-align: center; }
-        .cf-count { font-size: 12px; color: #6b7280; padding: 6px 14px 8px; border-top: 1px solid #f3f4f6; }
+        .cf-option { padding: 9px 14px; font-size: 15px; color: #374151; cursor: pointer; transition: background 0.1s; display: flex; align-items: center; gap: 8px; }
+        .cf-option:hover { background: #f0f5f8; color: #185569; }
+        .cf-option-dot { width: 6px; height: 6px; border-radius: 50%; background: #7ab5cc; flex-shrink: 0; }
+        .cf-empty { padding: 14px; font-size: 14px; color: #9ca3af; text-align: center; }
+        .cf-count { font-size: 13px; color: #6b7280; padding: 6px 14px 8px; border-top: 1px solid #f3f4f6; }
       `}</style>
 
          <div className="cf-wrapper" ref={containerRef}>
@@ -106,7 +106,12 @@ const CountryFilter: React.FC<FilterProps> = ({
                </label>
                <div className="cf-label-actions">
                   <button className="cf-map-btn" onClick={() => setIsMapOpen_bool(true)}>
-                     🗺 Map
+                     <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                        <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/>
+                        <line x1="9" y1="3" x2="9" y2="18"/>
+                        <line x1="15" y1="6" x2="15" y2="21"/>
+                     </svg>
+                     Map
                   </button>
                   <button className="cf-clear-btn" onClick={clearAll_cbk}>
                      Reset
