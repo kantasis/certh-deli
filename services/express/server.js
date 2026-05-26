@@ -1,18 +1,43 @@
 import express from 'express';
 import cors from 'cors';
 import pkg from 'pg';
+import jwt from 'jsonwebtoken';
 
 const { Pool } = pkg;
 
 const app = express();
 app.use(express.json());
 
-// ✅ Fix CORS: Allow requests from React frontend
+const ALLOWED_ORIGINS = [
+    'http://localhost:5173',
+    'http://localhost:9080',
+    'https://deli.oncodir.eu',
+    'https://deli-dashboard.oncodir.eu-ailabs.com',
+];
+
 app.use(cors({
-    origin: '*', // Change to your frontend URL for security (e.g., http://localhost:5173)
-    methods: ['GET', 'POST', 'OPTIONS','DELETE','PATCH','INSERT'],
-    allowedHeaders: ['Content-Type'],
+    origin: (origin, callback) => {
+        if (!origin || ALLOWED_ORIGINS.includes(origin)) return callback(null, true);
+        callback(new Error('Not allowed by CORS'));
+    },
+    methods: ['GET', 'POST', 'OPTIONS', 'DELETE', 'PATCH'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
 }));
+
+const JWT_SECRET = process.env.JWT_SECRET;
+
+const verifyToken = (req, res, next) => {
+    const authHeader = req.headers['authorization'];
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return res.status(401).json({ error: 'No token provided' });
+    }
+    try {
+        jwt.verify(authHeader.substring(7), JWT_SECRET, { algorithms: ['HS256'] });
+        next();
+    } catch {
+        return res.status(401).json({ error: 'Invalid or expired token' });
+    }
+};
 
 app.use((req, res, next) => {
   console.log(`[${req.method}] ${req.url}`);
@@ -50,22 +75,19 @@ const pool = new Pool({
 
 if (!process.env.DB_HOST) {
   throw new Error("DB_HOST is not set");
-}else{
-	console.log('All good')
-	console.log(process.env.DB_HOST)
 }
 
 
 // Insert new comment with page name
-app.post('/submit-text', async (req, res) => {
-    console.log("🔍 Received request body:", req.body);
-
+app.post('/submit-text', verifyToken, async (req, res) => {
     const { text, username, page_name } = req.body;
-
-    console.log("✅ Extracted values -> text:", text, "username:", username, "page_name:", page_name);
 
     if (!text || !username || !page_name) {
         return res.status(400).json({ error: 'Valid text, username, and page_name are required' });
+    }
+
+    if (text.length > 2000) {
+        return res.status(400).json({ error: 'Comment exceeds maximum length of 2000 characters' });
     }
 
     try {
@@ -86,7 +108,7 @@ app.post('/submit-text', async (req, res) => {
 
 
 // Endpoint to clear all comments from the table
-app.delete('/clear-comments', async (req, res) => {
+app.delete('/clear-comments', verifyToken, async (req, res) => {
     try {
         // SQL query to delete all rows from the comments table
         const result = await pool.query('DELETE FROM comments_tbl');
@@ -98,12 +120,42 @@ app.delete('/clear-comments', async (req, res) => {
     }
 });
 // Fetch all comments
-app.get('/comments', async (req, res) => {
+app.get('/comments', verifyToken, async (req, res) => {
     try {
         const result = await pool.query('SELECT * FROM comments_tbl ORDER BY created_at DESC');
         res.status(200).json(result.rows);
     } catch (error) {
         console.error('Error fetching comments:', error);
+        res.status(500).json({ error: 'Database error' });
+    }
+});
+
+app.get('/all-comments', verifyToken, async (req, res) => {
+    try {
+        const result = await pool.query('SELECT * FROM comments_tbl ORDER BY created_at DESC');
+        res.status(200).json(result.rows);
+    } catch (error) {
+        console.error('Error fetching comments:', error);
+        res.status(500).json({ error: 'Database error' });
+    }
+});
+
+app.post('/api/comments/submit-text', verifyToken, async (req, res) => {
+    const { text, username, page_name } = req.body;
+    if (!text || !username || !page_name) {
+        return res.status(400).json({ error: 'Valid text, username, and page_name are required' });
+    }
+    if (text.length > 2000) {
+        return res.status(400).json({ error: 'Comment exceeds maximum length of 2000 characters' });
+    }
+    try {
+        const result = await pool.query(
+            `INSERT INTO comments_tbl (content, username, page_name) VALUES ($1, $2, $3) RETURNING *`,
+            [text, username, page_name]
+        );
+        res.status(201).json({ message: 'Comment stored successfully', data: result.rows[0] });
+    } catch (error) {
+        console.error('Error inserting comment:', error.message);
         res.status(500).json({ error: 'Database error' });
     }
 });
@@ -117,7 +169,7 @@ app.use((req, res, next) => {
 
 
 // Save a dashboard for a user (max 6 per user)
-app.post('/api/save-dashboard', async (req, res) => {
+app.post('/api/save-dashboard', verifyToken, async (req, res) => {
     const { user_id, dashboard_id, saved_url, page_name } = req.body;
 
     if (!user_id || !dashboard_id || !saved_url || !page_name) {
@@ -149,7 +201,7 @@ app.post('/api/save-dashboard', async (req, res) => {
 });
 
 
-app.get('/api/user-dashboards/:userId', async (req, res) => {
+app.get('/api/user-dashboards/:userId', verifyToken, async (req, res) => {
   const { userId } = req.params;
 
   try {
@@ -177,7 +229,7 @@ app.get('/api/user-dashboards/:userId', async (req, res) => {
 
 
 // Delete a dashboard and all its associated graphs
-app.delete('/api/delete-dashboard-collection/:dashboardId', async (req, res) => {
+app.delete('/api/delete-dashboard-collection/:dashboardId', verifyToken, async (req, res) => {
     console.log("🔥 DELETE DASHBOARD COLLECTION HIT", req.params.dashboardId);
     const { dashboardId } = req.params;
 
@@ -197,7 +249,7 @@ app.delete('/api/delete-dashboard-collection/:dashboardId', async (req, res) => 
 
 
 // Delete a saved dashboard by ID
-app.delete('/api/delete-dashboard/:id', async (req, res) => {
+app.delete('/api/delete-dashboard/:id', verifyToken, async (req, res) => {
     const { id } = req.params;
    console.log("🔥 DELETE DASHBOARD COLLECTION HIT", id );
     try {
@@ -214,7 +266,7 @@ app.delete('/api/delete-dashboard/:id', async (req, res) => {
 
 
 
-app.patch('/api/rename-dashboard/:dashboardId', async (req, res) => {
+app.patch('/api/rename-dashboard/:dashboardId', verifyToken, async (req, res) => {
     const { dashboardId } = req.params;
     const { name } = req.body;
 
@@ -238,7 +290,7 @@ app.patch('/api/rename-dashboard/:dashboardId', async (req, res) => {
 
 
 // Create a new dashboard (max 3 per user)
-app.post('/api/create-dashboard', async (req, res) => {
+app.post('/api/create-dashboard', verifyToken, async (req, res) => {
     const { user_id, name } = req.body;
 
     if (!user_id || !name) {
@@ -269,7 +321,7 @@ app.post('/api/create-dashboard', async (req, res) => {
 
 
 // Save a graph into a specific dashboard (max 6 per dashboard)
-app.post('/api/save-graph', async (req, res) => {
+app.post('/api/save-graph', verifyToken, async (req, res) => {
     const { dashboardId, savedUrl, pageName, user_id } = req.body;
     
 

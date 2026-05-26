@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import authHeader from '../services/auth-header';
 import { getUserRole } from '../services/auth.service';
 
 const isProduction = import.meta.env.MODE === 'production';
@@ -41,7 +42,7 @@ const Comments: React.FC = () => {
     useEffect(() => {
         const fetchComments = async () => {
             try {
-                const response = await axios.get(API_URL);
+                const response = await axios.get(API_URL, { headers: authHeader() });
                 setComments(Array.isArray(response.data) ? response.data : []);
             } catch {
                 // silent — table will show empty state

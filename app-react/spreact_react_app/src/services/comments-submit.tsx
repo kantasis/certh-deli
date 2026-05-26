@@ -1,4 +1,5 @@
 import axios from "axios";
+import authHeader from "./auth-header";
 
 const isProduction = import.meta.env.MODE === "production";
 const host = import.meta.env.VITE_AUTHENTICATION_HOST;
@@ -24,7 +25,7 @@ export const submitComment = async (
             text,
             username,
             page_name
-        });
+        }, { headers: authHeader() });
 
         console.log("Response:", response.data);
         return response.data;

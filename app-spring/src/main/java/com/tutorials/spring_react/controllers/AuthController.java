@@ -5,6 +5,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.util.StringUtils;
+
 import jakarta.validation.Valid;
 import com.tutorials.spring_react.security.payloads.ChangePasswordRequest;
 
@@ -31,6 +34,8 @@ import com.tutorials.spring_react.models.UserModel;
 import com.tutorials.spring_react.repositories.RoleRepository;
 import com.tutorials.spring_react.repositories.UserRepository;
 import com.tutorials.spring_react.security.JwtUtils;
+import com.tutorials.spring_react.security.LoginRateLimiter;
+import com.tutorials.spring_react.security.TokenBlacklistService;
 import com.tutorials.spring_react.security.UserDetailsImpl;
 import com.tutorials.spring_react.security.payloads.JwtResponse;
 import com.tutorials.spring_react.security.payloads.LoginRequest;
@@ -41,10 +46,6 @@ import lombok.extern.log4j.Log4j2;
 
 import jakarta.validation.Valid;
 
-@CrossOrigin(
-   origins = "*",
-   maxAge = 3600
-)
 @RestController
 @RequestMapping("/api/v1/auth")
 @Log4j2
@@ -65,14 +66,23 @@ public class AuthController {
    @Autowired
    JwtUtils jwtUtils;
 
+   @Autowired
+   TokenBlacklistService tokenBlacklistService;
+
+   @Autowired
+   LoginRateLimiter loginRateLimiter;
+
    @PostMapping("/login")
    public ResponseEntity<?> authenticateUser(
+      HttpServletRequest request,
       @Valid
       @RequestBody
       LoginRequest loginRequest
    ) {
+      if (!loginRateLimiter.isAllowed(request.getRemoteAddr())) {
+         return ResponseEntity.status(429).body(new MessageResponse("Too many login attempts. Try again later."));
+      }
 
-      // System.out.printf("--- GK> Someone tried to login with [%s] / [%s] \n",loginRequest.getUsername(),loginRequest.getPassword() );
       UsernamePasswordAuthenticationToken userpass = new UsernamePasswordAuthenticationToken(
          
          loginRequest.getUsername(), 
@@ -89,7 +99,7 @@ public class AuthController {
       String jwt = jwtUtils.generateJwtToken(authentication);
       
       UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-      
+
       // ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(userDetails);
 
       List<String> roles = userDetails
@@ -188,12 +198,11 @@ public class AuthController {
          roles_strLst
             .forEach( role_str -> {
                ERole roleEnum;
-               if ( role_str == "admin" )
+               if ("admin".equals(role_str))
                   roleEnum = ERole.ROLE_ADMIN;
-               else if ( role_str == "mod" )
+               else if ("mod".equals(role_str))
                   roleEnum = ERole.ROLE_MODERATOR;
                else
-                  // TODO: This one should not be the default case
                   roleEnum = ERole.ROLE_USER;
 
                RoleModel roleModel = roleRepository
@@ -251,19 +260,13 @@ public class AuthController {
    // }
 
    @PostMapping("/logout")
-   public ResponseEntity<?> logoutUser() {
-      // TODO: Test if this disables the given JWT
-      Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-      Object principal = authentication.getPrincipal();
-
-      if (principal.toString() != "anonymousUser") {
-         String userId = ((UserDetailsImpl) principal).getId();
-         // TODO: Someday fix the refresh token
-         // refreshTokenService.deleteByUserId(userId);
+   public ResponseEntity<?> logoutUser(HttpServletRequest request) {
+      String headerAuth = request.getHeader("Authorization");
+      if (StringUtils.hasText(headerAuth) && headerAuth.startsWith("Bearer ")) {
+         tokenBlacklistService.blacklist(headerAuth.substring(7));
       }
-
-      return ResponseEntity.ok()
-         .body(new MessageResponse("You've been signed out!"));
+      SecurityContextHolder.clearContext();
+      return ResponseEntity.ok().body(new MessageResponse("You've been signed out!"));
    }
 
    @PostMapping("/update-password")

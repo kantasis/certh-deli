@@ -85,6 +85,8 @@ services:
          context: ./services/spring
       env_file:
          - ./services/spring/.env
+      environment:
+         JWT_SECRET: ${JWT_SECRET}
       ports:
          - ${HOST_SPRING_PORT}:${SPRING_PORT}
       restart: ${RESTART_POLICY}
@@ -118,3 +120,4 @@ services:
             DB_USER: ${GLOBAL_POSTGRES_USER}
             DB_PASSWORD: ${GLOBAL_POSTGRES_PASSWORD}
             DB_NAME: ${GLOBAL_POSTGRES_DB}
+            JWT_SECRET: ${JWT_SECRET}
