@@ -1,11 +1,10 @@
 import { useEffect, useMemo, useState, useRef } from "react";
-import axios from "axios";
 import * as AuthService from "../services/auth.service.tsx";
 import ReactECharts from "echarts-for-react";
-import { Accordion, Modal, Button, Card, Form, Row, Col } from 'react-bootstrap';
+import { Accordion, Modal } from 'react-bootstrap';
 import Comments from "./Comments.tsx";
 import SaveGraphButton from "./SaveGraphButton.tsx";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 
 
@@ -30,6 +29,7 @@ const TwoFactorHeatmapViewer = () => {
   const [token, setToken] = useState(null);
   const [horizon, setHorizon] = useState("1");
   const [isRestored, setIsRestored] = useState(false);
+  const [biasModalHorizon, setBiasModalHorizon] = useState<string | null>(null);
 
   const location = useLocation();
   // console.log(location)
@@ -267,11 +267,8 @@ const TwoFactorHeatmapViewer = () => {
             <li><strong>CRC Incidence Rate: </strong>Number of new CRC cases diagnosed per 100,000 population in a year. </li><br />
             <li><strong>Sex Groups: </strong>Both Sexes (Aggregated data for males and females), Males (males only), and Females (females only).</li>
             <br />
-
-
           </p>
         </div>
-
       </>)
     },
     {
@@ -291,6 +288,45 @@ const TwoFactorHeatmapViewer = () => {
           Time-lag analyses of 1, 3, 5 and 10 years between CRC incidence and risk factor SEVs investigated potential downstream effects.
           For visualization purposes, only cross-category pairs were considered, combining one lifestyle and one dietary risk factor. Pairs with known biological redundancy or high collinearity were excluded.
           The top 5 pairs per country and horizon were ranked by their estimated joint CRC incidence reduction at a standardised exposure reduction.</p>
+      </>)
+    },
+    {
+      title: 'Bias Assessment',
+      content: (<>
+        <p style={{ fontSize: '13px', color: 'var(--text-muted, #475569)', marginBottom: '12px' }}>
+          Below you can see the bias assessment results for the four predictive models presented on this page, one model per prediction horizon
+        </p>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          {[
+            { label: '1-year model', horizon: '1' },
+            { label: '3-year model', horizon: '3' },
+            { label: '5-year model', horizon: '5' },
+            { label: '10-year model', horizon: '10' },
+          ].map(({ label, horizon }) => (
+            <button
+              key={label}
+              onClick={() => setBiasModalHorizon(horizon)}
+              style={{
+                display: 'block',
+                width: '100%',
+                padding: '8px 12px',
+                borderRadius: '8px',
+                border: '1px solid var(--border, #e5e7eb)',
+                background: '#f5f7fb',
+                color: 'var(--brand-dark, #185569)',
+                fontWeight: 600,
+                fontSize: '13px',
+                textAlign: 'center',
+                cursor: 'pointer',
+                transition: 'background 0.15s',
+              }}
+              onMouseEnter={e => (e.currentTarget.style.background = '#e8f2f6')}
+              onMouseLeave={e => (e.currentTarget.style.background = '#f5f7fb')}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
       </>)
     },
 
@@ -358,118 +394,246 @@ const TwoFactorHeatmapViewer = () => {
   const capitalizeWords = (str) =>
     str.replace(/\b\w/g, (char) => char.toUpperCase());
 
-  if (!isLoggedIn) {
-    return <h2>Unauthorized</h2>;
-  }
+  if (!isLoggedIn) return <h2 className="text-center mt-5">Unauthorized</h2>;
 
   if (loading) {
     return (
-      <div className="text-center mt-5">
-        <div className="spinner-border text-primary" />
-        <div className="fw-bold mt-2">Loading...</div>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '400px', gap: '12px' }}>
+        <div className="spinner" aria-label="Loading" />
+        <span style={{ fontSize: '14px', color: 'var(--text-muted, #475569)', fontWeight: 500 }}>Loading data…</span>
       </div>
     );
   }
-  if (!json) return <div className="p-4">Something went wrong. Please try again !</div>;
+
+  if (!json) return <div className="p-4 text-center" style={{ color: 'var(--text-muted, #475569)' }}>Something went wrong. Please try again.</div>;
 
   return (
+    <>
+      <style>{`
+        .tf-page { padding: 24px 0 40px; }
 
-    <div className="row mt-5">
-      {/* Horizon */}
-      <div className="col-2">
-        <label className="fw-bold mb-1">Select Horizon</label>
-        <select
-          className="form-select"
-          value={horizon}
-          onChange={e => setHorizon(e.target.value)}
-        >
-          <option value="1">1 Year</option>
-          <option value="3">3 Years</option>
-          <option value="5">5 Years</option>
-          <option value="10">10 Years</option>
-        </select>
+        .tf-header { margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--border, #e5e7eb); }
+        .tf-header h1 { font-size: 22px; font-weight: 800; color: var(--text, #0f172a); margin: 0 0 3px; }
+        .tf-header p { font-size: 14px; color: var(--text-muted, #475569); margin: 0; }
 
+        .tf-sidebar-card {
+          background: var(--bg, #fff);
+          border: 1px solid var(--border, #e5e7eb);
+          border-radius: 14px;
+          padding: 18px 16px;
+          margin-bottom: 12px;
+        }
+        .tf-sidebar-card .filter-label {
+          display: block;
+          font-size: 13px;
+          font-weight: 700;
+          color: var(--text-muted, #475569);
+          text-transform: uppercase;
+          letter-spacing: 0.06em;
+          margin-bottom: 8px;
+        }
+        .tf-select {
+          width: 100%;
+          font-size: 15px;
+          padding: 7px 10px;
+          border: 1px solid var(--border, #e5e7eb);
+          border-radius: 8px;
+          background: var(--bg, #fff);
+          color: var(--text, #0f172a);
+          appearance: none;
+          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' stroke='%23475569' stroke-width='2' viewBox='0 0 24 24'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+          background-repeat: no-repeat;
+          background-position: right 10px center;
+          cursor: pointer;
+        }
+        .tf-select:focus { outline: none; border-color: var(--brand, #1f6580); box-shadow: 0 0 0 3px rgba(31,101,128,0.15); }
 
-        {/* Country */}
-        <label className="fw-bold mb-1">Select Country</label>
-        <select
-          className="form-select"
-          value={country}
-          onChange={e => setCountry(e.target.value)}
-        >
-          {countries.map(c => (
-            <option key={c} value={c}>
-              {c.replace(/_/g, " ")}
-            </option>
-          ))}
-        </select>
+        .tf-chart-wrapper {
+          position: relative;
+          border: 1px solid var(--border, #e5e7eb);
+          border-radius: 14px;
+          overflow: hidden;
+          background: #fff;
+          min-height: 600px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .tf-chart-inner { width: 100%; padding: 8px; }
+        .tf-empty-state { text-align: center; padding: 60px 24px; }
+        .tf-empty-title { font-size: 15px; font-weight: 600; color: var(--text, #0f172a); margin: 12px 0 6px; }
+        .tf-empty-sub { font-size: 14px; color: var(--text-muted, #475569); margin: 0; }
+        .tf-empty-icon { color: var(--text-muted, #475569); }
 
+        @media (prefers-reduced-motion: reduce) {
+          .tf-chart-wrapper { transition: none; }
+        }
+      `}</style>
 
-        {/* Factor Pair */}
-        <label className="fw-bold mb-1">Select Pair</label>
-        <select
-          className="form-select"
-          value={pairId}
-          onChange={e => setPairId(e.target.value)}
-        >
-          {pairs.map(p => (
-            <option key={p.pair_id} value={p.pair_id}>
-              {capitalizeWords(p.factor_1.replace(/_/g, " "))} × {capitalizeWords(p.factor_2.replace(/_/g, " "))}
-            </option>
-          ))}
-        </select>
-      </div>
+      <div className="container-fluid tf-page">
 
-      {/* Heatmap */}
+        <div className="tf-header">
+          <h1>Two-Factor Exploration</h1>
+          <p>Two-Factor Joint Effect Graph.</p>
+        </div>
 
-      <div className="col-8">
+        <div className="row g-3">
 
-        {/* 👉 LOADING */}
-        {/* {loading && (
-          <div className="text-center mt-5">
-            <div className="spinner-border text-primary" />
-            <div className="fw-bold mt-2">Loading...</div>
+          {/* ── Left sidebar ── */}
+          <div className="col-xl-2 col-lg-3">
+            <div className="tf-sidebar-card">
+              <span className="filter-label">Prediction Horizon</span>
+              <select className="tf-select" value={horizon} onChange={e => setHorizon(e.target.value)}>
+                <option value="1">1 Year</option>
+                <option value="3">3 Years</option>
+                <option value="5">5 Years</option>
+                <option value="10">10 Years</option>
+              </select>
+            </div>
+            <div className="tf-sidebar-card">
+              <span className="filter-label">Country</span>
+              <select className="tf-select" value={country} onChange={e => setCountry(e.target.value)}>
+                {countries.map(c => (
+                  <option key={c} value={c}>{c.replace(/_/g, " ")}</option>
+                ))}
+              </select>
+            </div>
+            <div className="tf-sidebar-card">
+              <span className="filter-label">Risk Factor Pair</span>
+              <select className="tf-select" value={pairId} onChange={e => setPairId(e.target.value)}>
+                {pairs.map(p => (
+                  <option key={p.pair_id} value={p.pair_id}>
+                    {capitalizeWords(p.factor_1.replace(/_/g, " "))} &times; {capitalizeWords(p.factor_2.replace(/_/g, " "))}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
-        )} */}
-        {heatmap && (
-          <>
-            <HeatmapEChart
-              heatmap={heatmap}
-              country={country}
-              horizon={horizon}
-              chartRef={chartRef}
-              onChartRendered={(url) => setChartImageUrl(url)} // update only after render
-            />
 
-            <SaveGraphButton
-              iframeUrl={{
-                url: chartImageUrl, // ✅ always fetch the latest chart
-                params: getUriParams(),
-                preview: chartImageUrl, // updated dynamically
-              }}
-            />
-          </>
-        )}
-      </div>
-      <div className="col-2">
-        <div>
-          <Accordion defaultActiveKey="-1">
-            {accordionContent_dictLst.map((item, idx) => (
-              <Accordion.Item eventKey={idx.toString()} key={idx}>
-                <Accordion.Header>{item.title}</Accordion.Header>
-                <Accordion.Body className="text-start" style={{ height: "340px", overflow: "scroll" }}>
-                  {item.content}
-                </Accordion.Body>
-              </Accordion.Item>
-            ))}
-          </Accordion>
+          {/* ── Center heatmap ── */}
+          <div className="col-xl-8 col-lg-6">
+            <div className="tf-chart-wrapper">
+              {heatmap ? (
+                <div className="tf-chart-inner">
+                  <HeatmapEChart
+                    heatmap={heatmap}
+                    country={country}
+                    horizon={horizon}
+                    chartRef={chartRef}
+                    onChartRendered={(url) => setChartImageUrl(url)}
+                  />
+                </div>
+              ) : (
+                <div className="tf-empty-state">
+                  <div className="tf-empty-icon" aria-hidden="true">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                      <rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/>
+                    </svg>
+                  </div>
+                  <p className="tf-empty-title">No heatmap available</p>
+                  <p className="tf-empty-sub">Select a country and horizon to load factor pair data.</p>
+                </div>
+              )}
+            </div>
+            {heatmap && (
+              <div className="mt-3">
+                <SaveGraphButton iframeUrl={{ url: chartImageUrl, params: getUriParams(), preview: chartImageUrl }} />
+              </div>
+            )}
+          </div>
 
-          <Comments />
+          {/* ── Right: accordion + comments ── */}
+          <div className="col-xl-2 col-lg-3">
+            <Accordion defaultActiveKey="-1" className="app-accordion">
+              {accordionContent_dictLst.map((item, idx) => (
+                <Accordion.Item eventKey={idx.toString()} key={idx}>
+                  <Accordion.Header>{item.title}</Accordion.Header>
+                  <Accordion.Body className="text-start">{item.content}</Accordion.Body>
+                </Accordion.Item>
+              ))}
+            </Accordion>
+            <Comments />
+          </div>
+
         </div>
       </div>
-    </div>
 
+      <Modal show={biasModalHorizon !== null} onHide={() => setBiasModalHorizon(null)} size="xl" centered>
+        <Modal.Header closeButton>
+          <Modal.Title style={{ fontSize: '16px', fontWeight: 700, color: 'var(--text, #0f172a)' }}>
+            Bias Assessment — {biasModalHorizon}-year model
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p style={{ fontSize: '15px', color: 'var(--text, #0f172a)', marginBottom: '16px' }}>
+            The following biases were detected in the data &amp; algorithm used in our Two-Factor Joint Effect model with a <strong>{biasModalHorizon}-year</strong> prediction horizon:
+          </p>
+          {biasModalHorizon && (() => {
+            const pdfMap: Record<string, string> = {
+              '1':  '/xgb_1Y__lagged_1Y_model_ready.pdf',
+              '3':  '/xgb_3Y__lagged_3Y_model_ready.pdf',
+              '5':  '/xgb_5Y__lagged_5Y_model_ready.pdf',
+              '10': '/xgb_10Y__lagged_10Y_model_ready.pdf',
+            };
+            const highDimStatus: Record<string, string> = {
+              '1': 'Localized', '3': 'Structural', '5': 'Localized', '10': 'Structural',
+            };
+            const rows = [
+              { dimension: 'Distributional Bias',   status: 'High',                          bg: '#ffd6d6', color: '#b30000', interpretation: 'Feature imbalance vs reference' },
+              { dimension: 'High-Dimensional Bias', status: highDimStatus[biasModalHorizon], bg: '',        color: '',        interpretation: 'Population anomalies' },
+              { dimension: 'Community Bias',        status: 'Low',                           bg: '#ccf0cc', color: '#1a6b1a', interpretation: 'Cluster-level imbalance' },
+              { dimension: 'Algorithmic Bias',      status: 'Low',                           bg: '#ccf0cc', color: '#1a6b1a', interpretation: 'Model / error disparities across groups' },
+              { dimension: 'Group Fairness Gaps',   status: 'N/A',                           bg: '',        color: '',        interpretation: 'No sensitive attributes evaluated (fairness not assessed)' },
+              { dimension: 'Causal Fairness',       status: 'Material',                      bg: '',        color: '',        interpretation: 'Estimated causal effect on bias' },
+            ];
+            const pdfUrl = pdfMap[biasModalHorizon];
+            const thStyle: React.CSSProperties = {
+              background: '#e8e8e8', fontWeight: 700, fontSize: '14px',
+              padding: '10px 14px', textAlign: 'center', border: '1px solid #ccc',
+            };
+            const tdStyle: React.CSSProperties = {
+              padding: '9px 14px', fontSize: '14px', border: '1px solid #ddd', verticalAlign: 'middle',
+            };
+            return (
+              <>
+                <h6 style={{ fontWeight: 700, marginBottom: '12px', fontSize: '15px' }}>Bias Summary Scorecard</h6>
+                <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '14px' }}>
+                  <thead>
+                    <tr>
+                      <th style={thStyle}>Dimension</th>
+                      <th style={thStyle}>Status</th>
+                      <th style={thStyle}>Interpretation</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {rows.map(row => (
+                      <tr key={row.dimension}>
+                        <td style={tdStyle}>{row.dimension}</td>
+                        <td style={{ ...tdStyle, background: row.bg, color: row.color, fontWeight: row.bg ? 600 : 400, textAlign: 'center' }}>
+                          {row.status}
+                        </td>
+                        <td style={tdStyle}>{row.interpretation}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                <p style={{ fontSize: '13px', color: '#666', fontStyle: 'italic', marginBottom: '16px' }}>
+                  Interpretation: Green = minimal bias, Orange = moderate imbalance, Red = strong bias risk.
+                </p>
+                <p style={{ fontSize: '14px', color: 'var(--text-muted, #475569)' }}>
+                  Click{' '}
+                  <a href={pdfUrl} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--brand-dark, #185569)', fontWeight: 600 }}>
+                    here
+                  </a>
+                  {' '}to download the Bias Analysis Report
+                </p>
+              </>
+            );
+          })()}
+        </Modal.Body>
+      </Modal>
 
+    </>
   );
 };
 
@@ -599,10 +763,12 @@ function HeatmapEChart({ heatmap, country, horizon, chartRef, onChartRendered })
 
         emphasis: {
           itemStyle: {
-            borderColor: "#000",  // ✅ black border
-            borderWidth: 1.5,     // thickness
-          },
-        },
+            borderColor: "#111",
+            borderWidth: 2,
+            shadowBlur: 15,
+            shadowColor: "rgba(0,0,0,0.3)"
+          }
+        }
       },
     ]
   };

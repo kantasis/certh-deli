@@ -1,8 +1,9 @@
 import axios from 'axios';
 import authHeader from './auth-header';
 
+const isProduction = import.meta.env.MODE === 'production';
 const authentication_host = import.meta.env.VITE_AUTHENTICATION_HOST;
-const DASHBOARD_API_URL = `http://${authentication_host}:8435`;
+const DASHBOARD_API_URL = isProduction ? '' : `http://${authentication_host}:8435`;
 
 export const getSavedDashboards = async (userId: string) => {
     try {

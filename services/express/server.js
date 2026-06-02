@@ -129,6 +129,36 @@ app.get('/comments', verifyToken, async (req, res) => {
         res.status(500).json({ error: 'Database error' });
     }
 });
+
+app.get('/all-comments', verifyToken, async (req, res) => {
+    try {
+        const result = await pool.query('SELECT * FROM comments_tbl ORDER BY created_at DESC');
+        res.status(200).json(result.rows);
+    } catch (error) {
+        console.error('Error fetching comments:', error);
+        res.status(500).json({ error: 'Database error' });
+    }
+});
+
+app.post('/api/comments/submit-text', verifyToken, async (req, res) => {
+    const { text, username, page_name } = req.body;
+    if (!text || !username || !page_name) {
+        return res.status(400).json({ error: 'Valid text, username, and page_name are required' });
+    }
+    if (text.length > 2000) {
+        return res.status(400).json({ error: 'Comment exceeds maximum length of 2000 characters' });
+    }
+    try {
+        const result = await pool.query(
+            `INSERT INTO comments_tbl (content, username, page_name) VALUES ($1, $2, $3) RETURNING *`,
+            [text, username, page_name]
+        );
+        res.status(201).json({ message: 'Comment stored successfully', data: result.rows[0] });
+    } catch (error) {
+        console.error('Error inserting comment:', error.message);
+        res.status(500).json({ error: 'Database error' });
+    }
+});
 app.use((req, res, next) => {
     console.log(`Received request: ${req.method} ${req.url}`);
     console.log('Headers:', req.headers);

@@ -31,6 +31,7 @@ const tabTitles: Record<string, string> = {
     quick_wins: "Quick Wins",
     sf_intervention: "Intervention-Driven",
     sf_target: "Target-Driven",
+    two_factor_heatmaps: "Two-Factor Exploration",
 };
 
 const tabHints: Record<string, string> = {
@@ -39,6 +40,7 @@ const tabHints: Record<string, string> = {
     quick_wins: "Highlights factors with stronger associations.",
     sf_intervention: "What-If scenarios adjusting one SEV.",
     sf_target: "SEV levels linked to CRC reduction goals.",
+    two_factor_heatmaps: "Two-Factor Joint Effect Graph.",
 };
 
 // ─────────────────────────────────────────────
@@ -226,6 +228,7 @@ const DeliPredictions = () => {
     const [tfLoading, setTfLoading] = useState(false);
     const [tfChartImageUrl, setTfChartImageUrl] = useState<string>("");
     const [tfIsRestored, setTfIsRestored] = useState(false);
+    const [biasTFModalHorizon, setBiasTFModalHorizon] = useState<string | null>(null);
 
     const isTwoFactor = type === "two_factor_heatmaps";
 
@@ -715,6 +718,40 @@ const DeliPredictions = () => {
                 </p>
             ),
         },
+        {
+            title: 'Bias Assessment',
+            content: (
+                <>
+                    <p style={{ fontSize: '13px', color: 'var(--text-muted, #475569)', marginBottom: '12px' }}>
+                        Below you can see the bias assessment results for the four predictive models presented on this page, one model per prediction horizon
+                    </p>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                        {[
+                            { label: '1-year model', horizon: '1' },
+                            { label: '3-year model', horizon: '3' },
+                            { label: '5-year model', horizon: '5' },
+                            { label: '10-year model', horizon: '10' },
+                        ].map(({ label, horizon }) => (
+                            <button
+                                key={label}
+                                onClick={() => setBiasTFModalHorizon(horizon)}
+                                style={{
+                                    display: 'block', width: '100%', padding: '8px 12px',
+                                    borderRadius: '8px', border: '1px solid var(--border, #e5e7eb)',
+                                    background: '#f5f7fb', color: 'var(--brand-dark, #185569)',
+                                    fontWeight: 600, fontSize: '13px', textAlign: 'center',
+                                    cursor: 'pointer', transition: 'background 0.15s',
+                                }}
+                                onMouseEnter={e => (e.currentTarget.style.background = '#e8f2f6')}
+                                onMouseLeave={e => (e.currentTarget.style.background = '#f5f7fb')}
+                            >
+                                {label}
+                            </button>
+                        ))}
+                    </div>
+                </>
+            ),
+        },
     ];
 
     const activeAccordionItems = isTwoFactor ? twoFactorAccordionItems : regularAccordionItems;
@@ -988,11 +1025,12 @@ const DeliPredictions = () => {
                         <Accordion defaultActiveKey="-1" className="app-accordion" style={{ marginBottom: "16px" }}>
                             {activeAccordionItems.map((item, idx) => {
                                 const isBiasAssessment = item.title === "Bias Assessment";
+                                const interceptClick = isBiasAssessment && !isTwoFactor;
                                 return (
                                     <Accordion.Item eventKey={idx.toString()} key={idx}>
                                         <Accordion.Header
                                             onClick={(e) => {
-                                                if (isBiasAssessment) {
+                                                if (interceptClick) {
                                                     e.stopPropagation();
                                                     e.preventDefault();
                                                     handleAccordionModal("The following biases were detected in the data used for the CRC Predictive Analytics:", true);
@@ -1001,7 +1039,7 @@ const DeliPredictions = () => {
                                         >
                                             {item.title}
                                         </Accordion.Header>
-                                        {!isBiasAssessment && <Accordion.Body className="text-start">{item.content}</Accordion.Body>}
+                                        {!interceptClick && <Accordion.Body className="text-start">{item.content}</Accordion.Body>}
                                     </Accordion.Item>
                                 );
                             })}
@@ -1031,6 +1069,81 @@ const DeliPredictions = () => {
 
                 </div>
             </div>
+
+            <Modal show={biasTFModalHorizon !== null} onHide={() => setBiasTFModalHorizon(null)} size="xl" centered>
+                <Modal.Header closeButton>
+                    <Modal.Title style={{ fontSize: '16px', fontWeight: 700, color: 'var(--text, #0f172a)' }}>
+                        Bias Assessment — {biasTFModalHorizon}-year model
+                    </Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <p style={{ fontSize: '15px', color: 'var(--text, #0f172a)', marginBottom: '16px' }}>
+                        The following biases were detected in the data &amp; algorithm used in our Two-Factor Joint Effect model with a <strong>{biasTFModalHorizon}-year</strong> prediction horizon:
+                    </p>
+                    {biasTFModalHorizon && (() => {
+                        const pdfMap: Record<string, string> = {
+                            '1':  '/xgb_1Y__lagged_1Y_model_ready.pdf',
+                            '3':  '/xgb_3Y__lagged_3Y_model_ready.pdf',
+                            '5':  '/xgb_5Y__lagged_5Y_model_ready.pdf',
+                            '10': '/xgb_10Y__lagged_10Y_model_ready.pdf',
+                        };
+                        const highDimStatus: Record<string, string> = {
+                            '1': 'Localized', '3': 'Structural', '5': 'Localized', '10': 'Structural',
+                        };
+                        const rows = [
+                            { dimension: 'Distributional Bias',   status: 'High',                               bg: '#ffd6d6', color: '#b30000', interpretation: 'Feature imbalance vs reference' },
+                            { dimension: 'High-Dimensional Bias', status: highDimStatus[biasTFModalHorizon],    bg: '',        color: '',        interpretation: 'Population anomalies' },
+                            { dimension: 'Community Bias',        status: 'Low',                                bg: '#ccf0cc', color: '#1a6b1a', interpretation: 'Cluster-level imbalance' },
+                            { dimension: 'Algorithmic Bias',      status: 'Low',                                bg: '#ccf0cc', color: '#1a6b1a', interpretation: 'Model / error disparities across groups' },
+                            { dimension: 'Group Fairness Gaps',   status: 'N/A',                                bg: '',        color: '',        interpretation: 'No sensitive attributes evaluated (fairness not assessed)' },
+                            { dimension: 'Causal Fairness',       status: 'Material',                           bg: '',        color: '',        interpretation: 'Estimated causal effect on bias' },
+                        ];
+                        const pdfUrl = pdfMap[biasTFModalHorizon];
+                        const thStyle: React.CSSProperties = {
+                            background: '#e8e8e8', fontWeight: 700, fontSize: '14px',
+                            padding: '10px 14px', textAlign: 'center', border: '1px solid #ccc',
+                        };
+                        const tdStyle: React.CSSProperties = {
+                            padding: '9px 14px', fontSize: '14px', border: '1px solid #ddd', verticalAlign: 'middle',
+                        };
+                        return (
+                            <>
+                                <h6 style={{ fontWeight: 700, marginBottom: '12px', fontSize: '15px' }}>Bias Summary Scorecard</h6>
+                                <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '14px' }}>
+                                    <thead>
+                                        <tr>
+                                            <th style={thStyle}>Dimension</th>
+                                            <th style={thStyle}>Status</th>
+                                            <th style={thStyle}>Interpretation</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {rows.map(row => (
+                                            <tr key={row.dimension}>
+                                                <td style={tdStyle}>{row.dimension}</td>
+                                                <td style={{ ...tdStyle, background: row.bg, color: row.color, fontWeight: row.bg ? 600 : 400, textAlign: 'center' }}>
+                                                    {row.status}
+                                                </td>
+                                                <td style={tdStyle}>{row.interpretation}</td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                                <p style={{ fontSize: '13px', color: '#666', fontStyle: 'italic', marginBottom: '16px' }}>
+                                    Interpretation: Green = minimal bias, Orange = moderate imbalance, Red = strong bias risk.
+                                </p>
+                                <p style={{ fontSize: '14px', color: 'var(--text-muted, #475569)' }}>
+                                    Click{' '}
+                                    <a href={pdfUrl} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--brand-dark, #185569)', fontWeight: 600 }}>
+                                        here
+                                    </a>
+                                    {' '}to download the Bias Analysis Report
+                                </p>
+                            </>
+                        );
+                    })()}
+                </Modal.Body>
+            </Modal>
         </>
     );
 };
