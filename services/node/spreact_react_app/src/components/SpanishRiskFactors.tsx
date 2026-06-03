@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import Unauthorized from './Unauthorized';
 import * as AuthService from "../services/auth.service.tsx";
 import Comments from "./Comments.tsx";
 import { useLocation } from "react-router-dom";
@@ -15,7 +16,7 @@ const riskFactorSpainRegion_dictLst = [
 ];
 
 const SpanishRiskFactorsDataPanel: React.FC = () => {
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [isLoggedIn, setIsLoggedIn] = useState(() => AuthService.isLoggedIn());
     const [iframeLoading, setIframeLoading] = useState(true);
     const [selectedRiskFactor, setSelectedRiskFactor] = useState("");
 
@@ -44,7 +45,7 @@ const SpanishRiskFactorsDataPanel: React.FC = () => {
     const getUriParams = () => `panelId=10&var-riskFactorRegion_filter=${selectedRiskFactor}&panelLabel=${panelLabel}`;
     const iFrame_url = `${grafana_url}&${getUriParams()}`;
 
-    if (!isLoggedIn) return <h2 className="text-center mt-5">Unauthorized</h2>;
+    if (!isLoggedIn) return <Unauthorized />;
 
     return (
         <>

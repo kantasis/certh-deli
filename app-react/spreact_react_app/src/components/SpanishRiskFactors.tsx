@@ -1,162 +1,167 @@
 import React, { useState, useEffect } from "react";
-import { Form } from "react-bootstrap";
+import Unauthorized from './Unauthorized';
 import * as AuthService from "../services/auth.service.tsx";
 import Comments from "./Comments.tsx";
 import { useLocation } from "react-router-dom";
 import SaveGraphButton from "./SaveGraphButton.tsx";
-// Interface for the properties of this component
-interface FilterProps {
-    selectedRiskFactor: string;
-    setSelectedRiskFactor: (value: string) => void;
-    riskFactorSpainRegion_dictLst: Array<{ value: string; label: string }>;
-}
 
-const RiskFactorSpainRegionFilter: React.FC<FilterProps> = ({
-    selectedRiskFactor,
-    setSelectedRiskFactor,
-    riskFactorSpainRegion_dictLst
-}) => {
-    // Categorize data into Screening and Risk Factors
-    const screeningData = riskFactorSpainRegion_dictLst.filter(item =>
-        ["CS2017", "POS2017", "CS2019", "POS2019"].includes(item.value)
-    );
-
-    const riskFactors = riskFactorSpainRegion_dictLst.filter(item =>
-        !["", "CS2017", "POS2017", "CS2019", "POS2019"].includes(item.value)
-    );
-
-    return (
-        <>
-            {/* Dropdown for Risk Factors */}
-            <label className="form-label mt-3">
-                <h6><strong>Select Risk Factor</strong></h6>
-            </label>
-            <Form.Control
-                as="select"
-                value={selectedRiskFactor}
-                onChange={(e) => setSelectedRiskFactor(e.target.value)}
-            >
-                <option value="" disabled>Select Risk Factor</option>
-                {riskFactors.map((item) => (
-                    <option key={item.value} value={item.value}>
-                        {item.label}
-                    </option>
-                ))}
-            </Form.Control>
-        </>
-    );
-};
+const riskFactorSpainRegion_dictLst = [
+    { value: "OW2017", label: "2017 - BMI (25-30), >18 years old" },
+    { value: "OBE2017", label: "2017 - BMI (>30), >18 years old" },
+    { value: "SMO2017", label: "2017 - > 15 years old daily smoking" },
+    { value: "ALC2017", label: "2017 - > 15 years old daily drinking" },
+    { value: "SED2017", label: "2017 - Sedentarism" },
+    { value: "PR2023", label: "2023 - Poverty Risk % persons living below poverty line" },
+    { value: "PCI2023", label: "2023 - Per capita income (Euros)" },
+];
 
 const SpanishRiskFactorsDataPanel: React.FC = () => {
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [isLoggedIn, setIsLoggedIn] = useState(() => AuthService.isLoggedIn());
+    const [iframeLoading, setIframeLoading] = useState(true);
+    const [selectedRiskFactor, setSelectedRiskFactor] = useState("");
 
     const location = useLocation();
     const savedIframeUrl = location.state?.iframeUrl;
 
     useEffect(() => {
-        if (!savedIframeUrl) return;
+        setIsLoggedIn(AuthService.isLoggedIn());
+    }, []);
 
+    useEffect(() => {
+        if (!savedIframeUrl) return;
         const url = new URL(savedIframeUrl);
         const params = new URLSearchParams(url.search);
-
         const riskFactor = params.get("var-riskFactorRegion_filter");
         if (riskFactor) setSelectedRiskFactor(riskFactor);
+    }, [savedIframeUrl]);
 
-        // Optionally, save the panel label to localStorage for LIT03
-        const panelLabel = location.state?.panelLabel;
-        if (panelLabel) {
-            localStorage.setItem("lit03Panel", panelLabel);
-        }
-    }, [savedIframeUrl, location.state]);
-
-
-    // List of available screening and risk factors
-    const riskFactorSpainRegion_dictLst = [
-        { value: "CS2017", label: "2017 - Coverage of CRC screening (%)" },
-        { value: "POS2017", label: "2017 - Positive cases (% over total tests)" },
-        { value: "OW2017", label: "2017 - BMI (25-30), >18 years old" },
-        { value: "OBE2017", label: "2017 - BMI (>30), >18 years old" },
-        { value: "SMO2017", label: "2017 - > 15 years old daily smoking" },
-        { value: "ALC2017", label: "2017 - > 15 years old daily drinking" },
-        { value: "SED2017", label: "2017 - Sedentarism" },
-        { value: "CS2019", label: "2019 - Coverage of CRC screening (%)" },
-        { value: "POS2019", label: "2019 - Positive cases (% over total tests)" },
-        { value: "PR2023", label: "2023 - Poverty Risk % persons living below poverty line" },
-        { value: "PCI2023", label: "2023 - Per capita income (Euros)" },
-    ];
-
-    // Use state to store the selected risk factor
-    const [selectedRiskFactor, setSelectedRiskFactor] = useState("");
-    const panelLabel = localStorage.getItem("lit03Panel");
-    // Grafana environment variables
     const grafana_host = import.meta.env.VITE_GRAFANA_HOST;
     const grafana_port = import.meta.env.VITE_GRAFANA_PORT;
     const grafana_path = import.meta.env.VITE_GRAFANA_PATH;
     const dashboard_name = import.meta.env.VITE_GRAFANA_DASHBOARD;
 
-    // Construct Grafana iframe URL dynamically
-    const grafana_url = `http://${grafana_host}:${grafana_port}/${grafana_path}/${dashboard_name}?orgId=1&theme=light`;
+    const grafana_url = `${window.location.protocol}//${grafana_host}:${grafana_port}/${grafana_path}/${dashboard_name}?orgId=1&theme=light`;
+    const panelLabel = localStorage.getItem("lit03Panel");
     const getUriParams = () => `panelId=10&var-riskFactorRegion_filter=${selectedRiskFactor}&panelLabel=${panelLabel}`;
     const iFrame_url = `${grafana_url}&${getUriParams()}`;
 
-    // Log for debugging
-    console.log("iFrame URL:", iFrame_url);
-
-    useEffect(() => {
-        setIsLoggedIn(AuthService.isLoggedIn());
-    }, []);
-
-    if (!isLoggedIn) return <h2>Unauthorized</h2>;
+    if (!isLoggedIn) return <Unauthorized />;
 
     return (
-        <div className="row">
-            {/* Left Panel - Dropdowns */}
-            <div className="col-sm-2 mt-3">
-                <RiskFactorSpainRegionFilter
-                    selectedRiskFactor={selectedRiskFactor}
-                    setSelectedRiskFactor={setSelectedRiskFactor}
-                    riskFactorSpainRegion_dictLst={riskFactorSpainRegion_dictLst}
-                />
-            </div>
+        <>
+            <style>{`
+                .srf-page { padding: 8px 0 40px; }
 
-            {/* Middle Panel - Conditional Rendering of Grafana iframe */}
-            <div className="col-sm-8 ">
-                {selectedRiskFactor && selectedRiskFactor !== "" ? (
-                    <div className="embed-responsive embed-responsive-16by9">
-                        <iframe
-                            id="embeddedPanel_id"
-                            className="embed-responsive-item"
-                            src={iFrame_url}
-                            width="100%"
-                            height="500px"
-                        ></iframe>
-                        <SaveGraphButton iframeUrl={iFrame_url} />
-                        {/* {iFrame_url} */}
-                    </div>
-                ) : (
-                    <div>
-                        <div className=""><div><h5 className="mb-5">Data on risk factors for CRC are presented by autonomous communities. Comparison of these frequencies makes it possible
-                            to identify the differences between autonomous communities.</h5></div>
+                .srf-sidebar-card {
+                    background: var(--bg, #fff);
+                    border: 1px solid var(--border, #e5e7eb);
+                    border-radius: 14px;
+                    padding: 18px 16px;
+                    margin-bottom: 12px;
+                }
+
+                .srf-iframe-wrapper {
+                    position: relative;
+                    border: 1px solid var(--border, #e5e7eb);
+                    border-radius: 14px;
+                    overflow: hidden;
+                    background: #fff;
+                    min-height: 500px;
+                }
+                .srf-iframe-loading {
+                    position: absolute; inset: 0;
+                    display: flex; flex-direction: column; align-items: center; justify-content: center;
+                    background: #fff;
+                    z-index: 2;
+                    gap: 12px;
+                    transition: opacity 0.3s ease;
+                }
+                .srf-iframe-loading.hidden { opacity: 0; pointer-events: none; }
+                .srf-iframe-loading span { font-size: 14px; color: var(--text-muted, #475569); font-weight: 500; }
+                .srf-iframe { display: block; border: none; width: 100%; height: 500px; }
+
+                .srf-placeholder { text-align: center; padding: 60px 24px; }
+                .srf-placeholder h5 { font-size: 15px; font-weight: 500; color: var(--text-muted, #475569); line-height: 1.65; margin: 0 auto 12px; max-width: 480px; }
+
+                .srf-src-card { border: 1px solid var(--border, #e5e7eb); border-radius: 10px; overflow: hidden; margin-bottom: 6px; }
+                .srf-src-title { font-size: 14px; font-weight: 600; color: var(--text, #0f172a); padding: 10px 14px; background: var(--bg, #fff); border-bottom: 1px solid var(--border, #e5e7eb); }
+                .srf-src-body { font-size: 14px; line-height: 1.6; padding: 12px 14px; color: var(--text, #0f172a); }
+                .srf-src-body a { color: var(--brand, #1f6580); text-decoration: none; }
+                .srf-src-body a:hover { color: var(--brand-dark, #185569); text-decoration: underline; }
+
+                @media (prefers-reduced-motion: reduce) {
+                    .srf-iframe-loading { transition: none; }
+                }
+            `}</style>
+
+            <div className="container-fluid srf-page">
+                <div className="row g-3">
+
+                    {/* ── Left sidebar ── */}
+                    <div className="col-xl-2 col-lg-3">
+                        <div className="srf-sidebar-card">
+                            <span className="filter-label">Risk Factor</span>
+                            <select
+                                className="form-select"
+                                value={selectedRiskFactor}
+                                onChange={(e) => { setSelectedRiskFactor(e.target.value); setIframeLoading(true); }}
+                            >
+                                <option value="" disabled>Select Risk Factor</option>
+                                {riskFactorSpainRegion_dictLst.map((item) => (
+                                    <option key={item.value} value={item.value}>{item.label}</option>
+                                ))}
+                            </select>
                         </div>
-                        <div className=""><h5>Please select a risk factor from the dropdown menu on the left to display the data.</h5></div>
                     </div>
-                )}
-            </div>
 
-            {/* Right Panel - Sources */}
-            <div className="col-sm-2">
-                <h5>Sources</h5>
-                <div style={{
-                    border: '1px solid #e2e6e9',
-                    borderRadius: 'var(--bs-border-radius)',
-                    padding: '10px'
-                }}>
-                    Spanish National Health Survey <br />
-                    <a target="_blank" href="https://www.sanidad.gob.es/estadEstudios/estadisticas/encuestaNacional/home.htm">Link</a>
+                    {/* ── Center: chart ── */}
+                    <div className="col-xl-8 col-lg-6">
+                        {selectedRiskFactor ? (
+                            <>
+                                <div className="srf-iframe-wrapper">
+                                    {iframeLoading && (
+                                        <div className="srf-iframe-loading">
+                                            <div className="spinner" aria-label="Loading chart" />
+                                            <span>Loading chart…</span>
+                                        </div>
+                                    )}
+                                    <iframe
+                                        className="srf-iframe"
+                                        src={iFrame_url}
+                                        title="Spanish Risk Factors"
+                                        onLoad={() => setIframeLoading(false)}
+                                    />
+                                </div>
+                                <div className="mt-3">
+                                    <SaveGraphButton iframeUrl={{ url: iFrame_url }} />
+                                </div>
+                            </>
+                        ) : (
+                            <div className="srf-placeholder">
+                                <h5>Data on risk factors for CRC are presented by autonomous communities. Comparison of these frequencies makes it possible to identify the differences between autonomous communities.</h5>
+                                <h5>Please select a risk factor from the dropdown menu on the left to display the data.</h5>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* ── Right: source + comments ── */}
+                    <div className="col-xl-2 col-lg-3">
+                        <div className="srf-src-card">
+                            <div className="srf-src-title">Source</div>
+                            <div className="srf-src-body">
+                                Spanish National Health Survey
+                                <br />
+                                <a target="_blank" rel="noopener noreferrer" href="https://www.sanidad.gob.es/estadEstudios/estadisticas/encuestaNacional/home.htm">
+                                    sanidad.gob.es ↗
+                                </a>
+                            </div>
+                        </div>
+                        <Comments />
+                    </div>
+
                 </div>
-                <Comments />
             </div>
-        </div>
+        </>
     );
 };
 

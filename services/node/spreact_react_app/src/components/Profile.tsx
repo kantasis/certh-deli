@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import Unauthorized from './Unauthorized';
 import { NavLink } from "react-router-dom";
 import * as AuthService from "../services/auth.service";
 
@@ -26,7 +27,7 @@ const Profile: React.FC = () => {
     }
   }, []);
 
-  if (!user) return <h2 className="text-center mt-5">Unauthorized</h2>;
+  if (!user) return <Unauthorized />;
 
   const initials = [user.name, user.surname]
     .filter(Boolean)

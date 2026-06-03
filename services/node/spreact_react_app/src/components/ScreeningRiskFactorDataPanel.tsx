@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import Unauthorized from './Unauthorized';
 import * as AuthService from "../services/auth.service.tsx";
 import Comments from "./Comments.tsx";
 import SaveGraphButton from "./SaveGraphButton.tsx";
@@ -10,7 +11,7 @@ const screeningMetrics = [
 ];
 
 const ScreeningDataPanel: React.FC = () => {
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [isLoggedIn, setIsLoggedIn] = useState(() => AuthService.isLoggedIn());
     const [iframeLoading, setIframeLoading] = useState(true);
     const [selectedRiskFactor, setSelectedRiskFactor] = useState("");
 
@@ -50,7 +51,7 @@ const ScreeningDataPanel: React.FC = () => {
     const iFrame_url = `${grafana_url}&${getUriParams()}`;
     // console.log("iFrame URL:", iFrame_url);
 
-    if (!isLoggedIn) return <h2 className="text-center mt-5">Unauthorized</h2>;
+    if (!isLoggedIn) return <Unauthorized />;
 
     return (
         <>

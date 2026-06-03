@@ -1,13 +1,13 @@
 import React, { useRef, useEffect, useState } from "react";
+import Unauthorized from './Unauthorized';
 import * as AuthService from "../services/auth.service.tsx";
 import ReactECharts from "echarts-for-react";
 import * as echarts from "echarts";
 import worldJson from "../assets/map/world.json";
-import { Form } from 'react-bootstrap';
 import Comments from "./Comments.tsx";
 import { Accordion } from 'react-bootstrap';
 import SaveGraphButton from "./SaveGraphButton.tsx";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import CountryFilter from "./CountryFilter.tsx";
 // import trendCorrelationStaticData from '../assets/trend_correlation.json';
 // import trendForecastingCRCData from '../assets/forecasting_CRC_new.json';
@@ -23,7 +23,7 @@ const EuropeMap = () => {
     // const [loadingData, setLoadingData] = useState(false);
     // const [error, setError] = useState<string | null>(null);
 
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [isLoggedIn, setIsLoggedIn] = useState(() => AuthService.isLoggedIn());
     const chartRef = useRef<ReactECharts>(null);          // NEW
     const [chartIframeUrl, setChartIframeUrl] = useState("");
     const [token, setToken] = useState(null);
@@ -122,6 +122,12 @@ const EuropeMap = () => {
 
     const [ceilYear_int, set_ceilYear_int] = useState(0);
 
+
+    const location = useLocation();
+    const navigate = useNavigate();
+
+
+
     useEffect(() => {
         const filteredOrderedData = selectedRiskFactors
             .map(factor => rawTrendCorrelationData.find(d => d.Risk_Factor === factor))
@@ -135,7 +141,7 @@ const EuropeMap = () => {
     const [dataMaxYear, setDataMaxYear] = useState<number | undefined>(undefined);
 
     const buildForecastingUrl = () => {
-        const baseUrl = "http://oncodir.catalink.eu:7565/v1/data-fusion/extra/forecasting-crc";
+        const baseUrl = "https://oncodir-datapi.catalink.eu/v1/data-fusion/extra/forecasting-crc";
         const params = new URLSearchParams();
 
         if (selectedCountry) params.append("country", selectedCountry);
@@ -452,7 +458,7 @@ const EuropeMap = () => {
         return paramsObj;
     };
 
-    const location = useLocation();
+    //const location = useLocation();
     const savedIframeUrl = location.state?.iframeUrl;
 
     useEffect(() => {
@@ -462,12 +468,9 @@ const EuropeMap = () => {
             const parsed = JSON.parse(savedIframeUrl);
             const params = parsed.params;
 
-            //  console.log("Restoring with params:", params);
-
             if (!params) return;
 
             setIsRestoring(true);
-
             setAnalysisType(params.analysis);
             setSexFilter(params.sexFilter);
             setAgeFilter(params.ageFilter);
@@ -562,9 +565,9 @@ const EuropeMap = () => {
             content: (<>
 
                 <p>
-                    B. F. Hankey, L. A. Ries, C. L. Kosary, E. J. Feuer, R. M. Merrill, L. X. Clegg, and B. K. Edwards, “Partitioning linear trends in age-adjusted rates,” Cancer causes & control, vol. 11, pp. 31–35, 2000. <br /><br />
+                    B. F. Hankey, L. A. Ries, C. L. Kosary, E. J. Feuer, R. M. Merrill, L. X. Clegg, and B. K. Edwards, "Partitioning linear trends in age-adjusted rates," Cancer causes & control, vol. 11, pp. 31–35, 2000. <br /><br />
 
-                    L. X. Clegg, B. F. Hankey, R. Tiwari, E. J. Feuer, and B. K. Edwards, “Estimating average annual per cent change in trend analysis,” Statistics in medicine, vol. 28, no. 29, pp. 3670–3682, 2009.<br /><br />
+                    L. X. Clegg, B. F. Hankey, R. Tiwari, E. J. Feuer, and B. K. Edwards, "Estimating average annual per cent change in trend analysis," Statistics in medicine, vol. 28, no. 29, pp. 3670–3682, 2009.<br /><br />
 
                 </p>
 
@@ -619,8 +622,6 @@ const EuropeMap = () => {
 
                     <strong>No statistically significant association:</strong> p ≥ 0.05
 
-
-
                 </div>
             </>)
         }
@@ -661,9 +662,6 @@ const EuropeMap = () => {
                         <p>Future CRC incidence rates over the next 30 years across EU countries for various population groups are projected using the AutoRegressive Integrated Moving Average (ARIMA) time series model, which captures temporal trends and autocorrelations in historical data.</p>
                         <p>The <strong>ARIMA </strong>model integrates three components: autoregression (using past values), moving average (using past forecast errors), and differencing (to correct for non-stationarity). It is defined by the parameters ARIMA(p, d, q), where p is the number of lagged observations, d is the number of differencing steps required for stationarity, and q is the number of lagged forecast errors. An automated ARIMA (autoARIMA) approach was employed to identify optimal parameter values by testing multiple combinations and selecting the best-fitting model based on the Akaike Information Criterion (AIC).</p>
                         <p>The final models produced projections with <strong>95% confidence intervals (CI)</strong>, providing <strong>country</strong>-specific and <strong>subgroup</strong>-specific forecasts (by age and sex) of CRC incidence rates through the year 2050.</p>
-
-
-
                     </p>
                 </div>
             </>)
@@ -712,10 +710,6 @@ const EuropeMap = () => {
                     <strong>Positive association: </strong>regression coefficients (β) {">"} 0 and p-value {"<"} 0.05<br /><br />
                     <strong>Negative association: </strong>β {"<"} 0 and p-value  {"<"} 0.05<br /><br />
                     <strong>No statistically significant association: </strong>p ≥ 0.05<br /><br />
-
-
-
-
                 </p>
             </div>
         </>)
@@ -726,7 +720,7 @@ const EuropeMap = () => {
             <p>
                 P. D. Allison, Fixed effects regression models. SAGE publications, 2009. <br /><br />
 
-                B. Hicks, J. A. Kaye, L. Azoulay, K. B. Kristensen, L. A. Habel, and A. Pottegard, “The application of lag times in cancer pharmacoepidemi ology: a narrative review,” Annals of Epidemiology, vol. 84, pp. 25–32, 2023.<br /><br />
+                B. Hicks, J. A. Kaye, L. Azoulay, K. B. Kristensen, L. A. Habel, and A. Pottegard, "The application of lag times in cancer pharmacoepidemi ology: a narrative review," Annals of Epidemiology, vol. 84, pp. 25–32, 2023.<br /><br />
 
             </p>
 
@@ -749,6 +743,9 @@ const EuropeMap = () => {
     useEffect(() => {
         if (analysisType !== "Trend Correlation") return;
 
+
+
+
         const controller = new AbortController();
         setLoading(true);
 
@@ -758,7 +755,7 @@ const EuropeMap = () => {
             year_interval: yearInterval.split(" ")[0],
         });
 
-        fetch(`http://oncodir.catalink.eu:7565/v1/data-fusion/extra/trend-correlation?${params.toString()}`, {
+        fetch(`https://oncodir-datapi.catalink.eu/v1/data-fusion/extra/trend-correlation?${params.toString()}`, {
             method: "GET",
             signal: controller.signal,
             headers: {
@@ -800,39 +797,61 @@ const EuropeMap = () => {
 
 
     useEffect(() => {
-        const controller = new AbortController();
+        const TOKEN_KEY = "oncodir_token";
+        const TOKEN_TS_KEY = "oncodir_token_ts"; // timestamp of last token fetch
+        const ONE_DAY = 24 * 60 * 60 * 1000; // 24 hours in ms
 
-        fetch("http://oncodir.catalink.eu:7565/v1/services/login/", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                service_name: import.meta.env.VITE_SERVICE_NAME,
-                password: import.meta.env.VITE_SERVICE_PASSWORD
-            }),
-            signal: controller.signal
-        })
-            .then(res => {
-                if (!res.ok) throw new Error(`HTTP error: ${res.status}`);
-                return res.text();
-            })
-            .then(token => {
-                setToken(token);
-                console.log("TOken: " + token)
-            })
-            .catch(err => {
+        const getToken = async () => {
+            const storedToken = localStorage.getItem(TOKEN_KEY);
+            const storedTs = localStorage.getItem(TOKEN_TS_KEY);
+            const now = Date.now();
+
+            if (storedToken && storedTs && now - parseInt(storedTs) < ONE_DAY) {
+                // Token is still valid
+                setToken(storedToken);
+                return;
+            }
+
+            // Token missing or expired → fetch new token
+            const controller = new AbortController();
+            try {
+                const res = await fetch(
+                    "https://oncodir-datapi.catalink.eu/v1/services/login/",
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                            service_name: import.meta.env.VITE_SERVICE_NAME,
+                            password: import.meta.env.VITE_SERVICE_PASSWORD,
+                        }),
+                        signal: controller.signal,
+                    }
+                );
+
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const newToken = await res.text();
+
+                localStorage.setItem(TOKEN_KEY, newToken);
+                localStorage.setItem(TOKEN_TS_KEY, now.toString());
+                setToken(newToken);
+            } catch (err) {
                 if (err.name !== "AbortError") {
-                    console.error("Failed to fetch token:", err);
+                    console.error("Login failed:", err);
                 }
-            });
+            }
 
-        return () => controller.abort();
+            return () => controller.abort();
+        };
+
+        getToken();
     }, []);
+
 
     useEffect(() => {
         if (analysisType !== "Trend Analysis") return;
-
+        if (!token) return;
         const controller = new AbortController();
         setLoading(true);
         const params = new URLSearchParams({
@@ -842,7 +861,7 @@ const EuropeMap = () => {
 
         });
 
-        fetch(`http://oncodir.catalink.eu:7565/v1/data-fusion/extra/trends?${params.toString()}`, {
+        fetch(`https://oncodir-datapi.catalink.eu/v1/data-fusion/extra/trends?${params.toString()}`, {
             method: "GET",
             signal: controller.signal,
             headers: {
@@ -873,13 +892,13 @@ const EuropeMap = () => {
             }, 300));
 
         return () => controller.abort();
-    }, [analysisType, sexFilter, ageFilter, yearInterval]);
+    }, [analysisType, sexFilter, ageFilter, yearInterval, token]);
 
 
 
     useEffect(() => {
         if (analysisType !== "Association Analysis") return;
-
+        if (!token) return;
         const controller = new AbortController();
         setLoading(true);
 
@@ -888,16 +907,15 @@ const EuropeMap = () => {
             age: ageFilter,
             year_interval: yearInterval.split(" ")[0],
         });
-        console.log(selectedRiskFactors)
         // selectedRiskFactors.forEach((rf) => {
         //     params.append("Risk_Factor", rf);
         // });
-        fetch(`http://oncodir.catalink.eu:7565/v1/data-fusion/extra/association/?${params.toString()}`, {
+        fetch(`https://oncodir-datapi.catalink.eu/v1/data-fusion/extra/association?${params.toString()}`, {
             method: "GET",
             signal: controller.signal,
             headers: {
                 "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}`
+                "Authorization": `Bearer ${token}`,
             }
         })
             .then((res) => {
@@ -917,7 +935,7 @@ const EuropeMap = () => {
             .finally(() => setLoading(false));
 
         return () => controller.abort();
-    }, [analysisType, sexFilter, ageFilter, selectedRiskFactors]);
+    }, [analysisType, sexFilter, ageFilter, selectedRiskFactors,token]);
 
 
 
@@ -1494,408 +1512,400 @@ const EuropeMap = () => {
         "Forecasting CRC": accordionContentForecastingCRC_dictLst,
     };
 
+    const urlToAnalysisType: Record<string, string> = {
+        "trend-analysis": "Trend Analysis",
+        "association-analysis": "Association Analysis",
+        "trend-correlation": "Trend Correlation",
+        "forecasting-crc": "Forecasting CRC",
+    };
+
+    const analysisTypeToUrl: Record<string, string> = {
+        "Trend Analysis": "trend-analysis",
+        "Association Analysis": "association-analysis",
+        "Trend Correlation": "trend-correlation",
+        "Forecasting CRC": "forecasting-crc",
+    };
+
+    const analysisTypeHints: Record<string, string> = {
+        "Trend Analysis": "Long-term CRC incidence by demographic subgroup.",
+        "Association Analysis": "Statistical associations between CRC and SEVs.",
+        "Trend Correlation": "Relationships between CRC and SEV trends.",
+        "Forecasting CRC": "Short-term extrapolations from historical data.",
+    };
+
     const accordionContent_dictLst = accordionContentMap[analysisType] || [];
+    useEffect(() => {
+        if (isRestoring) return;
 
-    //    #5470c6
+        const params = new URLSearchParams(location.search);
+        const tabParam = params.get("tab");
+        const mappedType = tabParam ? urlToAnalysisType[tabParam] : "";
 
-    if (!isLoggedIn) return <h2>Unauthorized</h2>;
+        if (mappedType) {
+            setAnalysisType(mappedType);
+        }
+    }, [location.search, isRestoring]);
+
+    useEffect(() => {
+        if (analysisType === "Association Analysis") {
+            setSelectedRiskFactors([...DEFAULT_RISK_FACTORS]);
+        } else if (analysisType === "Trend Correlation") {
+            setSelectedRiskFactors([...DEFAULT_RISK_FACTORS2]);
+        } else {
+            setSelectedRiskFactors([]); // optional fallback
+        }
+    }, [analysisType]);
+
+    const handleAnalysisTypeChange = (value: string) => {
+        setAnalysisType(value);
+
+
+
+        // ✅ URL sync
+        const urlParam = analysisTypeToUrl[value] || "";
+
+        const params = new URLSearchParams(location.search);
+
+        if (urlParam) params.set("tab", urlParam);
+        else params.delete("tab");
+
+        navigate(`${location.pathname}?${params.toString()}`, { replace: true });
+    };
+
+
+
+
+    if (!isLoggedIn) return <Unauthorized />;
     return (
+        <>
+            <style>{`
+                .ta-page { padding: 24px 0 40px; }
+                .ta-header { margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--border, #e5e7eb); }
+                .ta-header h1 { font-size: 22px; font-weight: 800; color: var(--text, #0f172a); margin: 0 0 3px; }
+                .ta-header p { font-size: 14px; color: var(--text-muted, #475569); margin: 0; }
 
-        <div className="container-fluid mt-5">
-            <div className="row">
-                {/* Left Column */}
-                <div className="col-2">
-                    {/* Always-visible Analysis Type Dropdown */}
-                    <div className="form-group mb-4">
-                        <label htmlFor="analysis-type" style={{ fontWeight: "bold", margin: "0px 0px 5px 0px" }}>
-                            Select Analysis Type:
-                        </label>
+                .ta-sidebar-card {
+                    background: var(--bg, #fff);
+                    border: 1px solid var(--border, #e5e7eb);
+                    border-radius: 14px;
+                    padding: 18px 16px;
+                    margin-bottom: 12px;
+                }
+                .ta-sidebar-card .filter-label {
+                    display: block;
+                    font-size: 13px;
+                    font-weight: 700;
+                    color: var(--text-muted, #475569);
+                    text-transform: uppercase;
+                    letter-spacing: 0.06em;
+                    margin-bottom: 8px;
+                }
+                .ta-select {
+                    width: 100%;
+                    border: 1.5px solid var(--border, #e5e7eb);
+                    border-radius: 8px;
+                    padding: 7px 10px;
+                    font-size: 14px;
+                    color: var(--text, #0f172a);
+                    background: #fff;
+                    outline: none;
+                    cursor: pointer;
+                    transition: border-color 0.2s, box-shadow 0.2s;
+                    font-family: inherit;
+                }
+                .ta-select:focus { border-color: var(--brand, #1f6580); box-shadow: 0 0 0 3px rgba(31,101,128,0.15); }
+
+                .ta-check-list {
+                    max-height: 240px;
+                    overflow-y: auto;
+                    border: 1.5px solid var(--border, #e5e7eb);
+                    border-radius: 8px;
+                    padding: 6px 4px;
+                }
+                .ta-check-list label {
+                    display: flex;
+                    align-items: center;
+                    gap: 7px;
+                    padding: 4px 8px;
+                    font-size: 14px;
+                    color: var(--text, #0f172a);
+                    cursor: pointer;
+                    border-radius: 5px;
+                }
+                .ta-check-list label:hover { background: #f0f5f8; }
+                .ta-check-list input[type="checkbox"] { accent-color: var(--brand, #1f6580); flex-shrink: 0; color-scheme: light; }
+
+                .ta-chart-wrapper {
+                    position: relative;
+                    border: 1px solid var(--border, #e5e7eb);
+                    border-radius: 14px;
+                    overflow: hidden;
+                    background: #fff;
+                    min-height: 580px;
+                    display: flex;
+                    flex-direction: column;
+                }
+                .ta-chart-inner { padding: 12px; flex: 1; }
+                .ta-chart-loading {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    min-height: 580px;
+                    gap: 12px;
+                }
+                .ta-chart-loading span { font-size: 14px; color: var(--text-muted, #475569); font-weight: 500; }
+                .ta-empty-state {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    min-height: 400px;
+                    padding: 32px;
+                    text-align: center;
+                }
+                .ta-empty-icon { width: 52px; height: 52px; border-radius: 14px; background: #e8f2f6; color: var(--brand-dark, #185569); display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; }
+                .ta-empty-title { font-size: 16px; font-weight: 700; color: var(--text, #0f172a); margin: 0 0 6px; }
+                .ta-empty-sub { font-size: 14px; color: var(--text-muted, #475569); margin: 0; max-width: 380px; line-height: 1.6; }
+
+
+                @media (prefers-reduced-motion: reduce) {
+                    .ta-select, .ta-check-list label { transition: none; }
+                }
+            `}</style>
+
+        <div className="container-fluid ta-page">
+
+            <div className="ta-header">
+                <h1>{analysisType || "CRC Trend & Association Analysis"}</h1>
+                <p>{analysisType ? analysisTypeHints[analysisType] : "Historical, subgroup-level analyses (associational)."}</p>
+            </div>
+
+            <div className="row g-3">
+                {/* ── Left sidebar ── */}
+                <div className="col-xl-2 col-lg-3">
+                    <div className="ta-sidebar-card">
+                        <span className="filter-label">Analysis Type</span>
                         <select
-                            id="analysis-type"
-                            className="form-control"
+                            className="ta-select"
                             value={analysisType}
-                            onChange={(e) => {
-                                const selectedType = e.target.value;
-                                setAnalysisType(selectedType);
-                                if (selectedType === "Association Analysis") {
-                                    setSelectedRiskFactors([...DEFAULT_RISK_FACTORS || []]);
-                                } else if (selectedType === "Trend Correlation") {
-                                    setSelectedRiskFactors([...DEFAULT_RISK_FACTORS2 || []]);
-                                }
-                            }}
-
+                            onChange={(e) => handleAnalysisTypeChange(e.target.value)}
+                            aria-label="Select analysis type"
                         >
-                            <option value="">-- Select --</option>
-                            <option value="Trend Analysis">Trend Analysis</option>
-                            <option value="Association Analysis">Association Analysis</option>
-                            <option value="Trend Correlation">Trend Correlation</option>
-                            <option value="Forecasting CRC">Forecasting CRC</option>
-
+                            <option value="">— Select —</option>
+                            {Object.keys(analysisTypeToUrl).map(type => (
+                                <option key={type} value={type}>{type}</option>
+                            ))}
                         </select>
                     </div>
                     {(analysisType === "Association Analysis" || analysisType === "Trend Correlation") && (
-                        <Form className="mb-3" style={{ maxWidth: "400px" }}>
-                            <Form.Label style={{ fontWeight: "bold" }}>
-                                Select Risk Factors (max 10):
-                            </Form.Label>
-                            <div className="form-control" style={{ maxHeight: "280px", overflowY: "auto", padding: "5px", textAlign: "left" }}>
+                        <div className="ta-sidebar-card">
+                            <span className="filter-label">Risk Factors (max 10)</span>
+                            <div className="ta-check-list" role="group" aria-label="Risk factor checkboxes">
                                 {uniqueRiskFactors.map((factor, index) => {
-
                                     const isSelected = selectedRiskFactors.includes(factor);
-                                    const disableCheckbox = selectedRiskFactors.length >= 10 && !isSelected;
-
+                                    const disabled = selectedRiskFactors.length >= 10 && !isSelected;
                                     return (
-                                        <Form.Check
-                                            key={index}
-                                            type="checkbox"
-                                            label={factor}
-                                            value={factor}
-                                            checked={isSelected}
-                                            onChange={() => toggleRiskFactor(factor)}
-                                            disabled={disableCheckbox}
-                                        />
+                                        <label key={index} style={{ opacity: disabled ? 0.5 : 1 }}>
+                                            <input
+                                                type="checkbox"
+                                                checked={isSelected}
+                                                onChange={() => toggleRiskFactor(factor)}
+                                                disabled={disabled}
+                                            />
+                                            {factor}
+                                        </label>
                                     );
-
                                 })}
                             </div>
-                        </Form>
-
+                        </div>
                     )}
                     {analysisType === "Forecasting CRC" && (
-
-                        <div className="form-group mb-3">
-                            <label htmlFor="country-select" style={{ fontWeight: "bold" }}>
-                                Select Country:
-                            </label>
+                        <div className="ta-sidebar-card">
+                            <span className="filter-label">Country</span>
                             <select
-                                className="form-control"
-                                id="country-select"
+                                className="ta-select"
                                 value={selectedCountry}
                                 onChange={(e) => setSelectedCountry(e.target.value)}
+                                aria-label="Select country"
                             >
-                                <option value="">-- Select a country --</option>
+                                <option value="">— Select a country —</option>
                                 {COUNTRY_OPTIONS.map((country, index) => (
-                                    <option key={index} value={country}>
-                                        {country}
-                                    </option>
+                                    <option key={index} value={country}>{country}</option>
                                 ))}
                             </select>
                             {selectedCountry && (
-                                <YearFilter
-                                    minYear_int={minYear_int ?? dataMinYear}  // fallback in case undefined
-                                    set_minYear={set_minYear}
-                                    maxYear_int={maxYear_int ?? dataMaxYear}
-                                    set_maxYear={set_maxYear}
-                                    floorYear_int={dataMinYear}
-                                    ceilYear_int={dataMaxYear}
-
-                                />
-
+                                <div style={{ marginTop: "12px" }}>
+                                    <span className="filter-label">Year range</span>
+                                    <YearFilter
+                                        minYear_int={minYear_int ?? dataMinYear}
+                                        set_minYear={set_minYear}
+                                        maxYear_int={maxYear_int ?? dataMaxYear}
+                                        set_maxYear={set_maxYear}
+                                        floorYear_int={dataMinYear}
+                                        ceilYear_int={dataMaxYear}
+                                    />
+                                </div>
                             )}
-
                         </div>
-
-
                     )}
-                    {/* Show filters only for Trend Analysis */}
-                    {(
-                        (analysisType === "Forecasting CRC" && selectedCountry) ||
-                        (analysisType === "Trend Analysis" ||
-                            analysisType === "Association Analysis" ||
-                            analysisType === "Trend Correlation")
-                    ) && (
-                            <>
-                                <div className="form-group mb-3">
-                                    <label htmlFor="sex-select" style={{ fontWeight: "bold" }}>
-                                        Select Sex:
-                                    </label>
-                                    <select
-                                        className="form-control"
-                                        id="sex-select"
-                                        value={sexFilter}
-                                        onChange={(e) => setSexFilter(e.target.value)}
-                                    >
-                                        <option value="Both">Both</option>
-                                        <option value="Male">Male</option>
-                                        <option value="Female">Female</option>
+
+                    {((analysisType === "Forecasting CRC" && selectedCountry) ||
+                        analysisType === "Trend Analysis" ||
+                        analysisType === "Association Analysis" ||
+                        analysisType === "Trend Correlation") && (
+                        <div className="ta-sidebar-card" style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
+                            <div>
+                                <span className="filter-label">Sex</span>
+                                <select className="ta-select" value={sexFilter} onChange={(e) => setSexFilter(e.target.value)} aria-label="Select sex">
+                                    <option value="Both">Both</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                </select>
+                            </div>
+                            <div>
+                                <span className="filter-label">Age</span>
+                                <select className="ta-select" value={ageFilter} onChange={(e) => setAgeFilter(e.target.value)} aria-label="Select age">
+                                    <option value="Age-standardized">Age-standardized</option>
+                                    <option value="Under 25">Under 25</option>
+                                    <option value="25 to 50">25 to 50</option>
+                                    <option value="Above 50">Above 50</option>
+                                </select>
+                            </div>
+                            {analysisType === "Trend Analysis" && (
+                                <div>
+                                    <span className="filter-label">Year Interval</span>
+                                    <select className="ta-select" value={yearInterval} onChange={(e) => setYearInterval(e.target.value)} aria-label="Select year interval">
+                                        <option value="5 years (2016-2021)">5 years (2016–2021)</option>
+                                        <option value="10 years (2011-2021)">10 years (2011–2021)</option>
+                                        <option value="15 years (2006-2021)">15 years (2006–2021)</option>
+                                        <option value="20 years (2001-2021)">20 years (2001–2021)</option>
+                                        <option value="25 years (1996-2021)">25 years (1996–2021)</option>
+                                        <option value="30 years (1991-2021)">30 years (1991–2021)</option>
                                     </select>
                                 </div>
-
-                                <div className="form-group mb-3">
-                                    <label htmlFor="age-select" style={{ fontWeight: "bold" }}>
-                                        Select Age:
-                                    </label>
-                                    <select
-                                        className="form-control"
-                                        id="age-select"
-                                        value={ageFilter}
-                                        onChange={(e) => setAgeFilter(e.target.value)}
-                                    >
-                                        <option value="Age-standardized">Age-standardized</option>
-                                        <option value="Under 25">Under 25</option>
-                                        <option value="25 to 50">25 to 50</option>
-                                        <option value="Above 50">Above 50</option>
-                                    </select>
-                                </div>
-
-
-
-
-
-                                {/* Show year interval only for Trend Analysis */}
-                                {analysisType === "Trend Analysis" && (
-                                    <div className="form-group mb-3">
-                                        <label htmlFor="year-select" style={{ fontWeight: "bold" }}>
-                                            Select Year Interval:
-                                        </label>
-                                        <select
-                                            className="form-control"
-                                            id="year-select"
-                                            value={yearInterval}
-                                            onChange={(e) => setYearInterval(e.target.value)}
-                                        >
-                                            <option value="5 years (2016-2021)">5 years (2016-2021)</option>
-                                            <option value="10 years (2011-2021)">10 years (2011-2021)</option>
-                                            <option value="15 years (2006-2021)">15 years (2006-2021)</option>
-                                            <option value="20 years (2001-2021)">20 years (2001-2021)</option>
-                                            <option value="25 years (1996-2021)">25 years (1996-2021)</option>
-                                            <option value="30 years (1991-2021)">30 years (1991-2021)</option>
-                                        </select>
-                                    </div>
-
-                                )}
-
-                            </>
-
-                        )}
-
-
+                            )}
+                        </div>
+                    )}
 
                 </div>
 
-                {/* Center Column */}
-                <div className="col-8">
+
+                {/* ── Center chart ── */}
+                <div className="col-xl-8 col-lg-6">
+
                     {!analysisType && (
-                        <div>
-                            <p>In this page, you can explore insights through two types of analysis: <strong>Trend Analysis</strong> and <strong>Association Analysis</strong> on various age and sex groups.</p>
-
-                            <p>Please select the desired type of analysis results from the <strong>drop-down menu on the left.</strong></p>
-
-                            <p>In the menu on the<strong> right-hand side</strong>, you can find detailed information about the <strong>data sources</strong> and <strong>methodology</strong> of the analysis.</p>
+                        <div className="ta-chart-wrapper">
+                            <div className="ta-empty-state">
+                                <div className="ta-empty-icon" aria-hidden="true">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                                        <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>
+                                    </svg>
+                                </div>
+                                <p className="ta-empty-title">Select an Analysis Type</p>
+                                <p className="ta-empty-sub">Choose <strong>Trend Analysis</strong>, <strong>Association Analysis</strong>, <strong>Trend Correlation</strong>, or <strong>Forecasting CRC</strong> from the sidebar to begin.</p>
+                            </div>
                         </div>
                     )}
+
                     {analysisType === "Trend Analysis" && (
-                        <>
-                            <h5>
-                                <strong>EAPC in European Countries</strong>
-                            </h5>
-                            {loading && (
-                                <div
-                                    style={{
-                                        position: "absolute",
-                                        top: 0,
-                                        left: 0,
-                                        width: "100%",
-                                        height: "100%",
-                                        backgroundColor: "rgba(255, 255, 255, 0.7)",
-                                        display: "flex",
-                                        flexDirection: "column",
-                                        alignItems: "center",
-                                        justifyContent: "center",
-                                        zIndex: 10,
-                                    }}
-                                >
-                                    <div
-                                        className="spinner-border text-primary"
-                                        role="status"
-                                        style={{ width: "3rem", height: "3rem" }}
-                                    ></div>
-                                    <div
-                                        style={{
-                                            marginTop: "1rem",
-                                            fontWeight: "bold",
-                                            fontSize: "1rem",
-                                            color: "#333",
-                                        }}
-                                    >
-                                        Loading...
-                                    </div>
+                        <div className="ta-chart-wrapper">
+                            {loading ? (
+                                <div className="ta-chart-loading">
+                                    <div className="spinner" aria-label="Loading chart" />
+                                    <span>Loading trend data…</span>
+                                </div>
+                            ) : (
+                                <div className="ta-chart-inner">
+                                    <ReactECharts ref={chartRef} key={JSON.stringify(chartData)} option={trendOption} style={{ height: "550px", width: "100%" }} />
                                 </div>
                             )}
-                            <ReactECharts ref={chartRef} key={JSON.stringify(chartData)} option={trendOption} style={{ height: "550px", width: "100%", margin: "15px 0px " }} />
-                            <SaveGraphButton iframeUrl={{ url: getChartImageUrl(chartIframeUrl), params: getUriParams() }} />
-
-                        </>
+                        </div>
                     )}
 
                     {analysisType === "Association Analysis" && (
-                        <>
-
-                            {/* <h5>
-                                <strong>Association Analysis</strong>
-                               
-                            </h5> */}
-                            {loading && (
-                                <div
-                                    style={{
-                                        position: "absolute",
-                                        top: 0,
-                                        left: 0,
-                                        width: "100%",
-                                        height: "100%",
-                                        backgroundColor: "rgba(255, 255, 255, 0.7)",
-                                        display: "flex",
-                                        flexDirection: "column",
-                                        alignItems: "center",
-                                        justifyContent: "center",
-                                        zIndex: 10,
-                                    }}
-                                >
-                                    <div
-                                        className="spinner-border text-primary"
-                                        role="status"
-                                        style={{ width: "3rem", height: "3rem" }}
-                                    ></div>
-                                    <div
-                                        style={{
-                                            marginTop: "1rem",
-                                            fontWeight: "bold",
-                                            fontSize: "1rem",
-                                            color: "#333",
-                                        }}
-                                    >
-                                        Loading...
-                                    </div>
+                        <div className="ta-chart-wrapper">
+                            {loading ? (
+                                <div className="ta-chart-loading">
+                                    <div className="spinner" aria-label="Loading chart" />
+                                    <span>Loading association data…</span>
+                                </div>
+                            ) : (
+                                <div className="ta-chart-inner">
+                                    <ReactECharts ref={chartRef} option={associationOption} style={{ height: "580px", width: "100%" }} />
                                 </div>
                             )}
-                            <ReactECharts
-                                ref={chartRef}
-                                option={associationOption}
-                                style={{ height: "600px", width: "100%" }}
-                            />
-                            <SaveGraphButton iframeUrl={{ url: getChartImageUrl(chartIframeUrl), params: getUriParams() }} />
-
-                        </>
-
+                        </div>
                     )}
+
                     {analysisType === "Trend Correlation" && (
-                        <>
-                            <h5><strong>Trend Correlation between Risk Factors and CRC incidence</strong></h5>
-                            {loading && (
-                                <div
-                                    style={{
-                                        position: "absolute",
-                                        top: 0,
-                                        left: 0,
-                                        width: "100%",
-                                        height: "100%",
-                                        backgroundColor: "rgba(255, 255, 255, 0.7)",
-                                        display: "flex",
-                                        flexDirection: "column",
-                                        alignItems: "center",
-                                        justifyContent: "center",
-                                        zIndex: 10,
-                                    }}
-                                >
-                                    <div
-                                        className="spinner-border text-primary"
-                                        role="status"
-                                        style={{ width: "3rem", height: "3rem" }}
-                                    ></div>
-                                    <div
-                                        style={{
-                                            marginTop: "1rem",
-                                            fontWeight: "bold",
-                                            fontSize: "1rem",
-                                            color: "#333",
-                                        }}
-                                    >
-                                        Loading...
-                                    </div>
+                        <div className="ta-chart-wrapper">
+                            {loading ? (
+                                <div className="ta-chart-loading">
+                                    <div className="spinner" aria-label="Loading chart" />
+                                    <span>Loading trend correlation data…</span>
+                                </div>
+                            ) : (
+                                <div className="ta-chart-inner">
+                                    <ReactECharts ref={chartRef} key={JSON.stringify(chartData)} option={trendCorrelationOption} style={{ height: "580px", width: "100%" }} />
                                 </div>
                             )}
-                            <ReactECharts
-                                ref={chartRef}
-                                key={JSON.stringify(chartData)}
-                                option={trendCorrelationOption}
-                                style={{ height: "600px", width: "100%" }}
-                            />
-                            <SaveGraphButton iframeUrl={{ url: getChartImageUrl("Trend Correlation"), params: getUriParams() }} />
-                        </>
+                        </div>
                     )}
-                    {analysisType === "Forecasting CRC" && !forecastChartOption && (
-                        <>
-                            <h6>Please select a <strong>Country </strong> using the menu on the left side</h6>
 
-                        </>
+                    {analysisType === "Forecasting CRC" && !forecastChartOption && (
+                        <div className="ta-chart-wrapper">
+                            <div className="ta-empty-state">
+                                <div className="ta-empty-icon" aria-hidden="true">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                                        <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                                    </svg>
+                                </div>
+                                <p className="ta-empty-title">Select a Country</p>
+                                <p className="ta-empty-sub">Choose a country from the sidebar to view the CRC forecast chart.</p>
+                            </div>
+                        </div>
                     )}
 
                     {analysisType === "Forecasting CRC" && forecastChartOption && (
-                        <>
-                            <h5><strong>Forecasting CRC</strong></h5>
-                            {loading && (
-                                <div
-                                    style={{
-                                        position: "absolute",
-                                        top: 0,
-                                        left: 0,
-                                        width: "100%",
-                                        height: "100%",
-                                        backgroundColor: "rgba(255, 255, 255, 0.7)",
-                                        display: "flex",
-                                        flexDirection: "column",
-                                        alignItems: "center",
-                                        justifyContent: "center",
-                                        zIndex: 10,
-                                    }}
-                                >
-                                    <div
-                                        className="spinner-border text-primary"
-                                        role="status"
-                                        style={{ width: "3rem", height: "3rem" }}
-                                    ></div>
-                                    <div
-                                        style={{
-                                            marginTop: "1rem",
-                                            fontWeight: "bold",
-                                            fontSize: "1rem",
-                                            color: "#333",
-                                        }}
-                                    >
-                                        Loading...
-                                    </div>
+                        <div className="ta-chart-wrapper">
+                            {loading ? (
+                                <div className="ta-chart-loading">
+                                    <div className="spinner" aria-label="Loading chart" />
+                                    <span>Loading forecast data…</span>
+                                </div>
+                            ) : (
+                                <div className="ta-chart-inner">
+                                    <ReactECharts ref={chartRef} key={JSON.stringify(chartData)} option={forecastChartOption} style={{ height: "580px", width: "100%" }} />
                                 </div>
                             )}
-                            <ReactECharts
-                                ref={chartRef}
-                                key={JSON.stringify(chartData)}
-                                option={forecastChartOption}
-
-                                style={{ height: "600px", width: "100%" }}
-                            />
-                            <SaveGraphButton iframeUrl={{ url: getChartImageUrl("Forecasting CRC"), params: getUriParams() }} />
-                        </>
+                        </div>
                     )}
 
+                    {analysisType && (
+                        <div className="mt-3">
+                            <SaveGraphButton iframeUrl={{ url: getChartImageUrl(analysisType === "Trend Analysis" ? chartIframeUrl : analysisType), params: getUriParams() }} />
+                        </div>
+                    )}
 
                 </div>
 
-                {/* Right Column (Optional) */}
-                <div className="col-2">{/* Reserved for future content */}
-
-                    <Accordion defaultActiveKey="-1">
+                {/* ── Right: accordion + comments ── */}
+                <div className="col-xl-2 col-lg-3">
+                    <Accordion defaultActiveKey="-1" className="app-accordion" style={{ marginBottom: "16px" }}>
                         {accordionContent_dictLst.map(({ title, content }, index) => (
                             <Accordion.Item eventKey={index.toString()} key={index}>
-                                <Accordion.Header className="text-left">{title}</Accordion.Header>
+                                <Accordion.Header>{title}</Accordion.Header>
                                 <Accordion.Body className="text-start">{content}</Accordion.Body>
                             </Accordion.Item>
                         ))}
                     </Accordion>
+                    <Comments />
+                </div>
 
-                    <Comments /></div>
             </div>
-        </div >
-
+        </div>
+        </>
     );
 
 };

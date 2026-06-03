@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import Unauthorized from './Unauthorized';
 import * as AuthService from "../services/auth.service";
 import * as UserService from "../services/user.service";
 
@@ -67,7 +68,7 @@ const AdminUsers: React.FC = () => {
             <div className="spinner" aria-label="Loading users" />
         </div>
     );
-    if (!isAuthorized) return <h2 className="text-center mt-5">Unauthorized</h2>;
+    if (!isAuthorized) return <Unauthorized />;
 
     const applyNameEdit = async () => {
         if (!editUser) return;

@@ -1,56 +1,29 @@
-import React, { useState, useEffect } from "react";
-import { Form } from 'react-bootstrap';
+import React from "react";
 
-// Interface for the properties of this component
 interface FilterProps {
-    // Lifted up State
-    selectedAge_int: number,
-    set_selectedAge: Function,
-    age_dictLst: Array<any>,
+   selectedAge_int: number;
+   set_selectedAge: Function;
+   age_dictLst: Array<{ value: number; label: string; var_filter?: string }>;
 }
 
 const AgeFilter: React.FC<FilterProps> = ({ selectedAge_int, set_selectedAge, age_dictLst }) => {
-
-    useEffect(
-        () => {
-          
-        },
-        []
-    );
-
-    return (<>
-        <label
-            className="form-label"
-            htmlFor="ageSelect_id"
-        >
-            <h6><strong>Select Age </strong></h6>
-        </label>
-        <Form id="ageSelect_id">
-            <Form.Control
-                as="select"
-                value={selectedAge_int}
-                onChange={(e) => {
-                    set_selectedAge(
-                        e.target.value
-                    )
-                }}
-            >
-                {age_dictLst.map((age_dict, index) => (
-                    <option
-                        key={index}
-                        value={age_dict['value']}
-                        data-toggle="tooltip"
-                        data-placement="right"
-                        title={age_dict['label']}
-                    // onClick={()=>( set_selectedYearLag(yearLag_dict) )}
-                    >
-                        {age_dict['label']}
-                    </option>
-                ))}
-            </Form.Control>
-        </Form>
-    </>);
+   return (
+      <div>
+         <label className="filter-label" htmlFor="ageSelect_id">Age group</label>
+         <select
+            id="ageSelect_id"
+            className="form-select"
+            value={selectedAge_int}
+            onChange={(e) => set_selectedAge(e.target.value)}
+         >
+            {age_dictLst.map((age_dict, index) => (
+               <option key={index} value={age_dict.value} title={age_dict.label}>
+                  {age_dict.label}
+               </option>
+            ))}
+         </select>
+      </div>
+   );
 };
-
 
 export default AgeFilter;

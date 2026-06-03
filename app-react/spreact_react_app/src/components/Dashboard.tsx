@@ -1,4 +1,5 @@
 import { Routes, Route, Link } from "react-router-dom";
+import Unauthorized from './Unauthorized';
 import React, { useState, useEffect } from "react";
 import * as AuthService from "../services/auth.service";
 import FilterPanel from "../components/FilterPanel";
@@ -9,7 +10,7 @@ const grafana_port = import.meta.env.VITE_GRAFANA_PORT;
 const grafana_path = import.meta.env.VITE_GRAFANA_PATH;
 const dashboard_name = import.meta.env.VITE_GRAFANA_DASHBOARD;
 
-const grafana_url = `http://${grafana_host}:${grafana_port}/${grafana_path}/${dashboard_name}?orgId=1&theme=light`
+const grafana_url = `${window.location.protocol}//${grafana_host}:${grafana_port}/${grafana_path}/${dashboard_name}?orgId=1&theme=light`
 // http://localhost:3000/d-solo/edn5ahxrzaw3kc/deli-main-dashboarg?orgId=1&theme=light&panelId=4&var-deli_custom_var=5
 
 // var envs_json = JSON.stringify(import.meta.env, null, 2); // spacing level = 2
@@ -17,7 +18,7 @@ const grafana_url = `http://${grafana_host}:${grafana_port}/${grafana_path}/${da
 
 const Dashboard: React.FC = () => {
 
-   const [isLoggedIn, setIsLoggedIn] = useState(false);
+   const [isLoggedIn, setIsLoggedIn] = useState(() => AuthService.isLoggedIn());
    const [selected_idx, setSelectedIdx] = useState(0);
    const [grafanaVar_int, setGrafanaVar] = useState(5);
    const [urlParams_str, setUrlParams] = useState('');
@@ -36,7 +37,7 @@ const Dashboard: React.FC = () => {
    );
 
    if (!isLoggedIn)
-      return <h2>Unauthorized</h2>;
+      return <Unauthorized />;
 
    const tabInfo_dictLst = [
       {

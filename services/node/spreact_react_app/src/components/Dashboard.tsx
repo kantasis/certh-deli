@@ -1,4 +1,5 @@
 import { Routes, Route, Link } from "react-router-dom";
+import Unauthorized from './Unauthorized';
 import React, { useState, useEffect } from "react";
 import * as AuthService from "../services/auth.service";
 import FilterPanel from "../components/FilterPanel";
@@ -17,7 +18,7 @@ const grafana_url = `${window.location.protocol}//${grafana_host}:${grafana_port
 
 const Dashboard: React.FC = () => {
 
-   const [isLoggedIn, setIsLoggedIn] = useState(false);
+   const [isLoggedIn, setIsLoggedIn] = useState(() => AuthService.isLoggedIn());
    const [selected_idx, setSelectedIdx] = useState(0);
    const [grafanaVar_int, setGrafanaVar] = useState(5);
    const [urlParams_str, setUrlParams] = useState('');
@@ -36,7 +37,7 @@ const Dashboard: React.FC = () => {
    );
 
    if (!isLoggedIn)
-      return <h2>Unauthorized</h2>;
+      return <Unauthorized />;
 
    const tabInfo_dictLst = [
       {

@@ -14,11 +14,37 @@ type MenuItem = {
    onClick?: () => void;
 };
 
+const getSessionExpiry = (): number | null => {
+   try {
+      const raw = localStorage.getItem("user");
+      if (!raw) return null;
+      const token = JSON.parse(raw)?.token;
+      if (!token) return null;
+      const exp = JSON.parse(atob(token.split('.')[1]))?.exp;
+      return exp ? exp * 1000 : null;
+   } catch {
+      return null;
+   }
+};
+
+const formatCountdown = (ms: number): string => {
+   if (ms <= 0) return "0s";
+   const totalSec = Math.floor(ms / 1000);
+   const h = Math.floor(totalSec / 3600);
+   const m = Math.floor((totalSec % 3600) / 60);
+   const s = totalSec % 60;
+   if (h > 0) return `${h}h ${String(m).padStart(2, '0')}m ${String(s).padStart(2, '0')}s`;
+   if (m > 0) return `${m}m ${String(s).padStart(2, '0')}s`;
+   return `${s}s`;
+};
+
 const NavbarMain: React.FC = () => {
    const [isLoggedIn, setIsLoggedIn] = useState(false);
    const [dashboards, setDashboards] = useState<MenuItem[]>([]);
    const [openMenu, setOpenMenu] = useState<string | null>(null);
    const [mobileOpen, setMobileOpen] = useState(false);
+   const [sessionCountdown, setSessionCountdown] = useState<string | null>(null);
+   const [timerTooltip, setTimerTooltip] = useState(false);
    const navigate = useNavigate();
    const location = useLocation();
    const currentUser = AuthService.getCurrentUser();
@@ -80,6 +106,40 @@ const NavbarMain: React.FC = () => {
          window.removeEventListener("dashboardRenamed", refreshDashboards);
       };
    }, []);
+
+   useEffect(() => {
+      if (!isLoggedIn) return;
+
+      const tick = () => {
+         const exp = getSessionExpiry();
+         if (!exp) {
+            window.location.href = "/login";
+            return;
+         }
+         const remaining = exp - Date.now();
+         if (remaining <= 0) {
+            localStorage.removeItem("user");
+            localStorage.removeItem("oncodir_token");
+            localStorage.removeItem("oncodir_token_ts");
+            window.location.href = "/login";
+         } else {
+            setSessionCountdown(formatCountdown(remaining));
+         }
+      };
+
+      tick();
+      const id = setInterval(tick, 1000);
+
+      const onVisible = () => {
+         if (document.visibilityState === 'visible') tick();
+      };
+      document.addEventListener('visibilitychange', onVisible);
+
+      return () => {
+         clearInterval(id);
+         document.removeEventListener('visibilitychange', onVisible);
+      };
+   }, [isLoggedIn]);
 
    const logout = () => {
       AuthService.logout();
@@ -301,6 +361,54 @@ const NavbarMain: React.FC = () => {
                            Logged in as: <strong>{AuthService.getCurrentUser()?.username}</strong>
                         </span>
                      </li>
+                     {sessionCountdown && (
+                        <li className="nav-item d-flex align-items-center me-2">
+                           <div
+                              style={{ position: 'relative', display: 'inline-flex' }}
+                              onMouseEnter={() => setTimerTooltip(true)}
+                              onMouseLeave={() => setTimerTooltip(false)}
+                           >
+                              <span style={{
+                                 fontSize: '12px', fontWeight: 700, fontVariantNumeric: 'tabular-nums',
+                                 color: sessionCountdown.endsWith('s') && !sessionCountdown.includes('m') ? '#dc2626' : 'var(--text-muted, #475569)',
+                                 background: sessionCountdown.endsWith('s') && !sessionCountdown.includes('m') ? '#fef2f2' : 'var(--muted, #f1f5f9)',
+                                 border: `1px solid ${sessionCountdown.endsWith('s') && !sessionCountdown.includes('m') ? '#fecaca' : 'var(--border, #e5e7eb)'}`,
+                                 borderRadius: '6px', padding: '3px 8px', letterSpacing: '0.04em',
+                                 transition: 'color 0.3s, background 0.3s',
+                                 cursor: 'default', userSelect: 'none',
+                                 display: 'inline-flex', alignItems: 'center', gap: '5px',
+                              }}>
+                                 <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24" aria-hidden="true">
+                                    <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+                                 </svg>
+                                 {sessionCountdown}
+                              </span>
+
+                              {timerTooltip && (
+                                 <div style={{
+                                    position: 'absolute', top: 'calc(100% + 10px)', right: 0,
+                                    background: '#1e293b', color: '#f8fafc',
+                                    fontSize: '12px', lineHeight: '1.5',
+                                    padding: '8px 12px', borderRadius: '8px',
+                                    whiteSpace: 'nowrap', pointerEvents: 'none',
+                                    boxShadow: '0 4px 12px rgba(0,0,0,0.25)',
+                                    zIndex: 9999,
+                                 }}>
+                                    <div style={{
+                                       position: 'absolute', bottom: '100%', right: '12px',
+                                       width: 0, height: 0,
+                                       borderLeft: '6px solid transparent',
+                                       borderRight: '6px solid transparent',
+                                       borderBottom: '6px solid #1e293b',
+                                    }} />
+                                    <div style={{ fontWeight: 700, marginBottom: '2px' }}>Session timer</div>
+                                    <div style={{ color: '#94a3b8' }}>You will be logged out automatically</div>
+                                    <div style={{ color: '#94a3b8' }}>when the session expires.</div>
+                                 </div>
+                              )}
+                           </div>
+                        </li>
+                     )}
                      <li className="nav-item dropdown">
                         <a
                            className="nav-link dropdown-toggle"

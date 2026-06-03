@@ -1,6 +1,12 @@
 import axios from "axios";
 import authHeader from "./auth-header";
 
+const clearSession = () => {
+   localStorage.removeItem("user");
+   localStorage.removeItem("oncodir_token");
+   localStorage.removeItem("oncodir_token_ts");
+};
+
 // Auto-logout on expired/invalid token
 axios.interceptors.response.use(
    (res) => res,
@@ -8,7 +14,7 @@ axios.interceptors.response.use(
       if (err.response?.status === 401 || err.response?.status === 403) {
          const isAuthCall = err.config?.url?.includes("/api/v1/auth/");
          if (!isAuthCall) {
-            localStorage.removeItem("user");
+            clearSession();
             window.location.href = "/login";
          }
       }

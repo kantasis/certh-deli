@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { Routes, Route, Link } from "react-router-dom";
+import React, { useEffect } from "react";
+import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
 import "./index.css";
@@ -30,6 +30,54 @@ import TwoFactorHeatmapViewer from "./components/TwoFactorExloration.tsx"
 import LargeScaleIntervention from "./components/LargeScaleInterventionLIP2.tsx"
 import AdminUsers from "./components/AdminUsers.tsx";
 
+const PUBLIC_PATHS = ['/login', '/register', '/', '/home'];
+
+const clearSession = () => {
+   localStorage.removeItem("user");
+   localStorage.removeItem("oncodir_token");
+   localStorage.removeItem("oncodir_token_ts");
+};
+
+const isSessionExpired = (): boolean => {
+   try {
+      const raw = localStorage.getItem("user");
+      if (!raw) return true;
+      const token = JSON.parse(raw)?.token;
+      if (!token) return true;
+      const exp = JSON.parse(atob(token.split('.')[1]))?.exp;
+      return exp ? Date.now() / 1000 > exp : true;
+   } catch {
+      return true;
+   }
+};
+
+const SessionGuard: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+   const navigate = useNavigate();
+   const location = useLocation();
+
+   const checkAndRedirect = () => {
+      if (PUBLIC_PATHS.includes(location.pathname)) return;
+      if (isSessionExpired()) {
+         clearSession();
+         navigate("/login");
+      }
+   };
+
+   useEffect(() => {
+      checkAndRedirect();
+   }, [location.pathname]);
+
+   useEffect(() => {
+      const onVisible = () => {
+         if (document.visibilityState === 'visible') checkAndRedirect();
+      };
+      document.addEventListener('visibilitychange', onVisible);
+      return () => document.removeEventListener('visibilitychange', onVisible);
+   }, [location.pathname]);
+
+   return <>{children}</>;
+};
+
 const App: React.FC = () => {
    return (<>
 
@@ -39,6 +87,7 @@ const App: React.FC = () => {
          </div>
 
          <div className="container-fluid gk_content">
+            <SessionGuard>
             <Routes>
                <Route path="/" element={<Home />} />
                <Route path="/home" element={<Home />} />
@@ -66,11 +115,17 @@ const App: React.FC = () => {
                <Route path="/my-dashboards" element={<MyDashboards />} />
                <Route path="/admin/users" element={<AdminUsers />} />
             </Routes>
+            </SessionGuard>
          </div>
 
-         <div className="gk_footer">
-            <img src='EU-Funding-Logo.png' />
-         </div>
+         <footer className="gk_footer">
+            <div className="gk_footer-inner">
+               <img src="EU-Funding-Logo.png" alt="Co-funded by the European Union" className="gk_footer-logo" />
+               <p className="gk_footer-copy">
+                  © {new Date().getFullYear()} ONCODIR · All rights reserved
+               </p>
+            </div>
+         </footer>
       </div>
    </>);
 };

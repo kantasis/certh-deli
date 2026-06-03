@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import Unauthorized from './Unauthorized';
 import * as AuthService from "../services/auth.service.tsx";
 import { Button, Dropdown } from 'react-bootstrap';
 import { Accordion } from 'react-bootstrap';
@@ -22,7 +23,7 @@ const grafana_url = `${window.location.protocol}//${grafana_host}:${grafana_port
 const AnalyticsPanel: React.FC = () => {
    const savedParamsRef = useRef<{ analysis: number, riskFactor: string | null, yearLag: number } | null>(null);
 
-   const [isLoggedIn, setIsLoggedIn] = useState(false);
+   const [isLoggedIn, setIsLoggedIn] = useState(() => AuthService.isLoggedIn());
    const [selectedAnalysis_int, set_selectedAnalysis] = useState(0);
    const [selectedRiskFactor_int, set_selectedRiskFactors] = useState(0);
    const [selectedYearLag_int, set_selectedYearLag] = useState(0);
@@ -215,7 +216,7 @@ const AnalyticsPanel: React.FC = () => {
       setShowModal(true);
    };
    if (!isLoggedIn)
-      return <h2>Unauthorized</h2>;
+      return <Unauthorized />;
 
    const style = {
       image: {

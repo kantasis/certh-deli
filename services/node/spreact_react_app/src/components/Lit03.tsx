@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import Unauthorized from './Unauthorized';
 import NewDash from "./CRCmortalityPanel";
 import ScreeningDataPanel from "./ScreeningRiskFactorDataPanel";
 import SpanishRiskFactors from "./SpanishRiskFactors";
@@ -12,7 +13,7 @@ const panelLabels: Record<string, string> = {
 
 const LIT03: React.FC = () => {
     const [selectedPanel, setSelectedPanel] = useState<string | null>(null);
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [isLoggedIn, setIsLoggedIn] = useState(() => AuthService.isLoggedIn());
 
     useEffect(() => {
         setIsLoggedIn(AuthService.isLoggedIn());
@@ -27,7 +28,7 @@ const LIT03: React.FC = () => {
         }
     }, [selectedPanel]);
 
-    if (!isLoggedIn) return <h2 className="text-center mt-5">Unauthorized</h2>;
+    if (!isLoggedIn) return <Unauthorized />;
 
     const renderPanel = () => {
         switch (selectedPanel) {

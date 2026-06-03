@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import Unauthorized from './Unauthorized';
 import * as AuthService from "../services/auth.service.tsx";
 import { Accordion } from "react-bootstrap";
 import SpainRegionFilter from "./SpainRegionsFilter.tsx";
@@ -24,7 +25,7 @@ const sex_dictLst = [
 ];
 
 const CRCmortalityPanel: React.FC = () => {
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [isLoggedIn, setIsLoggedIn] = useState(() => AuthService.isLoggedIn());
     const [iframeLoading, setIframeLoading] = useState(true);
     const [selectedRegions_lst, set_selectedRegions] = useState<string[]>([]);
     const [minYear_int, set_minYear] = useState(0);
@@ -75,7 +76,7 @@ const CRCmortalityPanel: React.FC = () => {
     const isSexSelected = selectedSex_int !== null;
     const isAllFiltersSelected = isRegionSelected && isYearSelected && isSexSelected;
 
-    if (!isLoggedIn) return <h2 className="text-center mt-5">Unauthorized</h2>;
+    if (!isLoggedIn) return <Unauthorized />;
 
     return (
         <>
