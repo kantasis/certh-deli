@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import authHeader from '../services/auth-header';
-import { getUserRole } from '../services/auth.service';
+import { getCurrentUser } from '../services/auth.service';
 
 const isProduction = import.meta.env.MODE === 'production';
 const host = import.meta.env.VITE_AUTHENTICATION_HOST;
@@ -34,8 +34,9 @@ const Comments: React.FC = () => {
     const [comments, setComments] = useState<Comment[]>([]);
     const [loading, setLoading] = useState(true);
 
-    const userRole = getUserRole();
-    if (userRole !== 'ROLE_ADMIN' && userRole !== 'ROLE_MODERATOR') {
+    const currentUser = getCurrentUser();
+    const roles = currentUser?.roles ?? [];
+    if (!roles.includes('ROLE_ADMIN') && !roles.includes('ROLE_MODERATOR')) {
         return <h2 className="text-center mt-5">Unauthorized</h2>;
     }
 
