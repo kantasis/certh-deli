@@ -71,7 +71,7 @@ const accordionContent_dictLst = [
 ];
 
 const Glossary: React.FC = () => {
-   const [isLoggedIn, setIsLoggedIn] = useState(false);
+   const [isLoggedIn, setIsLoggedIn] = useState(() => AuthService.isLoggedIn());
 
    useEffect(
       () => {

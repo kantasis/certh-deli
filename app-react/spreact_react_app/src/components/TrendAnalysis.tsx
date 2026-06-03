@@ -23,7 +23,7 @@ const EuropeMap = () => {
     // const [loadingData, setLoadingData] = useState(false);
     // const [error, setError] = useState<string | null>(null);
 
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [isLoggedIn, setIsLoggedIn] = useState(() => AuthService.isLoggedIn());
     const chartRef = useRef<ReactECharts>(null);          // NEW
     const [chartIframeUrl, setChartIframeUrl] = useState("");
     const [token, setToken] = useState(null);

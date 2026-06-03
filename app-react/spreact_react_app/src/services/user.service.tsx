@@ -30,3 +30,5 @@ export const updateUserRoles = (id: string, roles: string[]) =>
 export const deleteUser = (id: string) => axios.delete(`${USERS_API}/${id}`, { headers: authHeader() });
 export const updateUserNames = (id: string, data: { name: string; surname: string }) =>
    axios.put(`${USERS_API}/${id}/name`, data, { headers: authHeader() });
+export const updateUserPassword = (id: string, newPassword: string) =>
+   axios.put(`${USERS_API}/${id}/password`, { newPassword }, { headers: authHeader() });

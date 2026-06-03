@@ -11,7 +11,7 @@ const screeningMetrics = [
 ];
 
 const ScreeningDataPanel: React.FC = () => {
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [isLoggedIn, setIsLoggedIn] = useState(() => AuthService.isLoggedIn());
     const [iframeLoading, setIframeLoading] = useState(true);
     const [selectedRiskFactor, setSelectedRiskFactor] = useState("");
 

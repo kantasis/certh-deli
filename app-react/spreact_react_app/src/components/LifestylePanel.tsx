@@ -16,7 +16,7 @@ const panel_id = 3;
 const grafana_url = `${window.location.protocol}//${grafana_host}:${grafana_port}/${grafana_path}/${dashboard_name}?panelId=${panel_id}&orgId=1&theme=light`;
 
 const LifestylePanel: React.FC = () => {
-   const [isLoggedIn, setIsLoggedIn] = useState(false);
+   const [isLoggedIn, setIsLoggedIn] = useState(() => AuthService.isLoggedIn());
    const [iframeLoading, setIframeLoading] = useState(true);
    const [selectedCountries_lst, set_selectedCountries] = useState(["Greece", "Romania", "Lithuania"]);
    const [selectedFactor_str, set_selectedFactor] = useState('');

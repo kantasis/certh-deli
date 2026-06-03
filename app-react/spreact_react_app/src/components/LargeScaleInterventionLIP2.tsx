@@ -108,7 +108,7 @@ const domainMeta: Record<string, { bg: string; color: string }> = {
 const LargeScaleIntervention = () => {
     const [selectedIntervention, setSelectedIntervention] = useState("");
     const [selectedRiskFactor, setSelectedRiskFactor] = useState("");
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [isLoggedIn, setIsLoggedIn] = useState(() => AuthService.isLoggedIn());
 
     useEffect(() => {
         setIsLoggedIn(AuthService.isLoggedIn());

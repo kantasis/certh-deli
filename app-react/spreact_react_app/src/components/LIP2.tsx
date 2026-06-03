@@ -335,7 +335,7 @@ const AggregationAnalysis = () => {
     const location = useLocation();
     const isPopulationGroups = location.pathname.includes("lip2-population-groups");
     const [showGraph, setShowGraph] = useState(false);
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [isLoggedIn, setIsLoggedIn] = useState(() => AuthService.isLoggedIn());
 
     useEffect(() => {
         setIsLoggedIn(AuthService.isLoggedIn());

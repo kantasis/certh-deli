@@ -18,7 +18,7 @@ const grafana_url = `${window.location.protocol}//${grafana_host}:${grafana_port
 
 const Dashboard: React.FC = () => {
 
-   const [isLoggedIn, setIsLoggedIn] = useState(false);
+   const [isLoggedIn, setIsLoggedIn] = useState(() => AuthService.isLoggedIn());
    const [selected_idx, setSelectedIdx] = useState(0);
    const [grafanaVar_int, setGrafanaVar] = useState(5);
    const [urlParams_str, setUrlParams] = useState('');

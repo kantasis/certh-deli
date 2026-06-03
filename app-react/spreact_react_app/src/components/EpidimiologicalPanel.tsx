@@ -79,7 +79,7 @@ const EpidimiologicalPanel: React.FC = () => {
    const location = useLocation();
    const savedIframeUrl = location.state?.iframeUrl;
 
-   const [isLoggedIn, setIsLoggedIn] = useState(false);
+   const [isLoggedIn, setIsLoggedIn] = useState(() => AuthService.isLoggedIn());
    const [iframeLoading, setIframeLoading] = useState(true);
    const [selectedCountries_lst, set_selectedCountries] = useState(["Belgium", "Greece", "Italy"]);
    const [minYear_int, set_minYear] = useState(0);

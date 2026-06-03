@@ -23,7 +23,7 @@ const grafana_url = `${window.location.protocol}//${grafana_host}:${grafana_port
 const AnalyticsPanel: React.FC = () => {
    const savedParamsRef = useRef<{ analysis: number, riskFactor: string | null, yearLag: number } | null>(null);
 
-   const [isLoggedIn, setIsLoggedIn] = useState(false);
+   const [isLoggedIn, setIsLoggedIn] = useState(() => AuthService.isLoggedIn());
    const [selectedAnalysis_int, set_selectedAnalysis] = useState(0);
    const [selectedRiskFactor_int, set_selectedRiskFactors] = useState(0);
    const [selectedYearLag_int, set_selectedYearLag] = useState(0);

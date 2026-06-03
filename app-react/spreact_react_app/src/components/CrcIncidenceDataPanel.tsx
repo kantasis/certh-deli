@@ -25,7 +25,7 @@ const accordionItems = [
 ];
 
 const CrcIncidenceDataPanel: React.FC = () => {
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [isLoggedIn, setIsLoggedIn] = useState(() => AuthService.isLoggedIn());
     const [iframeLoading, setIframeLoading] = useState(true);
 
     useEffect(() => {

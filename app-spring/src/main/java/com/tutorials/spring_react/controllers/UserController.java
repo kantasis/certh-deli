@@ -3,10 +3,10 @@ package com.tutorials.spring_react.controllers;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import com.tutorials.spring_react.models.ERole;
@@ -14,6 +14,7 @@ import com.tutorials.spring_react.models.RoleModel;
 import com.tutorials.spring_react.models.UserModel;
 import com.tutorials.spring_react.repositories.RoleRepository;
 import com.tutorials.spring_react.repositories.UserRepository;
+import com.tutorials.spring_react.security.payloads.AdminPasswordResetRequest;
 import com.tutorials.spring_react.security.payloads.MessageResponse;
 import com.tutorials.spring_react.security.payloads.NameUpdateRequest;
 
@@ -26,6 +27,9 @@ public class UserController {
 
     @Autowired
     private RoleRepository roleRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     // 🔹 Get all users (Moderator or Admin)
     @GetMapping
@@ -61,6 +65,20 @@ public class UserController {
         userRepository.save(user);
 
         return new MessageResponse("User name and surname updated successfully");
+    }
+
+    // 🔹 Reset a user's password (admin only — no old password required)
+    @PutMapping("/{id}/password")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
+    public MessageResponse resetUserPassword(@PathVariable String id,
+                                             @RequestBody AdminPasswordResetRequest request) {
+        UserModel user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Error: User not found with id " + id));
+
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        userRepository.save(user);
+
+        return new MessageResponse("Password updated successfully");
     }
 
     // 🔹 Update user roles

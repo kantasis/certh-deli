@@ -13,7 +13,7 @@ const panelLabels: Record<string, string> = {
 
 const LIT03: React.FC = () => {
     const [selectedPanel, setSelectedPanel] = useState<string | null>(null);
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [isLoggedIn, setIsLoggedIn] = useState(() => AuthService.isLoggedIn());
 
     useEffect(() => {
         setIsLoggedIn(AuthService.isLoggedIn());

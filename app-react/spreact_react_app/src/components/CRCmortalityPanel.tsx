@@ -25,7 +25,7 @@ const sex_dictLst = [
 ];
 
 const CRCmortalityPanel: React.FC = () => {
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [isLoggedIn, setIsLoggedIn] = useState(() => AuthService.isLoggedIn());
     const [iframeLoading, setIframeLoading] = useState(true);
     const [selectedRegions_lst, set_selectedRegions] = useState<string[]>([]);
     const [minYear_int, set_minYear] = useState(0);

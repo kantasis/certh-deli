@@ -19,7 +19,7 @@ const grafana_url = `${grafanaHost_url}/${grafana_path}/${dashboard_name}?panelI
 
 const PolicyPanel: React.FC = () => {
 
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [isLoggedIn, setIsLoggedIn] = useState(() => AuthService.isLoggedIn());
     const [iframeLoading, setIframeLoading] = useState(true);
     const [selectedPolicy_str, set_selectedPolicy] = useState('Alcohol Consumption');
     const [country_name, setCountryName] = useState('');

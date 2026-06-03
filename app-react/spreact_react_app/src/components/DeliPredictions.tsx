@@ -196,7 +196,7 @@ const DeliPredictions = () => {
 
     // ── shared ────────────────────────────────
     const [type, setType] = useState("");
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [isLoggedIn, setIsLoggedIn] = useState(() => AuthService.isLoggedIn());
     const [token, setToken] = useState(null);
 
     // ── regular-chart state ───────────────────

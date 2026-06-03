@@ -16,7 +16,7 @@ const panel_id = 2;
 const grafana_url = `${window.location.protocol}//${grafana_host}:${grafana_port}/${grafana_path}/${dashboard_name}?panelId=${panel_id}&orgId=1&theme=light`;
 
 const NutritionPanel: React.FC = () => {
-   const [isLoggedIn, setIsLoggedIn] = useState(false);
+   const [isLoggedIn, setIsLoggedIn] = useState(() => AuthService.isLoggedIn());
    const [iframeLoading, setIframeLoading] = useState(true);
    const [selectedCountries_lst, set_selectedCountries] = useState<string[]>([]);
    const [selectedFactor_str, set_selectedFactor] = useState('');

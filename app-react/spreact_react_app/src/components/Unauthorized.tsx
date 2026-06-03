@@ -3,6 +3,12 @@ import { useNavigate } from "react-router-dom";
 
 const Unauthorized: React.FC = () => {
     const navigate = useNavigate();
+    const isLoggedIn = !!localStorage.getItem("user");
+
+    const subtitle = isLoggedIn
+        ? "Your account does not have the required permissions to access this page. Please contact an administrator if you believe this is an error."
+        : "You need to be signed in to view this page.";
+
     return (
         <div style={{
             display: 'flex', flexDirection: 'column', alignItems: 'center',
@@ -30,23 +36,25 @@ const Unauthorized: React.FC = () => {
             </h2>
             <p style={{
                 fontSize: '15px', color: 'var(--text-muted, #475569)',
-                margin: '0 0 28px', maxWidth: '360px', lineHeight: 1.6,
+                margin: '0 0 28px', maxWidth: '400px', lineHeight: 1.6,
             }}>
-                You need to be signed in to view this page.
+                {subtitle}
             </p>
-            <button
-                onClick={() => navigate('/login')}
-                style={{
-                    padding: '10px 24px', borderRadius: '8px', border: 'none',
-                    background: 'var(--brand-dark, #185569)', color: '#fff',
-                    fontSize: '14px', fontWeight: 700, cursor: 'pointer',
-                    transition: 'opacity 0.15s',
-                }}
-                onMouseEnter={e => (e.currentTarget.style.opacity = '0.85')}
-                onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
-            >
-                Go to Login
-            </button>
+            {!isLoggedIn && (
+                <button
+                    onClick={() => navigate('/login')}
+                    style={{
+                        padding: '10px 24px', borderRadius: '8px', border: 'none',
+                        background: 'var(--brand-dark, #185569)', color: '#fff',
+                        fontSize: '14px', fontWeight: 700, cursor: 'pointer',
+                        transition: 'opacity 0.15s',
+                    }}
+                    onMouseEnter={e => (e.currentTarget.style.opacity = '0.85')}
+                    onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
+                >
+                    Go to Login
+                </button>
+            )}
         </div>
     );
 };

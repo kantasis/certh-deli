@@ -22,7 +22,7 @@ const TwoFactorHeatmapViewer = () => {
   const [json, setJson] = useState(null);
   const [country, setCountry] = useState("Austria");
   const [pairId, setPairId] = useState(null);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(() => AuthService.isLoggedIn());
   const [loading, setLoading] = useState(true); // Loading state
   const [chartOptions, setChartOptions] = useState({});
   const [chartImageUrl, setChartImageUrl] = useState<string>("");
