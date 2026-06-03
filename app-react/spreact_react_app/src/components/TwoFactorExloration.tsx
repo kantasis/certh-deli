@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState, useRef } from "react";
+import Unauthorized from './Unauthorized';
 import * as AuthService from "../services/auth.service.tsx";
 import ReactECharts from "echarts-for-react";
 import { Accordion, Modal } from 'react-bootstrap';
@@ -394,7 +395,7 @@ const TwoFactorHeatmapViewer = () => {
   const capitalizeWords = (str) =>
     str.replace(/\b\w/g, (char) => char.toUpperCase());
 
-  if (!isLoggedIn) return <h2 className="text-center mt-5">Unauthorized</h2>;
+  if (!isLoggedIn) return <Unauthorized />;
 
   if (loading) {
     return (

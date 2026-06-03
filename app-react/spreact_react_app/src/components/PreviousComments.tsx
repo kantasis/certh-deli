@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import Unauthorized from './Unauthorized';
 import axios from 'axios';
 import authHeader from '../services/auth-header';
 import { getCurrentUser } from '../services/auth.service';
@@ -37,7 +38,7 @@ const Comments: React.FC = () => {
     const currentUser = getCurrentUser();
     const roles = currentUser?.roles ?? [];
     if (!roles.includes('ROLE_ADMIN') && !roles.includes('ROLE_MODERATOR')) {
-        return <h2 className="text-center mt-5">Unauthorized</h2>;
+        return <Unauthorized />;
     }
 
     useEffect(() => {

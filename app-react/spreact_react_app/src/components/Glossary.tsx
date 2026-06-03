@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import Unauthorized from './Unauthorized';
 import * as AuthService from "../services/auth.service.tsx";
 import { Accordion } from 'react-bootstrap';
 
@@ -80,7 +81,7 @@ const Glossary: React.FC = () => {
    );
 
    if (!isLoggedIn)
-      return <h2>Unauthorized</h2>;
+      return <Unauthorized />;
 
    return (<>
       <Accordion defaultActiveKey="-1" className="app-accordion">

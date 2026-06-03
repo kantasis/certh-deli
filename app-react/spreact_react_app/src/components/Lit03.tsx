@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import Unauthorized from './Unauthorized';
 import NewDash from "./CRCmortalityPanel";
 import ScreeningDataPanel from "./ScreeningRiskFactorDataPanel";
 import SpanishRiskFactors from "./SpanishRiskFactors";
@@ -27,7 +28,7 @@ const LIT03: React.FC = () => {
         }
     }, [selectedPanel]);
 
-    if (!isLoggedIn) return <h2 className="text-center mt-5">Unauthorized</h2>;
+    if (!isLoggedIn) return <Unauthorized />;
 
     const renderPanel = () => {
         switch (selectedPanel) {

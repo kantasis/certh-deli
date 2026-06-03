@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import Unauthorized from './Unauthorized';
 import * as AuthService from "../services/auth.service.tsx";
 import { Accordion } from 'react-bootstrap';
 import Comments from "./Comments.tsx";
@@ -31,7 +32,7 @@ const CrcIncidenceDataPanel: React.FC = () => {
         setIsLoggedIn(AuthService.isLoggedIn());
     }, []);
 
-    if (!isLoggedIn) return <h2 className="text-center mt-5">Unauthorized</h2>;
+    if (!isLoggedIn) return <Unauthorized />;
 
     return (
         <>

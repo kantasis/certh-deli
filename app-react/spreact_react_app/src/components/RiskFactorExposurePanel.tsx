@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import Unauthorized from './Unauthorized';
 import * as AuthService from "../services/auth.service.tsx";
 import { useLocation } from "react-router-dom";
 import CountryFilter from "./CountryFilter.tsx";
@@ -109,7 +110,7 @@ const RiskFactorExposurePanel: React.FC = () => {
         set_selectedAnalysis([0, 1, 2, 3, 4, 5].includes(rfVal) ? 1 : 2);
     }, [selectedRiskFactorExposure_int]);
 
-    if (!isLoggedIn) return <h2 className="text-center mt-5">Unauthorized</h2>;
+    if (!isLoggedIn) return <Unauthorized />;
 
     const buildIframeUrl = (panelId: number, isDiet: boolean = false) => {
         const countryParams = selectedCountries_lst.map(c => `var-country_filter=${encodeURIComponent(c)}`).join("&");

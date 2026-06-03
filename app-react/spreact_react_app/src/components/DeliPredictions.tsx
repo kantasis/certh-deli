@@ -1,4 +1,5 @@
 import React, { useRef, useEffect, useState, useCallback, useMemo } from "react";
+import Unauthorized from './Unauthorized';
 import ReactECharts from "echarts-for-react";
 import axios from "axios";
 import * as AuthService from "../services/auth.service.tsx";
@@ -756,7 +757,7 @@ const DeliPredictions = () => {
 
     const activeAccordionItems = isTwoFactor ? twoFactorAccordionItems : regularAccordionItems;
 
-    if (!isLoggedIn) return <h2 className="text-center mt-5">Unauthorized</h2>;
+    if (!isLoggedIn) return <Unauthorized />;
 
     return (
         <>

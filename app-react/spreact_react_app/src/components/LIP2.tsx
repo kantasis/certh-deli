@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
+import Unauthorized from './Unauthorized';
 import axios from "axios";
 import ReactECharts from "echarts-for-react";
 import { Accordion, Modal } from 'react-bootstrap';
@@ -614,7 +615,7 @@ const AggregationAnalysis = () => {
         URL.revokeObjectURL(url);
     };
 
-    if (!isLoggedIn) return <h2 className="text-center mt-5">Unauthorized</h2>;
+    if (!isLoggedIn) return <Unauthorized />;
 
     const activeAccordionItems = isPopulationGroups ? accordionContentPopulation_dictLst : accordionContentAggregation_dictLst;
 

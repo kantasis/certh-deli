@@ -1,4 +1,5 @@
 import React, { useRef, useEffect, useState } from "react";
+import Unauthorized from './Unauthorized';
 import * as AuthService from "../services/auth.service.tsx";
 import ReactECharts from "echarts-for-react";
 import * as echarts from "echarts";
@@ -1574,7 +1575,7 @@ const EuropeMap = () => {
 
 
 
-    if (!isLoggedIn) return <h2 className="text-center mt-5">Unauthorized</h2>;
+    if (!isLoggedIn) return <Unauthorized />;
     return (
         <>
             <style>{`

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import Unauthorized from './Unauthorized';
 import { getSavedDashboards, deleteDashboard, deleteDashboardCollection } from "../services/dashboard.service";
 import * as AuthService from "../services/auth.service";
 import { Modal, Tooltip, OverlayTrigger } from "react-bootstrap";
@@ -242,7 +243,7 @@ const SavedDashboards: React.FC = () => {
         }
     };
 
-    if (!isLoggedIn) return <h2 className="text-center mt-5">Unauthorized</h2>;
+    if (!isLoggedIn) return <Unauthorized />;
 
     const selectedCollection = dashboardCollections.find(c => c.id === selectedDashboardId);
     const totalGraphs = dashboards.length;

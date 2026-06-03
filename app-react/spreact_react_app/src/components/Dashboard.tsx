@@ -1,4 +1,5 @@
 import { Routes, Route, Link } from "react-router-dom";
+import Unauthorized from './Unauthorized';
 import React, { useState, useEffect } from "react";
 import * as AuthService from "../services/auth.service";
 import FilterPanel from "../components/FilterPanel";
@@ -36,7 +37,7 @@ const Dashboard: React.FC = () => {
    );
 
    if (!isLoggedIn)
-      return <h2>Unauthorized</h2>;
+      return <Unauthorized />;
 
    const tabInfo_dictLst = [
       {

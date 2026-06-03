@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import Unauthorized from './Unauthorized';
 import * as AuthService from "../services/auth.service.tsx";
 import { Button, Dropdown } from 'react-bootstrap';
 import { Accordion } from 'react-bootstrap';
@@ -215,7 +216,7 @@ const AnalyticsPanel: React.FC = () => {
       setShowModal(true);
    };
    if (!isLoggedIn)
-      return <h2>Unauthorized</h2>;
+      return <Unauthorized />;
 
    const style = {
       image: {

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import Unauthorized from './Unauthorized';
 import * as AuthService from "../services/auth.service.tsx";
 import CountryFilter from "./CountryFilter.tsx";
 import YearFilter from "./YearFilter.tsx";
@@ -35,7 +36,7 @@ const NutritionPanel: React.FC = () => {
 
    const iFrame_url = `${grafana_url}&${getUriParams()}`;
 
-   if (!isLoggedIn) return <h2 className="text-center mt-5">Unauthorized</h2>;
+   if (!isLoggedIn) return <Unauthorized />;
 
    return (
       <>

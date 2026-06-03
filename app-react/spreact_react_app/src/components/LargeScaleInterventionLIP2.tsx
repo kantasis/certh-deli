@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import Unauthorized from './Unauthorized';
 import { Accordion } from 'react-bootstrap';
 import Comments from "./Comments.tsx";
 import * as AuthService from "../services/auth.service.tsx";
@@ -113,7 +114,7 @@ const LargeScaleIntervention = () => {
         setIsLoggedIn(AuthService.isLoggedIn());
     }, []);
 
-    if (!isLoggedIn) return <h2 className="text-center mt-5">Unauthorized</h2>;
+    if (!isLoggedIn) return <Unauthorized />;
 
     const availableRiskFactors: string[] = selectedIntervention
         ? [...new Set(
