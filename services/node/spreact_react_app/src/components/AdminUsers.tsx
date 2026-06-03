@@ -3,6 +3,33 @@ import Unauthorized from './Unauthorized';
 import * as AuthService from "../services/auth.service";
 import * as UserService from "../services/user.service";
 
+const CHARSET_UPPER   = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+const CHARSET_LOWER   = 'abcdefghijklmnopqrstuvwxyz';
+const CHARSET_DIGITS  = '0123456789';
+const CHARSET_SYMBOLS = '!@#$%^&*()-_=+[]{}|;:,.<>?';
+const CHARSET_ALL     = CHARSET_UPPER + CHARSET_LOWER + CHARSET_DIGITS + CHARSET_SYMBOLS;
+
+const generatePassword = (): string => {
+    const pick = (s: string) => s[Math.floor(Math.random() * s.length)];
+    const base = [pick(CHARSET_UPPER), pick(CHARSET_LOWER), pick(CHARSET_DIGITS), pick(CHARSET_SYMBOLS)];
+    for (let i = 0; i < 8; i++) base.push(pick(CHARSET_ALL));
+    return base.sort(() => Math.random() - 0.5).join('');
+};
+
+const passwordStrength = (pw: string): { score: number; label: string; color: string } => {
+    if (!pw) return { score: 0, label: '', color: '#e5e7eb' };
+    let score = 0;
+    if (pw.length >= 8)  score++;
+    if (pw.length >= 12) score++;
+    if (/[A-Z]/.test(pw)) score++;
+    if (/[0-9]/.test(pw)) score++;
+    if (/[^A-Za-z0-9]/.test(pw)) score++;
+    if (score <= 1) return { score, label: 'Weak',   color: '#dc2626' };
+    if (score <= 3) return { score, label: 'Fair',   color: '#f59e0b' };
+    if (score === 4) return { score, label: 'Good',   color: '#16a34a' };
+    return             { score, label: 'Strong', color: '#0e7490' };
+};
+
 interface User {
     id: string;
     name: string;
@@ -33,6 +60,9 @@ const AdminUsers: React.FC = () => {
     const [editRolesUser, setEditRolesUser] = useState<User | null>(null);
     const [editRoles, setEditRoles] = useState<string[]>([]);
     const [deleteUser, setDeleteUser] = useState<User | null>(null);
+    const [pwUser, setPwUser] = useState<User | null>(null);
+    const [pwValue, setPwValue] = useState('');
+    const [pwVisible, setPwVisible] = useState(false);
     const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
 
     const currentUser = AuthService.getCurrentUser();
@@ -92,6 +122,19 @@ const AdminUsers: React.FC = () => {
             await refreshUsers();
         } catch {
             showToast("Failed to update roles", "error");
+        }
+    };
+
+    const handlePasswordReset = async () => {
+        if (!pwUser || !pwValue.trim()) return;
+        try {
+            await UserService.updateUserPassword(pwUser.id, pwValue);
+            showToast("Password updated successfully", "success");
+            setPwUser(null);
+            setPwValue('');
+            setPwVisible(false);
+        } catch {
+            showToast("Failed to update password", "error");
         }
     };
 
@@ -179,6 +222,26 @@ const AdminUsers: React.FC = () => {
                 .au-toast-error { background: #fef2f2; border: 1px solid #fecaca; color: #dc2626; }
                 @keyframes au-slide-down { from { opacity: 0; transform: translateX(-50%) translateY(-8px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
 
+                /* Key (password) button */
+                .au-btn-key { background: #fff; border-color: #d1fae5; color: #059669; }
+                .au-btn-key:hover { background: #ecfdf5; border-color: #059669; }
+
+                /* Password field wrapper */
+                .au-pw-wrap { position: relative; display: flex; align-items: center; }
+                .au-pw-wrap input { padding-right: 40px; }
+                .au-pw-toggle { position: absolute; right: 10px; background: none; border: none; cursor: pointer; color: var(--text-muted, #475569); padding: 0; display: flex; align-items: center; }
+                .au-pw-toggle:hover { color: var(--text, #0f172a); }
+
+                /* Generate button */
+                .au-btn-generate { display: inline-flex; align-items: center; gap: 5px; padding: 6px 12px; border-radius: 7px; font-size: 13px; font-weight: 600; cursor: pointer; border: 1.5px solid var(--border, #e5e7eb); background: #fff; color: var(--text, #0f172a); transition: background 0.15s; margin-top: 8px; }
+                .au-btn-generate:hover { background: #f0f5f8; border-color: var(--brand, #1f6580); color: var(--brand-dark, #185569); }
+
+                /* Strength bar */
+                .au-strength { margin-top: 10px; }
+                .au-strength-bar { height: 5px; border-radius: 3px; background: #e5e7eb; overflow: hidden; }
+                .au-strength-fill { height: 100%; border-radius: 3px; transition: width 0.25s, background 0.25s; }
+                .au-strength-label { font-size: 12px; font-weight: 600; margin-top: 4px; }
+
                 /* Empty state */
                 .au-empty { text-align: center; padding: 48px 24px; color: var(--text-muted, #475569); font-size: 15px; }
 
@@ -264,6 +327,18 @@ const AdminUsers: React.FC = () => {
                                                         <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
                                                     </svg>
                                                     Edit Roles
+                                                </button>
+                                                <button
+                                                    className="au-btn au-btn-key"
+                                                    onClick={() => { setPwUser(u); setPwValue(''); setPwVisible(false); }}
+                                                    aria-label={`Reset password for ${u.username}`}
+                                                >
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24" aria-hidden="true">
+                                                        <circle cx="7.5" cy="15.5" r="5.5"/>
+                                                        <path d="M21 2l-9.6 9.6"/>
+                                                        <path d="M15.5 7.5L17 6l3 3-1.5 1.5"/>
+                                                    </svg>
+                                                    Password
                                                 </button>
                                                 <button
                                                     className="au-btn au-btn-delete"
@@ -385,6 +460,74 @@ const AdminUsers: React.FC = () => {
                     </div>
                 </div>
             )}
+
+            {/* Reset Password Modal */}
+            {pwUser && (() => {
+                const str = passwordStrength(pwValue);
+                const barWidth = str.score ? `${(str.score / 5) * 100}%` : '0%';
+                return (
+                    <div className="au-overlay" onClick={() => setPwUser(null)} role="dialog" aria-modal="true" aria-labelledby="au-pw-title">
+                        <div className="au-modal" onClick={e => e.stopPropagation()}>
+                            <div className="au-modal-header">
+                                <h2 id="au-pw-title" className="au-modal-title">Reset Password — {pwUser.username}</h2>
+                                <button className="au-modal-close" onClick={() => setPwUser(null)} aria-label="Close dialog"><IconClose /></button>
+                            </div>
+                            <div className="au-modal-body">
+                                <div className="au-field">
+                                    <label className="au-field-label" htmlFor="au-pw-input">New Password</label>
+                                    <div className="au-pw-wrap">
+                                        <input
+                                            id="au-pw-input"
+                                            className="form-control"
+                                            type={pwVisible ? 'text' : 'password'}
+                                            value={pwValue}
+                                            onChange={e => setPwValue(e.target.value)}
+                                            autoComplete="new-password"
+                                            placeholder="Enter new password"
+                                        />
+                                        <button className="au-pw-toggle" type="button" onClick={() => setPwVisible(v => !v)} aria-label={pwVisible ? 'Hide password' : 'Show password'}>
+                                            {pwVisible ? (
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24" aria-hidden="true">
+                                                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+                                                    <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+                                                    <line x1="1" y1="1" x2="23" y2="23"/>
+                                                </svg>
+                                            ) : (
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24" aria-hidden="true">
+                                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                                    <circle cx="12" cy="12" r="3"/>
+                                                </svg>
+                                            )}
+                                        </button>
+                                    </div>
+                                    {pwValue && (
+                                        <div className="au-strength">
+                                            <div className="au-strength-bar">
+                                                <div className="au-strength-fill" style={{ width: barWidth, background: str.color }} />
+                                            </div>
+                                            <div className="au-strength-label" style={{ color: str.color }}>{str.label}</div>
+                                        </div>
+                                    )}
+                                </div>
+                                <button
+                                    className="au-btn-generate"
+                                    type="button"
+                                    onClick={() => { setPwValue(generatePassword()); setPwVisible(true); }}
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24" aria-hidden="true">
+                                        <circle cx="7.5" cy="15.5" r="5.5"/><path d="M21 2l-9.6 9.6"/><path d="M15.5 7.5L17 6l3 3-1.5 1.5"/>
+                                    </svg>
+                                    Generate password
+                                </button>
+                            </div>
+                            <div className="au-modal-footer">
+                                <button className="au-btn-cancel" onClick={() => setPwUser(null)}>Cancel</button>
+                                <button className="au-btn-apply" onClick={handlePasswordReset} disabled={!pwValue.trim()}>Apply</button>
+                            </div>
+                        </div>
+                    </div>
+                );
+            })()}
 
             {/* Toast notification */}
             {toast && (
