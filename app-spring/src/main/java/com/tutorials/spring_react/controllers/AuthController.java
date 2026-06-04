@@ -28,9 +28,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.tutorials.spring_react.models.AuditLogModel;
 import com.tutorials.spring_react.models.ERole;
 import com.tutorials.spring_react.models.RoleModel;
 import com.tutorials.spring_react.models.UserModel;
+import com.tutorials.spring_react.repositories.AuditLogRepository;
 import com.tutorials.spring_react.repositories.RoleRepository;
 import com.tutorials.spring_react.repositories.UserRepository;
 import com.tutorials.spring_react.security.JwtUtils;
@@ -72,6 +74,9 @@ public class AuthController {
    @Autowired
    LoginRateLimiter loginRateLimiter;
 
+   @Autowired
+   AuditLogRepository auditLogRepository;
+
    @PostMapping("/login")
    public ResponseEntity<?> authenticateUser(
       HttpServletRequest request,
@@ -92,10 +97,18 @@ public class AuthController {
       Authentication authentication = authenticationManager
          .authenticate(userpass);
 
+      // Block pending users before issuing a token
+      UserModel loginUser = userRepository.findByUsername(loginRequest.getUsername())
+         .orElseThrow(() -> new RuntimeException("User not found"));
+      if (Boolean.FALSE.equals(loginUser.getApproved())) {
+         return ResponseEntity.status(403)
+            .body(new MessageResponse("Your account is pending approval by an administrator."));
+      }
+
       SecurityContextHolder
          .getContext()
          .setAuthentication(authentication);
-      
+
       String jwt = jwtUtils.generateJwtToken(authentication);
       
       UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
@@ -127,6 +140,8 @@ public class AuthController {
          userDetails.getSurname(),
          roles
       );
+
+      auditLogRepository.save(new AuditLogModel("USER_LOGIN", userDetails.getUsername(), null, null));
 
       return ResponseEntity
          .ok(jwtResponse);
@@ -214,10 +229,12 @@ public class AuthController {
          ;
       }
       user.setRoles(roles_lst);
+      user.setApproved(false);
       userRepository.save(user);
+      auditLogRepository.save(new AuditLogModel("USER_REGISTER", user.getUsername(), null, "Pending approval"));
       return ResponseEntity
          .ok(
-            new MessageResponse("User registered successfully")
+            new MessageResponse("Registration successful. Your account is pending approval by an administrator.")
          )
       ;
    }
@@ -267,6 +284,25 @@ public class AuthController {
       }
       SecurityContextHolder.clearContext();
       return ResponseEntity.ok().body(new MessageResponse("You've been signed out!"));
+   }
+
+   @PostMapping("/refresh")
+   public ResponseEntity<?> refreshToken() {
+      Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+      if (!(authentication.getPrincipal() instanceof UserDetailsImpl)) {
+         return ResponseEntity.status(401).body(new MessageResponse("Not authenticated"));
+      }
+      UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+      String newJwt = jwtUtils.generateJwtTokenForUser(userDetails);
+      List<String> roles = userDetails.getAuthorities().stream()
+         .map(item -> item.getAuthority())
+         .collect(Collectors.toList());
+      return ResponseEntity.ok(new JwtResponse(
+         newJwt, "Bearer",
+         userDetails.getId(), userDetails.getUsername(),
+         userDetails.getEmail(), userDetails.getName(), userDetails.getSurname(),
+         roles
+      ));
    }
 
    @PostMapping("/update-password")

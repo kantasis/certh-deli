@@ -11,7 +11,7 @@ const clearSession = () => {
 axios.interceptors.response.use(
    (res) => res,
    (err) => {
-      if (err.response?.status === 401 || err.response?.status === 403) {
+      if (err.response?.status === 401) {
          const isAuthCall = err.config?.url?.includes("/api/v1/auth/");
          if (!isAuthCall) {
             clearSession();

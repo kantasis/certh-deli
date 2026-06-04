@@ -55,7 +55,9 @@ const IconClose = () => (
 
 const AdminUsers: React.FC = () => {
     const [users, setUsers] = useState<User[]>([]);
+    const [pendingUsers, setPendingUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState(true);
+    const [activeTab, setActiveTab] = useState<'users' | 'pending'>('users');
     const [editUser, setEditUser] = useState<User | null>(null);
     const [editRolesUser, setEditRolesUser] = useState<User | null>(null);
     const [editRoles, setEditRoles] = useState<string[]>([]);
@@ -66,7 +68,7 @@ const AdminUsers: React.FC = () => {
     const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
 
     const currentUser = AuthService.getCurrentUser();
-    const isAuthorized = currentUser?.roles?.includes("ROLE_ADMIN") || currentUser?.roles?.includes("ROLE_MODERATOR");
+    const isAuthorized = currentUser?.roles?.includes("ROLE_MODERATOR");
 
     const showToast = (message: string, type: "success" | "error") => {
         setToast({ message, type });
@@ -74,16 +76,24 @@ const AdminUsers: React.FC = () => {
     };
 
     const refreshUsers = async () => {
-        const res = await UserService.getAllUsers();
-        setUsers(res.data);
+        const [allRes, pendingRes] = await Promise.all([
+            UserService.getAllUsers(),
+            UserService.getPendingUsers(),
+        ]);
+        setUsers(allRes.data.filter((u: User) => u.approved !== false));
+        setPendingUsers(pendingRes.data);
     };
 
     useEffect(() => {
         const fetchUsers = async () => {
             if (!isAuthorized) { setLoading(false); return; }
             try {
-                const res = await UserService.getAllUsers();
-                setUsers(res.data);
+                const [allRes, pendingRes] = await Promise.all([
+                    UserService.getAllUsers(),
+                    UserService.getPendingUsers(),
+                ]);
+                setUsers(allRes.data.filter((u: User) => u.approved !== false));
+                setPendingUsers(pendingRes.data);
             } catch {
                 showToast("Failed to load users", "error");
             } finally {
@@ -122,6 +132,26 @@ const AdminUsers: React.FC = () => {
             await refreshUsers();
         } catch {
             showToast("Failed to update roles", "error");
+        }
+    };
+
+    const handleApprove = async (id: string) => {
+        try {
+            await UserService.approveUser(id);
+            showToast("User approved successfully", "success");
+            await refreshUsers();
+        } catch {
+            showToast("Failed to approve user", "error");
+        }
+    };
+
+    const handleReject = async (id: string) => {
+        try {
+            await UserService.rejectUser(id);
+            showToast("User rejected and removed", "success");
+            await refreshUsers();
+        } catch {
+            showToast("Failed to reject user", "error");
         }
     };
 
@@ -222,6 +252,19 @@ const AdminUsers: React.FC = () => {
                 .au-toast-error { background: #fef2f2; border: 1px solid #fecaca; color: #dc2626; }
                 @keyframes au-slide-down { from { opacity: 0; transform: translateX(-50%) translateY(-8px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
 
+                /* Tabs */
+                .au-tabs { display: flex; gap: 4px; margin-bottom: 20px; border-bottom: 2px solid var(--border, #e5e7eb); }
+                .au-tab { padding: 9px 18px; border: none; background: none; font-size: 14px; font-weight: 600; color: var(--text-muted, #475569); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -2px; transition: color 0.15s, border-color 0.15s; display: flex; align-items: center; gap: 7px; }
+                .au-tab:hover { color: var(--text, #0f172a); }
+                .au-tab.active { color: var(--brand-dark, #185569); border-bottom-color: var(--brand-dark, #185569); }
+                .au-tab-badge { background: #dc2626; color: #fff; border-radius: 20px; font-size: 11px; font-weight: 700; padding: 1px 7px; line-height: 1.6; }
+
+                /* Approve / Reject buttons */
+                .au-btn-approve { background: #fff; border-color: #bbf7d0; color: #16a34a; }
+                .au-btn-approve:hover { background: #f0fdf4; border-color: #16a34a; }
+                .au-btn-reject { background: #fff; border-color: #fecaca; color: #dc2626; }
+                .au-btn-reject:hover { background: #fef2f2; border-color: #dc2626; }
+
                 /* Key (password) button */
                 .au-btn-key { background: #fff; border-color: #d1fae5; color: #059669; }
                 .au-btn-key:hover { background: #ecfdf5; border-color: #059669; }
@@ -269,8 +312,21 @@ const AdminUsers: React.FC = () => {
                     </div>
                 </div>
 
-                {/* Users table */}
-                <div className="au-table-card">
+                {/* Tabs */}
+                <div className="au-tabs">
+                    <button className={`au-tab${activeTab === 'users' ? ' active' : ''}`} onClick={() => setActiveTab('users')}>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                        Active Users
+                    </button>
+                    <button className={`au-tab${activeTab === 'pending' ? ' active' : ''}`} onClick={() => setActiveTab('pending')}>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        Pending Approvals
+                        {pendingUsers.length > 0 && <span className="au-tab-badge">{pendingUsers.length}</span>}
+                    </button>
+                </div>
+
+                {/* Active Users table */}
+                {activeTab === 'users' && <div className="au-table-card">
                     <div className="au-table-scroll">
                         <table className="au-table">
                             <thead>
@@ -360,7 +416,49 @@ const AdminUsers: React.FC = () => {
                             </tbody>
                         </table>
                     </div>
-                </div>
+                </div>}
+
+                {/* Pending Approvals table */}
+                {activeTab === 'pending' && <div className="au-table-card">
+                    <div className="au-table-scroll">
+                        <table className="au-table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Surname</th>
+                                    <th>Username</th>
+                                    <th>Email</th>
+                                    <th style={{ textAlign: "right" }}>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {pendingUsers.length === 0 ? (
+                                    <tr><td colSpan={5} className="au-empty">No pending registrations.</td></tr>
+                                ) : pendingUsers.map(u => (
+                                    <tr key={u.id}>
+                                        <td>{u.name}</td>
+                                        <td>{u.surname}</td>
+                                        <td className="au-cell-muted">{u.username}</td>
+                                        <td className="au-cell-muted">{u.email}</td>
+                                        <td>
+                                            <div className="au-actions">
+                                                <button className="au-btn au-btn-approve" onClick={() => handleApprove(u.id)} aria-label={`Approve ${u.username}`}>
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+                                                    Approve
+                                                </button>
+                                                <button className="au-btn au-btn-reject" onClick={() => handleReject(u.id)} aria-label={`Reject ${u.username}`}>
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                                                    Reject
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>}
+
             </div>
 
             {/* Edit Name Modal */}

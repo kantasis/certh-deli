@@ -77,6 +77,18 @@ if (!process.env.DB_HOST) {
   throw new Error("DB_HOST is not set");
 }
 
+// Ensure audit_logs_tbl exists (Spring JPA creates it, but this is a safety net)
+pool.query(`
+    CREATE TABLE IF NOT EXISTS audit_logs_tbl (
+        id SERIAL PRIMARY KEY,
+        timestamp TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        action VARCHAR(50),
+        performed_by VARCHAR(100),
+        target VARCHAR(100),
+        details TEXT
+    )
+`).catch(err => console.error('Failed to ensure audit_logs_tbl:', err.message));
+
 
 // Insert new comment with page name
 app.post('/submit-text', verifyToken, async (req, res) => {
@@ -119,6 +131,108 @@ app.delete('/clear-comments', verifyToken, async (req, res) => {
         res.status(500).json({ error: 'Error clearing comments from the table.' });
     }
 });
+// Delete a single comment by id (admin/mod only — role verified via DB lookup)
+const verifyAdminOrMod = async (req, res, next) => {
+    const authHeader = req.headers['authorization'];
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return res.status(401).json({ error: 'No token provided' });
+    }
+    try {
+        const payload = jwt.decode(authHeader.substring(7));
+        if (!payload?.sub) return res.status(401).json({ error: 'Invalid token' });
+        const { rows } = await pool.query(
+            `SELECT r.label FROM users_tbl u
+             JOIN user_roles_tbl ur ON u.id = ur.user_id
+             JOIN roles_tbl r ON ur.role_id = r.id
+             WHERE u.username = $1`,
+            [payload.sub]
+        );
+        const roles = rows.map(r => r.label);
+        if (!roles.includes('ROLE_ADMIN') && !roles.includes('ROLE_MODERATOR')) {
+            return res.status(403).json({ error: 'Insufficient permissions' });
+        }
+        req.performedBy = payload.sub;
+        next();
+    } catch {
+        return res.status(500).json({ error: 'Role check failed' });
+    }
+};
+
+const deleteCommentById = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const result = await pool.query('DELETE FROM comments_tbl WHERE id = $1 RETURNING *', [id]);
+        if (result.rowCount === 0) return res.status(404).json({ error: 'Comment not found' });
+        const deleted = result.rows[0];
+        const details = JSON.stringify({
+            content: deleted.content,
+            username: deleted.username,
+            page_name: deleted.page_name,
+            created_at: deleted.created_at,
+        });
+        await pool.query(
+            `INSERT INTO audit_logs_tbl (action, performed_by, target, details, timestamp) VALUES ($1, $2, $3, $4, NOW())`,
+            ['COMMENT_DELETED', req.performedBy, `comment#${id}`, details]
+        ).catch(err => console.error('Audit log INSERT failed:', err.message));
+        res.status(200).json({ message: 'Comment deleted' });
+    } catch (error) {
+        console.error('Error deleting comment:', error.message);
+        res.status(500).json({ error: 'Database error' });
+    }
+};
+
+app.delete('/comments/:id', verifyToken, verifyAdminOrMod, deleteCommentById);
+app.delete('/all-comments/:id', verifyToken, verifyAdminOrMod, deleteCommentById);
+
+// Restore a deleted comment from audit log details JSON
+const restoreCommentHandler = async (req, res) => {
+    const { details, auditLogId } = req.body;
+    let parsed;
+    try {
+        parsed = typeof details === 'string' ? JSON.parse(details) : details;
+    } catch {
+        return res.status(400).json({ error: 'Invalid details format' });
+    }
+    const { content, username, page_name } = parsed ?? {};
+    if (!content || !username || !page_name) {
+        return res.status(400).json({ error: 'Missing comment fields in details' });
+    }
+    try {
+        const result = await pool.query(
+            `INSERT INTO comments_tbl (content, username, page_name) VALUES ($1, $2, $3) RETURNING *`,
+            [content, username, page_name]
+        );
+        await pool.query(
+            `INSERT INTO audit_logs_tbl (action, performed_by, target, details, timestamp) VALUES ($1, $2, $3, $4, NOW())`,
+            ['COMMENT_RESTORED', req.performedBy, auditLogId ? `audit#${auditLogId}` : null, JSON.stringify({ restoredComment: result.rows[0] })]
+        ).catch(err => console.error('Audit log INSERT failed:', err.message));
+        if (auditLogId) {
+            await pool.query('DELETE FROM audit_logs_tbl WHERE id = $1', [auditLogId])
+                .catch(err => console.error('Failed to remove COMMENT_DELETED entry after restore:', err.message));
+        }
+        res.status(201).json({ message: 'Comment restored', data: result.rows[0] });
+    } catch (error) {
+        console.error('Error restoring comment:', error.message);
+        res.status(500).json({ error: 'Database error' });
+    }
+};
+
+app.post('/comments/restore', verifyToken, verifyAdminOrMod, restoreCommentHandler);
+app.post('/all-comments/restore', verifyToken, verifyAdminOrMod, restoreCommentHandler);
+
+// Permanently delete an audit log entry (mod only)
+app.delete('/audit-logs/:id', verifyToken, verifyAdminOrMod, async (req, res) => {
+    const { id } = req.params;
+    try {
+        const result = await pool.query('DELETE FROM audit_logs_tbl WHERE id = $1', [id]);
+        if (result.rowCount === 0) return res.status(404).json({ error: 'Audit entry not found' });
+        res.status(200).json({ message: 'Audit entry deleted' });
+    } catch (error) {
+        console.error('Error deleting audit entry:', error.message);
+        res.status(500).json({ error: 'Database error' });
+    }
+});
+
 // Fetch all comments
 app.get('/comments', verifyToken, async (req, res) => {
     try {

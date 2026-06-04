@@ -126,6 +126,9 @@ const EuropeMap = () => {
     const location = useLocation();
     const navigate = useNavigate();
 
+    const [downloadingBias, setDownloadingBias] = useState<string | null>(null);
+    const [biasErrors, setBiasErrors] = useState<Record<string, string>>({});
+
 
 
     useEffect(() => {
@@ -668,6 +671,40 @@ const EuropeMap = () => {
         },
 
     ];
+    useEffect(() => {
+        setBiasErrors({});
+        setDownloadingBias(null);
+    }, [selectedRiskFactors, sexFilter, ageFilter]);
+
+    const toSlug = (s: string) => s.replace(/ /g, '_');
+
+    const handleBiasDownload = async (riskFactor: string) => {
+        const filename = `${toSlug(riskFactor)}_${toSlug(ageFilter)}_${sexFilter}`;
+        setDownloadingBias(filename);
+        setBiasErrors(prev => { const n = { ...prev }; delete n[riskFactor]; return n; });
+        try {
+            const cleanToken = (token || '').trim().replace(/^"|"$/g, '');
+            const res = await fetch(`https://oncodir-datapi.catalink.eu/v1/appo/report/filename/${filename}`, {
+                headers: { Authorization: `Bearer ${cleanToken}` },
+            });
+            if (!res.ok) throw new Error('Report not available');
+            const blob = await res.blob();
+            const objectUrl = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = objectUrl;
+            a.download = `${filename}.pdf`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(objectUrl);
+            setBiasErrors(prev => { const n = { ...prev }; delete n[riskFactor]; return n; });
+        } catch {
+            setBiasErrors(prev => ({ ...prev, [riskFactor]: 'Report not available for this combination.' }));
+        } finally {
+            setDownloadingBias(null);
+        }
+    };
+
     const accordionContentAssociation_dictLst = [{
         title: 'Data Sources',
         content: (<>
@@ -725,6 +762,70 @@ const EuropeMap = () => {
             </p>
 
         </>)
+    }, {
+        title: 'Bias Assessment',
+        content: (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                <p style={{ fontSize: '13px', color: '#475569', margin: 0, lineHeight: 1.5 }}>
+                    Select risk factors and demographic filters from the left panel, then download the corresponding Bias Analysis Report for each combination.
+                </p>
+                {selectedRiskFactors.length === 0 ? (
+                    <p style={{ fontSize: '12px', color: '#94a3b8', margin: 0, fontStyle: 'italic' }}>
+                        No risk factors selected yet.
+                    </p>
+                ) : (
+                    <>
+                        <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', margin: '2px 0' }}>
+                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', padding: '3px 9px', borderRadius: '20px', fontSize: '12px', fontWeight: 600, background: '#e8f2f6', color: '#185569', border: '1.5px solid #c5dce8' }}>
+                                <span style={{ opacity: 0.7 }}>Sex:</span> {sexFilter}
+                            </span>
+                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', padding: '3px 9px', borderRadius: '20px', fontSize: '12px', fontWeight: 600, background: '#e8f2f6', color: '#185569', border: '1.5px solid #c5dce8' }}>
+                                <span style={{ opacity: 0.7 }}>Age:</span> {ageFilter}
+                            </span>
+                        </div>
+                        {selectedRiskFactors.map(rf => {
+                            const filename = `${toSlug(rf)}_${toSlug(ageFilter)}_${sexFilter}`;
+                            const isLoading = downloadingBias === filename;
+                            const err = biasErrors[rf];
+                            return (
+                                <div key={rf} style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                                    {err && (
+                                        <div style={{ fontSize: '11px', color: '#dc2626', background: '#fee2e2', border: '1px solid #fecaca', borderRadius: '6px', padding: '4px 8px' }}>
+                                            {err}
+                                        </div>
+                                    )}
+                                    <button
+                                        onClick={() => handleBiasDownload(rf)}
+                                        disabled={!!downloadingBias}
+                                        style={{
+                                            display: 'flex', alignItems: 'center', gap: '6px',
+                                            padding: '7px 12px', borderRadius: '8px', fontSize: '12px', fontWeight: 600,
+                                            cursor: downloadingBias ? 'default' : 'pointer',
+                                            background: isLoading ? '#e8f2f6' : '#1f6580',
+                                            color: isLoading ? '#1f6580' : '#fff',
+                                            border: '1.5px solid #1f6580',
+                                            transition: 'all 0.15s', textAlign: 'left', width: '100%',
+                                            opacity: (downloadingBias && !isLoading) ? 0.5 : 1,
+                                        }}
+                                    >
+                                        {isLoading ? (
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24" style={{ flexShrink: 0 }}>
+                                                <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.86"/>
+                                            </svg>
+                                        ) : (
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24" style={{ flexShrink: 0 }}>
+                                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+                                            </svg>
+                                        )}
+                                        <span style={{ flex: 1 }}>{isLoading ? 'Downloading…' : rf}</span>
+                                    </button>
+                                </div>
+                            );
+                        })}
+                    </>
+                )}
+            </div>
+        )
     }];
 
     const toggleRiskFactor = (factor) => {
@@ -831,7 +932,7 @@ const EuropeMap = () => {
                 );
 
                 if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                const newToken = await res.text();
+                const newToken = (await res.text()).trim().replace(/^"|"$/g, '');
 
                 localStorage.setItem(TOKEN_KEY, newToken);
                 localStorage.setItem(TOKEN_TS_KEY, now.toString());
