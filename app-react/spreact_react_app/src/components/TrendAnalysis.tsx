@@ -301,8 +301,8 @@ const EuropeMap = () => {
                     const forecasted = forecastedMap[year];
                     const country = observed?.Country || forecasted?.Country || "Unknown";
 
-                    let tooltip = `<strong>Country: ${country}</strong><br/>
-                   <strong>Year: ${year}</strong><br/>`;
+                    let tooltip = `<strong>Country: ${esc(country)}</strong><br/>
+                   <strong>Year: ${esc(String(year))}</strong><br/>`;
 
                     let forecastAdded = false;
 
@@ -676,7 +676,8 @@ const EuropeMap = () => {
         setDownloadingBias(null);
     }, [selectedRiskFactors, sexFilter, ageFilter]);
 
-    const toSlug = (s: string) => s.replace(/ /g, '_');
+    const toSlug = (s: string) => s.replace(/[^a-zA-Z0-9_\-]/g, '_');
+    const esc = (s: string) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
     const handleBiasDownload = async (riskFactor: string) => {
         const filename = `${toSlug(riskFactor)}_${toSlug(ageFilter)}_${sexFilter}`;
@@ -899,8 +900,14 @@ const EuropeMap = () => {
 
     useEffect(() => {
         const TOKEN_KEY = "oncodir_token";
-        const TOKEN_TS_KEY = "oncodir_token_ts"; // timestamp of last token fetch
-        const ONE_DAY = 24 * 60 * 60 * 1000; // 24 hours in ms
+        const TOKEN_TS_KEY = "oncodir_token_ts";
+        const ONE_DAY = 24 * 60 * 60 * 1000;
+
+        const isProduction = import.meta.env.MODE === "production";
+        const host = import.meta.env.VITE_AUTHENTICATION_HOST;
+        const BIAS_TOKEN_URL = isProduction
+            ? '/all-comments/bias-token'
+            : `http://${host}:8435/bias-token`;
 
         const getToken = async () => {
             const storedToken = localStorage.getItem(TOKEN_KEY);
@@ -908,42 +915,27 @@ const EuropeMap = () => {
             const now = Date.now();
 
             if (storedToken && storedTs && now - parseInt(storedTs) < ONE_DAY) {
-                // Token is still valid
                 setToken(storedToken);
                 return;
             }
 
-            // Token missing or expired → fetch new token
-            const controller = new AbortController();
+            const user = JSON.parse(localStorage.getItem("user") || "{}");
+            const userJwt = user?.accessToken || '';
+
             try {
-                const res = await fetch(
-                    "https://oncodir-datapi.catalink.eu/v1/services/login/",
-                    {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify({
-                            service_name: import.meta.env.VITE_SERVICE_NAME,
-                            password: import.meta.env.VITE_SERVICE_PASSWORD,
-                        }),
-                        signal: controller.signal,
-                    }
-                );
-
+                const res = await fetch(BIAS_TOKEN_URL, {
+                    headers: { Authorization: `Bearer ${userJwt}` },
+                });
                 if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                const newToken = (await res.text()).trim().replace(/^"|"$/g, '');
-
+                const { token: newToken } = await res.json();
                 localStorage.setItem(TOKEN_KEY, newToken);
                 localStorage.setItem(TOKEN_TS_KEY, now.toString());
                 setToken(newToken);
-            } catch (err) {
+            } catch (err: any) {
                 if (err.name !== "AbortError") {
-                    console.error("Login failed:", err);
+                    console.error("Bias token fetch failed:", err);
                 }
             }
-
-            return () => controller.abort();
         };
 
         getToken();
@@ -1142,7 +1134,7 @@ const EuropeMap = () => {
                 const coefData = params.find(item => item.seriesName === "Correlation Coefficient");
                 const ciData = params.find(item => item.seriesName === "Confidence Intervals (95%)");
 
-                let result = `<div style="text-align:left;"><strong>Trend Correlation with ${name}</strong><br>`;
+                let result = `<div style="text-align:left;"><strong>Trend Correlation with ${esc(name)}</strong><br>`;
 
                 if (coefData) {
                     result += `<span style="display:inline-block;margin-right:5px;border-radius:10px;width:10px;height:10px;background-color:${coefData.color};"></span>`;
@@ -1263,12 +1255,12 @@ const EuropeMap = () => {
             trigger: "item",
             formatter: (params) => {
                 const { name, value, data } = params;
-                if (!data) return `${name}<br/>No data`;
+                if (!data) return `${esc(name)}<br/>No data`;
 
                 return `
-          <strong>${name}</strong><br/>
+          <strong>${esc(name)}</strong><br/>
           EAPC: <strong>${value?.toFixed(2) ?? "N/A"}</strong><br/>
-          Trend: <strong>${data.trend}</strong><br/>
+          Trend: <strong>${esc(data.trend)}</strong><br/>
           Confidence Interval (95%): <strong>[${data.eapc_low?.toFixed(2)}, ${data.eapc_up?.toFixed(2)}]</strong>
         `;
             },
@@ -1498,7 +1490,7 @@ const EuropeMap = () => {
                 const coefData = params.find(item => item.seriesName === "Coefficient");
                 const ciData = params.find(item => item.seriesName === "Confidence Intervals (95%)");
 
-                let result = `<div style="text-align:left;"><strong>Association between ${name} and CRC Incidence</strong><br>`;
+                let result = `<div style="text-align:left;"><strong>Association between ${esc(name)} and CRC Incidence</strong><br>`;
 
                 if (coefData) {
                     result += `<span style="display:inline-block;margin-right:5px;border-radius:10px;width:10px;height:10px;background-color:${coefData.color};"></span>`;

@@ -119,6 +119,41 @@ app.post('/submit-text', verifyToken, async (req, res) => {
 
 
 
+// Proxy: fetch service token from upstream and return it to the authenticated frontend
+const fetchBiasToken = async () => {
+    const res = await fetch('https://oncodir-datapi.catalink.eu/v1/services/login/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            service_name: process.env.SERVICE_NAME,
+            password: process.env.SERVICE_PASSWORD,
+        }),
+    });
+    if (!res.ok) throw new Error(`Upstream login failed: ${res.status}`);
+    const text = await res.text();
+    return text.trim().replace(/^"|"$/g, '');
+};
+
+app.get('/bias-token', verifyToken, async (req, res) => {
+    try {
+        const token = await fetchBiasToken();
+        res.json({ token });
+    } catch (err) {
+        console.error('bias-token error:', err.message);
+        res.status(502).json({ error: 'Failed to obtain bias token' });
+    }
+});
+
+app.get('/all-comments/bias-token', verifyToken, async (req, res) => {
+    try {
+        const token = await fetchBiasToken();
+        res.json({ token });
+    } catch (err) {
+        console.error('bias-token error:', err.message);
+        res.status(502).json({ error: 'Failed to obtain bias token' });
+    }
+});
+
 // Endpoint to clear all comments from the table
 app.delete('/clear-comments', verifyToken, async (req, res) => {
     try {

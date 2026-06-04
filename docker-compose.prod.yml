@@ -26,6 +26,9 @@ services:
       - main_network
     depends_on:
       - db_label
+    environment:
+      SERVICE_NAME: ${SERVICE_NAME}
+      SERVICE_PASSWORD: ${SERVICE_PASSWORD}
 
   # PostgreSQL
   db_label:
@@ -55,14 +58,4 @@ services:
     depends_on:
       - db_label
 
-  # Nginx Proxy Manager
-  certh-aico-proxy:
-    image: jc21/nginx-proxy-manager:latest
-    container_name: certh-aico-proxy
-    restart: unless-stopped
-    ports:
-      - 80:80
-      - 443:443
-      - 15000:81
-    networks:
-      - main_network
+  # Nginx Proxy Manager is managed separately — not in this compose file.
