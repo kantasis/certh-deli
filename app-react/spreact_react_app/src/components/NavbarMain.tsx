@@ -424,9 +424,12 @@ const NavbarMain: React.FC = () => {
                            </li>
                            <li>
                               <NavLink className="dropdown-item" to="/change-password" onClick={() => setMobileOpen(false)}>Change Password</NavLink>
+                           </li>
+                           <li>
+                              <NavLink className="dropdown-item" to="/session" onClick={() => setMobileOpen(false)}>Session Management</NavLink>
                               <hr />
                            </li>
-                           {isAdmin && (
+                           {(isAdmin || isModerator) && (
                               <>
                                  <li>
                                     <NavLink className="dropdown-item" to="/comments" onClick={() => setMobileOpen(false)}>
@@ -434,11 +437,18 @@ const NavbarMain: React.FC = () => {
                                     </NavLink>
                                  </li>
                                  {isModerator && (
-                                    <li>
-                                       <NavLink className="dropdown-item" to="/admin/users" onClick={() => setMobileOpen(false)}>
-                                          Admin Panel
-                                       </NavLink>
-                                    </li>
+                                    <>
+                                       <li>
+                                          <NavLink className="dropdown-item" to="/admin/users" onClick={() => setMobileOpen(false)}>
+                                             Admin Panel
+                                          </NavLink>
+                                       </li>
+                                       <li>
+                                          <NavLink className="dropdown-item" to="/admin/audit-log" onClick={() => setMobileOpen(false)}>
+                                             Audit Log
+                                          </NavLink>
+                                       </li>
+                                    </>
                                  )}
                                  <hr />
                               </>

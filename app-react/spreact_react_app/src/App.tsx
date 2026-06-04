@@ -29,6 +29,8 @@ import DeliPredictions from "./components/DeliPredictions.tsx"
 import TwoFactorHeatmapViewer from "./components/TwoFactorExloration.tsx"
 import LargeScaleIntervention from "./components/LargeScaleInterventionLIP2.tsx"
 import AdminUsers from "./components/AdminUsers.tsx";
+import AuditLog from "./components/AuditLog.tsx";
+import SessionPage from "./components/SessionPage.tsx";
 
 const PUBLIC_PATHS = ['/login', '/register', '/', '/home'];
 
@@ -114,6 +116,8 @@ const App: React.FC = () => {
                {/* <Route path="/deli-predictions" element={<DeliPredictions />} /> */}
                <Route path="/my-dashboards" element={<MyDashboards />} />
                <Route path="/admin/users" element={<AdminUsers />} />
+               <Route path="/admin/audit-log" element={<AuditLog />} />
+               <Route path="/session" element={<SessionPage />} />
             </Routes>
             </SessionGuard>
          </div>

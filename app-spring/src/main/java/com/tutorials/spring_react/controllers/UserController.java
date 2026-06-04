@@ -14,9 +14,13 @@ import com.tutorials.spring_react.models.RoleModel;
 import com.tutorials.spring_react.models.UserModel;
 import com.tutorials.spring_react.repositories.RoleRepository;
 import com.tutorials.spring_react.repositories.UserRepository;
+import com.tutorials.spring_react.models.AuditLogModel;
+import com.tutorials.spring_react.repositories.AuditLogRepository;
 import com.tutorials.spring_react.security.payloads.AdminPasswordResetRequest;
 import com.tutorials.spring_react.security.payloads.MessageResponse;
 import com.tutorials.spring_react.security.payloads.NameUpdateRequest;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -31,12 +35,52 @@ public class UserController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private AuditLogRepository auditLogRepository;
+
+    private String currentUsername() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        return auth != null ? auth.getName() : "unknown";
+    }
+
     // 🔹 Get all users (Moderator or Admin)
     @GetMapping
     @PreAuthorize("hasRole('MODERATOR')")
     public List<UserModel> getAllUsers() {
-        // Fetch all users, roles will be EAGER loaded
         return userRepository.findAll();
+    }
+
+    // 🔹 Get pending users (approved = false)
+    @GetMapping("/pending")
+    @PreAuthorize("hasRole('MODERATOR')")
+    public List<UserModel> getPendingUsers() {
+        return userRepository.findAll().stream()
+                .filter(u -> Boolean.FALSE.equals(u.getApproved()))
+                .collect(java.util.stream.Collectors.toList());
+    }
+
+    // 🔹 Approve a user
+    @PutMapping("/{id}/approve")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
+    public MessageResponse approveUser(@PathVariable String id) {
+        UserModel user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Error: User not found with id " + id));
+        user.setApproved(true);
+        userRepository.save(user);
+        auditLogRepository.save(new AuditLogModel("USER_APPROVED", currentUsername(), user.getUsername(), null));
+        return new MessageResponse("User approved successfully");
+    }
+
+    // 🔹 Reject (delete) a pending user
+    @DeleteMapping("/{id}/reject")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
+    public MessageResponse rejectUser(@PathVariable String id) {
+        userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Error: User not found with id " + id));
+        String rejUsername = userRepository.findById(id).map(UserModel::getUsername).orElse(id);
+        userRepository.deleteById(id);
+        auditLogRepository.save(new AuditLogModel("USER_REJECTED", currentUsername(), rejUsername, null));
+        return new MessageResponse("User rejected and removed");
     }
 
     // 🔹 Delete a user
@@ -45,7 +89,9 @@ public class UserController {
     public MessageResponse deleteUser(@PathVariable String id) {
         userRepository.findById(id).orElseThrow(() -> new RuntimeException("Error: User not found with id " + id));
 
+        String username = userRepository.findById(id).map(UserModel::getUsername).orElse(id);
         userRepository.deleteById(id);
+        auditLogRepository.save(new AuditLogModel("USER_DELETED", currentUsername(), username, null));
         return new MessageResponse("User deleted successfully");
     }
 
@@ -77,7 +123,7 @@ public class UserController {
 
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));
         userRepository.save(user);
-
+        auditLogRepository.save(new AuditLogModel("PASSWORD_RESET", currentUsername(), user.getUsername(), null));
         return new MessageResponse("Password updated successfully");
     }
 
@@ -113,9 +159,14 @@ public class UserController {
             newRoles.add(roleModel);
         }
 
+        String oldRoles = user.getRoles().stream()
+                .map(r -> r.getLabel().name())
+                .collect(java.util.stream.Collectors.joining(", "));
         user.setRoles(newRoles);
         userRepository.save(user);
-
+        String newRolesList = String.join(", ", rolesStr);
+        String details = oldRoles + " -> " + newRolesList;
+        auditLogRepository.save(new AuditLogModel("ROLE_CHANGED", currentUsername(), user.getUsername(), details));
         return new MessageResponse("User roles updated successfully");
     }
 }

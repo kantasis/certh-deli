@@ -48,6 +48,16 @@ public class JwtUtils {
       return Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
    }
 
+   public String generateJwtTokenForUser(org.springframework.security.core.userdetails.UserDetails userDetails) {
+      Date now = new Date();
+      return Jwts.builder()
+         .setSubject(userDetails.getUsername())
+         .setIssuedAt(now)
+         .setExpiration(new Date(now.getTime() + jwtExpirationMs))
+         .signWith(getKey(), SignatureAlgorithm.HS256)
+         .compact();
+   }
+
    public String getUsernameFromJwtToken(String token){
       return Jwts
          .parserBuilder()

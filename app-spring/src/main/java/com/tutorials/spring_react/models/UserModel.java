@@ -63,6 +63,9 @@ public class UserModel {
    @Size(max = 100) // You can adjust the max length as needed
    private String surname;
 
+   // null = legacy user (treated as approved); false = pending approval; true = approved
+   private Boolean approved;
+
    @ManyToMany(fetch = FetchType.EAGER)
    @JoinTable(name = "user_roles_tbl", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
 

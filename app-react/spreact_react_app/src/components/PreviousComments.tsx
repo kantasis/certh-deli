@@ -11,6 +11,10 @@ const API_URL = isProduction
     ? '/all-comments'
     : `http://${host}:8435/comments`;
 
+const DELETE_URL = (id: number) => isProduction
+    ? `/all-comments/${id}`
+    : `http://${host}:8435/comments/${id}`;
+
 interface Comment {
     id: number;
     content: string;
@@ -34,12 +38,28 @@ const formatDate = (iso: string) =>
 const Comments: React.FC = () => {
     const [comments, setComments] = useState<Comment[]>([]);
     const [loading, setLoading] = useState(true);
+    const [deletingId, setDeletingId] = useState<number | null>(null);
+    const [confirmId, setConfirmId] = useState<number | null>(null);
 
     const currentUser = getCurrentUser();
     const roles = currentUser?.roles ?? [];
     if (!roles.includes('ROLE_ADMIN') && !roles.includes('ROLE_MODERATOR')) {
         return <Unauthorized />;
     }
+    const canDelete = roles.includes('ROLE_MODERATOR');
+
+    const deleteComment = async (id: number) => {
+        setDeletingId(id);
+        try {
+            await axios.delete(DELETE_URL(id), { headers: authHeader() });
+            setComments(prev => prev.filter(c => c.id !== id));
+        } catch {
+            // silent
+        } finally {
+            setDeletingId(null);
+            setConfirmId(null);
+        }
+    };
 
     useEffect(() => {
         const fetchComments = async () => {
@@ -88,6 +108,14 @@ const Comments: React.FC = () => {
 
                 /* Page badge */
                 .pc-badge { display: inline-flex; align-items: center; padding: 3px 9px; border-radius: 20px; font-size: 12.5px; font-weight: 600; background: #e8f2f6; color: var(--brand-dark, #185569); border: 1.5px solid #c5dce8; white-space: nowrap; }
+
+                /* Delete button */
+                .pc-btn-delete { background: none; border: 1.5px solid #fecaca; color: #dc2626; border-radius: 7px; padding: 5px 10px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; font-size: 13px; font-weight: 600; transition: background 0.15s; white-space: nowrap; }
+                .pc-btn-delete:hover { background: #fef2f2; }
+                .pc-btn-confirm { background: #dc2626; border: 1.5px solid #dc2626; color: #fff; border-radius: 7px; padding: 5px 10px; cursor: pointer; font-size: 13px; font-weight: 600; transition: background 0.15s; margin-left: 4px; }
+                .pc-btn-confirm:hover { background: #b91c1c; }
+                .pc-btn-cancel-sm { background: none; border: 1.5px solid var(--border, #e5e7eb); color: var(--text-muted, #475569); border-radius: 7px; padding: 5px 10px; cursor: pointer; font-size: 13px; font-weight: 600; transition: background 0.15s; }
+                .pc-btn-cancel-sm:hover { background: var(--muted, #f5f7fb); }
 
                 /* States */
                 .pc-loading { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 56px 24px; color: var(--text-muted, #475569); font-size: 15px; }
@@ -158,12 +186,13 @@ const Comments: React.FC = () => {
                                                 Page
                                             </div>
                                         </th>
+                                        {canDelete && <th style={{ textAlign: 'right' }}>Actions</th>}
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {comments.length === 0 ? (
                                         <tr>
-                                            <td colSpan={4} className="pc-empty">No comments yet.</td>
+                                            <td colSpan={canDelete ? 5 : 4} className="pc-empty">No comments yet.</td>
                                         </tr>
                                     ) : comments.map(comment => (
                                         <tr key={comment.id}>
@@ -175,6 +204,22 @@ const Comments: React.FC = () => {
                                                     {comment.page_name ? formatPageName(comment.page_name) : 'N/A'}
                                                 </span>
                                             </td>
+                                            {canDelete && <td style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
+                                                {confirmId === comment.id ? (
+                                                    <>
+                                                        <span style={{ fontSize: '13px', color: '#dc2626', marginRight: '6px' }}>Delete?</span>
+                                                        <button className="pc-btn-confirm" disabled={deletingId === comment.id} onClick={() => deleteComment(comment.id)}>Yes</button>
+                                                        <button className="pc-btn-cancel-sm" style={{ marginLeft: '4px' }} onClick={() => setConfirmId(null)}>No</button>
+                                                    </>
+                                                ) : (
+                                                    <button className="pc-btn-delete" onClick={() => setConfirmId(comment.id)}>
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24" aria-hidden="true">
+                                                            <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+                                                        </svg>
+                                                        Delete
+                                                    </button>
+                                                )}
+                                            </td>}
                                         </tr>
                                     ))}
                                 </tbody>
