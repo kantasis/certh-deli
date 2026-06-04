@@ -64,6 +64,8 @@ const AuditLog: React.FC = () => {
     const [deletingAuditId, setDeletingAuditId] = useState<number | null>(null);
     const [confirmDeleteId, setConfirmDeleteId] = useState<number | null>(null);
     const [restoreError, setRestoreError] = useState<string | null>(null);
+    const [page, setPage] = useState(1);
+    const PAGE_SIZE = 20;
 
     const currentUser = getCurrentUser();
     const roles = currentUser?.roles ?? [];
@@ -108,6 +110,9 @@ const AuditLog: React.FC = () => {
     }, []);
 
     const filtered = filter ? entries.filter(e => e.action === filter) : entries;
+    const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+    const safePage = Math.min(page, totalPages);
+    const pageEntries = filtered.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
     const showTargetCol = filtered.some(e => !!e.target);
     const showDetailsCol = filtered.some(e => !!e.details);
     const showActionsCol = filter === 'COMMENT_DELETED' && filtered.some(e => !!e.details);
@@ -153,6 +158,13 @@ const AuditLog: React.FC = () => {
                 .al-btn-cancel-sm { background: none; border: 1.5px solid var(--border, #e5e7eb); color: var(--text-muted, #475569); border-radius: 7px; padding: 5px 10px; cursor: pointer; font-size: 13px; font-weight: 600; transition: background 0.15s; margin-left: 4px; }
                 .al-btn-cancel-sm:hover { background: var(--muted, #f5f7fb); }
                 .al-error { margin-bottom: 12px; padding: 10px 16px; background: #fee2e2; border: 1px solid #fecaca; border-radius: 8px; color: #dc2626; font-size: 14px; }
+                .al-pagination { display: flex; align-items: center; justify-content: space-between; margin-top: 16px; gap: 12px; flex-wrap: wrap; }
+                .al-pagination-info { font-size: 13px; color: var(--text-muted, #475569); }
+                .al-pagination-controls { display: flex; align-items: center; gap: 4px; }
+                .al-page-btn { padding: 5px 10px; border-radius: 7px; border: 1.5px solid var(--border, #e5e7eb); background: #fff; color: var(--text, #0f172a); font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.15s; min-width: 34px; text-align: center; }
+                .al-page-btn:hover:not(:disabled) { border-color: var(--brand, #1f6580); background: #e8f2f6; color: var(--brand-dark, #185569); }
+                .al-page-btn.active { border-color: var(--brand, #1f6580); background: #1f6580; color: #fff; }
+                .al-page-btn:disabled { opacity: 0.4; cursor: default; }
 
                 @media (prefers-reduced-motion: reduce) { .al-table tbody tr { transition: none; } }
             `}</style>
@@ -176,7 +188,7 @@ const AuditLog: React.FC = () => {
                     <div className="al-filter-group">
                         <button
                             className={`al-filter-chip${filter === '' ? ' active' : ''}`}
-                            onClick={() => setFilter('')}
+                            onClick={() => { setFilter(''); setPage(1); }}
                         >
                             See All
                         </button>
@@ -184,7 +196,7 @@ const AuditLog: React.FC = () => {
                             <button
                                 key={key}
                                 className={`al-filter-chip${filter === key ? ' active' : ''}`}
-                                onClick={() => setFilter(f => f === key ? '' : key)}
+                                onClick={() => { setFilter(f => f === key ? '' : key); setPage(1); }}
                             >
                                 {meta.label}
                             </button>
@@ -216,9 +228,9 @@ const AuditLog: React.FC = () => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {filtered.length === 0 ? (
+                                    {pageEntries.length === 0 ? (
                                         <tr><td colSpan={colSpan} className="al-empty">No events found.</td></tr>
-                                    ) : filtered.map(e => {
+                                    ) : pageEntries.map(e => {
                                         const meta = ACTION_META[e.action] ?? { label: e.action, color: '#6b7280', bg: '#f3f4f6' };
                                         const canRestore = e.action === 'COMMENT_DELETED' && !!e.details;
                                         return (
@@ -276,6 +288,33 @@ const AuditLog: React.FC = () => {
                         </div>
                     )}
                 </div>
+
+                {totalPages > 1 && (
+                    <div className="al-pagination">
+                        <span className="al-pagination-info">
+                            Showing {(safePage - 1) * PAGE_SIZE + 1}–{Math.min(safePage * PAGE_SIZE, filtered.length)} of {filtered.length} events
+                        </span>
+                        <div className="al-pagination-controls">
+                            <button className="al-page-btn" disabled={safePage === 1} onClick={() => setPage(1)}>«</button>
+                            <button className="al-page-btn" disabled={safePage === 1} onClick={() => setPage(p => p - 1)}>‹</button>
+                            {Array.from({ length: totalPages }, (_, i) => i + 1)
+                                .filter(p => p === 1 || p === totalPages || Math.abs(p - safePage) <= 1)
+                                .reduce<(number | '…')[]>((acc, p, i, arr) => {
+                                    if (i > 0 && p - (arr[i - 1] as number) > 1) acc.push('…');
+                                    acc.push(p);
+                                    return acc;
+                                }, [])
+                                .map((p, i) =>
+                                    p === '…'
+                                        ? <span key={`ellipsis-${i}`} className="al-page-btn" style={{ cursor: 'default', border: 'none' }}>…</span>
+                                        : <button key={p} className={`al-page-btn${safePage === p ? ' active' : ''}`} onClick={() => setPage(p as number)}>{p}</button>
+                                )
+                            }
+                            <button className="al-page-btn" disabled={safePage === totalPages} onClick={() => setPage(p => p + 1)}>›</button>
+                            <button className="al-page-btn" disabled={safePage === totalPages} onClick={() => setPage(totalPages)}>»</button>
+                        </div>
+                    </div>
+                )}
             </div>
         </>
     );
