@@ -9,7 +9,6 @@ services:
   node_label:
     build:
       context: ./services/node
-      dockerfile: Dockerfile
     container_name: ${PROJECT_NAME}_node_container
     restart: unless-stopped
     networks:
@@ -20,19 +19,17 @@ services:
     build:
       context: ./services/express
     container_name: ${PROJECT_NAME}_express_container
-    # ports:
-    #   - 8435:9080
+    ports:
+      - 8435:9080
     restart: unless-stopped
     networks:
       - main_network
     depends_on:
       - db_label
     environment:
-      DB_HOST: db_label
-      DB_PORT: ${GLOBAL_PGPORT}
-      DB_USER: ${GLOBAL_POSTGRES_USER}
-      DB_PASSWORD: ${GLOBAL_POSTGRES_PASSWORD}
-      DB_NAME: ${GLOBAL_POSTGRES_DB}
+      SERVICE_NAME: ${SERVICE_NAME}
+      SERVICE_PASSWORD: ${SERVICE_PASSWORD}
+
   # PostgreSQL
   db_label:
     image: postgres:17
@@ -50,23 +47,15 @@ services:
     user: "472:472"
     env_file:
       - ./services/grafana/.env
+    ports:
+      - "${HOST_GRAFANA_PORT}:3000"
     restart: unless-stopped
     volumes:
       - ./shared/grafana:/var/lib/grafana
-      - ./app-grafana:/etc/grafana/provisioning
+      - ./app-grafana:${GLOBAL_GF_PATHS_PROVISIONING}
     networks:
       - main_network
     depends_on:
       - db_label
 
-  # Nginx Proxy Manager
-  # certh-aico-proxy:
-  #   image: jc21/nginx-proxy-manager:latest
-  #   container_name: certh-aico2-proxy
-  #   restart: unless-stopped
-  #   ports:
-  #     - 80:80
-  #     - 443:443
-  #     - 15000:81
-  #   networks:
-  #     - main_network
+  # Nginx Proxy Manager is managed separately — not in this compose file.
