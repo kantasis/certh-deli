@@ -18,8 +18,8 @@ export const submitComment = async (
     page_name: string
 ) => {
     try {
-        console.log("Sending request to:", `${API_URL}/submit-text`);
-        console.log("Submitting comment:", { text, username, page_name });
+        // console.log("Sending request to:", `${API_URL}/submit-text`);
+        // console.log("Submitting comment:", { text, username, page_name });
 
         const response = await axios.post(`${API_URL}/submit-text`, {
             text,
@@ -27,7 +27,7 @@ export const submitComment = async (
             page_name
         }, { headers: authHeader() });
 
-        console.log("Response:", response.data);
+        // console.log("Response:", response.data);
         return response.data;
 
     } catch (error: any) {

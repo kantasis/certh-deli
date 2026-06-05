@@ -82,8 +82,8 @@ const EpidimiologicalPanel: React.FC = () => {
    const [isLoggedIn, setIsLoggedIn] = useState(() => AuthService.isLoggedIn());
    const [iframeLoading, setIframeLoading] = useState(true);
    const [selectedCountries_lst, set_selectedCountries] = useState(["Belgium", "Greece", "Italy"]);
-   const [minYear_int, set_minYear] = useState(0);
-   const [maxYear_int, set_maxYear] = useState(0);
+   const [minYear_int, set_minYear] = useState(1990);
+   const [maxYear_int, set_maxYear] = useState(2021);
    const [selectedSex_int, set_selectedSex] = useState<number | null>(0);
    const [selectedAge_int, set_selectedAge] = useState(0);
    const [selectedCrcFactors_int, set_selectedCrcFactors] = useState(0);

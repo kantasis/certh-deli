@@ -31,7 +31,7 @@ const Dashboard: React.FC = () => {
    useEffect(
       () => {
          setIsLoggedIn(AuthService.isLoggedIn());
-         console.log("Dashboard: "+ isLoggedIn);
+         // console.log("Dashboard: "+ isLoggedIn);
       },
       []
    );
@@ -120,7 +120,7 @@ const Dashboard: React.FC = () => {
       // urlParams_str
       // tabInfo_dict['url'] + `&${urlParams_str}`
       setUrlParams(`var-deli_country_var=${filter_country_str}`);
-      console.log(`GK> ${urlParams_str}`);
+      // console.log(`GK> ${urlParams_str}`);
    };
 
    return (

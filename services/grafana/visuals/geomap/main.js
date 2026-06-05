@@ -9,7 +9,7 @@ function getQueryResult(query_name) {
       )
       ;
    if (!result)
-      console.log(`Error: Query with name ${query_name} not found`)
+      // console.log(`Error: Query with name ${query_name} not found`)
    return result['fields'];
 }
 

@@ -3,7 +3,7 @@ let countries_sLst = [];
 
 data.series.map((s) => {
 
-  console.log("ASD: "+s.refId)
+  // console.log("ASD: "+s.refId)
    if (s.refId != 'main_query')
       return;
       

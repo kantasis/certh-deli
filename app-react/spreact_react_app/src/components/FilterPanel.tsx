@@ -27,7 +27,7 @@ const FilterPanel: React.FC<FilterProps> = ({filter_startYear_int, setFilter_sta
 
    const changeCountry = (event: React.FormEvent<HTMLSelectElement>) => {
       setFilter_country_str(event.currentTarget.value)
-      console.log(filter_country_str)
+      // console.log(filter_country_str)
    };
    return (<>
    

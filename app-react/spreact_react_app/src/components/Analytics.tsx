@@ -130,17 +130,17 @@ const AnalyticsPanel: React.FC = () => {
 
       const { analysis, riskFactor, yearLag } = savedParamsRef.current;
 
-      console.log("Applying saved params:", { analysis, riskFactor, yearLag });
+      // console.log("Applying saved params:", { analysis, riskFactor, yearLag });
 
       if (analysis === 2 && riskFactor) {
          const index = riskFactors_dictLst.findIndex(item => item.label === riskFactor);
-         console.log("Risk factor index found:", index);
+         // console.log("Risk factor index found:", index);
          if (index !== -1) set_selectedRiskFactors(index);
       }
 
       if (analysis === 1) {
          const yearLagIndex = yearLag_dictLst.findIndex(i => Number(i.var_filter) === yearLag);
-         console.log("Year lag index found:", yearLagIndex);
+         // console.log("Year lag index found:", yearLagIndex);
          if (yearLagIndex !== -1) set_selectedYearLag(yearLagIndex);
       }
 
@@ -342,7 +342,7 @@ const AnalyticsPanel: React.FC = () => {
 
    const getUriParams = () => {
       const analysis = selectedAnalysis_int;
-      console.log(analysis)
+      // console.log(analysis)
 
          const riskFactor = riskFactors_dictLst[selectedRiskFactor_int].label;
          return `var-riskFactor_filter=${encodeURIComponent(riskFactor)}&var-analysis_filter=${analysis}&panelId=6`;

@@ -40,11 +40,11 @@ const verifyToken = (req, res, next) => {
 };
 
 app.use((req, res, next) => {
-  console.log(`[${req.method}] ${req.url}`);
+  // console.log(`[${req.method}] ${req.url}`);
   next();
 });
 app.all('/api/*', (req, res, next) => {
-  console.log(`🔥 Matched wildcard /api route: ${req.method} ${req.url}`);
+  // console.log(`🔥 Matched wildcard /api route: ${req.method} ${req.url}`);
   next();
 });
 // Handle OPTIONS requests manually (important!)
@@ -108,7 +108,7 @@ app.post('/submit-text', verifyToken, async (req, res) => {
             [text, username, page_name] // ✅ Ensure this matches the table columns
         );
 
-        console.log("✅ Comment inserted into DB:", result.rows[0]); // Log the stored data
+        // console.log("✅ Comment inserted into DB:", result.rows[0]);
 
         res.status(201).json({ message: 'Comment stored successfully', data: result.rows[0] });
     } catch (error) {
@@ -159,7 +159,7 @@ app.delete('/clear-comments', verifyToken, async (req, res) => {
     try {
         // SQL query to delete all rows from the comments table
         const result = await pool.query('DELETE FROM comments_tbl');
-        console.log("Cleared all comments from the table");
+        // console.log("Cleared all comments from the table");
         res.status(200).json({ message: 'All comments have been cleared successfully.' });
     } catch (error) {
         console.error('Error clearing comments:', error.message);
@@ -309,8 +309,8 @@ app.post('/api/comments/submit-text', verifyToken, async (req, res) => {
     }
 });
 app.use((req, res, next) => {
-    console.log(`Received request: ${req.method} ${req.url}`);
-    console.log('Headers:', req.headers);
+    // console.log(`Received request: ${req.method} ${req.url}`);
+    // console.log('Headers:', req.headers);
     next();
 });
 
@@ -379,7 +379,7 @@ app.get('/api/user-dashboards/:userId', verifyToken, async (req, res) => {
 
 // Delete a dashboard and all its associated graphs
 app.delete('/api/delete-dashboard-collection/:dashboardId', verifyToken, async (req, res) => {
-    console.log("🔥 DELETE DASHBOARD COLLECTION HIT", req.params.dashboardId);
+    // console.log("🔥 DELETE DASHBOARD COLLECTION HIT", req.params.dashboardId);
     const { dashboardId } = req.params;
 
     try {
@@ -400,7 +400,7 @@ app.delete('/api/delete-dashboard-collection/:dashboardId', verifyToken, async (
 // Delete a saved dashboard by ID
 app.delete('/api/delete-dashboard/:id', verifyToken, async (req, res) => {
     const { id } = req.params;
-   console.log("🔥 DELETE DASHBOARD COLLECTION HIT", id );
+   // console.log("🔥 DELETE DASHBOARD COLLECTION HIT", id );
     try {
         await pool.query('DELETE FROM saved_graphs WHERE id = $1', [id]);
         res.status(204).send(); // 204 = No Content, which is OK

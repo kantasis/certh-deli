@@ -20,7 +20,7 @@ function Spring_Data(){
    axios.get(url)
    .then( (response) => {
 
-      console.log(response);
+      // console.log(response);
       // response.data
       // response.headers
       // response.status

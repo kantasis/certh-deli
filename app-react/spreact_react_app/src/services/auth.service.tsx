@@ -59,7 +59,7 @@ export const register = async (
 ): Promise<AuthUser> => {
    try {
       const res = await axios.post(API_URL + "register", { username, email, password, name, surname });
-      console.log("Registration successful:", res.data);
+      // console.log("Registration successful:", res.data);
       return res.data;
    } catch (error: any) {
       if (error.response) {

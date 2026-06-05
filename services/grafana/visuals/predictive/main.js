@@ -8,7 +8,7 @@ function getQueryResult(query_name) {
      )
      ;
    if (!result)
-     console.log(`Error: Query with name ${query_name} not found`)
+     // console.log(`Error: Query with name ${query_name} not found`)
    return result['fields'];
  }
  
@@ -18,7 +18,7 @@ function getQueryResult(query_name) {
  
  const filter_str = getVariable('riskFactor_filter');
  
- console.log(filter_str)
+ // console.log(filter_str)
  
  const queryResult = getQueryResult('deli_predictive_query')
  
