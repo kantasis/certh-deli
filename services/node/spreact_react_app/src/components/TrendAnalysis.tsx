@@ -901,7 +901,7 @@ const EuropeMap = () => {
     useEffect(() => {
         const TOKEN_KEY = "oncodir_token";
         const TOKEN_TS_KEY = "oncodir_token_ts";
-        const ONE_DAY = 24 * 60 * 60 * 1000;
+        const ONE_DAY = 50 * 60 * 1000; // 50 min — stays under the 1h DELI session TTL
 
         const isProduction = import.meta.env.MODE === "production";
         const host = import.meta.env.VITE_AUTHENTICATION_HOST;
@@ -920,12 +920,15 @@ const EuropeMap = () => {
             }
 
             const user = JSON.parse(localStorage.getItem("user") || "{}");
-            const userJwt = user?.accessToken || '';
+            const userJwt = user?.token || '';
+
+            if (!userJwt) return; // not logged in, skip silently
 
             try {
                 const res = await fetch(BIAS_TOKEN_URL, {
                     headers: { Authorization: `Bearer ${userJwt}` },
                 });
+                if (res.status === 401) return; // session expired — user must re-login
                 if (!res.ok) throw new Error(`HTTP ${res.status}`);
                 const { token: newToken } = await res.json();
                 localStorage.setItem(TOKEN_KEY, newToken);
