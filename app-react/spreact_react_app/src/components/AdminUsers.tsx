@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import Unauthorized from './Unauthorized';
 import * as AuthService from "../services/auth.service";
 import * as UserService from "../services/user.service";
@@ -54,10 +55,12 @@ const IconClose = () => (
 );
 
 const AdminUsers: React.FC = () => {
+    const location = useLocation();
     const [users, setUsers] = useState<User[]>([]);
     const [pendingUsers, setPendingUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState(true);
-    const [activeTab, setActiveTab] = useState<'users' | 'pending'>('users');
+    const initialTab = location.state?.tab === 'pending' ? 'pending' : 'users';
+    const [activeTab, setActiveTab] = useState<'users' | 'pending'>(initialTab);
     const [editUser, setEditUser] = useState<User | null>(null);
     const [editRolesUser, setEditRolesUser] = useState<User | null>(null);
     const [editRoles, setEditRoles] = useState<string[]>([]);
@@ -103,6 +106,16 @@ const AdminUsers: React.FC = () => {
         fetchUsers();
     }, [isAuthorized]);
 
+    // Sync pending users from the navbar bell's poll instead of running a separate interval
+    useEffect(() => {
+        if (!isAuthorized || activeTab !== 'pending') return;
+        const onPolled = (e: Event) => {
+            setPendingUsers((e as CustomEvent).detail);
+        };
+        window.addEventListener("pendingUsersPolled", onPolled);
+        return () => window.removeEventListener("pendingUsersPolled", onPolled);
+    }, [isAuthorized, activeTab]);
+
     if (loading) return (
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "320px" }}>
             <div className="spinner" aria-label="Loading users" />
@@ -140,6 +153,7 @@ const AdminUsers: React.FC = () => {
             await UserService.approveUser(id);
             showToast("User approved successfully", "success");
             await refreshUsers();
+            window.dispatchEvent(new CustomEvent("pendingUsersChanged"));
         } catch {
             showToast("Failed to approve user", "error");
         }
@@ -150,6 +164,7 @@ const AdminUsers: React.FC = () => {
             await UserService.rejectUser(id);
             showToast("User rejected and removed", "success");
             await refreshUsers();
+            window.dispatchEvent(new CustomEvent("pendingUsersChanged"));
         } catch {
             showToast("Failed to reject user", "error");
         }
