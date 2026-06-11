@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find \"\\\\\\\\wsl.localhost\\\\Ubuntu\\\\home\\\\leokalpakis\\\\certh-deli\\\\services\\\\spring\" -type f -name \"*.java\")",
+      "Bash(ls -la \"\\\\\\\\wsl.localhost\\\\Ubuntu\\\\home\\\\leokalpakis\\\\certh-deli\\\\services\\\\spring\")",
+      "Bash(find \"\\\\\\\\wsl.localhost\\\\Ubuntu\\\\home\\\\leokalpakis\\\\certh-deli\\\\app-react\\\\spreact_react_app\\\\src\\\\components\" -name \"*Board*\" -o -name \"*Admin*\" -o -name \"*Unauthorized*\")",
+      "Bash(cd \"\\\\\\\\wsl.localhost\\\\Ubuntu\\\\home\\\\leokalpakis\\\\certh-deli\")",
+      "Bash(python3 .claude/skills/ui-ux-pro-max/scripts/search.py \"healthcare medical analytics dashboard professional\" --design-system -f markdown)",
+      "Bash(python3 \".claude/skills/ui-ux-pro-max/scripts/search.py\" \"healthcare medical analytics dashboard professional\" --design-system -f markdown)"
+    ]
+  }
+}
