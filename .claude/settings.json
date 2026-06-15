@@ -6,7 +6,13 @@
       "Bash(find \"\\\\\\\\wsl.localhost\\\\Ubuntu\\\\home\\\\leokalpakis\\\\certh-deli\\\\app-react\\\\spreact_react_app\\\\src\\\\components\" -name \"*Board*\" -o -name \"*Admin*\" -o -name \"*Unauthorized*\")",
       "Bash(cd \"\\\\\\\\wsl.localhost\\\\Ubuntu\\\\home\\\\leokalpakis\\\\certh-deli\")",
       "Bash(python3 .claude/skills/ui-ux-pro-max/scripts/search.py \"healthcare medical analytics dashboard professional\" --design-system -f markdown)",
-      "Bash(python3 \".claude/skills/ui-ux-pro-max/scripts/search.py\" \"healthcare medical analytics dashboard professional\" --design-system -f markdown)"
+      "Bash(python3 \".claude/skills/ui-ux-pro-max/scripts/search.py\" \"healthcare medical analytics dashboard professional\" --design-system -f markdown)",
+      "Bash(docker compose *)",
+      "PowerShell(docker exec deli_express_container node -e \"import\\('axios'\\).then\\(m => m.default.get\\('https://oncodir-datapi.catalink.eu/v1/data-fusion/extra/aggregation?country=Greece', {timeout:10000}\\).then\\(r => console.log\\('OK', r.status, JSON.stringify\\(r.data\\).slice\\(0,100\\)\\)\\).catch\\(e => console.error\\('FAIL:', e.message, e.code\\)\\)\\)\" 2>&1)",
+      "PowerShell(docker exec deli_express_container cat /etc/resolv.conf 2>&1)",
+      "PowerShell(docker exec deli_express_container node -e \"const dns = require\\('dns'\\); dns.resolve4\\('google.com', \\(e,a\\) => console.log\\(e?.message ?? a\\)\\)\" 2>&1)",
+      "PowerShell(docker exec deli_express_container node -e \"const dns = require\\('dns'\\); dns.resolve4\\('oncodir-datapi.catalink.eu', \\(e,a\\) => console.log\\(e?.message ?? a\\)\\)\" 2>&1)",
+      "PowerShell(nslookup oncodir-datapi.catalink.eu 2>&1)"
     ]
   }
 }

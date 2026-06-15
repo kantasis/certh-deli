@@ -138,7 +138,10 @@ option = {
       left: 'left',
       top: 'bottom',
       text: ['High', 'Low'],
-      calculable: true
+      calculable: true,
+      inRange: {
+         color: ['#d73027', '#fee08b', '#ffff33']
+      }
    },
    series: [
       {
