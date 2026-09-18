@@ -22,8 +22,11 @@ const accordionContentAggregation_dictLst = [
                     <li style={{ marginBottom: 8 }}>
                         <strong>Data collection:</strong> Preparations for citizen enrollment began in September 2024, and the main study period ran from October to December 2024. By late November 2024, 46 participants were enrolled (40 in Greece, 3 in Lithuania, 1 in Luxembourg, 2 in Romania). Only Greek participants were used in this analysis.
                     </li>
-                    <li>
+                    <li style={{ marginBottom: 8 }}>
                         <strong>Variables:</strong> The dataset includes both <strong>static variables</strong> (demographics, lifestyle, socioeconomic status, clinical history) and <strong>non-static variables</strong> (nutritional habits, CRC risk assessment scores via PYRAMID), collected bi-weekly.
+                    </li>
+                    <li>
+                        <strong>Disclaimer:</strong> Prospective citizen data were used only in aggregated form, and only aggregated results are displayed in the DELI dashboard, ensuring that sensitive personal data remains protected.
                     </li>
                 </ul>
             </div>
@@ -317,6 +320,13 @@ const populationGroupsScatterData = [
     { X: -1.619146205, Y: -1.181300452, cluster: 12, variables: "Age_group: Not answered, BMI_group: Not answered, Biological Sex: Not answered, Smoking status: I have never smoked, Activity level: Somewhat active, Education: Postgraduate education (Master's degree, PhD), Employment: Retired, Region: Suburban, Occupation: ['Don't know / No answer','Manager','Professional']", score: 4 },
 ];
 
+const countryCode: Record<string, string> = { Greece: "GR", Romania: "RO", Lithuania: "LT" };
+const countryPilotLabel: Record<string, JSX.Element> = {
+    Greece: <><strong>LIT2</strong> (Greece)</>,
+    Romania: <><strong>LIP1</strong> (Romania)</>,
+    Lithuania: <><strong>LIP1</strong> (Lithuania)</>,
+};
+
 const riskScoreColor: Record<number, string> = { 2: "#16a34a", 3: "#d97706", 4: "#dc2626" };
 const clusterColors = ["#1f77b4","#aec7e8","#ff7f0e","#2ca02c","#d62728","#9467bd","#8c564b","#e377c2","#7f7f7f","#bcbd22","#17becf","#9edae5"];
 
@@ -326,6 +336,8 @@ const AggregationAnalysis = () => {
     const [selectedVariable, setSelectedVariable] = useState("");
     const [selectedPeriodType, setSelectedPeriodType] = useState("");
     const [selectedTimePeriod, setSelectedTimePeriod] = useState("");
+    const [searchParams] = useSearchParams();
+    const [selectedCountry, setSelectedCountry] = useState(() => searchParams.get("country") || "");
     const [showModal, setShowModal] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
     const [data, setData] = useState<any[]>([]);
@@ -344,15 +356,19 @@ const AggregationAnalysis = () => {
     const variables = useMemo(() => [...new Set(data.map((d) => d.Variable))], [data]);
     const periodTypes = ["Week", "Month"];
 
-    const [searchParams] = useSearchParams();
-    const country = searchParams.get("country");
+    const effectiveCountry = selectedCountry;
 
     useEffect(() => {
+        if (!effectiveCountry) {
+            setData([]);
+            setLoading(false);
+            return;
+        }
         const fetchData = async () => {
             try {
                 setLoading(true);
                 const response = await axios.get(
-                    `https://oncodir-datapi.catalink.eu/v1/data-fusion/extra/aggregation?country=${encodeURIComponent(country ?? "")}`
+                    `https://oncodir-datapi.catalink.eu/v1/data-fusion/extra/aggregation?country=${encodeURIComponent(effectiveCountry ?? "")}`
                 );
                 if (Array.isArray(response.data.results)) {
                     setData(response.data.results);
@@ -366,14 +382,14 @@ const AggregationAnalysis = () => {
             }
         };
         fetchData();
-    }, [country]);
+    }, [effectiveCountry]);
 
     useEffect(() => {
         setSelectedVariable("");
         setSelectedPeriodType("");
         setSelectedTimePeriod("");
         setCurrentPage(1);
-    }, [country]);
+    }, [effectiveCountry]);
 
     const timePeriods = useMemo(() => {
         if (!barChartVarsTime.includes(selectedVariable)) return [];
@@ -449,7 +465,7 @@ const AggregationAnalysis = () => {
             }
             return matchesVariable && matchesPeriodType && matchesTimePeriod;
         });
-    }, [data, selectedVariable, selectedPeriodType, selectedTimePeriod, country]);
+    }, [data, selectedVariable, selectedPeriodType, selectedTimePeriod, effectiveCountry]);
 
     useEffect(() => { setCurrentPage(1); }, [filteredData]);
 
@@ -755,7 +771,9 @@ const AggregationAnalysis = () => {
                     <h1>
                         {isPopulationGroups
                             ? "CRC Incidence Population Groups"
-                            : "Aggregation Analysis (GR)"}
+                            : effectiveCountry && countryCode[effectiveCountry]
+                                ? `Aggregation Analysis (${countryCode[effectiveCountry]})`
+                                : "Aggregation Analysis"}
                     </h1>
                     <p>
                         {isPopulationGroups
@@ -771,19 +789,36 @@ const AggregationAnalysis = () => {
                         {!isPopulationGroups && (
                             <>
                                 <div className="aa-sidebar-card">
-                                    <label className="filter-label" htmlFor="aa-variable-select">Variable</label>
+                                    <label className="filter-label" htmlFor="aa-country-select">Country</label>
                                     <select
-                                        id="aa-variable-select"
+                                        id="aa-country-select"
                                         className="form-select"
-                                        value={selectedVariable}
-                                        onChange={(e) => setSelectedVariable(e.target.value)}
+                                        value={selectedCountry}
+                                        onChange={(e) => setSelectedCountry(e.target.value)}
                                     >
-                                        <option value="">Select variable…</option>
-                                        {variables.map((v, i) => (
-                                            <option key={i} value={v as string}>{v as string}</option>
-                                        ))}
+                                        <option value="">Select country…</option>
+                                        <option value="Greece">Greece</option>
+                                        <option value="Romania">Romania</option>
+                                        <option value="Lithuania">Lithuania</option>
                                     </select>
                                 </div>
+
+                                {effectiveCountry && (
+                                    <div className="aa-sidebar-card">
+                                        <label className="filter-label" htmlFor="aa-variable-select">Variable</label>
+                                        <select
+                                            id="aa-variable-select"
+                                            className="form-select"
+                                            value={selectedVariable}
+                                            onChange={(e) => setSelectedVariable(e.target.value)}
+                                        >
+                                            <option value="">Select variable…</option>
+                                            {variables.map((v, i) => (
+                                                <option key={i} value={v as string}>{v as string}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                )}
 
                                 {barChartVarsTime.includes(selectedVariable) && (
                                     <div className="aa-sidebar-card" style={{ display: "flex", flexDirection: "column", gap: 14 }}>
@@ -919,14 +954,20 @@ const AggregationAnalysis = () => {
                             <>
                                 {!selectedVariable && (
                                     <div className="aa-intro">
-                                        <p>
-                                            Through this tab, users can explore insights from{" "}
-                                            {country === "Greece" ? <><strong>LIT2</strong> (Greece)</> : country === "Romania" ? <><strong>LIP1</strong> (Romania)</> : <strong>{country}</strong>}.
-                                        </p>
-                                        <p>
-                                            The <strong>Aggregation Analysis</strong> summarizes data from the NELI mobile app (T4.2), providing population-level insights across <strong>{country}</strong>.
-                                        </p>
-                                        <p>Please select a variable from the dropdown on the left.</p>
+                                        {!effectiveCountry ? (
+                                            <p>Please select a country (Greece, Romania, or Lithuania) from the dropdown on the left to begin.</p>
+                                        ) : (
+                                            <>
+                                                <p>
+                                                    Through this tab, users can explore insights from{" "}
+                                                    {countryPilotLabel[effectiveCountry] ?? <strong>{effectiveCountry}</strong>}.
+                                                </p>
+                                                <p>
+                                                    The <strong>Aggregation Analysis</strong> summarizes data from the NELI mobile app (T4.2), providing population-level insights across <strong>{effectiveCountry}</strong>.
+                                                </p>
+                                                <p>Please select a variable from the dropdown on the left.</p>
+                                            </>
+                                        )}
                                     </div>
                                 )}
 
@@ -946,6 +987,9 @@ const AggregationAnalysis = () => {
                                 {!loading && !error && selectedVariable && filteredData.length > 0 && (
                                     <>
                                         <div className="aa-chart-wrapper">
+                                            <h1 style={{ textAlign: "center", fontWeight: 700, fontSize: "18px", color: "var(--text, #0f172a)", margin: "16px 0 0" }}>
+                                                {selectedVariable}
+                                            </h1>
                                             {chartType === "pie-detailed" && (
                                                 <ReactECharts key={`${selectedVariable}-pie-detailed`} option={getPieOptions()} style={{ height: 440, width: "100%" }} />
                                             )}

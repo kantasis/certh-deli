@@ -12,7 +12,27 @@
       "PowerShell(docker exec deli_express_container cat /etc/resolv.conf 2>&1)",
       "PowerShell(docker exec deli_express_container node -e \"const dns = require\\('dns'\\); dns.resolve4\\('google.com', \\(e,a\\) => console.log\\(e?.message ?? a\\)\\)\" 2>&1)",
       "PowerShell(docker exec deli_express_container node -e \"const dns = require\\('dns'\\); dns.resolve4\\('oncodir-datapi.catalink.eu', \\(e,a\\) => console.log\\(e?.message ?? a\\)\\)\" 2>&1)",
-      "PowerShell(nslookup oncodir-datapi.catalink.eu 2>&1)"
+      "PowerShell(nslookup oncodir-datapi.catalink.eu 2>&1)",
+      "Read(//mnt/c/Users/leokalpakis/.claude/projects/**)",
+      "Read(//c/Users/leokalpakis/.claude/projects/--wsl-localhost-Ubuntu-home-leokalpakis-certh-deli//**)",
+      "Bash(ls -la \"/mnt/c/Users/leokalpakis/.claude/projects/\" 2>/dev/null)",
+      "Read(//mnt/c/Users/leokalpakis/.claude/**)",
+      "Bash(ls -la \"/c/Users/leokalpakis/.claude/projects/\" 2>&1)",
+      "Read(//c/Users/leokalpakis/.claude/projects//**)",
+      "Bash(ls -la \"/c/Users/leokalpakis/.claude/\" 2>&1)",
+      "Read(//c/Users/leokalpakis/.claude//**)",
+      "Read(//c/Users/leokalpakis/.claude/**)",
+      "Bash(find \"/c/Users/leokalpakis/.claude/backups\" -iname \"*certh-deli*\" 2>&1 | head -50)",
+      "Read(//c/Users/leokalpakis/.claude/backups/**)",
+      "Bash(git fetch *)",
+      "Bash(git rev-list *)",
+      "Bash(stat -c '%y %n' .git/refs/remotes/origin/new-ui 2>&1; echo \"---\"; git reflog show --date=iso origin/new-ui 2>&1 | head -5; echo \"---remote url---\"; git remote -v)",
+      "Read(///wsl.localhost/Ubuntu/home/leokalpakis/certh-deli/**)",
+      "Bash(ssh -T git@github.com)",
+      "Bash(echo \"---exit:$?---\")",
+      "Bash(ssh -v -i ~/.ssh/id_rsa -T git@github.com)",
+      "Bash(docker run *)",
+      "Bash(git log *)"
     ]
   }
 }

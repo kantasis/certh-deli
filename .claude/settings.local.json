@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls \\\\\\\\wsl.localhost\\\\Ubuntu\\\\home\\\\leokalpakis\\\\certh-deli)",
+      "Bash(dir \"\\\\\\\\wsl.localhost\\\\Ubuntu\\\\home\\\\leokalpakis\\\\certh-deli\")",
+      "Bash(python3 .claude/skills/ui-ux-pro-max/scripts/search.py \"healthcare analytics dashboard epidemiology medical data SaaS\" --design-system -p \"CERTH DELI\")",
+      "Bash(python3 .claude/skills/ui-ux-pro-max/scripts/search.py \"dashboard filter accessibility animation\" --domain ux -n 8)",
+      "Bash(python3 .claude/skills/ui-ux-pro-max/scripts/search.py \"analytics chart dashboard\" --stack react)"
+    ]
+  }
+}
