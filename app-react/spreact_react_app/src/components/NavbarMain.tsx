@@ -220,30 +220,17 @@ const NavbarMain: React.FC = () => {
                hint: "Pilot-specific analyses and integrated summaries.",
             },
 
-            { label: "LIT2 (Greece)", isSection: true },
-
             {
-               label: "Aggregation Analysis (GR)",
-               href: "/lip2-aggregation-analysis?country=Greece",
+               label: "Aggregation Analysis",
+               href: "/lip2-aggregation-analysis",
                hint: "Pilot-specific aggregation results (integrated analytics & policy relevance).",
             },
-
-
 
             {
                label: "CRC Incidence Population Groups",
                href: "/lip2-population-groups",
                hint: "Clustering analysis based on LIT-02 data to identify 12 CRC Incidence population groups for LiP-02",
             },
-
-            // { label: "LIP1 (Romania)", isSection: true },
-
-            // {
-            //    label: "Aggregation Analysis (RO)",
-            //    href: "/lip2-aggregation-analysis?country=Romania",
-            //    hint: "Pilot-specific aggregation results (integrated analytics & policy relevance).",
-            // },
-
 
          ],
       },
