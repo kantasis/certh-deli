@@ -166,7 +166,6 @@ const NavbarMain: React.FC = () => {
                   { label: "Forecasting CRC", href: "crc-trend-and-association-analysis?tab=forecasting-crc", hint: "Short-term extrapolations from historical data." },
                ],
             },
-            { label: "Spanish CRC Regional Data", href: "/LIT03", hint: "Subnational CRC mortality and risk factor patterns." },
          ],
       },
       {
@@ -222,7 +221,7 @@ const NavbarMain: React.FC = () => {
 
             {
                label: "Aggregation Analysis",
-               href: "/lip2-aggregation-analysis",
+               href: "/aggregation-analysis",
                hint: "Pilot-specific aggregation results (integrated analytics & policy relevance).",
             },
 
@@ -231,6 +230,8 @@ const NavbarMain: React.FC = () => {
                href: "/lip2-population-groups",
                hint: "Clustering analysis based on LIT-02 data to identify 12 CRC Incidence population groups for LiP-02",
             },
+
+            { label: "Spanish CRC Regional Data", href: "/LIT03", hint: "Subnational CRC mortality and risk factor patterns." },
 
          ],
       },

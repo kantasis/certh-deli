@@ -324,7 +324,7 @@ const countryCode: Record<string, string> = { Greece: "GR", Romania: "RO", Lithu
 const countryPilotLabel: Record<string, JSX.Element> = {
     Greece: <><strong>LIT2</strong> (Greece)</>,
     Romania: <><strong>LIP1</strong> (Romania)</>,
-    Lithuania: <><strong>LIP1</strong> (Lithuania)</>,
+    Lithuania: <><strong>LIP-03</strong> (Lithuania)</>,
 };
 
 const riskScoreColor: Record<number, string> = { 2: "#16a34a", 3: "#d97706", 4: "#dc2626" };

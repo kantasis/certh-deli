@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
+import { Routes, Route, useLocation, useNavigate, Navigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
 import "./index.css";
@@ -33,6 +33,11 @@ import AuditLog from "./components/AuditLog.tsx";
 import SessionPage from "./components/SessionPage.tsx";
 
 const PUBLIC_PATHS = ['/login', '/register', '/', '/home'];
+
+const LegacyAggregationAnalysisRedirect: React.FC = () => {
+   const location = useLocation();
+   return <Navigate to={`/aggregation-analysis${location.search}`} replace />;
+};
 
 const clearSession = () => {
    localStorage.removeItem("user");
@@ -105,7 +110,8 @@ const App: React.FC = () => {
                <Route path="/LIT03" element={< LIT03 />} />
                <Route path="/crc-trend-and-association-analysis" element={< TrendAnalysis />} />
                <Route path="/comments" element={< PreviousComments />} />
-               <Route path="/lip2-aggregation-analysis" element={<LIP2 />} />
+               <Route path="/aggregation-analysis" element={<LIP2 />} />
+               <Route path="/lip2-aggregation-analysis" element={<LegacyAggregationAnalysisRedirect />} />
                <Route path="/lip2-population-groups" element={<LIP2 />} />
                {/* <Route path="/nutritionPanel" element={<NutritionPanel />} />
                <Route path="/lifestylePanel" element={<LifestylePanel />} /> */}
