@@ -727,20 +727,10 @@ const riskFactors = [
     "High systolic blood pressure",
 ];
 
-const domainMeta: Record<string, { bg: string; color: string }> = {
-    "Smoking":           { bg: "#fee2e2", color: "#991b1b" },
-    "Alcohol Consumption": { bg: "#fef3c7", color: "#92400e" },
-    "Diet & Eating Habits": { bg: "#d1fae5", color: "#065f46" },
-    "Physical Activity": { bg: "#dbeafe", color: "#1e40af" },
-    "Health Literacy":   { bg: "#ede9fe", color: "#5b21b6" },
-    "Health Promotion":  { bg: "#fce7f3", color: "#9d174d" },
-    "R&D":               { bg: "#e0f2fe", color: "#0c4a6e" },
-};
-
 const LargeScaleIntervention = () => {
     const [selectedIntervention, setSelectedIntervention] = useState("");
     const [selectedRiskFactor, setSelectedRiskFactor] = useState("");
-    const [expandedRow, setExpandedRow] = useState<string | null>(null);
+    const [expanded, setExpanded] = useState<string | null>(null); // `${rowKey}|info` or `${rowKey}|rec`
     const [isLoggedIn, setIsLoggedIn] = useState(() => AuthService.isLoggedIn());
 
     useEffect(() => {
@@ -807,17 +797,28 @@ const LargeScaleIntervention = () => {
                     overflow: hidden;
                     background: var(--bg, #fff);
                 }
-                .li-table { width: 100%; border-collapse: collapse; font-size: 15px; }
+                .li-table {
+                    width: 100%;
+                    table-layout: fixed;
+                    border-collapse: collapse;
+                    font-size: 14px;
+                }
+                .li-table td { overflow-wrap: break-word; }
                 .li-table thead th {
                     background: var(--muted, #f5f7fb);
-                    font-size: 12px;
+                    font-size: 11px;
                     font-weight: 700;
                     text-transform: uppercase;
-                    letter-spacing: 0.06em;
                     color: var(--text-muted, #475569);
-                    padding: 10px 14px;
+                    padding: 10px 8px;
                     border-bottom: 1px solid var(--border, #e5e7eb);
-                    white-space: nowrap;
+                    white-space: normal;
+                    overflow-wrap: normal;
+                    word-break: keep-all;
+                    hyphens: none;
+                    line-height: 1.3;
+                    vertical-align: bottom;
+                    letter-spacing: 0.02em;
                     position: sticky;
                     top: 0;
                     z-index: 1;
@@ -833,12 +834,25 @@ const LargeScaleIntervention = () => {
                 .li-name-hint { border-bottom: 1px dotted var(--text-muted, #94a3b8); cursor: help; }
                 .li-reach { font-size: 13.5px; line-height: 1.5; color: var(--text, #0f172a); }
                 .li-nores { font-size: 13px; color: var(--text-muted, #94a3b8); font-style: italic; }
+                .li-diagnostic {
+                    margin-top: 6px; padding-top: 6px;
+                    border-top: 1px dashed var(--border, #e5e7eb);
+                    font-size: 12.5px; line-height: 1.5; color: var(--text-muted, #475569);
+                }
+                .li-diagnostic strong { color: var(--text, #0f172a); }
+                .li-details-btn {
+                    display: inline-flex; align-items: center; gap: 5px;
+                    margin-top: 6px; padding: 0; border: none; background: none;
+                    cursor: pointer; font-size: 12px; font-weight: 600;
+                    color: var(--brand-dark, #185569);
+                }
+                .li-details-btn:hover { text-decoration: underline; }
+                .li-groups { font-size: 13px; line-height: 1.5; color: var(--text, #0f172a); }
                 .li-expand-btn {
                     display: inline-flex; align-items: center; gap: 6px;
                     background: none; border: 1px solid var(--border, #e5e7eb);
                     border-radius: 999px; padding: 3px 11px; cursor: pointer;
                     font-size: 12.5px; font-weight: 600; color: var(--brand-dark, #185569);
-                    white-space: nowrap;
                 }
                 .li-expand-btn:hover { background: var(--muted, #f5f7fb); }
                 .li-detail-cell {
@@ -950,8 +964,8 @@ const LargeScaleIntervention = () => {
             <div className="container-fluid li-page">
 
                 <div className="li-header">
-                    <h1>LIP2</h1>
-                    <p>Pilot-specific analyses and integrated summaries.</p>
+                    <h1>Greek Pilot Study</h1>
+                    <p>Delivering primary prevention interventions for CRC in Greece.</p>
                 </div>
 
                 <div className="row g-3">
@@ -1005,10 +1019,11 @@ const LargeScaleIntervention = () => {
                                 <circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>
                             </svg>
                             <span>
-                                Results shown are drawn from the LiP-02 piloted interventions. Interventions marked
+                                Interventions marked
                                 &ldquo;No results reported&rdquo; were not implemented during the pilot. Hover an intervention
-                                name to see its description, and expand a row to view the full recommendations,
-                                mapped population clusters, barriers and facilitators.
+                                name to see its description, and use &ldquo;Show details&rdquo; in any column to view the
+                                related risk factors, mapped population clusters, key diagnostic, barriers and
+                                facilitators, or the recommendations generated.
                             </span>
                         </div>
 
@@ -1024,26 +1039,41 @@ const LargeScaleIntervention = () => {
                                 <table className="li-table">
                                     <thead>
                                         <tr>
-                                            <th>
+                                            <th style={{ width: "17%" }}>
                                                 Intervention
                                                 <span className="li-count-badge">{filteredData.length}</span>
                                             </th>
-                                            <th>Domain</th>
-                                            <th>Related Risk Factors</th>
-                                            <th>Effectiveness</th>
-                                            <th>Relevant Recommendations</th>
+                                            <th style={{ width: "10%" }}>Related Risk Factors</th>
+                                            <th style={{ width: "10%" }}>Targeted Groups</th>
+                                            <th style={{ width: "11%" }}>Identified Inequalities</th>
+                                            <th style={{ width: "10%" }}>Population Clusters</th>
+                                            <th style={{ width: "19%" }}>Effectiveness</th>
+                                            <th style={{ width: "11%" }}>Barriers &amp; Facilitators</th>
+                                            <th style={{ width: "12%" }}>Relevant Recommendations</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {filteredData.map((row) => {
-                                            const meta = domainMeta[row.category] ?? { bg: "#f3f4f6", color: "#374151" };
                                             const rowKey = `${row.name}-${row.category}`;
-                                            const isOpen = expandedRow === rowKey;
+                                            const effOpen = expanded === `${rowKey}|eff`;
+                                            const clOpen = expanded === `${rowKey}|cl`;
+                                            const rfOpen = expanded === `${rowKey}|rf`;
+                                            const bfOpen = expanded === `${rowKey}|bf`;
+                                            const recOpen = expanded === `${rowKey}|rec`;
                                             const recCount = row.recommendations?.length ?? 0;
+                                            const bfCount =
+                                                (row.behaviouralBarriers?.length ?? 0) +
+                                                (row.structuralBarriers?.length ?? 0) +
+                                                (row.facilitators?.length ?? 0);
+                                            const chevron = (open: boolean) => (
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24" aria-hidden="true" style={{ transform: open ? "rotate(180deg)" : undefined }}>
+                                                    <polyline points="6 9 12 15 18 9"/>
+                                                </svg>
+                                            );
                                             return (
                                                 <Fragment key={rowKey}>
                                                 <tr>
-                                                    <td style={{ minWidth: 200 }}>
+                                                    <td>
                                                         <span
                                                             className={`li-intervention-name${row.details ? " li-name-hint" : ""}`}
                                                             title={row.details || undefined}
@@ -1051,92 +1081,141 @@ const LargeScaleIntervention = () => {
                                                             {row.name}
                                                         </span>
                                                     </td>
-                                                    <td style={{ whiteSpace: "nowrap" }}>
-                                                        <span
-                                                            className="li-domain-chip"
-                                                            style={{ background: meta.bg, color: meta.color }}
-                                                        >
-                                                            {row.category}
-                                                        </span>
+                                                    <td>
+                                                        {row.riskFactors.length ? (
+                                                            <button
+                                                                className="li-details-btn"
+                                                                onClick={() => setExpanded(rfOpen ? null : `${rowKey}|rf`)}
+                                                                aria-expanded={rfOpen}
+                                                            >
+                                                                {rfOpen ? "Hide details" : "Show details"}
+                                                                {chevron(rfOpen)}
+                                                            </button>
+                                                        ) : <span className="li-nores">&mdash;</span>}
                                                     </td>
                                                     <td>
-                                                        {row.riskFactors.map((rf, i) => (
-                                                            <span key={i} className="li-rf-tag">{rf}</span>
-                                                        ))}
+                                                        {row.targetedGroups?.length
+                                                            ? <span className="li-groups">{row.targetedGroups.join(", ")}</span>
+                                                            : <span className="li-nores">&mdash;</span>}
                                                     </td>
-                                                    <td style={{ minWidth: 220 }}>
-                                                        {row.reach
-                                                            ? <span className="li-reach">{row.reach}</span>
-                                                            : <span className="li-nores">No results reported</span>}
+                                                    <td>
+                                                        {row.inequalities ? (
+                                                            <span
+                                                                className="li-ineq-chip"
+                                                                style={row.inequalities.toUpperCase() === "YES"
+                                                                    ? { background: "#fee2e2", color: "#991b1b" }
+                                                                    : { background: "#dcfce7", color: "#166534" }}
+                                                            >
+                                                                {row.inequalities.toUpperCase()}
+                                                            </span>
+                                                        ) : <span className="li-nores">&mdash;</span>}
                                                     </td>
-                                                    <td style={{ whiteSpace: "nowrap" }}>
+                                                    <td>
+                                                        {row.clusters?.length ? (
+                                                            <button
+                                                                className="li-details-btn"
+                                                                onClick={() => setExpanded(clOpen ? null : `${rowKey}|cl`)}
+                                                                aria-expanded={clOpen}
+                                                            >
+                                                                {clOpen ? "Hide details" : "Show details"}
+                                                                {chevron(clOpen)}
+                                                            </button>
+                                                        ) : <span className="li-nores">&mdash;</span>}
+                                                    </td>
+                                                    <td>
+                                                        {row.reach ? (
+                                                            <>
+                                                                <span className="li-reach">{row.reach}</span>
+                                                                {row.diagnostic && (
+                                                                    <div>
+                                                                        <button
+                                                                            className="li-details-btn"
+                                                                            onClick={() => setExpanded(effOpen ? null : `${rowKey}|eff`)}
+                                                                            aria-expanded={effOpen}
+                                                                        >
+                                                                            {effOpen ? "Hide details" : "Show details"}
+                                                                            {chevron(effOpen)}
+                                                                        </button>
+                                                                    </div>
+                                                                )}
+                                                            </>
+                                                        ) : <span className="li-nores">No results reported</span>}
+                                                    </td>
+                                                    <td>
+                                                        {bfCount > 0 ? (
+                                                            <button
+                                                                className="li-details-btn"
+                                                                onClick={() => setExpanded(bfOpen ? null : `${rowKey}|bf`)}
+                                                                aria-expanded={bfOpen}
+                                                            >
+                                                                {bfOpen ? "Hide details" : "Show details"}
+                                                                {chevron(bfOpen)}
+                                                            </button>
+                                                        ) : (
+                                                            <span className="li-nores">&mdash;</span>
+                                                        )}
+                                                    </td>
+                                                    <td>
                                                         {recCount > 0 ? (
                                                             <button
-                                                                className="li-expand-btn"
-                                                                onClick={() => setExpandedRow(isOpen ? null : rowKey)}
-                                                                aria-expanded={isOpen}
+                                                                className="li-details-btn"
+                                                                onClick={() => setExpanded(recOpen ? null : `${rowKey}|rec`)}
+                                                                aria-expanded={recOpen}
                                                             >
-                                                                {recCount} recommendation{recCount === 1 ? "" : "s"}
-                                                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24" aria-hidden="true" style={{ transform: isOpen ? "rotate(180deg)" : undefined }}>
-                                                                    <polyline points="6 9 12 15 18 9"/>
-                                                                </svg>
+                                                                {recOpen ? "Hide details" : "Show details"}
+                                                                {chevron(recOpen)}
                                                             </button>
                                                         ) : (
                                                             <span className="li-nores">&mdash;</span>
                                                         )}
                                                     </td>
                                                 </tr>
-                                                {isOpen && (
+                                                {effOpen && (
                                                     <tr>
-                                                        <td className="li-detail-cell" colSpan={5}>
+                                                        <td className="li-detail-cell" colSpan={8}>
                                                             <div className="li-detail-grid">
                                                                 <div className="li-detail-block li-detail-wide">
-                                                                    <h4>Recommendations generated</h4>
+                                                                    <h4>Key diagnostic</h4>
+                                                                    <p>{row.diagnostic}</p>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                )}
+                                                {rfOpen && (
+                                                    <tr>
+                                                        <td className="li-detail-cell" colSpan={8}>
+                                                            <div className="li-detail-grid">
+                                                                <div className="li-detail-block li-detail-wide">
+                                                                    <h4>Related risk factors</h4>
+                                                                    <div>
+                                                                        {row.riskFactors.map((rf, i) => (
+                                                                            <span key={i} className="li-rf-tag">{rf}</span>
+                                                                        ))}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                )}
+                                                {clOpen && (
+                                                    <tr>
+                                                        <td className="li-detail-cell" colSpan={8}>
+                                                            <div className="li-detail-grid">
+                                                                <div className="li-detail-block li-detail-wide">
+                                                                    <h4>Mapped population clusters</h4>
                                                                     <ul>
-                                                                        {row.recommendations?.map((r, i) => <li key={i}>{r}</li>)}
+                                                                        {row.clusters?.map((c, i) => <li key={i}>{c}</li>)}
                                                                     </ul>
                                                                 </div>
-                                                                {row.diagnostic && (
-                                                                    <div className="li-detail-block li-detail-wide">
-                                                                        <h4>Key diagnostic</h4>
-                                                                        <p>{row.diagnostic}</p>
-                                                                    </div>
-                                                                )}
-                                                                {!!row.targetedGroups?.length && (
-                                                                    <div className="li-detail-block">
-                                                                        <h4>Targeted groups</h4>
-                                                                        <p>{row.targetedGroups.join(", ")}</p>
-                                                                    </div>
-                                                                )}
-                                                                {row.owner && (
-                                                                    <div className="li-detail-block">
-                                                                        <h4>Owner</h4>
-                                                                        <p>{row.owner}</p>
-                                                                    </div>
-                                                                )}
-                                                                {row.inequalities && (
-                                                                    <div className="li-detail-block">
-                                                                        <h4>Identified inequalities</h4>
-                                                                        <p>
-                                                                            <span
-                                                                                className="li-ineq-chip"
-                                                                                style={row.inequalities.toUpperCase() === "YES"
-                                                                                    ? { background: "#fee2e2", color: "#991b1b" }
-                                                                                    : { background: "#dcfce7", color: "#166534" }}
-                                                                            >
-                                                                                {row.inequalities.toUpperCase()}
-                                                                            </span>
-                                                                        </p>
-                                                                    </div>
-                                                                )}
-                                                                {!!row.clusters?.length && (
-                                                                    <div className="li-detail-block li-detail-wide">
-                                                                        <h4>Mapped population clusters</h4>
-                                                                        <ul>
-                                                                            {row.clusters.map((c, i) => <li key={i}>{c}</li>)}
-                                                                        </ul>
-                                                                    </div>
-                                                                )}
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                )}
+                                                {bfOpen && (
+                                                    <tr>
+                                                        <td className="li-detail-cell" colSpan={8}>
+                                                            <div className="li-detail-grid">
                                                                 {!!row.behaviouralBarriers?.length && (
                                                                     <div className="li-detail-block">
                                                                         <h4>Behavioural barriers</h4>
@@ -1161,6 +1240,20 @@ const LargeScaleIntervention = () => {
                                                                         </ul>
                                                                     </div>
                                                                 )}
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                )}
+                                                {recOpen && (
+                                                    <tr>
+                                                        <td className="li-detail-cell" colSpan={8}>
+                                                            <div className="li-detail-grid">
+                                                                <div className="li-detail-block li-detail-wide">
+                                                                    <h4>Recommendations generated</h4>
+                                                                    <ul>
+                                                                        {row.recommendations?.map((r, i) => <li key={i}>{r}</li>)}
+                                                                    </ul>
+                                                                </div>
                                                             </div>
                                                         </td>
                                                     </tr>
