@@ -99,50 +99,44 @@ const TwoFactorHeatmapViewer = () => {
   useEffect(() => {
     const TOKEN_KEY = "oncodir_token";
     const TOKEN_TS_KEY = "oncodir_token_ts"; // timestamp of last token fetch
-    const ONE_DAY = 24 * 60 * 60 * 1000; // 24 hours in ms
+    const TOKEN_TTL = 50 * 60 * 1000; // 50 min — stays under the 1h DELI session TTL
+
+    const isProduction = import.meta.env.MODE === "production";
+    const host = import.meta.env.VITE_AUTHENTICATION_HOST;
+    const BIAS_TOKEN_URL = isProduction
+      ? '/all-comments/bias-token'
+      : `http://${host}:8435/bias-token`;
 
     const getToken = async () => {
       const storedToken = localStorage.getItem(TOKEN_KEY);
       const storedTs = localStorage.getItem(TOKEN_TS_KEY);
       const now = Date.now();
 
-      if (storedToken && storedTs && now - parseInt(storedTs) < ONE_DAY) {
+      if (storedToken && storedTs && now - parseInt(storedTs) < TOKEN_TTL) {
         // Token is still valid
         setToken(storedToken);
         return;
       }
 
-      // Token missing or expired → fetch new token
-      const controller = new AbortController();
-      try {
-        const res = await fetch(
-          "https://oncodir-datapi.catalink.eu/v1/services/login/",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              service_name: import.meta.env.VITE_SERVICE_NAME,
-              password: import.meta.env.VITE_SERVICE_PASSWORD,
-            }),
-            signal: controller.signal,
-          }
-        );
+      const user = JSON.parse(localStorage.getItem("user") || "{}");
+      const userJwt = user?.token || '';
+      if (!userJwt) return; // not logged in, skip silently
 
+      try {
+        const res = await fetch(BIAS_TOKEN_URL, {
+          headers: { Authorization: `Bearer ${userJwt}` },
+        });
+
+        if (res.status === 401) return; // session expired — user must re-login
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const newToken = await res.text();
+        const { token: newToken } = await res.json();
 
         localStorage.setItem(TOKEN_KEY, newToken);
         localStorage.setItem(TOKEN_TS_KEY, now.toString());
         setToken(newToken);
       } catch (err) {
-        if (err.name !== "AbortError") {
-          console.error("Login failed:", err);
-        }
+        console.error("Bias token fetch failed:", err);
       }
-
-      return () => controller.abort();
     };
 
     getToken();

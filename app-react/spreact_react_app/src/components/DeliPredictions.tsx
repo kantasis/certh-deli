@@ -248,36 +248,40 @@ const DeliPredictions = () => {
     useEffect(() => {
         const TOKEN_KEY = "oncodir_token";
         const TOKEN_TS_KEY = "oncodir_token_ts";
-        const ONE_DAY = 24 * 60 * 60 * 1000;
+        const TOKEN_TTL = 50 * 60 * 1000; // 50 min — stays under the 1h DELI session TTL
+
+        const isProduction = import.meta.env.MODE === "production";
+        const host = import.meta.env.VITE_AUTHENTICATION_HOST;
+        const BIAS_TOKEN_URL = isProduction
+            ? '/all-comments/bias-token'
+            : `http://${host}:8435/bias-token`;
 
         const getToken = async () => {
             const storedToken = localStorage.getItem(TOKEN_KEY);
             const storedTs = localStorage.getItem(TOKEN_TS_KEY);
             const now = Date.now();
-            if (storedToken && storedTs && now - parseInt(storedTs) < ONE_DAY) {
+            if (storedToken && storedTs && now - parseInt(storedTs) < TOKEN_TTL) {
                 setToken(storedToken);
                 return;
             }
-            const controller = new AbortController();
+
+            const user = JSON.parse(localStorage.getItem("user") || "{}");
+            const userJwt = user?.token || '';
+            if (!userJwt) return; // not logged in, skip silently
+
             try {
-                const res = await fetch("https://oncodir-datapi.catalink.eu/v1/services/login/", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        service_name: import.meta.env.VITE_SERVICE_NAME,
-                        password: import.meta.env.VITE_SERVICE_PASSWORD,
-                    }),
-                    signal: controller.signal,
+                const res = await fetch(BIAS_TOKEN_URL, {
+                    headers: { Authorization: `Bearer ${userJwt}` },
                 });
+                if (res.status === 401) return; // session expired — user must re-login
                 if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                const newToken = await res.text();
+                const { token: newToken } = await res.json();
                 localStorage.setItem(TOKEN_KEY, newToken);
                 localStorage.setItem(TOKEN_TS_KEY, now.toString());
                 setToken(newToken);
             } catch (err) {
-                if (err.name !== "AbortError") { /* login failed — silent */ }
+                console.error("Bias token fetch failed:", err);
             }
-            return () => controller.abort();
         };
         getToken();
     }, []);
@@ -423,6 +427,7 @@ const DeliPredictions = () => {
             if (params.horizon) setHorizon(params.horizon);
             if (params.country) setCountry(params.country);
             if (params.riskFactor) setPendingRiskFactor(params.riskFactor);
+            if (params.target !== undefined && params.target !== "") setSelectedTarget(Number(params.target));
             if (params.tfCountry) setTfCountry(params.tfCountry);
             if (params.tfHorizon) setTfHorizon(String(params.tfHorizon));
             if (params.pairId) setTfPairId(params.pairId);
@@ -468,6 +473,7 @@ const DeliPredictions = () => {
             if (["sf_intervention", "sf_target", "effect_sev_unit"].includes(type) && riskFactor) {
                 params.riskFactor = riskFactorsLst.find((rf) => rf.value === riskFactor)?.label || riskFactor;
             }
+            if (type === "sf_target") params.target = String(selectedTarget);
         }
         return params;
     };
