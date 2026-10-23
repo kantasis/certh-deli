@@ -1,5 +1,5 @@
 # Stage 1: Build React app
-FROM node:20-bullseye-slim AS builder
+FROM node:22-bullseye-slim AS builder
 WORKDIR /app
 
 COPY spreact_react_app/package*.json ./
